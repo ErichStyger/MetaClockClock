@@ -48,10 +48,7 @@
 #include "application.h"
 #include "McuLog.h"
 
-#if PL_CONFIG_WORLD_CLOCK
-  static bool CLOCK_ClockIsOn = false;
-  static bool CLOCK_ClockIsOn = true;
-#endif
+static bool CLOCK_ClockIsOn = true;
 #if PL_MATRIX_CONFIG_IS_12x5
   static bool CLOCK_clockIsLarge = true; /* if clock is using large font */
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */

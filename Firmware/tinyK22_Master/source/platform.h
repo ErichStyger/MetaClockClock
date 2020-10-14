@@ -29,13 +29,13 @@
 #define PL_CONFIG_IS_MASTER        (1) /* Master configuration, otherwise it is the client */
 #define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
 
-#define PL_CONFIG_IS_ALEXIS        (0) /* matching Alexis configuration */
+#define PL_CONFIG_IS_NEW_MODULAR   (PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128) /* new modular boards with power-off switch */
 
-/* clock organization: only one can be active! */
-#define PL_MATRIX_CONFIG_IS_1x1    (0 && !PL_CONFIG_IS_ALEXIS) /* test matrix with just one clock */
-#define PL_MATRIX_CONFIG_IS_8x3    (0 || PL_CONFIG_IS_ALEXIS) /* original 8x3 matrix configuration with 24 clocks */
-#define PL_MATRIX_CONFIG_IS_12x5   (1 && !PL_CONFIG_IS_ALEXIS) /* new 8x3 matrix configuration with 60 clocks */
-#define PL_MATRIX_CONFIG_IS_RGB    (1)  /* if matrix has RGB rings */
+/* predefined clock organization for the master: only one can be active! */
+#define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
+#define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
+#define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
+#define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
 
 /* hardware versions for boards with LPC845:
  * V0.1: initial version with 2x2 arrangement
@@ -72,13 +72,13 @@
 #define PL_CONFIG_USE_RS485         	(1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
 #define PL_CONFIG_USE_NVMC          	(0) /* using non-volatile configuration memory */
 #define PL_CONFIG_USE_WDT           	(0) /* if using watchdog timer, disable for easier debugging */
-#define PL_CONFIG_USE_DEMOS         	(1 && PL_CONFIG_USE_MATRIX && (PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
+#define PL_CONFIG_USE_DEMOS         	(1 && PL_CONFIG_USE_MATRIX && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
 #define PL_CONFIG_USE_BLE           	(1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
 #define PL_CONFIG_USE_BLE_MSG       	(1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit app messages */
 #define PL_CONFIG_USE_ESP32         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* if using the ESP32 */
 #define PL_CONFIG_USE_SHT31         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_USE_I2C) /* if using SHT31 sensor */
 #define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_IS_TINYK22 || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
-#define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128) /* using hardware to turn off/on the stepper motors to reduce power */
+#define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 
 #define PL_CONFIG_USE_STEPPER         (1) /* enable stepper function, both motors and virtual (LED) stepper */
 #define PL_CONFIG_USE_LED_STEPPER     (1 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
@@ -87,13 +87,13 @@
 /* remove?: */
 #define PL_CONFIG_USE_LED_RING      	(1 && PL_CONFIG_USE_NEO_PIXEL) /* if it has LED rings */
 #define PL_CONFIG_USE_MATRIX        	(1 && (PL_CONFIG_USE_STEPPER || PL_CONFIG_USE_LED_RING || PL_CONFIG_IS_MASTER)) /* if using the matrix module to control the clocks */
-#define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0) /* play automatic demo after power-on */
-
+#define PL_CONFIG_USE_LOW_POWER       (0)  /* if using low power mode */
 
 /* client only: */
 #define PL_CONFIG_USE_MAG_SENSOR    (0 && PL_CONFIG_IS_CLIENT) /* using magnets and hall sensors */
 #define PL_CONFIG_USE_LED_DIMMING   (0 && PL_CONFIG_USE_LED_RING)
 #define PL_CONFIG_USE_DUAL_HANDS    (0 && PL_CONFIG_USE_LED_RING) /* dual hand on Z axis */
+#define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0 && PL_CONFIG_IS_CLIENT) /* play automatic demo after power-on */
 
 /* master only: */
 #define PL_CONFIG_USE_SHELL_UART    (1 && PL_CONFIG_IS_MASTER) /* using UART for USB-CDC to host */
@@ -103,7 +103,7 @@
 #define PL_CONFIG_USE_EXT_EEPROM    (1 && PL_CONFIG_USE_I2C) /* AT24C32 */
 
 #define PL_CONFIG_USE_CLOCK         (1 && PL_CONFIG_USE_RTC)  /* 1: application implements a clock */
-#define PL_CONFIG_USE_INTERMEZZO    (1 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER)
+#define PL_CONFIG_USE_INTERMEZZO    (1 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485)
 
 #define PL_CONFIG_USE_MCU_LOG       (McuLog_CONFIG_IS_ENABLED) /* configured in IncludeMcuLibConfig.h */
 

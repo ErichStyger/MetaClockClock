@@ -29,14 +29,13 @@
 #define PL_CONFIG_IS_MASTER        (0) /* Master configuration, otherwise it is the client */
 #define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
 
-#define PL_CONFIG_IS_ALEXIS        (0) /* matching Alexis configuration */
-#define PL_CONFIG_IS_NEW_MODULAR   (1) /* new modular boards with power-off switch */
+#define PL_CONFIG_IS_NEW_MODULAR   (PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128) /* new modular boards with power-off switch */
 
-/* clock organization: only one can be active! */
-#define PL_MATRIX_CONFIG_IS_1x1    (0 && !PL_CONFIG_IS_ALEXIS) /* test matrix with just one clock */
-#define PL_MATRIX_CONFIG_IS_8x3    (0 || PL_CONFIG_IS_ALEXIS) /* original 8x3 matrix configuration with 24 clocks */
-#define PL_MATRIX_CONFIG_IS_12x5   (0 && !PL_CONFIG_IS_ALEXIS) /* new 8x3 matrix configuration with 60 clocks */
-#define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER)  /* if matrix has RGB rings */
+/* predefined clock organization for the master: only one can be active! */
+#define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
+#define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
+#define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
+#define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
 
 /* hardware versions for boards with LPC845:
  * V0.1: initial version with 2x2 arrangement
