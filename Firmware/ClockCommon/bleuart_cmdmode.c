@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "Platform.h"
+#include "platform.h"
 #if PL_CONFIG_USE_BLE
 #include "bleuart_cmdmode.h"
 #include "ble.h"

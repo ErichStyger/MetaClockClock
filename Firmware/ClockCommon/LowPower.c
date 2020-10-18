@@ -103,7 +103,7 @@ void LP_Init(void) {
  * https://mcuoneclipse.com/2014/03/16/starting-point-for-kinetis-low-power-lls-mode/
  */
 
-#include "Platform.h"
+#include "platform.h"
 #include "LowPower.h"
 #include "Cpu.h"
 #include "CLS1.h"
