@@ -125,9 +125,14 @@ void McuRTOS_vApplicationIdleHook(void)
   /* Called whenever the RTOS is idle (from the IDLE task).
      Here would be a good place to put the CPU into low power mode. */
   /* Write your code here ... */
+#if McuLib_CONFIG_CORTEX_M==0 && PL_CONFIG_USE_RTT
+  /* somehow on LPC this does slow down RTT communication a lot! */
+  /* a better solution here would be to check if there are RTT bytes in the buffer, but the buffer is not full yet */
+#else
   __asm volatile("dsb");
   __asm volatile("wfi");
   __asm volatile("isb");
+#endif
 }
 
 
