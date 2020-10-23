@@ -421,3 +421,4 @@ int SEGGER_printf(const char * sFormat, ...); /* << EST */
 #endif
 
 /*************************** End of file ****************************/
+

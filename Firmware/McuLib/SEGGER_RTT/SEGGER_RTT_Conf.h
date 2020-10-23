@@ -77,15 +77,6 @@ Revision: $Rev: 21074 $
   #include "portmacro.h" /* include FreeRTOS port header file for critical section handling */
 #endif
 
-/* Channel 0 settings from properties */ /* << EST */
-#define SEGGER_RTT_CHANNEL_0_ENABLED              (1) /* 1: initialize channel; 0: do not initialize channel */
-#define SEGGER_RTT_CHANNEL_0_NAME                 "Terminal"
-#define SEGGER_RTT_CHANNEL_0_BUFFER_SIZE_UP       (McuRTT_CONFIG_RTT_BUFFER_SIZE_UP)
-#define SEGGER_RTT_CHANNEL_0_BUFFER_SIZE_DOWN     (McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN)
-#define SEGGER_RTT_CHANNEL_0_MODE_UP              SEGGER_RTT_MODE_NO_BLOCK_SKIP
-#define SEGGER_RTT_CHANNEL_0_MODE_DOWN            SEGGER_RTT_MODE_NO_BLOCK_SKIP
-/* > EST */
-
 //
 // Take in and set to correct values for Cortex-A systems with CPU cache
 //
@@ -97,7 +88,7 @@ Revision: $Rev: 21074 $
 // Up-channel 1: SystemView
 //
 #ifndef   SEGGER_RTT_MAX_NUM_UP_BUFFERS
-  #define SEGGER_RTT_MAX_NUM_UP_BUFFERS             (3)     // Max. number of up-buffers (T->H) available on this target    (Default: 3)
+  #define SEGGER_RTT_MAX_NUM_UP_BUFFERS             (McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS)     // Max. number of up-buffers (T->H) available on this target    (Default: 3)
 #endif
 //
 // Most common case:
@@ -105,7 +96,7 @@ Revision: $Rev: 21074 $
 // Down-channel 1: SystemView
 //
 #ifndef   SEGGER_RTT_MAX_NUM_DOWN_BUFFERS
-  #define SEGGER_RTT_MAX_NUM_DOWN_BUFFERS           (3)     // Max. number of down-buffers (H->T) available on this target  (Default: 3)
+  #define SEGGER_RTT_MAX_NUM_DOWN_BUFFERS           (McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS)     // Max. number of down-buffers (H->T) available on this target  (Default: 3)
 #endif
 
 #ifndef   BUFFER_SIZE_UP
@@ -460,3 +451,4 @@ void OS_SIM_LeaveCriticalSection(void);
 
 #endif
 /*************************** End of file ****************************/
+
