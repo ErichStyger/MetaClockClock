@@ -158,6 +158,20 @@
 									<listOptionValue builtIn="false" value="../source"/>
 									<listOptionValue builtIn="false" value="../"/>
 									<listOptionValue builtIn="false" value="../board/boards"/>
+									<listOptionValue builtIn="false" value="../../McuLib"/>
+									<listOptionValue builtIn="false" value="../../McuLib/config"/>
+									<listOptionValue builtIn="false" value="../../McuLib/config/fonts"/>
+									<listOptionValue builtIn="false" value="../../McuLib/fonts"/>
+									<listOptionValue builtIn="false" value="../../McuLib/src"/>
+									<listOptionValue builtIn="false" value="../../McuLib/FreeRTOS/Source/include"/>
+									<listOptionValue builtIn="false" value="../../McuLib/FreeRTOS/Source/portable/GCC/ARM_CM4F"/>
+									<listOptionValue builtIn="false" value="../../McuLib/SEGGER_RTT"/>
+									<listOptionValue builtIn="false" value="../../McuLib/SEGGER_Sysview"/>
+									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/config"/>
+									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/include"/>
+									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/streamports/Jlink_RTT/include"/>
+									<listOptionValue builtIn="false" value="../../McuLib/HD44780"/>
+									<listOptionValue builtIn="false" value="../../McuLib/FatFS/source"/>
 								</option>
 								<option id="gnu.both.asm.option.warnings.nowarn.1287731129" name="Suppress warnings (-W)" superClass="gnu.both.asm.option.warnings.nowarn" useByScannerDiscovery="false"/>
 								<option id="gnu.both.asm.option.version.145043968" name="Announce version (-v)" superClass="gnu.both.asm.option.version" useByScannerDiscovery="false"/>
@@ -290,25 +304,19 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="com.crt.advproject.config.exe.debug.1834824750.362705125" name="/" resourcePath="RTT">
-						<toolChain id="com.crt.advproject.toolchain.exe.debug.857144596" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
-							<tool id="com.crt.advproject.cpp.exe.debug.1984097174" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.622091220"/>
-							<tool id="com.crt.advproject.gcc.exe.debug.746452671" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.489972124">
-								<inputType id="com.crt.advproject.compiler.input.1266258510" superClass="com.crt.advproject.compiler.input"/>
-							</tool>
-							<tool id="com.crt.advproject.gas.exe.debug.482695722" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1328812309">
-								<inputType id="cdt.managedbuild.tool.gnu.assembler.input.503796658" superClass="cdt.managedbuild.tool.gnu.assembler.input"/>
-								<inputType id="com.crt.advproject.assembler.input.1787235445" name="Additional Assembly Source Files" superClass="com.crt.advproject.assembler.input"/>
-							</tool>
-							<tool id="com.crt.advproject.link.cpp.exe.debug.1339235629" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1368244844"/>
-							<tool id="com.crt.advproject.link.exe.debug.1298512954" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.187737908"/>
-							<tool id="com.crt.advproject.tool.debug.debug.28816252" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1335062086"/>
-						</toolChain>
-					</folderInfo>
+					<fileInfo id="com.crt.advproject.config.exe.debug.1834824750.2041221617" name="SEGGER_RTT_ASM_ARMv7M.S" rcbsApplicability="disable" resourcePath="McuLib/SEGGER_RTT/SEGGER_RTT_ASM_ARMv7M.S" toolsToInvoke="com.crt.advproject.gas.exe.debug.1328812309.1052502083">
+						<tool id="com.crt.advproject.gas.exe.debug.1328812309.1052502083" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1328812309"/>
+						<tool customBuildStep="true" id="org.eclipse.cdt.managedbuilder.ui.rcbs.777482425" name="Resource Custom Build Step">
+							<inputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.inputtype.2097283909" name="Resource Custom Build Step Input Type">
+								<additionalInput kind="additionalinputdependency" paths=""/>
+							</inputType>
+							<outputType id="org.eclipse.cdt.managedbuilder.ui.rcbs.outputtype.2109716604" name="Resource Custom Build Step Output Type"/>
+						</tool>
+					</fileInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ClockCommon"/>
-						<entry excluding="SEGGER_Sysview|FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33|LittlevGL|TraceRecorder|minIni|HD44780|fonts|FatFS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
+						<entry excluding="SEGGER_RTT/SEGGER_RTT_ASM_ARMv7M.S|SEGGER_Sysview|FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33|LittlevGL|TraceRecorder|minIni|HD44780|fonts|FatFS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
