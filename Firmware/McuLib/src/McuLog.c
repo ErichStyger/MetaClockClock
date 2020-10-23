@@ -157,14 +157,6 @@ void McuLog_set_color(bool enable) {
 
 static void OutputCharFctConsole(void *p, char ch) {
   McuShell_StdIO_OutErr_FctType io = (McuShell_StdIO_OutErr_FctType)p;
-#if McuRTT_CONFIG_BLOCKING_SEND
-  if (io==McuRTT_StdIOSendChar) {
-    unsigned int rttUpSize = SEGGER_RTT_GetUpBufferFreeSize(0);
-    if (rttUpSize<sizeof(char)) { /* is there enough space available in the RTT up buffer? */
-      return; /* do not block */
-    }
-  }
-#endif
   io(ch);
 }
 
@@ -184,12 +176,6 @@ void McuLog_set_rtt_logger(bool enable) {
 
 #if McuLog_CONFIG_USE_RTT_DATA_LOGGER
 static void OutputCharRttLoggerFct(void *p, char ch) {
-#if McuLog_CONFIG_RTT_DATA_LOGGER_CHANNEL_MODE == SEGGER_RTT_MODE_BLOCK_IF_FIFO_FULL
-  unsigned int rttUpSize = SEGGER_RTT_GetUpBufferFreeSize(McuLog_RTT_DATA_LOGGER_CHANNEL);
-  if (rttUpSize<sizeof(char)) { /* is there enough space available in the RTT up buffer? */
-    return; /* do not block */
-  }
-#endif
   McuRTT_Write(McuLog_RTT_DATA_LOGGER_CHANNEL, (const char*)&ch, sizeof(char));
 }
 #endif

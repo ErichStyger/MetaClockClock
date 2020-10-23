@@ -236,7 +236,7 @@ void McuX12_017_Step(McuX12_017_Handle_t device, McuX12_017_Motor_e motor) {
   McuGPIO_SetHigh(dev->m[motor].step);
   McuWait_Waitus(10);
   McuGPIO_SetLow(dev->m[motor].step);
-  McuWait_Waitus(500);
+  McuWait_Waitus(100);
   if (dev->m[motor].isForward) {
     dev->m[motor].pos++;
   } else {
@@ -270,14 +270,12 @@ void McuX12_017_SingleStep(McuX12_017_Handle_t device, McuX12_017_Motor_e motor,
     McuX12_017_SetForward(dev, motor);
   }
   McuGPIO_SetHigh(dev->m[motor].step); /* do step, next statements will do an implicit delay */
-  //McuGPIO_Toggle(dev->m[motor].step);
   /* change position information */
   if (dev->m[motor].isForward) {
     dev->m[motor].pos++;
   } else {
     dev->m[motor].pos--;
   }
- // McuWait_Waitus(50);
   McuGPIO_SetLow(dev->m[motor].step);
 }
 
