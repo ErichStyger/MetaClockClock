@@ -1348,7 +1348,7 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
       }
     } /* for */
     STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), waitms);
-    timeoutms -= waitms;
+    timeoutms -= ((abs(stepSize)*STEPPER_TIME_STEP_US)/1000)+1; /* estimate time needed to perform the number of steps */
   }
   if (timeoutms<0) {
     res = ERR_UNDERFLOW;
@@ -1370,17 +1370,17 @@ static uint8_t MATRIX_ZeroHand(STEPPER_Handle_t *motors[], int16_t offsets[], si
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
 
   /* move forward ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 10000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 3000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 10000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 1000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step forward ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 10000, 2, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 1000, 2, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
@@ -1427,6 +1427,12 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   STEPPER_Handle_t stepper;
   int i;
 
+#if PL_CONFIG_USE_MOTOR_ON_OFF
+  if (!STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())) {
+    McuLog_trace("turning on motors");
+    STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
+  }
+#endif
   /* first zero position at current position and set delay */
   i = 0;
   for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
@@ -1441,19 +1447,19 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   }
   McuLog_trace("Move hands CCW to find sensor");
   /* move ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 5000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 3000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   McuLog_trace("Move hands CW back got get off sensor");
   /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), false, 1, 5000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), false, 1, 1000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   McuLog_trace("Move hands CW over sensor again");
   /* step ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -1, 5000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -1, 1000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
     return res;
   }
@@ -1489,7 +1495,7 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
     #endif
     }
   }
-  McuLog_trace("Move hands back to zero position");
+  McuLog_trace("Move hands back CCW to zero position");
   MATRIX_MoveByOffset(motors, offsets, sizeof(motors)/sizeof(motors[0]), STEPPER_HAND_ZERO_DELAY);
   return res;
 }
