@@ -90,7 +90,7 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER                 (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (0)
+#define McuLog_CONFIG_IS_ENABLED                      (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
