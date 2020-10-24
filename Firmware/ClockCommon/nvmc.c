@@ -83,15 +83,46 @@ uint8_t NVMC_GetRS485Addr(void) {
   const NVMC_Data_t *data;
 
   if (!NVMC_HasValidConfig()) {
-    McuLog_error("no valid NVMC configuration, returning default address");
+    McuLog_error("no valid NVMC configuration, returning default RS-485 address (1)");
     return 0x1;
   }
   data = NVMC_GetDataPtr();
   if (data!=NULL) {
     return data->addrRS485;
   }
-  McuLog_error("NVMC does not exist, returning default address");
+  McuLog_error("NVMC does not exist, returning default RS-485 address (0x1)");
   return 0x1; /* default */
+}
+
+uint8_t NVMC_GetNofActiveMotors(void) {
+  const NVMC_Data_t *data;
+
+  if (!NVMC_HasValidConfig()) {
+    McuLog_error("no valid NVMC configuration, returning default number of motors (1)");
+    return 0x1;
+  }
+  data = NVMC_GetDataPtr();
+  if (data!=NULL) {
+    return data->nofActiveMotors;
+  }
+  McuLog_error("NVMC does not exist, returning default number of motors (1)");
+  return 0x1; /* default */
+}
+
+static uint8_t NVMC_SetNofActiveMotors(uint8_t nofMotors) {
+  NVMC_Data_t data;
+
+  if (NVMC_IsErased()) {
+    McuLog_error("FLASH is erased, initialize it first!");
+    return ERR_FAILED;
+  }
+  data = *NVMC_GetDataPtr(); /* struct copy */
+  data.nofActiveMotors = nofMotors;
+  if (NVMC_WriteConfig(&data)!=ERR_OK) {
+    McuLog_error("Failed writing configuration!");
+    return ERR_FAILED;
+  }
+  return ERR_OK;
 }
 
 #if PL_CONFIG_USE_NVMC
@@ -270,11 +301,12 @@ static uint8_t NVMC_InitConfig(void) {
     return ERR_FAILED;
   }
   memset(&data, 0, sizeof(data)); /* initialize data */
-  data.version = NVMC_VERSION_1_0;
+  data.version = NVMC_CURRENT_VERSION;
+  data.nofActiveMotors = PL_CONFIG_NOF_CLOCK_ON_BOARD;
 #if PL_CONFIG_IS_MASTER
   data.addrRS485 = 0x01;
 #else
-  data.addrRS485 = 0x0A;
+  data.addrRS485 = 0x0A; /* default initial clock/slave address */
 #endif
   for (int i=0; i<sizeof(data.zeroOffsets)/sizeof(data.zeroOffsets[0]); i++) {
     for(int j=0; j<sizeof(data.zeroOffsets[0])/sizeof(data.zeroOffsets[0][0]); j++) {
@@ -319,6 +351,10 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_STEPPER
     uint8_t status[12];
 
+    buf[0] = '\0';
+    McuUtility_strcatNum8u(buf, sizeof(buf), data->nofActiveMotors);
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+    McuShell_SendStatusStr((unsigned char*)"  motors", buf, io->stdOut);
     for (int i=0; i<sizeof(data->zeroOffsets)/sizeof(data->zeroOffsets[0]); i++) {
       buf[0] = '\0';
       for(int j=0; j<sizeof(data->zeroOffsets[0])/sizeof(data->zeroOffsets[0][0]); j++) {
@@ -341,6 +377,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  erase", (unsigned char*)"Erase configuration area\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  init", (unsigned char*)"Erase and initialize configuration area\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  nofMotors", (unsigned char*)"Set the number of motors\r\n", io->stdOut);
   return ERR_OK;
 }
 
@@ -357,6 +394,17 @@ uint8_t NVMC_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "nvmc init")==0) {
     *handled = true;
     return NVMC_InitConfig();
+  } else if (McuUtility_strncmp((char*)cmd, "nvmc nofMotors", sizeof("nvmc nofMotors")-1)==0) {
+    *handled = true;
+    const unsigned char *p;
+    int32_t val;
+
+    p = cmd + sizeof("nvmc nofMotors ")-1;
+    if (McuUtility_xatoi(&p, &val)==ERR_OK && val>=0 && val<=0xff) {
+       return NVMC_SetNofActiveMotors(val);
+    } else {
+      return ERR_FAILED;
+    }
   }
   return ERR_OK;
 }

@@ -12,14 +12,18 @@
 #include <stdbool.h>
 #include "McuShell.h"
 
-#define NVMC_VERSION_1_0  (10)
+#define NVMC_VERSION_1_0  (10) /* initial version */
+#define NVMC_VERSION_1_1  (11) /* added nofActiveMotors */
+
+#define NVMC_CURRENT_VERSION    NVMC_VERSION_1_1 /* active and current version */
 
 typedef struct {
   uint32_t version; /* NVMC_VERSION_1_0, must be 32bit type to have struct 4 byte aligned! */
   uint8_t addrRS485; /* device address on the RS-485 bus */
+  uint8_t nofActiveMotors; /* used for the modular clock boards to define the number of active clocks */
   int16_t zeroOffsets[PL_CONFIG_NOF_CLOCK_ON_BOARD][PL_CONFIG_NOF_CLOCK_ON_BOARD_Z]; /* two offsets for each motor, offset from the magnet sensor to the zero position */
-  /* fill up to 64 bytes, needed for flash programming */
-  uint8_t filler[64-4-1-(PL_CONFIG_NOF_CLOCK_ON_BOARD*PL_CONFIG_NOF_CLOCK_ON_BOARD_Z*2)-4];
+  /* fill up to 64 bytes, needed for flash programming! */
+  uint8_t filler[64-4-1-1-(PL_CONFIG_NOF_CLOCK_ON_BOARD*PL_CONFIG_NOF_CLOCK_ON_BOARD_Z*2)];
 } NVMC_Data_t;
 
 /*!
@@ -32,6 +36,8 @@ uint8_t NVMC_WriteConfig(NVMC_Data_t *data);
 int16_t NVMC_GetStepperZeroOffset(uint8_t clock, uint8_t motor);
 
 uint8_t NVMC_GetRS485Addr(void);
+
+uint8_t NVMC_GetNofActiveMotors(void);
 
 bool NVMC_IsErased(void);
 
