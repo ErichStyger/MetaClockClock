@@ -503,12 +503,12 @@ static void RS485Task(void *pv) {
           }
         }
     #endif
-    #if PL_CONFIG_IS_MASTER
+    //#if PL_CONFIG_IS_MASTER
       } else {
         /* not starting with '@', print it ... */
         SHELL_SendString((unsigned char *)cmdBuf);
         SHELL_SendString((unsigned char*)"\r\n");
-    #endif
+    //#endif
       }
       cmdBuf[0] = '\0'; /* reset buffer for next iteration */
     #if PL_CONFIG_IS_CLIENT
