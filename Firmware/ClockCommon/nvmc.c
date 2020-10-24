@@ -109,6 +109,7 @@ uint8_t NVMC_GetNofActiveMotors(void) {
   return 0x1; /* default */
 }
 
+#if PL_CONFIG_USE_NVMC
 static uint8_t NVMC_SetNofActiveMotors(uint8_t nofMotors) {
   NVMC_Data_t data;
 
@@ -124,9 +125,9 @@ static uint8_t NVMC_SetNofActiveMotors(uint8_t nofMotors) {
   }
   return ERR_OK;
 }
+#endif
 
 #if PL_CONFIG_USE_NVMC
-
 static uint8_t NVMC_Erase(void) {
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
   uint32_t startSector = FLASH_NVM_SECTOR_START; /* sector is 1k in size */
@@ -308,11 +309,13 @@ static uint8_t NVMC_InitConfig(void) {
 #else
   data.addrRS485 = 0x0A; /* default initial clock/slave address */
 #endif
+#if PL_CONFIG_NOF_CLOCK_ON_BOARD>0
   for (int i=0; i<sizeof(data.zeroOffsets)/sizeof(data.zeroOffsets[0]); i++) {
     for(int j=0; j<sizeof(data.zeroOffsets[0])/sizeof(data.zeroOffsets[0][0]); j++) {
       data.zeroOffsets[i][j] = 0; /* default offset */
     }
   }
+#endif
   return NVMC_WriteConfig(&data);
 }
 

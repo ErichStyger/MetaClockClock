@@ -1348,9 +1348,10 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
       }
     } /* for */
     STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), waitms);
-    timeoutms -= ((abs(stepSize)*STEPPER_TIME_STEP_US)/1000)+1; /* estimate time needed to perform the number of steps */
+    timeoutms -= ((abs(stepSize)*delay*STEPPER_TIME_STEP_US)/1000)+1; /* estimate time needed to perform the number of steps */
   }
   if (timeoutms<0) {
+    McuLog_error("timeout moving hand on sensor");
     res = ERR_UNDERFLOW;
   }
   return res;
@@ -1370,17 +1371,17 @@ static uint8_t MATRIX_ZeroHand(STEPPER_Handle_t *motors[], int16_t offsets[], si
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
 
   /* move forward ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 3000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 2000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 1000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 500, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step forward ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 1000, 2, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 500, 2, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 

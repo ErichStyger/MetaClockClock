@@ -32,7 +32,13 @@
 #define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
 
 /* predefined Matrix configurations: */
-#if 0 /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
+#if 0 /* first small 'meta-clock, 6 LPC845 boards building a 8x3 matrix */
+  #define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
+  #define PL_MATRIX_CONFIG_IS_8x3    (1 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
+  #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
+  #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
+  #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
+#elif 0 /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
   #define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
@@ -58,19 +64,30 @@
 /* number of clocks on the board */
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (2)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (2)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (4)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (2)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (2)
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (4)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (4)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 /* dummy entries only */
-  #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (1)
-  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (0)
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK /* dummy entries only */
-  #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (1)
-  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (0)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (0)
 #endif
 
 #define PL_CONFIG_WORLD_CLOCK       	(0) /* legacy, clock showing different time zones */
