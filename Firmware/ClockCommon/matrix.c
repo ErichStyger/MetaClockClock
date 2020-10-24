@@ -2414,10 +2414,10 @@ void MATRIX_TimerCallback(void) {
   }
   /* check if we can stop timer */
   if (!workToDo) {
-#if PL_CONFIG_USE_LED_RING
     STEPPER_StopTimer();
-   } else {
-     (void)APP_RequestUpdateLEDsFromISR();
+#if PL_CONFIG_USE_LED_RING
+  } else { /* request update of the LEDs */
+    (void)APP_RequestUpdateLEDsFromISR();
 #endif
   }
 }
@@ -2755,31 +2755,43 @@ static void InitSteppers(void) {
   x12config.hw_reset.gpio = GPIO;
   x12config.hw_reset.port = 0U;
   x12config.hw_reset.pin  = 14U;
-  /* M0_DIR: */
+  /* M0_DIR: PIO1_9 */
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIO;
   x12config.motor[X12_017_M0].hw_dir.port = 1U;
   x12config.motor[X12_017_M0].hw_dir.pin  = 9U;
 
-  /* M0_STEP: */
+  /* M0_STEP: PIO0_12 */
   x12config.motor[X12_017_M0].hw_step.gpio = GPIO;
   x12config.motor[X12_017_M0].hw_step.port = 0U;
   x12config.motor[X12_017_M0].hw_step.pin  = 12U;
 
-  /* M1_DIR: */
+  /* M1_DIR: PIO0_13 */
   x12config.motor[X12_017_M1].hw_dir.gpio = GPIO;
   x12config.motor[X12_017_M1].hw_dir.port = 0U;
   x12config.motor[X12_017_M1].hw_dir.pin  = 13U;
 
-  /* M1_STEP:  */
+  /* M1_STEP: PIO1_8 */
   x12config.motor[X12_017_M1].hw_step.gpio = GPIO;
   x12config.motor[X12_017_M1].hw_step.port = 1U;
   x12config.motor[X12_017_M1].hw_step.pin  = 8U;
-#if PL_CONFIG_BOARD_VERSION==1
+
+  /* M2_DIR: PIO0_4 */
+  x12config.motor[X12_017_M2].hw_dir.gpio = GPIO;
+  x12config.motor[X12_017_M2].hw_dir.port = 0U;
+  x12config.motor[X12_017_M2].hw_dir.pin  = 4U;
+
+  /* M2_STEP: PIO0_28 */
+  x12config.motor[X12_017_M2].isInverted = true;
+  x12config.motor[X12_017_M2].hw_step.gpio = GPIO;
+  x12config.motor[X12_017_M2].hw_step.port = 0U;
+  x12config.motor[X12_017_M2].hw_step.pin  = 28U;
+
+#if PL_CONFIG_BOARD_VERSION==1 /* old V0.1 */
   /* M3_STEP: PIO1_0 */
   x12config.motor[X12_017_M3].hw_step.gpio = GPIO;
   x12config.motor[X12_017_M3].hw_step.port = 1U;
   x12config.motor[X12_017_M3].hw_step.pin  = 0U;
-#else
+#else /* current V1.0 */
   /* M3_STEP: PIO0_26 */
   x12config.motor[X12_017_M3].hw_step.gpio = GPIO;
   x12config.motor[X12_017_M3].hw_step.port = 0U;
