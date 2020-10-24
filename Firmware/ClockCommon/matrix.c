@@ -618,8 +618,8 @@ static uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
         isEnabled = STEPBOARD_IsEnabled(MATRIX_Boards[i]);
         addr = STEPBOARD_GetAddress(MATRIX_Boards[i]);
 #endif
-        if (isEnabled && MATRIX_CommandHasBeenSentToBoard(i)) {
-          McuLog_trace("Waiting for idle");
+        if (isEnabled && !MATRIX_CommandHasBeenSentToBoard(i)) {
+          McuLog_trace("Waiting for idle (addr 0x%02x)", addr);
           res = RS485_SendCommand(addr, (unsigned char*)"idle", 1000, false, 1); /* ask board if it is idle */
           if (res==ERR_OK) { /* board is idle */
             boardIsIdle[i] = true;
@@ -785,7 +785,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
   }
   if (nof>0) {
     *cmdSent = true;
-    McuLog_trace("Queuing commands");
+    McuLog_trace("Queuing commands (addr 0x%02x)", addr);
     resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
 #if PL_CONFIG_USE_LED_RING
     resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, true, 1); /* queue the command for ourself (LED ring) */
@@ -937,8 +937,9 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
       isEnabled = STEPBOARD_IsEnabled(MATRIX_Boards[i]);
       addr = STEPBOARD_GetAddress(MATRIX_Boards[i]);
 #endif
-      if (isEnabled && MATRIX_CommandHasBeenSentToBoard(i)) {
-        res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, false, 1); /* ask board if there was an error */
+      if (isEnabled && !MATRIX_CommandHasBeenSentToBoard(i)) {
+        McuLog_trace("Checking last error (addr 0x%02x)", addr);
+       res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, false, 1); /* ask board if there was an error */
         if (res==ERR_OK) { /* no error */
           boardHasError[i] = false;
         } else { /* send command again! */
@@ -956,11 +957,9 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
 
 #if PL_CONFIG_USE_RS485
 static uint8_t SendExecuteCommand(void) {
-  McuLog_trace("Sending Execute");
+  McuLog_trace("Sending broadcast exq");
   /* send broadcast execute queue command */
   (void)RS485_SendCommand(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix exq", 1000, true, 0); /* execute the queue */
-  ///* send it again, just to make sure if a board has not received it: */
-  //(void)RS485_SendCommand(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix exq", 1000, true, 0); /* execute the queue */
   /* check with lastEror if all have received the message */
   return MATRIX_CheckRemoteLastError();
 }
@@ -1022,7 +1021,7 @@ static void MATRIX_SendMotorOnOffAll(bool on) {
     addr = MATRIX_BoardList[i].addr;
     isEnabled = MATRIX_BoardList[i].enabled;
     if (isEnabled) {
-      McuLog_trace("Turning motor %s for board 0x%x", on?"on":"off", addr);
+      McuLog_trace("Turning motor %s for board 0x%02x", on?"on":"off", addr);
       res = RS485_SendCommand(addr, cmd, 1000, false, 1);
       if (res!=ERR_OK) {
         McuLog_error("failed changing motor on/off board 0x%x", addr);
