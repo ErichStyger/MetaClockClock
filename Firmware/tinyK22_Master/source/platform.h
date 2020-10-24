@@ -89,7 +89,7 @@
 #define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_BOARD_MASTER_K22_WS2812B || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
 #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 
-#define PL_CONFIG_USE_STEPPER         (1 && PL_CONFIG_BOARD_MASTER_K22_WS2812B) /* enable stepper function, both motors and virtual (LED) stepper */
+#define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_BOARD_MASTER_K22_WS2812B)) /* enable stepper function, both motors and virtual (LED) stepper */
 #define PL_CONFIG_USE_LED_STEPPER     (1 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #define PL_CONFIG_USE_X12_LED_STEPPER (PL_CONFIG_USE_X12_STEPPER && PL_CONFIG_USE_NEO_PIXEL)

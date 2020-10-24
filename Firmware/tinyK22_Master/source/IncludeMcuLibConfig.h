@@ -31,7 +31,7 @@ Instructions:
 #define McuLib_CONFIG_SDK_VERSION_USED   McuLib_CONFIG_SDK_MCUXPRESSO_2_0
 #define McuLib_CONFIG_CPU_IS_LPC         (0)  /* LPC845 */
 #define McuLib_CONFIG_CORTEX_M           (4)  /* K22 is a Cortex-M4 */
-#define McuLib_CONFIG_CPU_IS_KINETIS     (1)
+#define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K22 is a Kinetis */
 
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
@@ -44,6 +44,8 @@ Instructions:
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
 #define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
+#define configSYSTICK_USE_LOW_POWER_TIMER       (0)
+#define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
 
 /* performance counter: */
 #define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
@@ -62,7 +64,7 @@ Instructions:
 #define McuPercepio_CONFIG_START_TRACE_IN_STARTUP_MODE  TRC_START
 /* -------------------------------------------------*/
 /* Shell */
-#define McuShell_CONFIG_PROJECT_NAME_STRING           "tinyK22 LedRing"
+#define McuShell_CONFIG_PROJECT_NAME_STRING           "tinyK22 Master"
 #define McuShell_CONFIG_MULTI_CMD_ENABLED             (1)
 #define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256)
 #define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
@@ -74,6 +76,13 @@ Instructions:
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (1024)
+#if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
+  #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (2)
+  #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (2)
+#else
+  #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (1)
+  #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (1)
+#endif
 /* ------------------- I2C ---------------------------*/
 #define CONFIG_USE_HW_I2C                             (1) /* if using HW I2C, otherwise use software bit banging */
 #define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)

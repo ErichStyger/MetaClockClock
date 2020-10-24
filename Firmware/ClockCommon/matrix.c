@@ -1439,24 +1439,27 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
       }
     }
   }
-
+  McuLog_trace("Move hands CCW to find sensor");
   /* move ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 10000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 5000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
+  McuLog_trace("Move hands CW back got get off sensor");
   /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), false, 1, 10000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), false, 1, 5000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
+  McuLog_trace("Move hands CW over sensor again");
   /* step ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -1, 10000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -1, 5000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
     return res;
   }
 
 #if PL_CONFIG_USE_NVMC
+  McuLog_trace("Store offsets in NVMC");
   /* store new offsets */
   NVMC_Data_t data;
 
@@ -1471,6 +1474,7 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   }
   res = NVMC_WriteConfig(&data);
   if (res!=ERR_OK) {
+    McuLog_error("Failed storing in NVMC");
     return res;
   }
 #endif
@@ -1485,6 +1489,7 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
     #endif
     }
   }
+  McuLog_trace("Move hands back to zero position");
   MATRIX_MoveByOffset(motors, offsets, sizeof(motors)/sizeof(motors[0]), STEPPER_HAND_ZERO_DELAY);
   return res;
 }
@@ -1784,7 +1789,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  zero all", (unsigned char*)"Move all motors to zero position using magnet sensor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  zero <x> <y> <z>", (unsigned char*)"Move clock to zero position using magnet sensor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  offs <x> <y> <z> <v>", (unsigned char*)"Set offset value for clock\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  offs 12", (unsigned char*)"Calculate offset from 12-o-clock for all\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  offs 12", (unsigned char*)"Calculate offset from 12-o-clock for all motors\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   McuShell_SendHelpStr((unsigned char*)"  motor on|off", (unsigned char*)"Switch motors on or off\r\n", io->stdOut);
@@ -2827,14 +2832,22 @@ static void InitSteppers(void) {
 
   /* setup the stepper motors */
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
   x12Steppers[0].x12device = x12device[0];
   x12Steppers[0].x12motor = X12_017_M1;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
   x12Steppers[1].x12device = x12device[0];
   x12Steppers[1].x12motor = X12_017_M0;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
   x12Steppers[2].x12device = x12device[0];
   x12Steppers[2].x12motor = X12_017_M3;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   x12Steppers[3].x12device = x12device[0];
   x12Steppers[3].x12motor = X12_017_M2;
+  #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   x12Steppers[0].x12device = x12device[0];
   x12Steppers[0].x12motor = X12_017_M1;
@@ -2856,10 +2869,18 @@ static void InitSteppers(void) {
 
 #if PL_CONFIG_USE_MAG_SENSOR
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
   x12Steppers[0].mag = MAG_MAG1;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
   x12Steppers[1].mag = MAG_MAG0;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
   x12Steppers[2].mag = MAG_MAG3;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   x12Steppers[3].mag = MAG_MAG2;
+  #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   x12Steppers[0].mag = MAG_MAG1;
   x12Steppers[1].mag = MAG_MAG0;
@@ -2875,14 +2896,22 @@ static void InitSteppers(void) {
   stepperConfig.stepFn = X12_SingleStep;
 
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
   stepperConfig.device = &x12Steppers[0];
   stepper[0] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
   stepperConfig.device = &x12Steppers[1];
   stepper[1] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
   stepperConfig.device = &x12Steppers[2];
   stepper[2] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   stepperConfig.device = &x12Steppers[3];
   stepper[3] = STEPPER_InitDevice(&stepperConfig);
+  #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   stepperConfig.device = &x12Steppers[0];
   stepper[0] = STEPPER_InitDevice(&stepperConfig);
@@ -2906,10 +2935,18 @@ static void InitSteppers(void) {
   stepBoardConfig.addr = RS485_GetAddress();
   stepBoardConfig.enabled = true;
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
   stepBoardConfig.stepper[0][0] = stepper[0];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
   stepBoardConfig.stepper[0][1] = stepper[1];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
   stepBoardConfig.stepper[1][0] = stepper[2];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   stepBoardConfig.stepper[1][1] = stepper[3];
+  #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   stepBoardConfig.stepper[0][0] = stepper[0];
   stepBoardConfig.stepper[0][1] = stepper[1];
@@ -2929,11 +2966,15 @@ static void InitSteppers(void) {
   stepperRingConfig.ledLane = 5; /* PTC5 */
   stepperRingConfig.ledStartPos = 0;
   stepperRingConfig.ledCw = false;
+  #if MATRIX_NOF_STEPPERS>=2
   stepBoardConfig.ledRing[0][0] = NEOSR_InitDevice(&stepperRingConfig);
   stepBoardConfig.ledRing[0][1] = NEOSR_InitDevice(&stepperRingConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   stepperRingConfig.ledLane = 6; /* PTC6 */
   stepBoardConfig.ledRing[1][0] = NEOSR_InitDevice(&stepperRingConfig);
   stepBoardConfig.ledRing[1][1] = NEOSR_InitDevice(&stepperRingConfig);
+  #endif
 #endif
 
   MATRIX_Boards[0] = STEPBOARD_InitDevice(&stepBoardConfig);
