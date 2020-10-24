@@ -2752,6 +2752,7 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_step.pin  = 4U;
   x12config.motor[X12_017_M3].isInverted  = true;
 #else /* LPC845 */
+  /* Reset for both motor drivers: PIO0_14 */
   x12config.hw_reset.gpio = GPIO;
   x12config.hw_reset.port = 0U;
   x12config.hw_reset.pin  = 14U;
@@ -2785,6 +2786,20 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M2].hw_step.gpio = GPIO;
   x12config.motor[X12_017_M2].hw_step.port = 0U;
   x12config.motor[X12_017_M2].hw_step.pin  = 28U;
+
+#if PL_CONFIG_BOARD_VERSION==1 /* old V0.1, PIO0_11 needs external pull-up! */
+  /* M3_DIR: PIO0_11 */
+  x12config.motor[X12_017_M3].isInverted = true;
+  x12config.motor[X12_017_M3].hw_dir.gpio = GPIO;
+  x12config.motor[X12_017_M3].hw_dir.port = 0U;
+  x12config.motor[X12_017_M3].hw_dir.pin  = 11U;
+#else /* current V1.0 */
+  /* M3_DIR: PIO0_27 */
+  x12config.motor[X12_017_M3].isInverted = true;
+  x12config.motor[X12_017_M3].hw_dir.gpio = GPIO;
+  x12config.motor[X12_017_M3].hw_dir.port = 0U;
+  x12config.motor[X12_017_M3].hw_dir.pin  = 27U;
+#endif
 
 #if PL_CONFIG_BOARD_VERSION==1 /* old V0.1 */
   /* M3_STEP: PIO1_0 */
