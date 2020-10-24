@@ -53,7 +53,7 @@ Instructions:
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
-#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (1)
+#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
 #define SYSVIEW_APP_NAME                     "K02 LedStepper"
 #define SYSVIEW_DEVICE_NAME                  "NXP K02FN64"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)

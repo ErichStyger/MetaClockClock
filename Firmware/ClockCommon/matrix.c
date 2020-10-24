@@ -1796,9 +1796,6 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 
 uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
   const unsigned char *p;
-//#if PL_CONFIG_USE_STEPPER || PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
-  int32_t x, y, z;
-//#endif
 #if PL_CONFIG_USE_STEPPER || PL_CONFIG_USE_LED_RING
   uint8_t res;
   bool speedUp, slowDown;
@@ -1848,6 +1845,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           || McuUtility_strncmp((char*)cmd, "matrix R ", sizeof("matrix R ")-1)==0   /* "matrix R <x> <y> <z> <a> <d> <md>" */
             )
   {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd+sizeof("matrix A ")-1;
     res = ParseMatrixCommand(&p, &x, &y, &z, &v, &d, &mode, &speedUp, &slowDown);
@@ -1863,6 +1862,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
   #endif /* PL_CONFIG_IS_MASTER && PL_CONFIG_USE_LED_RING */
   } else if (McuUtility_strncmp((char*)cmd, "matrix r ", sizeof("matrix r ")-1)==0) { /* relative move, "matrix r <x> <y> <z> <a> <d> <md>" */
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd+sizeof("matrix r ")-1;
     do {
@@ -1880,6 +1881,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     } while(res==ERR_OK && *p==',');
     return res;
   } else if (McuUtility_strncmp((char*)cmd, "matrix a ", sizeof("matrix a ")-1)==0) { /* absolute move, "matrix a <x> <y> <z> <a> <d> <md>" */
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd+sizeof("matrix a ")-1;
     do {
@@ -1900,6 +1903,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     unsigned char *ptr, *data;
     STEPPER_Handle_t stepper;
     size_t len;
+    int32_t x, y, z;
 
     *handled = TRUE;
     p = cmd + sizeof("matrix q ")-1;
@@ -1984,6 +1988,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
   /* ---------------------- enabled/disable for a ring/hand ---------------------------------- */
   } else if (McuUtility_strncmp((char*)cmd, "matrix hand enable ", sizeof("matrix hand enable ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix hand enable ")-1;
     if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
@@ -2011,6 +2017,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #endif
 #if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
   } else if (McuUtility_strncmp((char*)cmd, "matrix ring enable ", sizeof("matrix ring enable ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix ring enable ")-1;
     if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
@@ -2052,6 +2060,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
     return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "matrix 2nd enable ", sizeof("matrix 2nd enable ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix 2nd enable ")-1;
     if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
@@ -2100,6 +2110,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
     /* ---------------------- set color for hand or ring ---------------------------------- */
   } else if (McuUtility_strncmp((char*)cmd, "matrix hand rgb ", sizeof("matrix hand rgb ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix hand rgb ")-1;
     do {
@@ -2127,6 +2139,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return res;
   #if PL_CONFIG_USE_DUAL_HANDS
   } else if (McuUtility_strncmp((char*)cmd, "matrix 2nd rgb ", sizeof("matrix 2nd rgb ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix 2nd rgb ")-1;
     do {
@@ -2153,6 +2167,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return res;
   #endif /* PL_CONFIG_USE_DUAL_HANDS */
   } else if (McuUtility_strncmp((char*)cmd, "matrix ring rgb ", sizeof("matrix ring rgb ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix ring rgb ")-1;
     do {
@@ -2207,6 +2223,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       return ERR_FAILED;
     }
   } else if (McuUtility_strncmp((char*)cmd, "matrix rgb pixel ", sizeof("matrix rgb pixel ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix rgb pixel ")-1;
     if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
@@ -2245,6 +2263,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_ZeroAllHands();
   #endif
   } else if (McuUtility_strncmp((char*)cmd, "matrix zero ", sizeof("matrix zero ")-1)==0) {
+    int32_t x, y, z;
+
     *handled = TRUE;
     p = cmd + sizeof("matrix zero ")-1;
     if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
@@ -2297,6 +2317,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "matrix hand brightness ", sizeof("matrix hand brightness ")-1)==0) {
     uint8_t f;
+    int32_t x, y, z;
 
     *handled = TRUE;
     p = cmd + sizeof("matrix hand brightness ")-1;

@@ -20,6 +20,8 @@
 /* select the board used: */
 #define PL_CONFIG_BOARD_ID         (PL_CONFIG_BOARD_ID_MASTER_K22FN512)
 
+#define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
+
 /* CPU/Board selection: only one can be active! */
 #define PL_CONFIG_IS_LPC845        (McuLib_CONFIG_CPU_IS_LPC)     /* LPC845 */
 #define PL_CONFIG_IS_TINYK22       (McuLib_CONFIG_CPU_IS_KINETIS && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* Kinetis K22FN512 */
@@ -73,14 +75,14 @@
 #define PL_CONFIG_USE_NVMC          	(1) /* using non-volatile configuration memory */
 #define PL_CONFIG_USE_WDT           	(0) /* if using watchdog timer, disable for easier debugging */
 #define PL_CONFIG_USE_DEMOS         	(1 && PL_CONFIG_USE_MATRIX && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
-#define PL_CONFIG_USE_BLE           	(1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
+#define PL_CONFIG_USE_BLE           	(0 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
 #define PL_CONFIG_USE_BLE_MSG       	(1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit app messages */
 #define PL_CONFIG_USE_ESP32         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* if using the ESP32 */
 #define PL_CONFIG_USE_SHT31         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_USE_I2C) /* if using SHT31 sensor */
-#define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_IS_TINYK22 || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
+#define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_BOARD_MASTER_K22_WS2812B || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
 #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 
-#define PL_CONFIG_USE_STEPPER         (1) /* enable stepper function, both motors and virtual (LED) stepper */
+#define PL_CONFIG_USE_STEPPER         (1 && PL_CONFIG_BOARD_MASTER_K22_WS2812B) /* enable stepper function, both motors and virtual (LED) stepper */
 #define PL_CONFIG_USE_LED_STEPPER     (1 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #define PL_CONFIG_USE_X12_LED_STEPPER (PL_CONFIG_USE_X12_STEPPER && PL_CONFIG_USE_NEO_PIXEL)

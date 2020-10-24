@@ -52,10 +52,10 @@ Instructions:
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (1)
-#define SYSVIEW_APP_NAME                     "tinyK22 LedRing"
+#define SYSVIEW_APP_NAME                     "tinyK22 Master"
 #define SYSVIEW_DEVICE_NAME                  "NXP K22FN512"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
-#define McuSystemView_CONFIG_RTT_CHANNEL     (2)
+#define McuSystemView_CONFIG_RTT_CHANNEL     (1)
 /* -------------------------------------------------*/
 /* Percepio Tracealyzer */
 #define configUSE_PERCEPIO_TRACE_HOOKS                  (0)
