@@ -54,7 +54,7 @@ bool NVMC_HasValidConfig(void) {
   const NVMC_Data_t *data;
 
   data = NVMC_GetDataPtr();
-  return data != NULL && data->version == NVMC_VERSION_1_0;
+  return data != NULL && data->version == NVMC_CURRENT_VERSION;
 }
 
 static bool isErased(const uint8_t *ptr, int nofBytes) {
