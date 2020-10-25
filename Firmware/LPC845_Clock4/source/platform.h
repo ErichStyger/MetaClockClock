@@ -42,7 +42,7 @@
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-#elif 1 /* new 60 'modular' clock configuration */
+#elif 0 /* new 60 'modular' clock configuration */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
@@ -70,6 +70,12 @@
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (2)
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (4)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (4)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (1)
+  #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Z   (2)
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_BOARD_MASTER_K22_WS2812B
+  /* virtual steppers for LED rings: settings for a virtual LPC845_Clock4 board */
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD     (4)
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_X   (4)
   #define PL_CONFIG_NOF_CLOCK_ON_BOARD_Y   (1)
@@ -103,7 +109,8 @@
 #define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_IS_TINYK22 || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
 #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 
-#define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_BOARD_MASTER_K22_WS2812B)) /* enable stepper function, both motors and virtual (LED) stepper */
+#define PL_CONFIG_USE_VIRTUAL_STEPPER (PL_CONFIG_BOARD_MASTER_K22_WS2812B)
+#define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
 #define PL_CONFIG_USE_LED_STEPPER     (1 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #define PL_CONFIG_USE_X12_LED_STEPPER (PL_CONFIG_USE_X12_STEPPER && PL_CONFIG_USE_NEO_PIXEL)
