@@ -2672,9 +2672,9 @@ static void InitLedRings(void) {
   CreateBoardLedRings(14, BOARD_ADDR_14, true, 4, 8*40);
 #endif
 #endif
-#else /* #if PL_CONFIG_IS_MASTER */
+#else /* not master, normal clock board */
   CreateBoardLedRings(0, RS485_GetAddress(), true, 0, 0);
-#endif
+#endif /* PL_CONFIG_IS_MASTER */
 }
 #endif /* PL_CONFIG_USE_LED_STEPPER */
 
