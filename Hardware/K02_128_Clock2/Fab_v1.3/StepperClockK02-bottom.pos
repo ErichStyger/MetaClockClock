@@ -1,0 +1,13 @@
+### Module positions - created on 18.06.2020 12:53:06 ###
+### Printed by Pcbnew version kicad (5.1.5)-3
+## Unit = mm, Angle = deg.
+## Side : bottom
+# Ref     Val       Package                                       PosX       PosY       Rot  Side
+C1        100nF     C_0603                                    -74.1600    35.9600    0.0000  bottom
+C2        100nF     C_0603                                    -60.1200    35.9600    0.0000  bottom
+FID4      Fiducial  Fiducial_1mm_Dia_2.54mm_Outer_CopperTop    -4.6600    27.0300    0.0000  bottom
+FID5      Fiducial  Fiducial_1mm_Dia_2.54mm_Outer_CopperTop   -71.7300    16.7500    0.0000  bottom
+FID6      Fiducial  Fiducial_1mm_Dia_2.54mm_Outer_CopperTop   -67.0700    67.8700    0.0000  bottom
+U7        AH3572    SOT-23_2T                                 -74.2000    39.4100    0.0000  bottom
+U8        AH3572    SOT-23_2T                                 -60.3800    39.3700    0.0000  bottom
+## End

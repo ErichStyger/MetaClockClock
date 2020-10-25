@@ -1,0 +1,41 @@
+### Module positions - created on 04.06.2020 14:49:43 ###
+### Printed by Pcbnew version kicad (5.1.5)-3
+## Unit = mm, Angle = deg.
+## Side : All
+# Ref     Val             Package                                            PosX       PosY       Rot  Side
+C1        100nF           C_0603                                         -74.1300    35.9600    0.0000  bottom
+C2        100nF           C_0603                                         -60.0900    35.9600    0.0000  bottom
+FID4      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop         -3.6300    31.3700    0.0000  bottom
+FID5      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop        -78.5300    43.7500    0.0000  bottom
+FID6      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop        -49.4700    77.2100    0.0000  bottom
+U7        AH3572          SOT-23_2T                                      -74.1700    39.4100    0.0000  bottom
+U8        AH3572          SOT-23_2T                                      -60.3500    39.3700    0.0000  bottom
+C3        100nF           C_0603                                          16.0100    44.7800  270.0000  top
+C4        10nF            C_0603                                          32.6300    70.9600    0.0000  top
+C5        100nF           C_0603                                          38.9200    75.4500  270.0000  top
+C10       100nF           C_0603                                           4.9200    35.6600  270.0000  top
+C12       22uF/16V        CP_Elec_5x5.3                                   16.5700    28.1100    0.0000  top
+C16       100nF           C_0603                                          47.5100    66.5500  180.0000  top
+C17       1uF             C_0603                                          47.4900    64.2800  180.0000  top
+C18       10uF/16V        C_1206                                          54.5800    16.2000  180.0000  top
+C19       1uF             C_0603                                          59.9500    11.3700  270.0000  top
+C20       100nF           C_0603                                          16.4700    66.3500  270.0000  top
+C21       10nF            C_0603                                          17.9700    66.3300  270.0000  top
+D1        LED_Blue        D_0603                                          24.9100    71.9300  270.0000  top
+FID1      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop         71.7200    16.7700    0.0000  top
+FID2      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop          3.6300    31.3300    0.0000  top
+FID3      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop         49.3800    77.2100    0.0000  top
+R1        10k             R_0603                                           4.0600    39.0700  180.0000  top
+R2        120             R_0603                                          68.8400    58.5300   90.0000  top
+R3        10k             R_0603                                          29.3500    76.5600   90.0000  top
+R4        10k             R_0603                                          30.6500    62.1600   90.0000  top
+R5        10k             R_0603                                          28.6500    58.1500  270.0000  top
+R6        2k2             R_0603                                          23.2300    71.9300  270.0000  top
+SW1       KMKR221G-LFS    SW_SPST_KMR2_Small                              32.6300    75.4600   90.0000  top
+U2        K02FN64M100     QFN-32-1EP_5x5mm_Pitch0.5mm                     24.1700    65.1300    0.0000  top
+U3        VID66-08        SOP-16_4.4x10.4mm_Pitch1.27mm                   10.7000    40.8600  180.0000  top
+U4        CD74HCT14       TSSOP-16_4.4x5mm_Pitch0.65mm                    42.7800    72.7200   90.0000  top
+U16       SN65HVD72       SOIC-8_3.9x4.9mm_Pitch1.27mm                    45.7000    59.6400    0.0000  top
+U17       XC6206-3.3V     SOT-23                                          55.4200    11.3700  180.0000  top
+U19       SWD_JTAG_10pin  SWD_Pin_Header_Straight_2x05_Pitch1.27mm_SMD    16.6400    57.2600  270.0000  top
+## End

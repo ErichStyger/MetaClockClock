@@ -1,0 +1,35 @@
+<openpnp-board version="1.1" name="Motor_Bottom.board.xml">
+   <dimensions units="Millimeters" x="80.0" y="80.0" z="0.0" rotation="0.0"/>
+   <fiducials/>
+   <placements>
+      <placement version="1.4" id="C1" side="Bottom" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="71.33171428571433" y="35.53542857142857" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C2" side="Bottom" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="57.33171428571433" y="35.435428571428574" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U2" side="Bottom" part-id="SOT-23_2T-AH3572" type="Placement" enabled="true">
+         <location units="Millimeters" x="71.31514285714286" y="38.949142857142846" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U3" side="Bottom" part-id="SOT-23_2T-AH3572" type="Placement" enabled="true">
+         <location units="Millimeters" x="57.531714285714315" y="38.879999999999995" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FidB2" side="Bottom" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="28.52028571428582" y="50.676571428571435" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FidB4" side="Bottom" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="28.620285714285814" y="27.676571428571435" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FidA1" side="Bottom" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="67.72028571428586" y="27.876571428571424" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+   </placements>
+   <solder-paste-pads/>
+</openpnp-board>

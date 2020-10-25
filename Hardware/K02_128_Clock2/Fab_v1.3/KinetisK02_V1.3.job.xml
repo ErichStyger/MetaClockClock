@@ -1,0 +1,102 @@
+<openpnp-job>
+   <panels/>
+   <board-locations>
+      <board-location side="Top" board-file="KinetisK02_V1.3.board.xml" panel-id="Panel1" check-fiducials="false" enabled="true">
+         <location units="Millimeters" x="112.2972685907393" y="79.28624022466255" z="-9.0" rotation="0.19148241428998403"/>
+         <placed class="java.util.HashMap">
+            <entry>
+               <string>C20</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C21</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C3</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C4</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C5</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C6</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C7</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R1</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R2</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R3</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R4</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C10</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R5</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R6</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R7</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R8</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>R9</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C17</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C16</string>
+               <boolean>true</boolean>
+            </entry>
+            <entry>
+               <string>C19</string>
+               <boolean>true</boolean>
+            </entry>
+         </placed>
+      </board-location>
+      <board-location side="Top" board-file="..\..\Ring80\Ring80.board.xml" panel-id="Panel1" check-fiducials="false" enabled="false">
+         <location units="Millimeters" x="150.83859383658708" y="80.65950774985967" z="-9.0" rotation="0.1617465365054591"/>
+         <placed class="java.util.HashMap"/>
+      </board-location>
+      <board-location side="Top" board-file="..\Fab_v1.4\K02_Bottom.board.xml" panel-id="Panel1" check-fiducials="false" enabled="false">
+         <location units="Millimeters" x="112.05419748006858" y="79.86561160733726" z="-9.0" rotation="-1.1847169544973721"/>
+         <placed class="java.util.HashMap"/>
+      </board-location>
+      <board-location side="Bottom" board-file="..\Fab_v1.4\Motor_Bottom.board.xml" panel-id="Panel1" check-fiducials="false" enabled="false">
+         <location units="Millimeters" x="112.46374485254265" y="79.83923319323173" z="-9.0" rotation="0.36510907211290194"/>
+         <placed class="java.util.HashMap"/>
+      </board-location>
+   </board-locations>
+</openpnp-job>

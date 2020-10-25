@@ -1,0 +1,40 @@
+### Module positions - created on 23.06.2020 21:23:23 ###
+### Printed by Pcbnew version kicad (5.1.5)-3
+## Unit = mm, Angle = deg.
+## Side : top
+# Ref     Val             Package                                            PosX       PosY       Rot  Side
+C3        100nF           C_0603                                          20.3500    46.3500    0.0000  top
+C4        10nF            C_0603                                          35.5720    73.9140    0.0000  top
+C5        100nF           C_0603                                          48.6200    68.9400   90.0000  top
+C6        10uF            C_0603                                          42.7400     8.9100    0.0000  top
+C7        10uF            C_0603                                          34.5400     8.4300  270.0000  top
+C10       100nF           C_0603                                           5.4900    31.6600  270.0000  top
+C12       220uF/25V       CP_Elec_10x10.5                                 39.7600    17.6600   90.0000  top
+C16       100nF           C_0603                                          49.2600    65.9600  180.0000  top
+C17       1uF             C_0603                                          49.2600    64.5100  180.0000  top
+C18       10uF/16V        C_1206                                          56.0100    73.7000    0.0000  top
+C19       1uF             C_0603                                          49.1900    73.7500   90.0000  top
+C20       100nF           C_0603                                          13.5200    62.3500  270.0000  top
+C21       10nF            C_0603                                          14.8500    62.3500  270.0000  top
+D1        LED_Blue        D_0603                                          36.7400    64.6600    0.0000  top
+FID1      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop         71.7500    16.7700    0.0000  top
+FID2      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop          4.6800    27.0400    0.0000  top
+FID3      Fiducial        Fiducial_1mm_Dia_2.54mm_Outer_CopperTop         67.0700    67.8700    0.0000  top
+R1        10k             R_0603                                          17.0100    30.6700  270.0000  top
+R2        120             R_0603                                          68.5300    58.5000   90.0000  top
+R3        10k             R_0603                                          28.1940    71.3740  270.0000  top
+R4        10k             R_0603                                          26.3400    71.3740  270.0000  top
+R5        10k             R_0603                                          33.2500    64.7700  180.0000  top
+R6        2k2             R_0603                                          39.6800    64.6600  180.0000  top
+R7        510             R_0603                                          59.6400    73.3600  180.0000  top
+R8        10k             R_0603                                          32.8500     8.5800   90.0000  top
+R9        510             R_0603                                          38.7600    75.3800  270.0000  top
+SW1       KMKR221G-LFS    SW_SPST_KMR2_Small                              18.7960    65.7860  180.0000  top
+U2        K02FN64VFM10    QFN-32-1EP_5x5mm_Pitch0.5mm                     18.6400    58.4000  270.0000  top
+U3        74HCT245        SSOP-20_4.4x6.5mm_Pitch0.65mm                   43.6800    71.7800  270.0000  top
+U4        SWD_JTAG_10pin  SWD_Pin_Header_Straight_2x05_Pitch1.27mm_SMD    33.7500    69.3600  180.0000  top
+U5        DIO7003         SOT-23-5                                        38.6700     7.9300    0.0000  top
+U6        MS_X12.017      SOIC-28W_7.5x17.9mm_Pitch1.27mm                 11.3100    39.4600  270.0000  top
+U16       SN65HVD72       SOIC-8_3.9x4.9mm_Pitch1.27mm                    46.8300    60.7100    0.0000  top
+U17       XC6206-3.3V     SOT-23                                          51.6700    73.7000    0.0000  top
+## End

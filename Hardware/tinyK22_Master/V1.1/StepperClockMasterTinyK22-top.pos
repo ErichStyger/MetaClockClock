@@ -1,0 +1,23 @@
+### Module positions - created on 03.09.2020 11:06:21 ###
+### Printed by Pcbnew version kicad (5.1.5)-3
+## Unit = mm, Angle = deg.
+## Side : top
+# Ref     Val            Package                             PosX       PosY       Rot  Side
+C4        100nF          C_0603                           24.1800    36.2800    0.0000  top
+C6        100nF          C_0603                            1.3900    33.7100  270.0000  top
+D1        VS-10BQ015HM3  Schottky_VS-10BQ015HM3           31.9400    10.1200  180.0000  top
+R1        120            R_0603                           45.3800    58.9700  270.0000  top
+R2        120            R_0603                           47.1800    58.9600  270.0000  top
+R3        120            R_0603                           48.9600    58.9600  270.0000  top
+R4        120            R_0603                           50.7700    58.9700  270.0000  top
+R5        120            R_0603                           52.5600    58.9600  270.0000  top
+R8        120            R_0603                           32.2800     6.0000  180.0000  top
+R11       1k             R_0603                           41.8000     8.5800    0.0000  top
+R12       1k             R_0603                           53.3500     8.5200    0.0000  top
+R15       4.7k           R_0603                           24.1300    27.0300    0.0000  top
+R16       4.7k           R_0603                           27.2200    27.0800  180.0000  top
+U3        74HCT245       SSOP-20_4.4x6.5mm_Pitch0.65mm    49.0400    51.3100  270.0000  top
+U5        DS3232M        SOIC-8_3.9x4.9mm_Pitch1.27mm     24.1600    31.8800    0.0000  top
+U6        SHT30-DIS-B    SHT30                             4.5500    33.7300  180.0000  top
+U7        SN65HVD72      SOIC-8_3.9x4.9mm_Pitch1.27mm     48.2800    27.0700  270.0000  top
+## End

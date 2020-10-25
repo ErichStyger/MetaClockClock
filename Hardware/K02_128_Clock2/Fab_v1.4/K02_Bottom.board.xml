@@ -1,0 +1,35 @@
+<openpnp-board version="1.1" name="K02_Bottom.board.xml">
+   <dimensions units="Millimeters" x="80.0" y="80.0" z="0.0" rotation="0.0"/>
+   <fiducials/>
+   <placements>
+      <placement version="1.4" id="C1" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="8.843589053272382" y="36.354280459719334" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C2" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="22.80741836144773" y="36.269234844465814" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID4" side="Top" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="11.266202813619657" y="17.02613831285001" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID5" side="Top" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="15.985100737222155" y="68.21355193031981" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID6" side="Top" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="78.09708393049942" y="27.15802954226008" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U7" side="Top" part-id="SOT-23_2T-AH3572" type="Placement" enabled="true">
+         <location units="Millimeters" x="8.831497354433338" y="39.762555502158364" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U8" side="Top" part-id="SOT-23_2T-AH3572" type="Placement" enabled="true">
+         <location units="Millimeters" x="22.670907393260734" y="39.735545780158404" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+   </placements>
+   <solder-paste-pads/>
+</openpnp-board>

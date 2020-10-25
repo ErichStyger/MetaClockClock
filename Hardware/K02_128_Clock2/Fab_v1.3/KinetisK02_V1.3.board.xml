@@ -1,0 +1,171 @@
+<openpnp-board version="1.1" name="KinetisK02_V1.3.board.xml">
+   <dimensions units="Millimeters" x="80.0" y="80.0" z="0.0" rotation="0.0"/>
+   <fiducials/>
+   <placements>
+      <placement version="1.4" id="C1" side="Bottom" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="74.16" y="35.96" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C2" side="Bottom" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="60.12" y="35.96" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID4" side="Bottom" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="4.66" y="27.03" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID5" side="Bottom" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="71.73" y="16.75" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID6" side="Bottom" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="67.07" y="67.87" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U7" side="Bottom" part-id="SOT-23_2T-AH3572" type="Placement" enabled="true">
+         <location units="Millimeters" x="74.2" y="39.41" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U8" side="Bottom" part-id="SOT-23_2T-AH3572" type="Placement" enabled="true">
+         <location units="Millimeters" x="60.38" y="39.37" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C3" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="20.35" y="46.35" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C4" side="Top" part-id="C_0603-10nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="35.572" y="73.914" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C5" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="48.62" y="68.94" z="0.0" rotation="90.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C6" side="Top" part-id="C_0603-10uF" type="Placement" enabled="true">
+         <location units="Millimeters" x="42.74" y="8.91" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C7" side="Top" part-id="C_0603-10uF" type="Placement" enabled="true">
+         <location units="Millimeters" x="34.54" y="8.43" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C10" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="5.49" y="31.66" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C12" side="Top" part-id="CP_Elec_10x10.5-220uF/25V" type="Placement" enabled="false">
+         <location units="Millimeters" x="39.76" y="17.66" z="0.0" rotation="90.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C16" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="49.26" y="65.96" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C17" side="Top" part-id="C_0603-1uF" type="Placement" enabled="true">
+         <location units="Millimeters" x="49.26" y="64.51" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C18" side="Top" part-id="C_1206-10uF/16V" type="Placement" enabled="false">
+         <location units="Millimeters" x="56.01" y="73.7" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C19" side="Top" part-id="C_0603-1uF" type="Placement" enabled="true">
+         <location units="Millimeters" x="49.19" y="73.75" z="0.0" rotation="90.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C20" side="Top" part-id="C_0603-100nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="13.52" y="62.35" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="C21" side="Top" part-id="C_0603-10nF" type="Placement" enabled="true">
+         <location units="Millimeters" x="14.85" y="62.35" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="D1" side="Top" part-id="D_0603-LED_Blue" type="Placement" enabled="false">
+         <location units="Millimeters" x="36.74" y="64.66" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID1" side="Top" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="71.75" y="16.77" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID2" side="Top" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="4.68" y="27.04" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="FID3" side="Top" part-id="Fiducial_1mm_Dia_2.54mm_Outer_CopperTop-Fiducial" type="Fiducial" enabled="true">
+         <location units="Millimeters" x="67.07" y="67.87" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R1" side="Top" part-id="R_0603-10k" type="Placement" enabled="true">
+         <location units="Millimeters" x="17.01" y="30.67" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R2" side="Top" part-id="R_0603-120" type="Placement" enabled="true">
+         <location units="Millimeters" x="68.53" y="58.5" z="0.0" rotation="90.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R3" side="Top" part-id="R_0603-10k" type="Placement" enabled="true">
+         <location units="Millimeters" x="28.194" y="71.374" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R4" side="Top" part-id="R_0603-10k" type="Placement" enabled="true">
+         <location units="Millimeters" x="26.34" y="71.374" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R5" side="Top" part-id="R_0603-10k" type="Placement" enabled="true">
+         <location units="Millimeters" x="33.25" y="64.77" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R6" side="Top" part-id="R_0603-2k2" type="Placement" enabled="true">
+         <location units="Millimeters" x="39.68" y="64.66" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R7" side="Top" part-id="R_0603-510" type="Placement" enabled="true">
+         <location units="Millimeters" x="59.64" y="73.36" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R8" side="Top" part-id="R_0603-10k" type="Placement" enabled="true">
+         <location units="Millimeters" x="32.85" y="8.58" z="0.0" rotation="90.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="R9" side="Top" part-id="R_0603-510" type="Placement" enabled="true">
+         <location units="Millimeters" x="38.76" y="75.38" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="SW1" side="Top" part-id="SW_SPST_KMR2_Small-KMKR221G-LFS" type="Placement" enabled="false">
+         <location units="Millimeters" x="18.796" y="65.786" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U2" side="Top" part-id="QFN-32-1EP_5x5mm_Pitch0.5mm-K02FN64VFM10" type="Placement" enabled="false">
+         <location units="Millimeters" x="18.64" y="58.4" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U3" side="Top" part-id="SSOP-20_4.4x6.5mm_Pitch0.65mm-74HCT245" type="Placement" enabled="false">
+         <location units="Millimeters" x="43.68" y="71.78" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U4" side="Top" part-id="SWD_Pin_Header_Straight_2x05_Pitch1.27mm_SMD-SWD_JTAG_10pin" type="Placement" enabled="false">
+         <location units="Millimeters" x="33.75" y="69.36" z="0.0" rotation="180.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U5" side="Top" part-id="SOT-23-5-DIO7003" type="Placement" enabled="false">
+         <location units="Millimeters" x="38.67" y="7.93" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U6" side="Top" part-id="SOIC-28W_7.5x17.9mm_Pitch1.27mm-MS_X12.017" type="Placement" enabled="false">
+         <location units="Millimeters" x="11.31" y="39.46" z="0.0" rotation="270.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U16" side="Top" part-id="SOIC-8_3.9x4.9mm_Pitch1.27mm-SN65HVD72" type="Placement" enabled="false">
+         <location units="Millimeters" x="46.83" y="60.71" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+      <placement version="1.4" id="U17" side="Top" part-id="SOT-23-XC6206-3.3V" type="Placement" enabled="false">
+         <location units="Millimeters" x="51.67" y="73.7" z="0.0" rotation="0.0"/>
+         <error-handling>Alert</error-handling>
+      </placement>
+   </placements>
+   <solder-paste-pads/>
+</openpnp-board>
