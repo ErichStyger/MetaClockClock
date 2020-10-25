@@ -12,7 +12,6 @@
 #include <stdint.h>
 
 #if PL_CONFIG_IS_MASTER
-
 /* configuration for master: */
 #if PL_MATRIX_CONFIG_IS_8x3
   #define MATRIX_NOF_BOARDS         (6)   /* total number of boards in matrix */

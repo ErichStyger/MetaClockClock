@@ -288,10 +288,10 @@ static void IntermezzoTemperature(void) {
     return ;
   }
   temperature -= 4.0; /* offset */
-#if PL_MATRIX_CONFIG_IS_8x3
-  MATRIX_ShowTemperature(temperature, false);
-#elif PL_MATRIX_CONFIG_IS_12x5
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
   MATRIX_ShowTemperatureLarge(temperature, false);
+#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+  MATRIX_ShowTemperature(temperature, false);
 #endif
 }
 

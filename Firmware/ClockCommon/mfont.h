@@ -11,9 +11,7 @@
 
 typedef enum {
   MFONT_SIZE_2x3,
-//#if PL_MATRIX_CONFIG_IS_12x5
   MFONT_SIZE_3x5
-//#endif
 } MFONT_Size_e;
 
 #define MFONT_SIZE_X_2x3   2  /* number of columns needed */

@@ -21,6 +21,8 @@
   #elif PL_MATRIX_CONFIG_IS_12x5
     #define NEOC_NOF_LANES         (5) /* number of data lanes. For a matrix it is assumed that the number of pixels are divided to the available lanes! */
     #define NEOC_NOF_LEDS_IN_LANE  (12*40) /* number of LEDs in each lane */
+  #else
+    #error "unknown"
   #endif
   #define NEOC_LANE_START (0)
   #define NEOC_LANE_END   (NEOC_NOF_LANES-1)

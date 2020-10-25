@@ -538,7 +538,7 @@ static void DEMO_LedPong(void) {
     if (gameOver) {
       break;
     }
-#if PL_MATRIX_CONFIG_IS_12x5
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_X>=5
     if (i==1) {
       MovePlayer(&playerL, 1);
     } else if (i==3) {
@@ -559,7 +559,7 @@ static void DEMO_LedPong(void) {
     } else if (i==27) {
       MovePlayer(&playerR, 1);
     }
-#elif PL_MATRIX_CONFIG_IS_8x3
+#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
     if (i==1) {
       MovePlayer(&playerL, 1);
     } else if (i==3) {
@@ -855,7 +855,7 @@ static uint8_t DEMO_Demo3(const McuShell_StdIOType *io) {
   return MATRIX_MoveAllto12(10000, io);
 }
 
-#if PL_MATRIX_CONFIG_IS_12x5
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
 static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -935,7 +935,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 
   MATRIX_DrawAllClockDelays(2, 2);
   McuTimeDate_GetTime(&time);
-#if PL_MATRIX_CONFIG_IS_12x5
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
   (void)MATRIX_ShowTimeLarge(time.Hour, time.Min, true);
 #else
   (void)MATRIX_ShowTime(time.Hour, time.Min, false, true);

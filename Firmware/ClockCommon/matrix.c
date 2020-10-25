@@ -1065,7 +1065,7 @@ uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io) {
   return MATRIX_MoveAlltoHour(12, timeoutMs, io);
 }
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
 uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 #if PL_CONFIG_USE_RS485
   uint8_t buf[16];
@@ -1081,9 +1081,9 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
   return ERR_OK;
 #endif
 }
-#endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
 static void MATRIX_DrawBorder(void) {
 #if 1
   MATRIX_DrawRectangle(0, 0, MATRIX_NOF_CLOCKS_X, MATRIX_NOF_CLOCKS_Y);
@@ -1133,7 +1133,7 @@ static void MATRIX_DrawBorder(void) {
   }
 #endif
 }
-#endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
 
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait) {
@@ -1144,15 +1144,15 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
 #if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
-#if PL_MATRIX_CONFIG_IS_8x3
-  (void)hasBorder; /* not used */
-  x = 0; y = 0;
-#elif PL_MATRIX_CONFIG_IS_12x5
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
   x = 2; y = 1;
 
   if (hasBorder) {
     MATRIX_DrawBorder();
   }
+#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+  (void)hasBorder; /* not used */
+  x = 0; y = 0;
 #else
   #error "not supported"
 #endif
@@ -1177,15 +1177,15 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 #if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
- #if PL_MATRIX_CONFIG_IS_8x3
-   x = 0; y = 0;
- #elif PL_MATRIX_CONFIG_IS_12x5
-   x = 2; y = 1;
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+  x = 2; y = 1;
 
-   MATRIX_DrawBorder();
- #else
+  MATRIX_DrawBorder();
+#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+   x = 0; y = 0;
+#else
    #error "not supported"
- #endif
+#endif
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), temperature/10);
   McuUtility_strcatNum8u(buf, sizeof(buf), temperature%10);
@@ -1196,7 +1196,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
 uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   uint8_t buf[8];
 
@@ -1211,7 +1211,7 @@ uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
-#endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
 
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
@@ -1221,15 +1221,15 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 #if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
- #if PL_MATRIX_CONFIG_IS_8x3
-   x = 0; y = 0;
- #elif PL_MATRIX_CONFIG_IS_12x5
-   x = 2; y = 1;
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+  x = 2; y = 1;
 
-   MATRIX_DrawBorder();
- #else
+  MATRIX_DrawBorder();
+#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+   x = 0; y = 0;
+#else
    #error "not supported"
- #endif
+#endif
    buf[0] = '\0';
    McuUtility_strcatNum8u(buf, sizeof(buf), humidity);
    McuUtility_chcat(buf, sizeof(buf), '%');
@@ -1239,7 +1239,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
 uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   uint8_t buf[8];
 
@@ -1253,7 +1253,7 @@ uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
-#endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
 
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
@@ -1263,15 +1263,15 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 #if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
- #if PL_MATRIX_CONFIG_IS_8x3
-   x = 0; y = 0;
- #elif PL_MATRIX_CONFIG_IS_12x5
+#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
    x = 2; y = 1;
 
    MATRIX_DrawBorder();
- #else
+#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+   x = 0; y = 0;
+#else
    #error "not supported"
- #endif
+#endif
    buf[0] = '\0';
    McuUtility_strcatNum16u(buf, sizeof(buf), lux);
    McuUtility_chcat(buf, sizeof(buf), '%');
@@ -1281,7 +1281,7 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
 uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   uint8_t buf[8];
 
@@ -1295,7 +1295,7 @@ uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
-#endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_12x5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
 
 #if PL_CONFIG_USE_MAG_SENSOR  && PL_CONFIG_IS_CLIENT
 static void MATRIX_MoveByOffset(STEPPER_Handle_t *motors[], int16_t offsets[], size_t nofMotors, uint16_t delay) {
@@ -2278,10 +2278,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
         && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
        )
     {
-  #if PL_CONFIG_IS_MASTER
-      McuShell_SendStr((unsigned char*)"NYI\r\n", io->stdErr); /* \todo NYI magnet handling from master */
-      return ERR_FAILED; /* NYI */
-  #elif PL_CONFIG_IS_CLIENT
+  #if PL_CONFIG_IS_CLIENT
       STEPPER_Handle_t *motors[1];
       int16_t offset;
 
