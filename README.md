@@ -13,5 +13,6 @@ For more information about this project, see the following articles:
 
 
 Folders:
-- Firmware: contains the firmware for the different master and clock versions
+- **Firmware**: contains the firmware for the different master and clock versions
+- **Hardware**: contains PCB files
 
