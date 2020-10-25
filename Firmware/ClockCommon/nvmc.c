@@ -24,7 +24,7 @@
   #define FLASH_NVM_ADDR_START      (0xFC00) /* LPC845 has 64k FLASH (0x10000), last 1k page is used for NVM */
   #define FLASH_NVM_SECTOR_START    (FLASH_NVM_ADDR_START/1024) /* sector size is 1k */
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
-  #define FLASH_NVM_ADDR_START      ((0+513*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
+  #define FLASH_NVM_ADDR_START      ((0+512*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
   #define FLASH_NVM_BLOCK_SIZE      0x800 /* must match FLASH_GetProperty(&s_flashDriver, kFLASH_PropertyPflash0SectorSize, &pflashSectorSize) */
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64
   #define FLASH_NVM_ADDR_START      ((0+64*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
