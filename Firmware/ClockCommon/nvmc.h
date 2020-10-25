@@ -17,7 +17,7 @@
 
 #define NVMC_CURRENT_VERSION    NVMC_VERSION_1_1 /* active and current version */
 
-#define NVMC_FLAGS_HALL_SENSORS_ENABLED   (1<<0)
+#define NVMC_FLAGS_MAGNET_ENABLED   (1<<0)  /* if magnets are present on hands or not */
 
 typedef struct {
   uint32_t version; /* NVMC_CURRENT_VERSION, must be 32bit type to have struct 4 byte aligned! */

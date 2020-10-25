@@ -347,7 +347,7 @@ static uint8_t NVMC_InitConfig(void) {
 #endif
   data.flags = 0;
 #if PL_CONFIG_USE_MAG_SENSOR
-  data.flags |= NVMC_FLAGS_HALL_SENSORS_ENABLED;
+  data.flags |= NVMC_FLAGS_MAGNET_ENABLED;
 #endif
 #if PL_CONFIG_NOF_CLOCK_ON_BOARD>0
   for (int i=0; i<sizeof(data.zeroOffsets)/sizeof(data.zeroOffsets[0]); i++) {
@@ -397,11 +397,11 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
     flags = NVMC_GetFlags();
     McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
     McuUtility_strcatNum32Hex(buf, sizeof(buf), flags);
-    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hall: ");
-    if (flags&NVMC_FLAGS_HALL_SENSORS_ENABLED) {
-      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"on");
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" mag: ");
+    if (flags&NVMC_FLAGS_MAGNET_ENABLED) {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"1");
     } else {
-      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"off");
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"0");
     }
     McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
     McuShell_SendStatusStr((unsigned char*)"  flags", buf, io->stdOut);
