@@ -162,7 +162,6 @@ static uint8_t NVMC_SetFlags(uint32_t flags) {
 }
 #endif
 
-
 #if PL_CONFIG_USE_NVMC
 static uint8_t NVMC_Erase(void) {
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */

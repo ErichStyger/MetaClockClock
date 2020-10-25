@@ -1428,6 +1428,10 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   STEPPER_Handle_t stepper;
   int i;
 
+  if (!(NVMC_GetFlags()&NVMC_FLAGS_MAGNET_ENABLED)) {
+    McuLog_info("No magnets, ignoring command");
+    return ERR_OK;
+  }
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   if (!STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())) {
     McuLog_trace("turning on motors");
