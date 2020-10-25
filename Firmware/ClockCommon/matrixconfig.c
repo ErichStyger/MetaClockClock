@@ -154,15 +154,8 @@
       {.enabled = true, .addr=BOARD_ADDR_13, .cmdSent=false},
       {.enabled = true, .addr=BOARD_ADDR_14, .cmdSent=false},
   };
-#elif PL_MATRIX_CONFIG_IS_1x1
-  const MatrixClock_t clockMatrix[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y] = /* information about how the clocks are organized */
-  {
-    [0][0]={.addr=BOARD_ADDR_00, .nr=0, .board.x=0, .board.y=0, .enabled=true}, [1][0]={.addr=BOARD_ADDR_00, .nr=1, .board.x=1, .board.y=0, .enabled=true},
-  };
-
-  MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
-      {.enabled = true, .addr=BOARD_ADDR_00, .cmdSent=false},
-  };
+#else
+  #error "unknown matrix"
 #endif
 
 #endif /* PL_CONFIG_IS_MASTER */

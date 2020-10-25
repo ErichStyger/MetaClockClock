@@ -1153,9 +1153,6 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
   if (hasBorder) {
     MATRIX_DrawBorder();
   }
-#elif PL_MATRIX_CONFIG_IS_1x1
-  (void)hasBorder; /* not used */
-  x = 0; y = 0;
 #else
   #error "not supported"
 #endif
@@ -1186,8 +1183,6 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
    x = 2; y = 1;
 
    MATRIX_DrawBorder();
- #elif PL_MATRIX_CONFIG_IS_1x1
-   x = 0; y = 0;
  #else
    #error "not supported"
  #endif
@@ -1232,8 +1227,6 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
    x = 2; y = 1;
 
    MATRIX_DrawBorder();
- #elif PL_MATRIX_CONFIG_IS_1x1
-   x = 0; y = 0;
  #else
    #error "not supported"
  #endif
@@ -1276,8 +1269,6 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
    x = 2; y = 1;
 
    MATRIX_DrawBorder();
- #elif PL_MATRIX_CONFIG_IS_1x1
-  x = 0; y = 0;
  #else
    #error "not supported"
  #endif

@@ -29,11 +29,6 @@
   #define MATRIX_NOF_CLOCKS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_CLOCKS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_CLOCKS_Z       (2)   /* number of clocks in z direction */
-#elif PL_MATRIX_CONFIG_IS_1x1
-  #define MATRIX_NOF_BOARDS         (1)  /* total number of boards in matrix */
-  #define MATRIX_NOF_CLOCKS_X       (2)  /* number of clocks in x (horizontal) direction */
-  #define MATRIX_NOF_CLOCKS_Y       (1)   /* number of clocks in y (vertical) direction */
-  #define MATRIX_NOF_CLOCKS_Z       (2)   /* number of clocks in z direction */
 #endif
 
 /* no steppers on the master itself */
@@ -109,8 +104,8 @@ typedef enum {
   BOARD_ADDR_12=0x12,
   BOARD_ADDR_13=0x13,
   BOARD_ADDR_14=0x14,
-#elif PL_MATRIX_CONFIG_IS_1x1
-  BOARD_ADDR_00=0x44, /* first column, top board */
+#else
+  #error "unknown matrix"
 #endif
 } MATRIX_BOARD_ADDR_e;
 

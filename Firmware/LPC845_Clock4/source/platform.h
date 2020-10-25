@@ -33,19 +33,16 @@
 
 /* predefined Matrix configurations: */
 #if 1 /* first small 'meta-clock, 6 LPC845 boards building a 8x3 matrix */
-  #define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
   #define PL_MATRIX_CONFIG_IS_8x3    (1 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
 #elif 0 /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
-  #define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
 #elif 1 /* new 60 'modular' clock configuration */
-  #define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
