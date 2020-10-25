@@ -20,7 +20,8 @@ typedef enum {
   INTERMEZZO_NOF /* must be last in list */
 } Intermezzo_e;
 
-static Intermezzo_e IntermezzoMode = INTERMEZZO_FEW;
+static Intermezzo_e IntermezzoMode = INTERMEZZO_NONE;
+//static Intermezzo_e IntermezzoMode = INTERMEZZO_FEW;
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 
 static void IntermezzoDemo1(void) {
