@@ -38,7 +38,7 @@
   #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-#elif 0 /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
+#elif 1 /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
   #define PL_MATRIX_CONFIG_IS_1x1    (0 && PL_CONFIG_IS_MASTER) /* test matrix with just one clock */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
@@ -116,9 +116,9 @@
 #define PL_CONFIG_USE_LOW_POWER       (0)  /* if using low power mode */
 
 /* client only: */
-#define PL_CONFIG_USE_MAG_SENSOR    (1 && PL_CONFIG_IS_CLIENT)      /* has magnets and hall sensors */
-#define PL_CONFIG_USE_LED_DIMMING   (0 && PL_CONFIG_USE_LED_RING)
-#define PL_CONFIG_USE_DUAL_HANDS    (0 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
+#define PL_CONFIG_USE_MAG_SENSOR      (1 && PL_CONFIG_IS_CLIENT)      /* has magnets and hall sensors */
+#define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_LED_RING)
+#define PL_CONFIG_USE_DUAL_HANDS      (0 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
 #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0 && PL_CONFIG_IS_CLIENT) /* play automatic demo after power-on */
 
 /* master only: */

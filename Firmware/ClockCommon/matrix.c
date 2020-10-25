@@ -1004,30 +1004,29 @@ uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait) {
 
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
-static void MATRIX_SendMotorOnOffAll(bool on) {
+#if PL_CONFIG_IS_MASTER
+static uint8_t MATRIX_SendMatrixCmdToAllBoards(const unsigned char *cmd) {
   uint8_t res;
   uint8_t addr;
   bool isEnabled;
-  unsigned char cmd[32];
+  bool hasError = false;
 
-  McuUtility_strcpy(cmd, sizeof(cmd), (unsigned char*)"matrix motor ");
-  if (on) {
-    McuUtility_strcat(cmd, sizeof(cmd), (unsigned char*)"on");
-  } else {
-    McuUtility_strcat(cmd, sizeof(cmd), (unsigned char*)"off");
-  }
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* go through all boards */
     addr = MATRIX_BoardList[i].addr;
     isEnabled = MATRIX_BoardList[i].enabled;
     if (isEnabled) {
-      McuLog_trace("Turning motor %s for board 0x%02x", on?"on":"off", addr);
+      McuLog_trace("Sending '%s' to board 0x%02x", cmd, addr);
       res = RS485_SendCommand(addr, cmd, 1000, false, 1);
       if (res!=ERR_OK) {
-        McuLog_error("failed changing motor on/off board 0x%x", addr);
+        McuLog_error("failed sending command '%s' to board 0x%x", cmd, addr);
+        hasError = true;
       }
     }
   }
+  if (hasError) {
+    return ERR_FAILED;
+  }
+  return ERR_OK;
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
@@ -1792,6 +1791,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  lastError", (unsigned char*)"Check remotes for last error\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  waitidle", (unsigned char*)"Check remotes for idle state\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  sendcmd <cmd>", (unsigned char*)"Send a command to all boards\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_X12_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  reset high|low", (unsigned char*)"Set motor driver reset line (LOW active)\r\n", io->stdOut);
@@ -1800,7 +1800,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  zero all", (unsigned char*)"Move all motors to zero position using magnet sensor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  zero <x> <y> <z>", (unsigned char*)"Move clock to zero position using magnet sensor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  offs <x> <y> <z> <v>", (unsigned char*)"Set offset value for clock\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  offs 12", (unsigned char*)"Calculate offset from 12-o-clock for all motors\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  offs 12", (unsigned char*)"Calculate offset from 12-o-clock for all clocks\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   McuShell_SendHelpStr((unsigned char*)"  motor on|off", (unsigned char*)"Switch motors on or off\r\n", io->stdOut);
@@ -2310,12 +2310,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
   } else if (McuUtility_strcmp((char*)cmd, "matrix offs 12")==0) {
     *handled = TRUE;
-  #if PL_CONFIG_IS_MASTER
-      McuShell_SendStr((unsigned char*)"NYI\r\n", io->stdErr); /* \todo NYI magnet handling from master */
-      return ERR_FAILED; /* NYI */
-  #elif PL_CONFIG_IS_CLIENT
     return MATRIX_SetOffsetFrom12();
-  #endif
 #endif /* PL_CONFIG_USE_MAG_SENSOR */
 #if PL_CONFIG_USE_LED_DIMMING
   } else if (McuUtility_strncmp((char*)cmd, "matrix hand brightness all ", sizeof("matrix hand brightness all ")-1)==0) {
@@ -2367,14 +2362,14 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor on")==0) {
     *handled = TRUE;
     #if PL_CONFIG_IS_MASTER
-    MATRIX_SendMotorOnOffAll(true);
+    return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
     #else
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
     #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor off")==0) {
     *handled = TRUE;
     #if PL_CONFIG_IS_MASTER
-    MATRIX_SendMotorOnOffAll(false);
+    return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
     #else
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
     #endif
@@ -2383,17 +2378,24 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     MATRIX_MoveAlltoHour(12, 10000, io);
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
-    MATRIX_SendMotorOnOffAll(false);
+    return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
   #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park off")==0) {
     *handled = TRUE;
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
-    MATRIX_SendMotorOnOffAll(true);
+    return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
   #endif
+#if PL_CONFIG_IS_MASTER
+  } else if (McuUtility_strncmp((char*)cmd, "matrix sendcmd ", sizeof("matrix sendcmd ")-1)==0) {
+    *handled = TRUE;
+
+    p = cmd + sizeof("matrix sendcmd ")-1;
+    return MATRIX_SendMatrixCmdToAllBoards(p);
+#endif /* PL_CONFIG_IS_MASTER */
   }
   return ERR_OK;
 }

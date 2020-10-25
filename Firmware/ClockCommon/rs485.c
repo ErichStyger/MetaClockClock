@@ -245,7 +245,7 @@ static RS485_Response_e WaitForResponse(int32_t timeoutMs, uint8_t fromAddr) {
   return RS485_RESPONSE_CONTINUE;
 }
 
-uint8_t RS485_SendCommand(uint8_t dstAddr, unsigned char *cmd, int32_t timeoutMs, bool intern, uint32_t nofRetry) {
+uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t timeoutMs, bool intern, uint32_t nofRetry) {
   /* example: send "@16 1 cmd stepper status" */
   unsigned char buf[McuShell_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t res = ERR_OK;
