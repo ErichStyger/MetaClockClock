@@ -128,6 +128,42 @@ static uint8_t NVMC_SetNofActiveMotors(uint8_t nofMotors) {
 #endif
 
 #if PL_CONFIG_USE_NVMC
+uint32_t NVMC_GetFlags(void) {
+  const NVMC_Data_t *data;
+
+  if (!NVMC_HasValidConfig()) {
+    McuLog_error("no valid NVMC configuration, returning 0");
+    return 0;
+  }
+  data = NVMC_GetDataPtr();
+  if (data!=NULL) {
+    return data->flags;
+  }
+  McuLog_error("NVMC does not exist, returning 0");
+  return 0; /* default */
+}
+#endif
+
+#if PL_CONFIG_USE_NVMC
+static uint8_t NVMC_SetFlags(uint32_t flags) {
+  NVMC_Data_t data;
+
+  if (NVMC_IsErased()) {
+    McuLog_error("FLASH is erased, initialize it first!");
+    return ERR_FAILED;
+  }
+  data = *NVMC_GetDataPtr(); /* struct copy */
+  data.flags = flags;
+  if (NVMC_WriteConfig(&data)!=ERR_OK) {
+    McuLog_error("Failed writing configuration!");
+    return ERR_FAILED;
+  }
+  return ERR_OK;
+}
+#endif
+
+
+#if PL_CONFIG_USE_NVMC
 static uint8_t NVMC_Erase(void) {
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
   uint32_t startSector = FLASH_NVM_SECTOR_START; /* sector is 1k in size */
@@ -309,6 +345,10 @@ static uint8_t NVMC_InitConfig(void) {
 #else
   data.addrRS485 = 0x0A; /* default initial clock/slave address */
 #endif
+  data.flags = 0;
+#if PL_CONFIG_USE_MAG_SENSOR
+  data.flags |= NVMC_FLAGS_HALL_SENSORS_ENABLED;
+#endif
 #if PL_CONFIG_NOF_CLOCK_ON_BOARD>0
   for (int i=0; i<sizeof(data.zeroOffsets)/sizeof(data.zeroOffsets[0]); i++) {
     for(int j=0; j<sizeof(data.zeroOffsets[0])/sizeof(data.zeroOffsets[0][0]); j++) {
@@ -331,7 +371,7 @@ int16_t NVMC_GetStepperZeroOffset(uint8_t clock, uint8_t motor) {
 
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   const NVMC_Data_t *data;
-  uint8_t buf[24];
+  uint8_t buf[48];
 
   McuShell_SendStatusStr((unsigned char*)"nvmc", (unsigned char*)"Non-volatile memory configuration area\r\n", io->stdOut);
   if (NVMC_IsErased()) {
@@ -351,11 +391,25 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
     McuUtility_strcatNum8Hex(buf, sizeof(buf), data->addrRS485);
     McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
     McuShell_SendStatusStr((unsigned char*)"  RS-458", buf, io->stdOut);
+
+    uint32_t flags;
+
+    flags = NVMC_GetFlags();
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
+    McuUtility_strcatNum32Hex(buf, sizeof(buf), flags);
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hall: ");
+    if (flags&NVMC_FLAGS_HALL_SENSORS_ENABLED) {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"on");
+    } else {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"off");
+    }
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+    McuShell_SendStatusStr((unsigned char*)"  flags", buf, io->stdOut);
 #if PL_CONFIG_USE_STEPPER
     uint8_t status[12];
 
     buf[0] = '\0';
-    McuUtility_strcatNum8u(buf, sizeof(buf), data->nofActiveMotors);
+    McuUtility_strcatNum8u(buf, sizeof(buf), NVMC_GetNofActiveMotors());
     McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
     McuShell_SendStatusStr((unsigned char*)"  motors", buf, io->stdOut);
     for (int i=0; i<sizeof(data->zeroOffsets)/sizeof(data->zeroOffsets[0]); i++) {
@@ -381,6 +435,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  erase", (unsigned char*)"Erase configuration area\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  init", (unsigned char*)"Erase and initialize configuration area\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  nofMotors", (unsigned char*)"Set the number of motors\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  flags <val>", (unsigned char*)"Set flags\r\n", io->stdOut);
   return ERR_OK;
 }
 
@@ -405,6 +460,17 @@ uint8_t NVMC_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     p = cmd + sizeof("nvmc nofMotors ")-1;
     if (McuUtility_xatoi(&p, &val)==ERR_OK && val>=0 && val<=0xff) {
        return NVMC_SetNofActiveMotors(val);
+    } else {
+      return ERR_FAILED;
+    }
+  } else if (McuUtility_strncmp((char*)cmd, "nvmc flags", sizeof("nvmc flags")-1)==0) {
+    *handled = true;
+    const unsigned char *p;
+    int32_t val;
+
+    p = cmd + sizeof("nvmc flags ")-1;
+    if (McuUtility_xatoi(&p, &val)==ERR_OK) {
+       return NVMC_SetFlags((uint32_t)val);
     } else {
       return ERR_FAILED;
     }
