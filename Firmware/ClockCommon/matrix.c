@@ -1056,7 +1056,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
       }
     }
   }
-  STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 1000);
+  STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
   return ERR_OK;
 #endif
 }
