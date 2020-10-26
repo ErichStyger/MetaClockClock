@@ -20,8 +20,6 @@
 /* select the board used: */
 #define PL_CONFIG_BOARD_ID         (PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4)
 
-#define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
-
 /* CPU/Board selection: only one can be active! */
 #define PL_CONFIG_IS_LPC845        (McuLib_CONFIG_CPU_IS_LPC)     /* LPC845 */
 #define PL_CONFIG_IS_TINYK22       (McuLib_CONFIG_CPU_IS_KINETIS && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* Kinetis K22FN512 */
@@ -37,16 +35,19 @@
   #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
+  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #elif 0 /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
-  #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
+  #define PL_MATRIX_CONFIG_IS_RGB    (1 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-#elif 0 /* new 60 'modular' clock configuration */
+  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
+#elif 1 /* new 60 'modular' clock configuration */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (1) /* new modular boards with power-off switch */
+  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #endif
 
 /* hardware versions for boards with LPC845:
