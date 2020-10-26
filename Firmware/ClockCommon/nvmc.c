@@ -19,6 +19,7 @@
 #include "Shell.h"
 #include "McuLog.h"
 
+#if PL_CONFIG_USE_NVMC
 /* Note: the flash memory has been reduced for the linker file (project settings, managed linker file) */
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
   #define FLASH_NVM_ADDR_START      (0xFC00) /* LPC845 has 64k FLASH (0x10000), last 1k page is used for NVM */
@@ -49,14 +50,18 @@
   static flash_config_t s_flashDriver;
 #endif
 #endif
+#endif /* PL_CONFIG_USE_NVMC */
 
+#if PL_CONFIG_USE_NVMC
 bool NVMC_HasValidConfig(void) {
   const NVMC_Data_t *data;
 
   data = NVMC_GetDataPtr();
   return data != NULL && data->version == NVMC_CURRENT_VERSION;
 }
+#endif
 
+#if PL_CONFIG_USE_NVMC
 static bool isErased(const uint8_t *ptr, int nofBytes) {
   while (nofBytes>0) {
     if (*ptr!=0xFF) {
@@ -67,19 +72,25 @@ static bool isErased(const uint8_t *ptr, int nofBytes) {
   }
   return true;
 }
+#endif
 
+#if PL_CONFIG_USE_NVMC
 bool NVMC_IsErased(void) {
   return isErased((uint8_t*)FLASH_NVM_ADDR_START, sizeof(NVMC_Data_t));
 }
+#endif
 
+#if PL_CONFIG_USE_NVMC
 const NVMC_Data_t *NVMC_GetDataPtr(void) {
   if (NVMC_IsErased()) {
     return NULL;
   }
   return (const NVMC_Data_t *)FLASH_NVM_ADDR_START;
 }
+#endif
 
 uint8_t NVMC_GetRS485Addr(void) {
+#if PL_CONFIG_USE_NVMC
   const NVMC_Data_t *data;
 
   if (!NVMC_HasValidConfig()) {
@@ -92,8 +103,14 @@ uint8_t NVMC_GetRS485Addr(void) {
   }
   McuLog_error("NVMC does not exist, returning default RS-485 address (0x1)");
   return 0x1; /* default */
+#elif PL_CONFIG_IS_MASTER
+  return 0x1; /* default address for master */
+#else
+  #error "flash programming has to be enabled"
+#endif
 }
 
+#if PL_CONFIG_USE_NVMC
 uint8_t NVMC_GetNofActiveMotors(void) {
   const NVMC_Data_t *data;
 
@@ -108,6 +125,7 @@ uint8_t NVMC_GetNofActiveMotors(void) {
   McuLog_error("NVMC does not exist, returning default number of motors (1)");
   return 0x1; /* default */
 }
+#endif
 
 #if PL_CONFIG_USE_NVMC
 static uint8_t NVMC_SetNofActiveMotors(uint8_t nofMotors) {
