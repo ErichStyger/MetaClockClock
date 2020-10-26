@@ -17,14 +17,6 @@
 #define PL_CONFIG_BOARD_ID_CLOCK_K02FN128     (5)  /* Board V1.4, dual clock with K02FN128 */
 #define PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK  (6)  /* Board LPC-845-BRK breadboard as master */
 
-/* notes:
- * 60 Billion configuration
- * predefined configuration to 60 billion
- *
- * New Modular:
- * predefined configuration: modular
- */
-
 /* select the board used: */
 #define PL_CONFIG_BOARD_ID         (PL_CONFIG_BOARD_ID_MASTER_K22FN512)
 
@@ -55,6 +47,13 @@
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (1) /* new modular boards with power-off switch */
+  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
+#elif 0 /* 16x9 matrix by Alexis */
+  #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
+  #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
+  #define PL_MATRIX_CONFIG_IS_16x9   (1 && PL_CONFIG_IS_MASTER) /* new 16x9 matrix configuration with 144 clocks */
+  #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
+  #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
   #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #endif
 
