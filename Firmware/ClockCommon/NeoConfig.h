@@ -9,6 +9,8 @@
 
 #include "platform.h"
 
+#if PL_CONFIG_USE_NEO_PIXEL
+
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   #define NEOC_LANE_START        (5)
   #define NEOC_LANE_END          (6)
@@ -29,5 +31,7 @@
 #endif
 
 #define NEOC_NOF_PIXEL   ((NEOC_NOF_LANES)*(NEOC_NOF_LEDS_IN_LANE)) /* number of pixels */
+
+#endif /* PL_CONFIG_USE_NEO_PIXEL */
 
 #endif /* NEOCONFIG_H_ */
