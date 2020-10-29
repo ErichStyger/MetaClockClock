@@ -7,16 +7,16 @@
 #include "platform.h"
 #include "application.h"
 #include "McuRTOS.h"
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
-  #include "matrix.h"
   #include "NeoStepperRing.h"
 #endif
+#include "matrix.h"
 #include "McuLog.h"
 #include "McuUtility.h"
 #include "StepperBoard.h"
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   static SemaphoreHandle_t semNeoUpdate; /* semaphore use to trigger a display update */
 #endif
 
@@ -26,7 +26,7 @@ uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 #define TEST_MODE   (0)  /* test mode for rings */
 #define DEMO_MODE   (1)  /* demo mode after power-on */
 
@@ -55,7 +55,7 @@ static void TestRing(void) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 bool APP_RequestUpdateLEDsFromISR(void) {
   BaseType_t xHigherPriorityTaskWoken;
 
@@ -92,20 +92,18 @@ static void NeoTask(void *pv) {
   TestRing();
 #endif
   for(;;) {
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
     res = xSemaphoreTake(semNeoUpdate, portMAX_DELAY); /* block until we get a request to update */
     if (res==pdTRUE) { /* received the signal */
       NEO_ClearAllPixel();
-    #if PL_CONFIG_USE_MATRIX
       MATRIX_IlluminateHands();
-    #endif
       NEO_TransferPixels();
     }
 #endif
     vTaskDelay(pdMS_TO_TICKS(20)); /* can wait 20 ms until a next update is needed */
   } /* for */
 }
-#endif /* PL_CONFIG_USE_LED_RING */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 #if configUSE_HEAP_SCHEME==5
   static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[8*1024]; /* placed in in no_init section inside SRAM_LOWER */
@@ -123,7 +121,7 @@ void APP_Run(void) {
 #if configUSE_HEAP_SCHEME==5
   vPortDefineHeapRegions(xHeapRegions); /* Pass the array into vPortDefineHeapRegions(). Must be called first! */
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   if (xTaskCreate(
       NeoTask,  /* pointer to the task */
       "Neo", /* task name for kernel awareness debugging */

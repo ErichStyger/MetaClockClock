@@ -55,9 +55,7 @@
 #if PL_CONFIG_USE_NVMC
   #include "nvmc.h"
 #endif
-#if PL_CONFIG_USE_MATRIX
-  #include "matrix.h"
-#endif
+#include "matrix.h"
 #include "leds.h"
 #if PL_CONFIG_USE_BUTTON
   #include "buttons.h"
@@ -87,7 +85,7 @@
 #if PL_CONFIG_USE_INTERMEZZO
   #include "intermezzo.h"
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
   #include "PixelDMA.h"
 #endif
@@ -202,9 +200,7 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_NVMC
   NVMC_Init();
 #endif
-#if PL_CONFIG_USE_MATRIX
-  MATRIX_Init();
-#endif
+MATRIX_Init();
 #if PL_CONFIG_USE_WDT
   WDT_Init();
 #endif
@@ -214,7 +210,7 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_INTERMEZZO
   INTERMEZZO_Init();
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   PIXDMA_Init();
   NEO_Init();
 #endif

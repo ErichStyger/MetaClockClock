@@ -252,7 +252,7 @@ uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t tim
   RS485_Response_e resp;
   uint8_t crc, hex;
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   if (intern && (dstAddr==RS485_GetAddress() || dstAddr==RS485_BROADCAST_ADDRESS)) {
     SHELL_ParseCommand(cmd, NULL, true); /* parse it for the LED rings */
     if (dstAddr!=RS485_BROADCAST_ADDRESS) { /* only for us */

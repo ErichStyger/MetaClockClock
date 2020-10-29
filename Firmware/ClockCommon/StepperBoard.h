@@ -14,7 +14,7 @@
 #include <stdbool.h>
 #include "stepper.h"
 #include "McuGPIO.h"
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoStepperRing.h"
 #endif
 
@@ -24,7 +24,7 @@ typedef struct STEPBOARD_Config_t {
   uint8_t addr;      /* RS-485 address */
   bool enabled;      /* if board is enabled or not */
   STEPPER_Handle_t stepper[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS];
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   NEOSR_Handle_t *ledRing[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS]; /* points to the LED ring device */
 #endif
 } STEPBOARD_Config_t;
@@ -42,9 +42,9 @@ void STEPBOARD_NormalizePosition(STEPBOARD_Handle_t board);
 
 STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int clock, int motor);
 
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int clock, int motor);
-#endif /* PL_CONFIG_USE_NEO_PIXEL */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 STEPBOARD_Handle_t STEPBOARD_GetBoard(void);
 void STEPBOARD_SetBoard(STEPBOARD_Handle_t);

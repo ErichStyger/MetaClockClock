@@ -1059,7 +1059,7 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
     for(int x=0; x<3; x++) { /* every clock column */
       (void)MATRIX_DrawClockHands(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       (void)MATRIX_DrawMoveMode(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-    #if PL_CONFIG_USE_LED_RING
+    #if PL_CONFIG_USE_NEO_PIXEL_HW
       MATRIX_DrawClockLEDs(xPos+x, yPos+y, ch->digit[y][x].hands[0].enabled, ch->digit[y][x].hands[1].enabled);
     #endif
     #if PL_CONFIG_USE_DUAL_HANDS
@@ -1076,7 +1076,7 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
     for(int x=0; x<2; x++) { /* every clock column */
       (void)MATRIX_DrawClockHands(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       (void)MATRIX_DrawMoveMode(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-    #if PL_CONFIG_USE_LED_RING
+    #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* should pass brightness as parameter! */
 #if 0 /* \todo */ /* does not work yet */
       MATRIX_StartHandDimming(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled?0xff:0);

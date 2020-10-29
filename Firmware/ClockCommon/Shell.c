@@ -35,9 +35,7 @@
 #if PL_CONFIG_USE_MAG_SENSOR
   #include "magnets.h"
 #endif
-#if PL_CONFIG_USE_MATRIX
-  #include "matrix.h"
-#endif
+#include "matrix.h"
 #if PL_CONFIG_USE_WDT
   #include "watchdog.h"
 #endif
@@ -114,9 +112,7 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
   RS485_ParseCommand,
   RS485Uart_ParseCommand,
 #endif
-#if PL_CONFIG_USE_MATRIX
   MATRIX_ParseCommand,
-#endif
 #if PL_CONFIG_USE_CLOCK
   CLOCK_ParseCommand,
 #endif

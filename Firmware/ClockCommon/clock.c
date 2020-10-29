@@ -32,9 +32,7 @@
   #include "fsl_flash.h"
   #endif
 #endif
-#if PL_CONFIG_USE_MATRIX
- #include "matrix.h"
-#endif
+#include "matrix.h"
 #if PL_CONFIG_USE_WDT
   #include "watchdog.h"
 #endif
@@ -53,7 +51,7 @@ static bool CLOCK_ClockIsOn = false;
   static bool CLOCK_clockIsLarge = true; /* if clock is using large font */
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   static uint32_t CLOCK_HandColor = 0x000030;
   static uint8_t CLOCK_HandBrightness = 0xff; /* max */
   static bool CLOCK_ShowSeconds = false;
@@ -121,7 +119,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), CLOCK_UpdatePeriodMinutes==1?(unsigned char*)" minute\r\n":(unsigned char*)" minutes\r\n");
   McuShell_SendStatusStr((unsigned char*)"  period", buf, io->stdOut);
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"color: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), CLOCK_HandColor);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", brightness 0x");
@@ -190,7 +188,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  on|off", (unsigned char*)"Enable or disable the clock\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  park", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  period <minute>", (unsigned char*)"Clock update period in minutes (>0)\r\n", io->stdOut);
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   McuShell_SendHelpStr((unsigned char*)"  hand rgb <rgb>", (unsigned char*)"Set hand color\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  seconds on|off", (unsigned char*)"Show seconds\r\n", io->stdOut);
 #endif
@@ -243,7 +241,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       return ERR_FAILED;
     }
     return ERR_OK;
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   } else if (McuUtility_strncmp((char*)cmd, "clock hand rgb ", sizeof("clock hand rgb ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("clock hand rgb ")-1;
@@ -336,7 +334,7 @@ static uint8_t AdjustHourForTimeZone(uint8_t hour, int8_t gmtDelta) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 static void ShowSeconds(const TIMEREC *time) {
   static uint8_t lastSecondShown = -1;
 
@@ -418,7 +416,7 @@ static void ClockTask(void *pv) {
   }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   /* turn on the hand LEDs */
   MATRIX_SetHandColorAll((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
 #if PL_CONFIG_USE_LED_DIMMING
@@ -456,7 +454,7 @@ static void ClockTask(void *pv) {
       McuLog_info("Start parking clock");
       CLOCK_ClockIsOn = false; /* disable clock */
       SHELL_ParseCommand((unsigned char*)"matrix hour 12", McuShell_GetStdio(), true); /* move to 12-o-clock position */
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
       (void)MATRIX_SetRingColorAll(0, 0, 0);
       (void)MATRIX_SetHandLedEnabledAll(false);
@@ -471,7 +469,7 @@ static void ClockTask(void *pv) {
       McuLog_info("Clock off");
       CLOCK_ClockIsOn = false; /* disable clock */
       prevClockUpdateTimestampSec = 0;
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
       (void)MATRIX_SetRingColorAll(0, 0, 0);
       (void)MATRIX_SetHandLedEnabledAll(false);
@@ -507,7 +505,7 @@ static void ClockTask(void *pv) {
     } /* if clock is on */
     if (CLOCK_ClockIsOn) { /* show time */
       res = McuTimeDate_GetTimeDate(&time, &date);
-    #if PL_CONFIG_USE_LED_RING
+    #if PL_CONFIG_USE_NEO_PIXEL_HW
       ShowSeconds(&time);
     #endif
       if (res==ERR_OK && (McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0) >= prevClockUpdateTimestampSec+60*CLOCK_UpdatePeriodMinutes)) {
@@ -515,7 +513,7 @@ static void ClockTask(void *pv) {
         McuLog_info("Time: %02d:%02d", time.Hour, time.Min);
         MATRIX_DrawAllClockDelays(5,5);
         MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-    #if PL_CONFIG_USE_LED_RING
+    #if PL_CONFIG_USE_NEO_PIXEL_HW
         MATRIX_SetHandColorAll((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
     #endif
     #if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5

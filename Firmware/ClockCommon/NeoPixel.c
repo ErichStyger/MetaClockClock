@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 #include "NeoPixel.h"
 #include "McuUtility.h"
 #include "PixelDMA.h"
@@ -335,4 +335,4 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
 void NEO_Init(void) {
   NEO_ClearAllPixel();
 }
-#endif /* PL_HAS_NEO_PIXEL */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */

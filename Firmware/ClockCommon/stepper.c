@@ -12,7 +12,7 @@
   #include "McuX12_017.h"
 #elif PL_CONFIG_USE_ULN2003
   #include "McuULN2003.h"
-#elif PL_CONFIG_USE_LED_RING
+#elif PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoStepperRing.h"
 #endif
 #if PL_CONFIG_USE_WDT

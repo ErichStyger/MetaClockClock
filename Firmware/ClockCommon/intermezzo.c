@@ -30,7 +30,7 @@ static void IntermezzoDemo1(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   (void)MATRIX_DrawAllClockDelays(6, 6);
@@ -66,7 +66,7 @@ static void IntermezzoDemo3(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
@@ -105,7 +105,7 @@ static void IntermezzoDemo4(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_MoveAllto12(10000, NULL);
@@ -127,7 +127,7 @@ static void IntermezzoDemo5(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
@@ -172,7 +172,7 @@ static void Intermezzo0(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(2, 2);
@@ -185,7 +185,7 @@ static void Intermezzo1(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(5, 5);
@@ -198,7 +198,7 @@ static void Intermezzo2(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(6, 6);
@@ -215,7 +215,7 @@ static void Intermezzo3(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
@@ -228,7 +228,7 @@ static void Intermezzo4(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(6, 6);
@@ -244,7 +244,7 @@ static void IntermezzoRandomHandsAllOn(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   (void)MATRIX_DrawAllClockDelays(2, 5);
@@ -253,7 +253,7 @@ static void IntermezzoRandomHandsAllOn(void) {
     for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
       for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
         (void)MATRIX_DrawClockHand(x, y, z,  McuUtility_random(0, 359));
-      #if PL_CONFIG_USE_LED_RING
+      #if PL_CONFIG_USE_NEO_PIXEL_HW
         MATRIX_SetHandColor(x, y, z, McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255));
       #endif
       }
@@ -266,7 +266,7 @@ static void IntermezzoRandomHands(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(3, 7);
@@ -318,7 +318,7 @@ static void IntermezzoRectangles(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_CLOCKS_X, MATRIX_NOF_CLOCKS_Y);
@@ -328,7 +328,7 @@ static void IntermezzoRectangles2(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_CLOCKS_X/2, MATRIX_NOF_CLOCKS_Y);
@@ -339,7 +339,7 @@ static void IntermezzoRectangles3(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_CLOCKS_X/3, MATRIX_NOF_CLOCKS_Y);

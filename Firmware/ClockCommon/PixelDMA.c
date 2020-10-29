@@ -6,7 +6,7 @@
 
 #include "platform.h"
 
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 #include <stdint.h>
 #include <stddef.h>
 #include "fsl_ftm.h"
@@ -328,4 +328,4 @@ void PIXDMA_Init(void) {
   InitTimer(); /* timer setup */
   InitDMA();
 }
-#endif /* PL_CONFIG_USE_NEO_PIXEL */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */

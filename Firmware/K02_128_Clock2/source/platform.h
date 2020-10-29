@@ -109,28 +109,26 @@
 #define PL_CONFIG_USE_RS485         	(1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
 #define PL_CONFIG_USE_NVMC          	(1) /* using non-volatile configuration memory */
 #define PL_CONFIG_USE_WDT           	(0) /* if using watchdog timer, disable for easier debugging */
-#define PL_CONFIG_USE_DEMOS         	(1 && PL_CONFIG_USE_MATRIX && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
+#define PL_CONFIG_USE_DEMOS         	(1 && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
 #define PL_CONFIG_USE_BLE           	(1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
 #define PL_CONFIG_USE_BLE_MSG       	(1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit app messages */
 #define PL_CONFIG_USE_ESP32         	(0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* if using the ESP32 */
 #define PL_CONFIG_USE_SHT31         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_USE_I2C) /* if using SHT31 sensor */
-#define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_IS_TINYK22 || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
+#define PL_CONFIG_USE_NEO_PIXEL_HW  	(1 && (PL_CONFIG_BOARD_MASTER_K22_WS2812B || PL_CONFIG_IS_K02)) /* 1: drives NeoPixels/WS2812B directly on the board */
 #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 
 #define PL_CONFIG_USE_VIRTUAL_STEPPER (PL_CONFIG_BOARD_MASTER_K22_WS2812B)
 #define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
-#define PL_CONFIG_USE_LED_STEPPER     (1 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
+#define PL_CONFIG_USE_LED_STEPPER     (1 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
-#define PL_CONFIG_USE_X12_LED_STEPPER (PL_CONFIG_USE_X12_STEPPER && PL_CONFIG_USE_NEO_PIXEL)
-/* remove?: */
-#define PL_CONFIG_USE_LED_RING      	(1 && PL_CONFIG_USE_NEO_PIXEL) /* if it has LED rings */
-#define PL_CONFIG_USE_MATRIX        	(1 && (PL_CONFIG_USE_STEPPER || PL_CONFIG_USE_LED_RING || PL_CONFIG_IS_MASTER)) /* if using the matrix module to control the clocks */
+#define PL_CONFIG_USE_X12_LED_STEPPER (PL_CONFIG_USE_X12_STEPPER && PL_CONFIG_USE_NEO_PIXEL_HW)
+
 #define PL_CONFIG_USE_LOW_POWER       (0)  /* if using low power mode */
 
 /* client only: */
 #define PL_CONFIG_USE_MAG_SENSOR      (1 && PL_CONFIG_IS_CLIENT)      /* has magnets and hall sensors */
-#define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_LED_RING)
-#define PL_CONFIG_USE_DUAL_HANDS      (0 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
+#define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_NEO_PIXEL_HW)
+#define PL_CONFIG_USE_DUAL_HANDS      (1 && PL_CONFIG_USE_NEO_PIXEL_HW)   /* dual hand on Z axis */
 #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0 && PL_CONFIG_IS_CLIENT) /* play automatic demo after power-on */
 
 /* master only: */

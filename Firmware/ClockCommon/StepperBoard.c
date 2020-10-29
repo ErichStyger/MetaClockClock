@@ -29,7 +29,7 @@ typedef struct STEPBOARD_Device_t {
   McuGPIO_Handle_t motorOnOff; /* LOW active for all motors */
 #endif
   STEPPER_Handle_t stepper[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS];
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   NEOSR_Handle_t *ledRing[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS]; /* points to the LED ring device */
 #endif
 } STEPBOARD_Device_t;
@@ -39,24 +39,24 @@ static const STEPBOARD_Config_t defaultConfig =
 {
   .addr = 0x0, .enabled = true,
   .stepper[0][0] = NULL, .stepper[0][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   .ledRing[0][0] = NULL, .ledRing[0][1] = NULL,
 #endif
 #if STEPPER_NOF_CLOCKS >= 2
   .stepper[1][0] = NULL, .stepper[1][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   .ledRing[1][0] = NULL, .ledRing[1][1] = NULL,
 #endif
 #endif
 #if STEPPER_NOF_CLOCKS >= 3
   .stepper[2][0] = NULL, .stepper[2][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   .ledRing[2][0] = NULL, .ledRing[2][1] = NULL,
 #endif
 #endif
 #if STEPPER_NOF_CLOCKS >= 4
   .stepper[3][0] = NULL, .stepper[3][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   .ledRing[3][0] = NULL, .ledRing[3][1] = NULL,
 #endif
 #endif
@@ -81,14 +81,14 @@ STEPBOARD_Handle_t STEPBOARD_InitDevice(STEPBOARD_Config_t *config) {
     handle->enabled = config->enabled;
     handle->stepper[0][0] = config->stepper[0][0];
     handle->stepper[0][1] = config->stepper[0][1];
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
     handle->ledRing[0][0] = config->ledRing[0][0];
     handle->ledRing[0][1] = config->ledRing[0][1];
 #endif
 #if STEPPER_NOF_CLOCKS >= 2
     handle->stepper[1][0] = config->stepper[1][0];
     handle->stepper[1][1] = config->stepper[1][1];
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
     handle->ledRing[1][0] = config->ledRing[1][0];
     handle->ledRing[1][1] = config->ledRing[1][1];
 #endif
@@ -96,7 +96,7 @@ STEPBOARD_Handle_t STEPBOARD_InitDevice(STEPBOARD_Config_t *config) {
 #if STEPPER_NOF_CLOCKS >= 3
     handle->stepper[2][0] = config->stepper[2][0];
     handle->stepper[2][1] = config->stepper[2][1];
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
     handle->ledRing[2][0] = config->ledRing[2][0];
     handle->ledRing[2][1] = config->ledRing[2][1];
 #endif
@@ -104,7 +104,7 @@ STEPBOARD_Handle_t STEPBOARD_InitDevice(STEPBOARD_Config_t *config) {
 #if STEPPER_NOF_CLOCKS >= 4
     handle->stepper[3][0] = config->stepper[3][0];
     handle->stepper[3][1] = config->stepper[3][1];
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
     handle->ledRing[3][0] = config->ledRing[3][0];
     handle->ledRing[3][1] = config->ledRing[3][1];
 #endif
@@ -130,12 +130,12 @@ bool STEPBOARD_IsEnabled(STEPBOARD_Handle_t board) {
   return handle->enabled;
 }
 
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int clock, int motor) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
   return handle->ledRing[clock][motor];
 }
-#endif /* PL_CONFIG_USE_NEO_PIXEL */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int clock, int motor) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;

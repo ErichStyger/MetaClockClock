@@ -12,7 +12,7 @@
 #include "matrix.h"
 #include "McuUtility.h"
 #include "McuTimeDate.h"
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "application.h"
 #endif
 #if PL_CONFIG_USE_CLOCK
@@ -29,7 +29,7 @@ static uint8_t DEMO_FailedDemo(uint8_t res) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 static void DEMO_LedDemo0(void) {
   MATRIX_SetRingLedEnabledAll(true);
   MATRIX_SetRingColorAll(2, 0, 0);
@@ -53,9 +53,9 @@ static void DEMO_LedDemo0(void) {
   vTaskDelay(pdMS_TO_TICKS(2000));
   MATRIX_SetRingLedEnabledAll(false);
 }
-#endif /* PL_CONFIG_USE_LED_RING */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
-#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER
+#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_MASTER
 typedef struct weather_ring_t {
   bool enabled;
   uint8_t r, g, b;
@@ -264,9 +264,9 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
   APP_RequestUpdateLEDs();
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
-#endif /* PL_CONFIG_USE_LED_RING */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 static NEO_PixelColor Rainbow(int32_t numOfSteps, int32_t step) {
   float r = 0.0;
   float g = 0.0;
@@ -356,7 +356,7 @@ static void DEMO_LedDemo1(void) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER
+#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_MASTER
 /* ------------------ PONG Game ------------------------------- */
 typedef struct {
   uint8_t r, g, b;
@@ -575,7 +575,7 @@ static void DEMO_LedPong(void) {
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
-#endif /* PL_CONFIG_USE_LED_RING */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 #if PL_CONFIG_IS_MASTER
 static uint8_t DemoSquare(void) {
@@ -861,7 +861,7 @@ static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
 
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DemoRandomHandsPos();
@@ -869,14 +869,14 @@ static void DEMO_Nxp(void) {
   MFONT_PrintString((unsigned char*)"RUNS", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DemoRandomHandsPos();
   MFONT_PrintString((unsigned char*)"WITH", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DemoRandomHandsPos();
@@ -886,7 +886,7 @@ static void DEMO_Nxp(void) {
   MFONT_PrintString((unsigned char*)"P", 7, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DemoRandomHandsPos();
@@ -896,7 +896,7 @@ static void DEMO_Nxp(void) {
   MFONT_PrintString((unsigned char*)"C", 7, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DemoRandomHandsPos();
@@ -906,7 +906,7 @@ static void DEMO_Nxp(void) {
   MFONT_PrintString((unsigned char*)"5", 7, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
-#if PL_CONFIG_USE_NEO_PIXEL
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   DemoRandomHandsPos();
@@ -970,7 +970,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
 
@@ -984,7 +984,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   (void)MATRIX_ShowTime(time.Hour, time.Min, true, true);
   MATRIX_Delay(3000);
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_Delay(3000);
@@ -992,9 +992,9 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 static uint8_t DemoRandomHandsColor(void) {
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   uint32_t color;
 
   MATRIX_SetHandLedEnabledAll(true);
@@ -1034,13 +1034,13 @@ static uint8_t DemoRandomHandsColor(void) {
   return ERR_OK;
 #else
   return ERR_FAILED;
-#endif /* PL_CONFIG_USE_LED_RING */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 static uint8_t DemoRandomRingColor(void) {
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(false);
   MATRIX_SetRingLedEnabledAll(true);
   for(int i=0; i<10; i++) {
@@ -1079,7 +1079,7 @@ static uint8_t DemoRandomRingColor(void) {
   return ERR_OK;
 #else
   return ERR_FAILED;
-#endif /* PL_CONFIG_USE_LED_RING */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 }
 #endif
 
@@ -1167,7 +1167,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   #if PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   McuShell_SendHelpStr((unsigned char*)"  hands random pos", (unsigned char*)"Randomize hand position\r\n", io->stdOut);
-#if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   McuShell_SendHelpStr((unsigned char*)"  hands random color", (unsigned char*)"Randomize hand color\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  ring random color", (unsigned char*)"Randomize ring color\r\n", io->stdOut);
 #endif
@@ -1208,11 +1208,11 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  nxp", (unsigned char*)"NXP demo\r\n", io->stdOut);
   #endif
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   McuShell_SendHelpStr((unsigned char*)"  led 0", (unsigned char*)"LED color demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  led 1", (unsigned char*)"LED rainbow demo\r\n", io->stdOut);
 #endif
-#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER
+#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  pong", (unsigned char*)"pong demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  weather <weather>", (unsigned char*)"Show weather: sunny, cloudy, rainy, icy\r\n", io->stdOut);
 #endif
@@ -1449,7 +1449,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     return ERR_FAILED;
   }
 #endif /* PL_CONFIG_IS_MASTER */
-#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER
+#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_MASTER
   } else if (McuUtility_strcmp((char*)cmd, "demo weather sunny")==0) {
     *handled = TRUE;
     DEMO_ShowWeather(weather_sunny);
@@ -1471,7 +1471,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     DEMO_LedPong();
     return ERR_OK;
 #endif
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   } else if (McuUtility_strcmp((char*)cmd, "demo led 0")==0) {
     *handled = TRUE;
     DEMO_LedDemo0();
@@ -1480,8 +1480,8 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     *handled = TRUE;
     DEMO_LedDemo1();
     return ERR_OK;
-#endif /* PL_CONFIG_USE_LED_RING */
-#if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   } else if (McuUtility_strcmp((char*)cmd, "demo ring random color")==0) {
     *handled = TRUE;
     #if PL_CONFIG_USE_CLOCK
@@ -1490,8 +1490,8 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     }
     #endif
     return DemoRandomRingColor();
-#endif /* PL_CONFIG_USE_LED_RING */
-#if PL_CONFIG_USE_LED_RING || PL_MATRIX_CONFIG_IS_RGB
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   } else if (McuUtility_strcmp((char*)cmd, "demo hands random color")==0) {
     *handled = TRUE;
     #if PL_CONFIG_USE_CLOCK

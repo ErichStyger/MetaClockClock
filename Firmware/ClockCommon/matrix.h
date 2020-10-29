@@ -14,7 +14,7 @@
 #include "McuShell.h"
 #include "stepper.h"
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
 
   void MATRIX_SetHandLedEnabledAll(bool on);
