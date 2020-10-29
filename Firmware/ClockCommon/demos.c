@@ -21,6 +21,7 @@
 #include "mfont.h"
 #include "StepperBoard.h"
 #include "NeoPixel.h"
+#include "McuLog.h"
 
 #if PL_CONFIG_IS_MASTER
 static uint8_t DEMO_FailedDemo(uint8_t res) {
@@ -1084,6 +1085,8 @@ static uint8_t DemoRandomRingColor(void) {
 
 #if PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
 static uint8_t DemoClap(void) {
+  uint8_t res;
+
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
@@ -1095,7 +1098,10 @@ static uint8_t DemoClap(void) {
       (void)MATRIX_DrawClockHands(x, y, 0,  180);
     }
   }
-  (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+  res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+  if (res!=ERR_OK) {
+    McuLog_error("failed executing: %d", res);
+  }
   for (int i=0; i<2; i++) {
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
     for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
