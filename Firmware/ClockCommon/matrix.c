@@ -618,7 +618,7 @@ static uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
         isEnabled = STEPBOARD_IsEnabled(MATRIX_Boards[i]);
         addr = STEPBOARD_GetAddress(MATRIX_Boards[i]);
 #endif
-        if (isEnabled && !MATRIX_CommandHasBeenSentToBoard(i)) {
+        if (isEnabled && MATRIX_CommandHasBeenSentToBoard(i)) {
           McuLog_trace("Waiting for idle (addr 0x%02x)", addr);
           res = RS485_SendCommand(addr, (unsigned char*)"idle", 1000, false, 1); /* ask board if it is idle */
           if (res==ERR_OK) { /* board is idle */
@@ -937,9 +937,9 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
       isEnabled = STEPBOARD_IsEnabled(MATRIX_Boards[i]);
       addr = STEPBOARD_GetAddress(MATRIX_Boards[i]);
 #endif
-      if (isEnabled && !MATRIX_CommandHasBeenSentToBoard(i)) {
+      if (isEnabled && MATRIX_CommandHasBeenSentToBoard(i)) {
         McuLog_trace("Checking last error (addr 0x%02x)", addr);
-       res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, false, 1); /* ask board if there was an error */
+        res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, false, 1); /* ask board if there was an error */
         if (res==ERR_OK) { /* no error */
           boardHasError[i] = false;
         } else { /* send command again! */
