@@ -112,9 +112,9 @@
 #define PL_CONFIG_USE_DEMOS         	(1 && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
 #define PL_CONFIG_USE_BLE           	(1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
 #define PL_CONFIG_USE_BLE_MSG       	(1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit app messages */
-#define PL_CONFIG_USE_ESP32         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* if using the ESP32 */
+#define PL_CONFIG_USE_ESP32         	(0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* if using the ESP32 */
 #define PL_CONFIG_USE_SHT31         	(1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_USE_I2C) /* if using SHT31 sensor */
-#define PL_CONFIG_USE_NEO_PIXEL     	(1 && (PL_CONFIG_IS_TINYK22 || PL_CONFIG_IS_K02)) /* 1: using NeoPixels/WS2812B */
+#define PL_CONFIG_USE_NEO_PIXEL_HW  	(1 && (PL_CONFIG_BOARD_MASTER_K22_WS2812B || PL_CONFIG_IS_K02)) /* 1: drives NeoPixels/WS2812B directly on the board */
 #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 
 #define PL_CONFIG_USE_VIRTUAL_STEPPER (PL_CONFIG_BOARD_MASTER_K22_WS2812B)
