@@ -70,6 +70,7 @@ static struct {
   const char *cmd; /* command string to execute */
   uint32_t delayMs; /* delay after command */
 } SHELL_DemoList[] = {
+    {"matrix test", 1000},
     {"demo led 0", 1000},
     {"demo led 1", 1000},
     {"demo hands random pos", 1000},
