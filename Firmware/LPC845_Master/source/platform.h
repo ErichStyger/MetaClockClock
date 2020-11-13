@@ -143,7 +143,7 @@
 #define PL_CONFIG_USE_EXT_EEPROM    (1 && PL_CONFIG_USE_I2C) /* AT24C32 */
 
 #define PL_CONFIG_USE_CLOCK         (1 && PL_CONFIG_USE_RTC)  /* 1: application implements a clock */
-#define PL_CONFIG_USE_INTERMEZZO    (0 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485)
+#define PL_CONFIG_USE_INTERMEZZO    (1 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485)
 
 #define PL_CONFIG_USE_MCU_LOG       (McuLog_CONFIG_IS_ENABLED) /* configured in IncludeMcuLibConfig.h */
 
