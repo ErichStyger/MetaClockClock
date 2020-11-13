@@ -12,6 +12,7 @@
 #include "McuShell.h"
 
 #define RS485_BROADCAST_ADDRESS (0x00) /* special broadcast address */
+#define RS485_ILLEGAL_ADDRESS   (0xff) /* illegal/initialization value */
 
 uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t timeoutMs, bool intern, uint32_t nofRetry);
 
