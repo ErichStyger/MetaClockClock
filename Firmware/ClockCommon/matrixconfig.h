@@ -155,9 +155,9 @@ typedef enum {
 #endif
 } MATRIX_BOARD_ADDR_e;
 
-typedef struct {
+typedef struct MatrixClock_t {
   uint8_t addr; /* RS-485 address */
-  uint8_t nr;   /* clock number, 0..3 */
+  uint8_t nr;   /* clock number, 0..3, identifying the position on the board (assuming the 1x4 clock */
   struct {
     uint8_t x, y; /* coordinates on the board */
   } board;
@@ -166,7 +166,7 @@ typedef struct {
 
 extern const MatrixClock_t clockMatrix[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y];
 
-typedef struct {
+typedef struct MATRIX_BoardList_t {
   bool enabled;  /* if board is enabled or not */
   uint8_t addr;  /* RS-485 address of the board */
   bool cmdSent;  /* if command has been sent or not to the board */
