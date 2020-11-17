@@ -328,7 +328,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
   McuShell_SendHelpStr((unsigned char*)"  send <text>", (unsigned char*)"Send a text to the RS-485 bus\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  sendcmd <addr> <cmd>", (unsigned char*)"Send a shell command to the RS-485 address and check response\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  log on|off", (unsigned char*)"Log RS-485 bus activity to shell\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  log on|off", (unsigned char*)"Log RS-485 bus activity to McuLog\r\n", io->stdOut);
   return ERR_OK;
 }
 
@@ -391,7 +391,7 @@ uint8_t RS485_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   return ERR_OK;
 }
 
-#if PL_CONFIG_IS_CLIENT
+//#if PL_CONFIG_IS_CLIENT
 static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, uint8_t *sourceAddr, uint8_t *destinationAddr) {
   /* format is in the form "@<DST_ADDR> <SRC_ADDR> <CRC> cmd help" */
   const unsigned char *p;
@@ -438,18 +438,19 @@ static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, u
   }
   return ERR_FAILED;
 }
-#endif
+//#endif
 
 static void RS485Task(void *pv) {
   static uint8_t cmdBuf[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* command line from the RS-485 bus */
-#if PL_CONFIG_IS_CLIENT
+//#if PL_CONFIG_IS_CLIENT
   const unsigned char *startCmd;
-  uint8_t srcAddr, dstAddr, res, crc;
+  uint8_t srcAddr, dstAddr;
+  uint8_t res, crc;
   uint8_t buf[32];
   unsigned char hex;
   bool reply;
   static uint8_t lastError = ERR_OK;
-#endif
+//#endif
 
   (void)pv; /* not used */
   McuLog_trace("Starting RS485 Task");
@@ -459,14 +460,13 @@ static void RS485Task(void *pv) {
   cmdBuf[0] = '\0';
   for(;;) {
     if (McuShell_ReadCommandLine(cmdBuf, sizeof(cmdBuf), &RS485Uart_stdio)==ERR_OK) {
-#if PL_CONFIG_IS_CLIENT
       reply = false;
-#endif
+      srcAddr = RS485_ILLEGAL_ADDRESS;
+      dstAddr = RS485_ILLEGAL_ADDRESS;
       if (cmdBuf[0]=='@' && strlen((char*)cmdBuf)>sizeof("@dd ss cc ")-1) { /* have a valid message? */
         if (RS485_DoLogging) {
           McuLog_trace("Rx: %s", cmdBuf);
         }
-    #if PL_CONFIG_IS_CLIENT /* for the master, do not write to the bus here too! Would need a better way to control the bus */
         reply = false; /* default */
         res = CheckHeader(cmdBuf, &startCmd, &srcAddr, &dstAddr);
         if (res == ERR_CRC) { /* wrong crc */
@@ -502,16 +502,12 @@ static void RS485Task(void *pv) {
             reply = false;
           }
         }
-    #endif
-    //#if PL_CONFIG_IS_MASTER
       } else {
         /* not starting with '@', print it ... */
         SHELL_SendString((unsigned char *)cmdBuf);
         SHELL_SendString((unsigned char*)"\r\n");
-    //#endif
       }
       cmdBuf[0] = '\0'; /* reset buffer for next iteration */
-    #if PL_CONFIG_IS_CLIENT
       /* send response back to sender */
       if (reply && dstAddr!=RS485_BROADCAST_ADDRESS) { /* normal message, send response. For broadcasts it is up to the caller to check the last error */
         McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"@");
@@ -533,7 +529,6 @@ static void RS485Task(void *pv) {
         McuUtility_chcat(buf, sizeof(buf), '\n');
         RS485_SendStr(buf);
       }
-   #endif
     }
     if (!RS485Uart_stdio.keyPressed()) { /* if nothing in input queue, give back some CPU time */
       vTaskDelay(pdMS_TO_TICKS(10));
