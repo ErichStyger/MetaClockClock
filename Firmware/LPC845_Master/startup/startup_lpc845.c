@@ -9,7 +9,7 @@
 // SPDX-License-Identifier: BSD-3-Clause
 //*****************************************************************************
 
-#if defined (DEBUG)
+#if defined (DEBUG) || defined (NDEBUG)
 #pragma GCC push_options
 #pragma GCC optimize ("Og")
 #endif // (DEBUG)
