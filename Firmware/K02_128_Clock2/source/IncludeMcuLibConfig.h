@@ -27,6 +27,8 @@ Instructions:
 #ifndef INCLUDEMCULIBCONFIG_H_
 #define INCLUDEMCULIBCONFIG_H_
 
+#define SIM_UIDH    /* fix for wrong SIM_GetUniqueID() in the SDK */
+
 /* ------------------- SDK/Library ---------------------------*/
 #define McuLib_CONFIG_SDK_VERSION_USED   McuLib_CONFIG_SDK_MCUXPRESSO_2_0
 #define McuLib_CONFIG_CPU_IS_LPC         (0)  /* LPC845 */
