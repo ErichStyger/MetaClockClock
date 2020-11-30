@@ -13,26 +13,31 @@
 
 #if PL_CONFIG_IS_MASTER
 /* configuration for master: */
-#if PL_MATRIX_CONFIG_IS_8x3
+#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
   #define MATRIX_NOF_BOARDS         (6)   /* total number of boards in matrix */
   #define MATRIX_NOF_CLOCKS_X       (8)   /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_CLOCKS_Y       (3)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_CLOCKS_Z       (2)   /* number of clocks in z direction */
-#elif PL_MATRIX_CONFIG_IS_12x5 && PL_CONFIG_IS_NEW_MODULAR
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
   #define MATRIX_NOF_BOARDS         (38)  /* total number of boards in matrix */
   #define MATRIX_NOF_CLOCKS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_CLOCKS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_CLOCKS_Z       (2)   /* number of clocks in z direction */
-#elif PL_MATRIX_CONFIG_IS_12x5
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
   #define MATRIX_NOF_BOARDS         (15)  /* total number of boards in matrix */
   #define MATRIX_NOF_CLOCKS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_CLOCKS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_CLOCKS_Z       (2)   /* number of clocks in z direction */
-#elif PL_MATRIX_CONFIG_IS_16x9
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS
   #define MATRIX_NOF_BOARDS         (4*9)  /* total number of boards in matrix */
   #define MATRIX_NOF_CLOCKS_X       (16)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_CLOCKS_Y       (9)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_CLOCKS_Z       (2)   /* number of clocks in z direction */
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
+  #define MATRIX_NOF_BOARDS         (5)  /* total number of boards in matrix */
+  #define MATRIX_NOF_CLOCKS_X       (8)  /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_CLOCKS_Y       (5)   /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_CLOCKS_Z       (1)   /* number of clocks in z direction */
 #else
   #error "unknown configuration"
 #endif
@@ -41,7 +46,7 @@
 #define MATRIX_NOF_STEPPERS       (0)  /* number of stepper on board */
 
 typedef enum {
-#if PL_MATRIX_CONFIG_IS_8x3
+#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
   BOARD_ADDR_00=0x25, /* first column, top board */
   BOARD_ADDR_01=0x24,
   BOARD_ADDR_02=0x23,
@@ -49,7 +54,7 @@ typedef enum {
   BOARD_ADDR_05=0x22, /* second column, top board */
   BOARD_ADDR_06=0x21,
   BOARD_ADDR_07=0x20,
-#elif PL_MATRIX_CONFIG_IS_12x5 && PL_CONFIG_IS_NEW_MODULAR
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
   BOARD_ADDR_00=0x45, /* column 1+2, top board */
   BOARD_ADDR_01=0x46,
   BOARD_ADDR_02=0x47,
@@ -92,7 +97,7 @@ typedef enum {
   BOARD_ADDR_33=0x63, BOARD_ADDR_34=0x62,
   BOARD_ADDR_35=0x61, BOARD_ADDR_36=0x60,
 
-#elif PL_MATRIX_CONFIG_IS_12x5
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
   BOARD_ADDR_00=0x20, /* first column, top board */
   BOARD_ADDR_01=0x21,
   BOARD_ADDR_02=0x22,
@@ -110,7 +115,7 @@ typedef enum {
   BOARD_ADDR_12=0x12,
   BOARD_ADDR_13=0x13,
   BOARD_ADDR_14=0x14,
-#elif PL_MATRIX_CONFIG_IS_16x9
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS
   BOARD_ADDR_00=0x18, /* first column, top board */
   BOARD_ADDR_01=0x17,
   BOARD_ADDR_02=0x16,
@@ -150,6 +155,12 @@ typedef enum {
   BOARD_ADDR_33=0x39,
   BOARD_ADDR_34=0x38,
   BOARD_ADDR_35=0x37,
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
+  BOARD_ADDR_00=0x20,
+  BOARD_ADDR_01=0x21,
+  BOARD_ADDR_02=0x22,
+  BOARD_ADDR_03=0x23,
+  BOARD_ADDR_04=0x24,
 #else
   #error "unknown matrix"
 #endif
@@ -174,26 +185,24 @@ typedef struct MATRIX_BoardList_t {
 
 extern MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS];
 
+/* configurations of (slave) stepper motor boards */
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2
-  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_CLOCK_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
-  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_CLOCK_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
-  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_CLOCK_ON_BOARD_Z)  /* number of clocks in z direction */
+  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_STEPPER_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Z)  /* number of clocks in z direction */
   #define MATRIX_NOF_BOARDS         (1)  /* number of boards in matrix */
-  #define MATRIX_NOF_STEPPERS       (MATRIX_NOF_CLOCKS_X*MATRIX_NOF_CLOCKS_Y*MATRIX_NOF_CLOCKS_Z)  /* number of stepper on board */
   #define MATRIX_STEPPER_MAPPING_X  {0, 1} /* map stepper on x position for boards. This reflects the X (horizontal) order of stepper */
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
-  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_CLOCK_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
-  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_CLOCK_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
-  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_CLOCK_ON_BOARD_Z)  /* number of clocks in z direction */
+  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_STEPPER_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Z)  /* number of clocks in z direction */
   #define MATRIX_NOF_BOARDS         (1)  /* number of boards in matrix */
-  #define MATRIX_NOF_STEPPERS       (MATRIX_NOF_CLOCKS_X*MATRIX_NOF_CLOCKS_Y*MATRIX_NOF_CLOCKS_Z)  /* number of stepper on board */
   #define MATRIX_STEPPER_MAPPING_X  {3, 2, 1, 0} /* map stepper on x position for boards. This reflects the X (horizontal) order of stepper */
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
-  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_CLOCK_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
-  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_CLOCK_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
-  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_CLOCK_ON_BOARD_Z)  /* number of clocks in z direction */
+  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_STEPPER_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Z)  /* number of clocks in z direction */
   #define MATRIX_NOF_BOARDS         (1)  /* number of boards in matrix */
-  #define MATRIX_NOF_STEPPERS       (MATRIX_NOF_CLOCKS_X*MATRIX_NOF_CLOCKS_Y*MATRIX_NOF_CLOCKS_Z)  /* number of stepper on board */
   #if MATRIX_NOF_CLOCKS_X==1
     #define MATRIX_STEPPER_MAPPING_X  {0}  /* map stepper on x position for boards. This reflects the X (horizontal) order of stepper */
   #elif MATRIX_NOF_CLOCKS_X==2
@@ -201,6 +210,23 @@ extern MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS];
   #else
     #error
   #endif
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
+  #define MATRIX_NOF_CLOCKS_X       (PL_CONFIG_NOF_STEPPER_ON_BOARD_X)  /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_CLOCKS_Y       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Y)  /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_CLOCKS_Z       (PL_CONFIG_NOF_STEPPER_ON_BOARD_Z)  /* number of clocks in z direction */
+  #define MATRIX_NOF_BOARDS         (1)  /* number of boards in board matrix */
+  #if MATRIX_NOF_CLOCKS_X==4
+    #define MATRIX_STEPPER_MAPPING_X  {0, 1, 2, 3}  /* map stepper on x position for boards. This reflects the X (horizontal) order of stepper */
+  #elif MATRIX_NOF_CLOCKS_X==8
+    #define MATRIX_STEPPER_MAPPING_X  {0, 1, 2, 3, 4, 5, 6, 7}  /* map stepper on x position for boards. This reflects the X (horizontal) order of stepper */
+  #else
+    #error "NYI"
+  #endif
 #endif /* PL_CONFIG_IS_MASTER */
+
+#define MATRIX_NOF_STEPPERS_X      MATRIX_NOF_CLOCKS_X
+#define MATRIX_NOF_STEPPERS_Y      MATRIX_NOF_CLOCKS_Y
+#define MATRIX_NOF_STEPPERS_Z      MATRIX_NOF_CLOCKS_Z
+#define MATRIX_NOF_STEPPERS       (MATRIX_NOF_STEPPERS_X*MATRIX_NOF_STEPPERS_Y*MATRIX_NOF_STEPPERS_Z)  /* number of stepper on board or matrix */
 
 #endif /* MATRIXCONFIG_H_ */

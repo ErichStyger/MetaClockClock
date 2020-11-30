@@ -28,9 +28,9 @@ typedef struct STEPBOARD_Device_t {
   bool isOn; /* if motor is powered */
   McuGPIO_Handle_t motorOnOff; /* LOW active for all motors */
 #endif
-  STEPPER_Handle_t stepper[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS];
+  STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  NEOSR_Handle_t *ledRing[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS]; /* points to the LED ring device */
+  NEOSR_Handle_t *ledRing[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z]; /* points to the LED ring device */
 #endif
 } STEPBOARD_Device_t;
 
@@ -38,28 +38,7 @@ typedef struct STEPBOARD_Device_t {
 static const STEPBOARD_Config_t defaultConfig =
 {
   .addr = 0x0, .enabled = true,
-  .stepper[0][0] = NULL, .stepper[0][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  .ledRing[0][0] = NULL, .ledRing[0][1] = NULL,
-#endif
-#if STEPPER_NOF_CLOCKS >= 2
-  .stepper[1][0] = NULL, .stepper[1][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  .ledRing[1][0] = NULL, .ledRing[1][1] = NULL,
-#endif
-#endif
-#if STEPPER_NOF_CLOCKS >= 3
-  .stepper[2][0] = NULL, .stepper[2][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  .ledRing[2][0] = NULL, .ledRing[2][1] = NULL,
-#endif
-#endif
-#if STEPPER_NOF_CLOCKS >= 4
-  .stepper[3][0] = NULL, .stepper[3][1] = NULL,
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  .ledRing[3][0] = NULL, .ledRing[3][1] = NULL,
-#endif
-#endif
+  /* other fields are initialized implicitly with 0 or NULL */
 };
 
 void STEPBOARD_GetDefaultConfig(STEPBOARD_Config_t *config) {
@@ -79,36 +58,16 @@ STEPBOARD_Handle_t STEPBOARD_InitDevice(STEPBOARD_Config_t *config) {
     memset(handle, 0, sizeof(STEPBOARD_Device_t)); /* init all fields */
     handle->addr = config->addr;
     handle->enabled = config->enabled;
-    handle->stepper[0][0] = config->stepper[0][0];
-    handle->stepper[0][1] = config->stepper[0][1];
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-    handle->ledRing[0][0] = config->ledRing[0][0];
-    handle->ledRing[0][1] = config->ledRing[0][1];
-#endif
-#if STEPPER_NOF_CLOCKS >= 2
-    handle->stepper[1][0] = config->stepper[1][0];
-    handle->stepper[1][1] = config->stepper[1][1];
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-    handle->ledRing[1][0] = config->ledRing[1][0];
-    handle->ledRing[1][1] = config->ledRing[1][1];
-#endif
-#endif
-#if STEPPER_NOF_CLOCKS >= 3
-    handle->stepper[2][0] = config->stepper[2][0];
-    handle->stepper[2][1] = config->stepper[2][1];
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-    handle->ledRing[2][0] = config->ledRing[2][0];
-    handle->ledRing[2][1] = config->ledRing[2][1];
-#endif
-#endif
-#if STEPPER_NOF_CLOCKS >= 4
-    handle->stepper[3][0] = config->stepper[3][0];
-    handle->stepper[3][1] = config->stepper[3][1];
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-    handle->ledRing[3][0] = config->ledRing[3][0];
-    handle->ledRing[3][1] = config->ledRing[3][1];
-#endif
-#endif
+    for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+      for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+        for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+          handle->stepper[x][y][z] = config->stepper[x][y][z];
+        #if PL_CONFIG_USE_NEO_PIXEL_HW
+          handle->ledRing[x][y][z] = config->ledRing[x][y][z];
+        #endif
+        }
+      }
+    }
   #if PL_CONFIG_USE_MOTOR_ON_OFF
     handle->motorOnOff = NULL; /* use STEPBOARD_SetMotorSwitch() to assign handle */
   #endif
@@ -131,26 +90,28 @@ bool STEPBOARD_IsEnabled(STEPBOARD_Handle_t board) {
 }
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int clock, int motor) {
+NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int x, int y, int z) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
-  return handle->ledRing[clock][motor];
+  return handle->ledRing[x][y][z];
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
-STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int clock, int motor) {
+STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int x, int y, int z) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
-  return handle->stepper[clock][motor];
+  return handle->stepper[x][y][z];
 }
 
 bool STEPBOARD_ItemsInQueue(STEPBOARD_Handle_t board) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
   QueueHandle_t queue;
 
-  for(int i=0; i<STEPPER_NOF_CLOCKS; i++) {
-    for(int j=0; j<STEPPER_NOF_CLOCK_MOTORS; j++) {
-      queue = STEPPER_GetQueue(handle->stepper[i][j]);
-      if (uxQueueMessagesWaiting(queue)!=0) { /* still things queued up? */
-        return true; /* yes */
+  for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+      for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+        queue = STEPPER_GetQueue(handle->stepper[x][y][z]);
+        if (uxQueueMessagesWaiting(queue)!=0) { /* still things queued up? */
+          return true; /* yes */
+        }
       }
     }
   }
@@ -160,10 +121,12 @@ bool STEPBOARD_ItemsInQueue(STEPBOARD_Handle_t board) {
 bool STEPBOARD_IsIdle(STEPBOARD_Handle_t board) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
 
-  for(int i=0; i<STEPPER_NOF_CLOCKS; i++) {
-    for(int j=0; j<STEPPER_NOF_CLOCK_MOTORS; j++) {
-      if (!STEPPER_IsIdle(handle->stepper[i][j])) { /* still steps to do? */
-        return false; /* yes, not finished */
+  for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+      for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+        if (!STEPPER_IsIdle(handle->stepper[x][y][z])) { /* still steps to do? */
+          return false; /* yes, not finished */
+        }
       }
     }
   }
@@ -173,9 +136,11 @@ bool STEPBOARD_IsIdle(STEPBOARD_Handle_t board) {
 void STEPBOARD_NormalizePosition(STEPBOARD_Handle_t board) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
 
-  for(int i=0; i<STEPPER_NOF_CLOCKS; i++) {
-    for(int j=0; j<STEPPER_NOF_CLOCK_MOTORS; j++) {
-      STEPPER_NormalizePos(handle->stepper[i][j]);
+  for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+      for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+        STEPPER_NormalizePos(handle->stepper[x][y][z]);
+      }
     }
   }
 }
@@ -227,7 +192,7 @@ void STEPBOARD_MotorSwitchOnOff(STEPBOARD_Handle_t board, bool on) {
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
   void *dev;
 
-  dev = STEPPER_GetDevice(handle->stepper[0][0]); /* get the device handle: have one driver IC for two clocks */
+  dev = STEPPER_GetDevice(handle->stepper[0][0][0]); /* get the device handle: have one driver IC for two clocks */
   if (on) {
     MATRIX_EnableStepper(dev);
     McuGPIO_SetValue(handle->motorOnOff, false); /* the high-side switch is LOW-active */

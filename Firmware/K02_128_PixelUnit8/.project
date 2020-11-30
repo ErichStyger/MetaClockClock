@@ -41,11 +41,6 @@
 			<type>2</type>
 			<locationURI>copy_PARENT/McuLib</locationURI>
 		</link>
-		<link>
-			<name>Etter/ClockCommon</name>
-			<type>2</type>
-			<locationURI>PARENT-7-PROJECT_LOC/tmp/etter/ClockCommon</locationURI>
-		</link>
 	</linkedResources>
 	<variableList>
 		<variable>

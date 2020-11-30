@@ -23,9 +23,9 @@ typedef void *STEPBOARD_Handle_t;
 typedef struct STEPBOARD_Config_t {
   uint8_t addr;      /* RS-485 address */
   bool enabled;      /* if board is enabled or not */
-  STEPPER_Handle_t stepper[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS];
+  STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  NEOSR_Handle_t *ledRing[STEPPER_NOF_CLOCKS][STEPPER_NOF_CLOCK_MOTORS]; /* points to the LED ring device */
+  NEOSR_Handle_t *ledRing[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z]; /* points to the LED ring device */
 #endif
 } STEPBOARD_Config_t;
 
@@ -40,10 +40,10 @@ bool STEPBOARD_IsIdle(STEPBOARD_Handle_t board);
 void STEPBOARD_MoveAndWait(STEPBOARD_Handle_t board, uint32_t waitMs);
 void STEPBOARD_NormalizePosition(STEPBOARD_Handle_t board);
 
-STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int clock, int motor);
+STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int x, int y, int z);
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int clock, int motor);
+NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int x, int y, int z);
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 STEPBOARD_Handle_t STEPBOARD_GetBoard(void);

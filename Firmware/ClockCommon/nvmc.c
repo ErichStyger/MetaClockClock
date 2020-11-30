@@ -21,32 +21,29 @@
 
 #if PL_CONFIG_USE_NVMC
 /* Note: the flash memory has been reduced for the linker file (project settings, managed linker file) */
-#if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_LPC845  /* LPC845-BRK */
   #define FLASH_NVM_ADDR_START      (0xFC00) /* LPC845 has 64k FLASH (0x10000), last 1k page is used for NVM */
   #define FLASH_NVM_SECTOR_START    (FLASH_NVM_ADDR_START/1024) /* sector size is 1k */
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
+#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
   #define FLASH_NVM_ADDR_START      ((0+512*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
   #define FLASH_NVM_BLOCK_SIZE      0x800 /* must match FLASH_GetProperty(&s_flashDriver, kFLASH_PropertyPflash0SectorSize, &pflashSectorSize) */
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64
+#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64
   #define FLASH_NVM_ADDR_START      ((0+64*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
   #define FLASH_NVM_BLOCK_SIZE      0x800 /* must match FLASH_GetProperty(&s_flashDriver, kFLASH_PropertyPflash0SectorSize, &pflashSectorSize) */
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
   #define FLASH_NVM_ADDR_START      ((0+128*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
   #define FLASH_NVM_BLOCK_SIZE      0x800 /* must match FLASH_GetProperty(&s_flashDriver, kFLASH_PropertyPflash0SectorSize, &pflashSectorSize) */
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
-  #define FLASH_NVM_ADDR_START      ((0+128*1024)-FLASH_NVM_BLOCK_SIZE) /* last block in FLASH, start address of configuration data in flash */
-  #define FLASH_NVM_BLOCK_SIZE      0x800 /* must match FLASH_GetProperty(&s_flashDriver, kFLASH_PropertyPflash0SectorSize, &pflashSectorSize) */
+#else
+  #error "Unknown MCU!"
 #endif
 
 #if PL_CONFIG_USE_NVMC
 /*! @brief Flash driver Structure */
-#if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_LPC845  /* LPC845-BRK */
   /* nothing needed */
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
+#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
   static flash_config_t s_flashDriver;
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
-  static flash_config_t s_flashDriver;
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
   static flash_config_t s_flashDriver;
 #endif
 #endif
@@ -182,7 +179,7 @@ static uint8_t NVMC_SetFlags(uint32_t flags) {
 
 #if PL_CONFIG_USE_NVMC
 static uint8_t NVMC_Erase(void) {
-#if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_LPC845  /* LPC845-BRK */
   uint32_t startSector = FLASH_NVM_SECTOR_START; /* sector is 1k in size */
   uint32_t endSector = FLASH_NVM_SECTOR_START;
   status_t res;
@@ -213,7 +210,7 @@ static uint8_t NVMC_Erase(void) {
   if (NVMC_IsErased()) { /* already eased? */
     return ERR_OK; /* yes, nothing to do */
   }
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
   /* need to switch to normal RUN mode for flash programming,
    * with Fcore=60MHz Fbus=Fflash=20MHz
    * see https://community.nxp.com/thread/377633
@@ -227,20 +224,20 @@ static uint8_t NVMC_Erase(void) {
   /* erase */
   FLASH_GetProperty(&s_flashDriver, kFLASH_PropertyPflash0SectorSize, &pflashSectorSize);
   for(;;) { /* breaks, switch back to HSRUN if things fail */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
     uint32_t primask = DisableGlobalIRQ(); /* workaround: need to disable interrupts? */
-#endif
+  #endif
     status = FLASH_Erase(&s_flashDriver, FLASH_NVM_ADDR_START, pflashSectorSize, kFTFx_ApiEraseKey);
     if (status!=kStatus_FTFx_Success || pflashSectorSize!=FLASH_NVM_BLOCK_SIZE) {
       res = ERR_FAILED;
-  #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
       EnableGlobalIRQ(primask); /* workaround: need to disable interrupts? */
   #endif
       break;
     }
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+  #if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
     EnableGlobalIRQ(primask); /* workaround: need to disable interrupts? */
-#endif
+  #endif
     /* Verify sector if it's been erased. */
     status = FLASH_VerifyErase(&s_flashDriver, FLASH_NVM_ADDR_START, pflashSectorSize, kFTFx_MarginValueUser);
     if (status!=kStatus_FTFx_Success) {
@@ -249,7 +246,7 @@ static uint8_t NVMC_Erase(void) {
     }
     break;
   } /* for */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
   status = SMC_SetPowerModeHsrun(SMC);
   if (status!=kStatus_Success) {
     res = ERR_FAILED;
@@ -282,7 +279,7 @@ uint8_t NVMC_SetBlockFlash(uint32_t addr, void *data, size_t dataSize) {
     *p = *q;
     p++; q++;
   }
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
   /* need to switch to normal RUN mode for flash programming,
    * with Fcore=60MHz Fbus=Fflash=20MHz
    * see https://community.nxp.com/thread/377633
@@ -294,7 +291,7 @@ uint8_t NVMC_SetBlockFlash(uint32_t addr, void *data, size_t dataSize) {
   McuWait_Waitms(1); /* give time to switch clock, otherwise flash programming might fail below */
 #endif
   /* program */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
     uint32_t primask = DisableGlobalIRQ(); /* workaround: need to disable interrupts? */
 #endif
   for(;;) { /* breaks, switch back to HSRUN if things fail */
@@ -305,10 +302,10 @@ uint8_t NVMC_SetBlockFlash(uint32_t addr, void *data, size_t dataSize) {
     }
     break;
   } /* for */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
     EnableGlobalIRQ(primask); /* workaround: need to disable interrupts? */
 #endif
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128
   status = SMC_SetPowerModeHsrun(SMC);
   if (status!=kStatus_Success) {
     res = ERR_FAILED;
@@ -356,7 +353,7 @@ static uint8_t NVMC_InitConfig(void) {
   }
   memset(&data, 0, sizeof(data)); /* initialize data */
   data.version = NVMC_CURRENT_VERSION;
-  data.nofActiveMotors = PL_CONFIG_NOF_CLOCK_ON_BOARD;
+  data.nofActiveMotors = PL_CONFIG_NOF_STEPPER_ON_BOARD;
 #if PL_CONFIG_IS_MASTER
   data.addrRS485 = 0x01;
 #else
@@ -366,7 +363,7 @@ static uint8_t NVMC_InitConfig(void) {
 #if PL_CONFIG_USE_MAG_SENSOR
   data.flags |= NVMC_FLAGS_MAGNET_ENABLED;
 #endif
-#if PL_CONFIG_NOF_CLOCK_ON_BOARD>0
+#if PL_CONFIG_NOF_STEPPER_ON_BOARD>0
   for (int i=0; i<sizeof(data.zeroOffsets)/sizeof(data.zeroOffsets[0]); i++) {
     for(int j=0; j<sizeof(data.zeroOffsets[0])/sizeof(data.zeroOffsets[0][0]); j++) {
       data.zeroOffsets[i][j] = 0; /* default offset */

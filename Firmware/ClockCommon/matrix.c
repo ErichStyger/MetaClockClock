@@ -64,8 +64,6 @@
 
   static MATRIX_Matrix_t matrix; /* map of current matrix */
   static MATRIX_Matrix_t prevMatrix; /* map of previous matrix, used to reduce communication traffic */
-#else
-  static int const mapXBoardPosNr[MATRIX_NOF_CLOCKS_X] = MATRIX_STEPPER_MAPPING_X; /* map stepper on x position for boards. This reflects the X (horizontal) order of stepper motor */
 #endif /* PL_CONFIG_IS_MASTER */
 
 #if PL_CONFIG_USE_X12_STEPPER
@@ -130,13 +128,13 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
   if (board==NULL) {
     return NULL;
   }
-  stepper = STEPBOARD_GetStepper(board, mapXBoardPosNr[x], z);
+  stepper = STEPBOARD_GetStepper(board, x, y, z);
 #endif
   return stepper;
 }
 #endif
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
 NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
   if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
     return NULL;
@@ -149,9 +147,9 @@ NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
   #error "wrong configuration"
 #endif
 }
-#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+#endif /* PL_CONFIG_USE_LED_RING */
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
 void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness) {
   *pColor = MATRIX_LedHandColor;
   *pBrightness = MATRIX_LedHandBrightness;
@@ -407,14 +405,6 @@ uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z) {
   return clockMatrix[x][y].addr;
 #else
   return RS485_GetAddress();
-#endif
-}
-
-uint8_t MATRIX_GetPos(int32_t x, int32_t y, int32_t z) {
-#if PL_CONFIG_IS_MASTER
-  return clockMatrix[x][y].nr;
-#else
-  return mapXBoardPosNr[x];
 #endif
 }
 
@@ -1586,16 +1576,13 @@ static uint8_t PrintStepperStatus(const McuShell_StdIOType *io) {
     for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
         STEPPER_Handle_t stepper;
-        uint8_t addr, nr;
+        uint8_t addr;
 
         stepper = MATRIX_GetStepper(x, y, z);
         addr = MATRIX_GetAddress(x, y, z);
-        nr = MATRIX_GetPos(x, y, z);
         buf[0] = '\0';
         McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"addr:0x");
         McuUtility_strcatNum8Hex(buf, sizeof(buf), addr);
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", nr:");
-        McuUtility_strcatNum8u(buf, sizeof(buf), nr);
         McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", Stepper ");
         STEPPER_StrCatStatus(stepper, buf, sizeof(buf));
         McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
@@ -1620,12 +1607,14 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   uint8_t buf[32];
 
   McuShell_SendStatusStr((unsigned char*)"matrix", (unsigned char*)"Matrix settings\r\n", io->stdOut);
-  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"x*y: ");
-  McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_CLOCKS_X);
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"x*y*z: ");
+  McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_STEPPERS_X);
   McuUtility_chcat(buf, sizeof(buf), '*');
-  McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_CLOCKS_Y);
+  McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_STEPPERS_Y);
+  McuUtility_chcat(buf, sizeof(buf), '*');
+  McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_STEPPERS_Z);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  McuShell_SendStatusStr((unsigned char*)"  clocks", buf, io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  stepper", buf, io->stdOut);
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"hand: 0x");
@@ -2540,9 +2529,9 @@ static void MatrixQueueTask(void *pv) {
 #if PL_CONFIG_USE_LED_STEPPER
 static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, int ledLane, int ledStartPos) {
   NEOSR_Config_t stepperRingConfig;
-  NEOSR_Handle_t ring[PL_CONFIG_NOF_CLOCK_ON_BOARD*PL_CONFIG_NOF_CLOCK_ON_BOARD_Z];
+  NEOSR_Handle_t ring[PL_CONFIG_NOF_STEPPER_ON_BOARD*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
   STEPPER_Config_t stepperConfig;
-  STEPPER_Handle_t stepper[PL_CONFIG_NOF_CLOCK_ON_BOARD*PL_CONFIG_NOF_CLOCK_ON_BOARD_Z];
+  STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
   STEPBOARD_Config_t stepBoardConfig;
 
   /* get default configurations */
@@ -2678,15 +2667,10 @@ static void InitLedRings(void) {
 }
 #endif /* PL_CONFIG_USE_LED_STEPPER */
 
-
 #if PL_CONFIG_USE_X12_STEPPER
 static void InitSteppers(void) {
   McuX12_017_Config_t x12config;
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
-  McuX12_017_Handle_t x12device[1]; /* one motor driver IC on the board */
-#else
-  McuX12_017_Handle_t x12device[2]; /* two motor drive IC on the board */
-#endif
+  McuX12_017_Handle_t x12device[PL_CONFIG_BOARD_NOF_MOTOR_DRIVER]; /* motor driver IC on the board */
   STEPPER_Config_t stepperConfig;
   STEPPER_Handle_t stepper[MATRIX_NOF_STEPPERS];
   STEPBOARD_Config_t stepBoardConfig;
@@ -2697,10 +2681,11 @@ static void InitSteppers(void) {
   STEPBOARD_GetDefaultConfig(&stepBoardConfig);
 
   /* -------- X12.017 motor drivers: 1 or 2 on each board -------------- */
+#if PL_CONFIG_BOARD_NOF_MOTOR_DRIVER>=1
   /* initialize first X12.017 */
   /* DRV_RESET: */
   x12config.hasReset = true;
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128 /* it has a single quad driver on board */
+#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128 /* they have a single quad driver on board */
   x12config.hw_reset.gpio = GPIOA;
   x12config.hw_reset.port = PORTA;
   x12config.hw_reset.pin  = 19U;
@@ -2745,7 +2730,52 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_step.port = PORTD;
   x12config.motor[X12_017_M3].hw_step.pin  = 4U;
   x12config.motor[X12_017_M3].isInverted  = true;
-#else /* LPC845 */
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
+  x12config.hw_reset.gpio = GPIOA;
+  x12config.hw_reset.port = PORTA;
+  x12config.hw_reset.pin  = 19U;
+  /* M0_DIR: */
+  x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
+  x12config.motor[X12_017_M0].hw_dir.port = PORTE;
+  x12config.motor[X12_017_M0].hw_dir.pin  = 17U;
+
+  /* M0_STEP: */
+  x12config.motor[X12_017_M0].hw_step.gpio = GPIOE;
+  x12config.motor[X12_017_M0].hw_step.port = PORTE;
+  x12config.motor[X12_017_M0].hw_step.pin  = 16U;
+
+  /* M1_DIR: */
+  x12config.motor[X12_017_M1].hw_dir.gpio = GPIOE;
+  x12config.motor[X12_017_M1].hw_dir.port = PORTE;
+  x12config.motor[X12_017_M1].hw_dir.pin  = 18U;
+
+  /* M1_STEP:  */
+  x12config.motor[X12_017_M1].hw_step.gpio = GPIOE;
+  x12config.motor[X12_017_M1].hw_step.port = PORTE;
+  x12config.motor[X12_017_M1].hw_step.pin  = 19U;
+
+  /* M2_DIR: */
+  x12config.motor[X12_017_M2].hw_dir.gpio = GPIOB;
+  x12config.motor[X12_017_M2].hw_dir.port = PORTB;
+  x12config.motor[X12_017_M2].hw_dir.pin  = 1U;
+
+  /* M2_STEP:  */
+  x12config.motor[X12_017_M2].hw_step.gpio = GPIOB;
+  x12config.motor[X12_017_M2].hw_step.port = PORTB;
+  x12config.motor[X12_017_M2].hw_step.pin  = 0U;
+  x12config.motor[X12_017_M2].isInverted  = true;
+
+  /* M3_DIR: */
+  x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
+  x12config.motor[X12_017_M3].hw_dir.port = PORTD;
+  x12config.motor[X12_017_M3].hw_dir.pin  = 5U;
+
+  /* M3_STEP: */
+  x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;
+  x12config.motor[X12_017_M3].hw_step.port = PORTD;
+  x12config.motor[X12_017_M3].hw_step.pin  = 4U;
+  x12config.motor[X12_017_M3].isInverted  = true;
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4/* LPC845 */
   /* Reset for both motor drivers: PIO0_14 */
   x12config.hw_reset.gpio = GPIO;
   x12config.hw_reset.port = 0U;
@@ -2806,13 +2836,17 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_step.port = 0U;
   x12config.motor[X12_017_M3].hw_step.pin  = 26U;
 #endif
+#else
+  #error "NYI"
 #endif /* LPC845 */
 
   x12device[0] = McuX12_017_InitDevice(&x12config);
+#endif /* PL_CONFIG_BOARD_NOF_MOTOR_DRIVER>=1 */
 
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
+#if PL_CONFIG_BOARD_NOF_MOTOR_DRIVER>=2 /* boards with two motor driver IC */
   /* initialize second X12.017 */
   x12config.hasReset = false; /* second device shares the reset line from the first */
+#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   /* M4_DIR: PIO0_0 */
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIO;
   x12config.motor[X12_017_M0].hw_dir.port = 0U;
@@ -2856,7 +2890,54 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_step.pin  = 6U;
 
   x12device[1] = McuX12_017_InitDevice(&x12config);
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
+  #error "verify/change the pin settings below!"
+  /* M0_DIR: */
+  x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
+  x12config.motor[X12_017_M0].hw_dir.port = PORTE;
+  x12config.motor[X12_017_M0].hw_dir.pin  = 17U;
+
+  /* M0_STEP: */
+  x12config.motor[X12_017_M0].hw_step.gpio = GPIOE;
+  x12config.motor[X12_017_M0].hw_step.port = PORTE;
+  x12config.motor[X12_017_M0].hw_step.pin  = 16U;
+
+  /* M1_DIR: */
+  x12config.motor[X12_017_M1].hw_dir.gpio = GPIOE;
+  x12config.motor[X12_017_M1].hw_dir.port = PORTE;
+  x12config.motor[X12_017_M1].hw_dir.pin  = 18U;
+
+  /* M1_STEP:  */
+  x12config.motor[X12_017_M1].hw_step.gpio = GPIOE;
+  x12config.motor[X12_017_M1].hw_step.port = PORTE;
+  x12config.motor[X12_017_M1].hw_step.pin  = 19U;
+
+  /* M2_DIR: */
+  x12config.motor[X12_017_M2].hw_dir.gpio = GPIOB;
+  x12config.motor[X12_017_M2].hw_dir.port = PORTB;
+  x12config.motor[X12_017_M2].hw_dir.pin  = 1U;
+
+  /* M2_STEP:  */
+  x12config.motor[X12_017_M2].hw_step.gpio = GPIOB;
+  x12config.motor[X12_017_M2].hw_step.port = PORTB;
+  x12config.motor[X12_017_M2].hw_step.pin  = 0U;
+  x12config.motor[X12_017_M2].isInverted  = true;
+
+  /* M3_DIR: */
+  x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
+  x12config.motor[X12_017_M3].hw_dir.port = PORTD;
+  x12config.motor[X12_017_M3].hw_dir.pin  = 5U;
+
+  /* M3_STEP: */
+  x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;
+  x12config.motor[X12_017_M3].hw_step.port = PORTD;
+  x12config.motor[X12_017_M3].hw_step.pin  = 4U;
+  x12config.motor[X12_017_M3].isInverted  = true;
+#else
+  #error "configure 2nd driver!"
 #endif
+
+#endif /* PL_CONFIG_BOARD_NOF_MOTOR_DRIVER>=2 */
 
   /* setup the stepper motors */
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
@@ -2877,22 +2958,73 @@ static void InitSteppers(void) {
   x12Steppers[3].x12motor = X12_017_M2;
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
+  #if MATRIX_NOF_STEPPERS>=1
   x12Steppers[0].x12device = x12device[0];
   x12Steppers[0].x12motor = X12_017_M1;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
   x12Steppers[1].x12device = x12device[0];
   x12Steppers[1].x12motor = X12_017_M0;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
   x12Steppers[2].x12device = x12device[0];
   x12Steppers[2].x12motor = X12_017_M3;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   x12Steppers[3].x12device = x12device[0];
   x12Steppers[3].x12motor = X12_017_M2;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=5
   x12Steppers[4].x12device = x12device[1];
   x12Steppers[4].x12motor = X12_017_M3;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=6
   x12Steppers[5].x12device = x12device[1];
   x12Steppers[5].x12motor = X12_017_M2;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=7
   x12Steppers[6].x12device = x12device[1];
   x12Steppers[6].x12motor = X12_017_M1;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=8
   x12Steppers[7].x12device = x12device[1];
   x12Steppers[7].x12motor = X12_017_M0;
+  #endif
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
+  x12Steppers[0].x12device = x12device[0];
+  x12Steppers[0].x12motor = X12_017_M0;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
+  x12Steppers[1].x12device = x12device[0];
+  x12Steppers[1].x12motor = X12_017_M1;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
+  x12Steppers[2].x12device = x12device[0];
+  x12Steppers[2].x12motor = X12_017_M2;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
+  x12Steppers[3].x12device = x12device[0];
+  x12Steppers[3].x12motor = X12_017_M3;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=5
+  x12Steppers[4].x12device = x12device[1];
+  x12Steppers[4].x12motor = X12_017_M0;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=6
+  x12Steppers[5].x12device = x12device[1];
+  x12Steppers[5].x12motor = X12_017_M1;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=7
+  x12Steppers[6].x12device = x12device[1];
+  x12Steppers[6].x12motor = X12_017_M2;
+  #endif
+  #if MATRIX_NOF_STEPPERS>=8
+  x12Steppers[7].x12device = x12device[1];
+  x12Steppers[7].x12motor = X12_017_M3;
+  #endif
+#else
+  #error "check your configuration!"
 #endif
 
 #if PL_CONFIG_USE_MAG_SENSOR
@@ -2918,6 +3050,8 @@ static void InitSteppers(void) {
   x12Steppers[5].mag = MAG_MAG5;
   x12Steppers[6].mag = MAG_MAG7;
   x12Steppers[7].mag = MAG_MAG6;
+#else
+  #error "check your configuration!"
 #endif
 #endif
   /* initialize stepper, 2 or 4 for each X12 driver, depending on the IC (dual or quad) */
@@ -2941,22 +3075,73 @@ static void InitSteppers(void) {
   stepper[3] = STEPPER_InitDevice(&stepperConfig);
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
+  #if MATRIX_NOF_STEPPERS>=1
   stepperConfig.device = &x12Steppers[0];
   stepper[0] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
   stepperConfig.device = &x12Steppers[1];
   stepper[1] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
   stepperConfig.device = &x12Steppers[2];
   stepper[2] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
   stepperConfig.device = &x12Steppers[3];
   stepper[3] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=5
   stepperConfig.device = &x12Steppers[4];
   stepper[4] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=6
   stepperConfig.device = &x12Steppers[5];
   stepper[5] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=7
   stepperConfig.device = &x12Steppers[6];
   stepper[6] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=8
   stepperConfig.device = &x12Steppers[7];
   stepper[7] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
+  stepperConfig.device = &x12Steppers[0];
+  stepper[0] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
+  stepperConfig.device = &x12Steppers[1];
+  stepper[1] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
+  stepperConfig.device = &x12Steppers[2];
+  stepper[2] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
+  stepperConfig.device = &x12Steppers[3];
+  stepper[3] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=5
+  stepperConfig.device = &x12Steppers[4];
+  stepper[4] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=6
+  stepperConfig.device = &x12Steppers[5];
+  stepper[5] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=7
+  stepperConfig.device = &x12Steppers[6];
+  stepper[6] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+  #if MATRIX_NOF_STEPPERS>=8
+  stepperConfig.device = &x12Steppers[7];
+  stepper[7] = STEPPER_InitDevice(&stepperConfig);
+  #endif
+#else
+  #error "check your configuration!"
 #endif
 
   /* setup board */
@@ -2964,26 +3149,69 @@ static void InitSteppers(void) {
   stepBoardConfig.enabled = true;
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   #if MATRIX_NOF_STEPPERS>=1
-  stepBoardConfig.stepper[0][0] = stepper[0];
+  stepBoardConfig.stepper[0][0][0] = stepper[0];
   #endif
   #if MATRIX_NOF_STEPPERS>=2
-  stepBoardConfig.stepper[0][1] = stepper[1];
+  stepBoardConfig.stepper[0][0][1] = stepper[1];
   #endif
   #if MATRIX_NOF_STEPPERS>=3
-  stepBoardConfig.stepper[1][0] = stepper[2];
+  stepBoardConfig.stepper[1][0][0] = stepper[2];
   #endif
   #if MATRIX_NOF_STEPPERS>=4
-  stepBoardConfig.stepper[1][1] = stepper[3];
+  stepBoardConfig.stepper[1][0][1] = stepper[3];
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
-  stepBoardConfig.stepper[0][0] = stepper[0];
-  stepBoardConfig.stepper[0][1] = stepper[1];
-  stepBoardConfig.stepper[1][0] = stepper[2];
-  stepBoardConfig.stepper[1][1] = stepper[3];
-  stepBoardConfig.stepper[2][0] = stepper[4];
-  stepBoardConfig.stepper[2][1] = stepper[5];
-  stepBoardConfig.stepper[3][0] = stepper[6];
-  stepBoardConfig.stepper[3][1] = stepper[7];
+  #if MATRIX_NOF_STEPPERS>=1
+  stepBoardConfig.stepper[0][0][0] = stepper[0];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
+  stepBoardConfig.stepper[0][0][1] = stepper[1];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
+  stepBoardConfig.stepper[1][0][0] = stepper[2];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
+  stepBoardConfig.stepper[1][0][1] = stepper[3];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=5
+  stepBoardConfig.stepper[1][0][0] = stepper[4];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=6
+  stepBoardConfig.stepper[1][0][1] = stepper[5];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=7
+  stepBoardConfig.stepper[1][1][0] = stepper[6];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=8
+  stepBoardConfig.stepper[1][1][1] = stepper[7];
+  #endif
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
+  #if MATRIX_NOF_STEPPERS>=1
+  stepBoardConfig.stepper[0][0][0] = stepper[0];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=2
+  stepBoardConfig.stepper[1][0][0] = stepper[1];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=3
+  stepBoardConfig.stepper[2][0][0] = stepper[2];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=4
+  stepBoardConfig.stepper[3][0][0] = stepper[3];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=5
+  stepBoardConfig.stepper[4][0][0] = stepper[4];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=6
+  stepBoardConfig.stepper[5][0][0] = stepper[5];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=7
+  stepBoardConfig.stepper[6][0][0] = stepper[6];
+  #endif
+  #if MATRIX_NOF_STEPPERS>=8
+  stepBoardConfig.stepper[7][0][0] = stepper[7];
+  #endif
+#else
+  #error "check your configuration!"
 #endif
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
