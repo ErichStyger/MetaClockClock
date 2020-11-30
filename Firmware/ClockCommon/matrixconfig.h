@@ -170,12 +170,12 @@ typedef struct MatrixClock_t {
   uint8_t addr; /* RS-485 address */
   uint8_t nr;   /* clock number, 0..3, identifying the position on the board (assuming the 1x4 clock */
   struct {
-    uint8_t x, y; /* coordinates on the board */
+    uint8_t x, y, z; /* coordinates on the board */
   } board;
   bool enabled; /* if enabled or not */
 } MatrixClock_t;
 
-extern const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y];
+extern const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z];
 
 typedef struct MATRIX_BoardList_t {
   bool enabled;  /* if board is enabled or not */
@@ -223,7 +223,5 @@ extern MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS];
     #error "NYI"
   #endif
 #endif /* PL_CONFIG_IS_MASTER */
-
-#define MATRIX_NOF_STEPPERS       (MATRIX_NOF_STEPPERS_X*MATRIX_NOF_STEPPERS_Y*MATRIX_NOF_STEPPERS_Z)  /* number of stepper on board or matrix */
 
 #endif /* MATRIXCONFIG_H_ */

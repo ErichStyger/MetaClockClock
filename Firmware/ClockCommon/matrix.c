@@ -402,7 +402,7 @@ void MATRIX_SetHandLedEnabledAll(bool on) {
 
 uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z) {
 #if PL_CONFIG_IS_MASTER
-  return clockMatrix[x][y].addr;
+  return clockMatrix[x][y][z].addr;
 #else
   return RS485_GetAddress();
 #endif
@@ -725,23 +725,22 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
   int nof = 0;
   bool isRelative = false;
 
-  //*cmdSent = false;
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   McuUtility_strcpy(ledbuf, sizeof(ledbuf), (unsigned char*)"matrix q ");
 #endif
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
-      if (clockMatrix[x][y].addr==addr && clockMatrix[x][y].enabled) { /* check if is a matching board and clock is enabled */
-        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
           if (matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes or if it is a relative move */
             //isRelative = matrix.isRelModeMap[x][y][z];
             if (nof>0) {
               McuUtility_chcat(buf, sizeof(buf), ',');
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.x); /* <x> */
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.y); /* <y> */
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
             McuUtility_strcat(buf, sizeof(buf), isRelative?(unsigned char*)" r ":(unsigned char*)" a ");

@@ -856,7 +856,7 @@ static uint8_t DEMO_Demo3(const McuShell_StdIOType *io) {
   return MATRIX_MoveAllto12(10000, io);
 }
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -1189,22 +1189,22 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  time <time>", (unsigned char*)"Show time\r\n", io->stdOut);
 #endif
-  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  time large <time>", (unsigned char*)"Show large time\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  temperature <tt>", (unsigned char*)"Show temperature\r\n", io->stdOut);
-  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  temperature large <tt>", (unsigned char*)"Show large temperature\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  humidity <hh>", (unsigned char*)"Show humidity\r\n", io->stdOut);
-  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  humidity large <hh>", (unsigned char*)"Show large humidity\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  text <xy> <text>", (unsigned char*)"Write text at position\r\n", io->stdOut);
-  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  text large <xy> <text>", (unsigned char*)"Write large text at position\r\n", io->stdOut);
   #endif
-  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  nxp", (unsigned char*)"NXP demo\r\n", io->stdOut);
   #endif
 #endif
@@ -1318,7 +1318,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo 4")==0) {
     *handled = true;
     return DEMO_Demo4(io);
-#if MATRIX_NOF_STEPPERS_Y >= 5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo time large ", sizeof("demo time large ")-1)==0) {
     uint8_t hour, minute, second, hsec;
 
@@ -1340,7 +1340,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_STEPPERS_Y >= 5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo temperature large ", sizeof("demo temperature large ")-1)==0) {
     uint8_t temperature;
 
@@ -1362,7 +1362,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_STEPPERS_Y >= 5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo humidity large ", sizeof("demo humidity large ")-1)==0) {
     uint8_t humidity;
 
@@ -1384,7 +1384,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_STEPPERS_Y >= 5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo lux large ", sizeof("demo lux large ")-1)==0) {
     uint16_t lux;
 
@@ -1406,7 +1406,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo text large ", sizeof("demo text large ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("demo text large ")-1;
