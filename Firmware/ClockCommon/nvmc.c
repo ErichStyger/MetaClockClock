@@ -18,6 +18,7 @@
 #include "McuUtility.h"
 #include "Shell.h"
 #include "McuLog.h"
+#include "matrix.h"
 
 #if PL_CONFIG_USE_NVMC
 /* Note: the flash memory has been reduced for the linker file (project settings, managed linker file) */
@@ -353,7 +354,7 @@ static uint8_t NVMC_InitConfig(void) {
   }
   memset(&data, 0, sizeof(data)); /* initialize data */
   data.version = NVMC_CURRENT_VERSION;
-  data.nofActiveMotors = PL_CONFIG_NOF_STEPPER_ON_BOARD;
+  data.nofActiveMotors = MATRIX_NOF_STEPPERS;
 #if PL_CONFIG_IS_MASTER
   data.addrRS485 = 0x01;
 #else
@@ -363,22 +364,24 @@ static uint8_t NVMC_InitConfig(void) {
 #if PL_CONFIG_USE_MAG_SENSOR
   data.flags |= NVMC_FLAGS_MAGNET_ENABLED;
 #endif
-#if PL_CONFIG_NOF_STEPPER_ON_BOARD>0
-  for (int i=0; i<sizeof(data.zeroOffsets)/sizeof(data.zeroOffsets[0]); i++) {
-    for(int j=0; j<sizeof(data.zeroOffsets[0])/sizeof(data.zeroOffsets[0][0]); j++) {
-      data.zeroOffsets[i][j] = 0; /* default offset */
+#if MATRIX_NOF_STEPPERS>0
+  for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+      for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+        data.zeroOffsets[x][y][z] = 0; /* default offset */
+      }
     }
   }
 #endif
   return NVMC_WriteConfig(&data);
 }
 
-int16_t NVMC_GetStepperZeroOffset(uint8_t clock, uint8_t motor) {
+int16_t NVMC_GetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z) {
   const NVMC_Data_t *data;
 
   data = NVMC_GetDataPtr();
   if (data!=NULL) {
-    return data->zeroOffsets[clock][motor];
+    return data->zeroOffsets[x][y][z];
   }
   return 0; /* default */
 }
@@ -425,16 +428,18 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
     buf[0] = '\0';
     McuUtility_strcatNum8u(buf, sizeof(buf), NVMC_GetNofActiveMotors());
     McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-    McuShell_SendStatusStr((unsigned char*)"  motors", buf, io->stdOut);
-    for (int i=0; i<sizeof(data->zeroOffsets)/sizeof(data->zeroOffsets[0]); i++) {
+    McuShell_SendStatusStr((unsigned char*)"  stepper", buf, io->stdOut);
+    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
       buf[0] = '\0';
-      for(int j=0; j<sizeof(data->zeroOffsets[0])/sizeof(data->zeroOffsets[0][0]); j++) {
-        McuUtility_strcatNum16sFormatted(buf, sizeof(buf), data->zeroOffsets[i][j], ' ', 5);
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ");
+      for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+        for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+          McuUtility_strcatNum16sFormatted(buf, sizeof(buf), data->zeroOffsets[x][y][z], ' ', 5);
+          McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ");
+        }
       }
       McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
       McuUtility_strcpy(status, sizeof(status), (unsigned char*)"  offset[");
-      McuUtility_strcatNum16s(status, sizeof(status), i);
+      McuUtility_strcatNum16s(status, sizeof(status), y);
       McuUtility_strcat(status, sizeof(status), (unsigned char*)"]");
       McuShell_SendStatusStr(status, buf, io->stdOut);
     }
