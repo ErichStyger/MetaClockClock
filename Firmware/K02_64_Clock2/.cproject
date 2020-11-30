@@ -688,7 +688,7 @@
 	</storageModule>
 	<storageModule moduleId="refreshScope" versionNumber="2">
 		<configuration configurationName="Debug">
-			<resource resourceType="PROJECT" workspacePath="/K02_128_Clock2"/>
+			<resource resourceType="PROJECT" workspacePath="/K02_64_Clock2"/>
 		</configuration>
 		<configuration configurationName="Release">
 			<resource resourceType="PROJECT" workspacePath="/KE02_Clock2"/>

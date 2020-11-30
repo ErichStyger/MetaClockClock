@@ -16,6 +16,13 @@
 ///* assign matrix configuration used, only needed for master: */
 //#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_SMARTWALL_8x5)
 
+/* ********************************************************************* */
+/* override settings in platform_common.h: */
+#define PL_CONFIG_USE_MAG_SENSOR        (1)
+#define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* has NeoPixels */
+#define PL_CONFIG_USE_LED_RING          (1 && PL_CONFIG_USE_NEO_PIXEL_HW)
+#define PL_CONFIG_USE_X12_LED_STEPPER   (1 && PL_CONFIG_USE_LED_RING) /* stepper motors with rings */
+
 #include "platform_common.h"
 
 

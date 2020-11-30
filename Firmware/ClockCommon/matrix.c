@@ -52,13 +52,13 @@
 
 #if PL_CONFIG_IS_MASTER
   typedef struct MATRIX_Matrix_t {
-    int16_t angleMap[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y][MATRIX_NOF_CLOCKS_Z]; /* two hands per clock */
-    int8_t delayMap[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y][MATRIX_NOF_CLOCKS_Z]; /* map of clocks with their speed delay */
-    //bool isRelModeMap[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y][MATRIX_NOF_CLOCKS_Z]; /* map if angle is relative or absolute */
-    STEPPER_MoveMode_e moveMap[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y][MATRIX_NOF_CLOCKS_Z];
+    int16_t angleMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* two hands per clock */
+    int8_t delayMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map of clocks with their speed delay */
+    //bool isRelModeMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map if angle is relative or absolute */
+    STEPPER_MoveMode_e moveMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z];
   #if PL_MATRIX_CONFIG_IS_RGB
-    int32_t colorHandMap[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y][MATRIX_NOF_CLOCKS_Z]; /* color for each hand */
-    int32_t colorRingMap[MATRIX_NOF_CLOCKS_X][MATRIX_NOF_CLOCKS_Y][MATRIX_NOF_CLOCKS_Z]; /* color for each ring */
+    int32_t colorHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each hand */
+    int32_t colorRingMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each ring */
   #endif
   } MATRIX_Matrix_t;
 
@@ -114,7 +114,7 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
   STEPPER_Handle_t stepper;
   STEPBOARD_Handle_t board;
 
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return NULL;
   }
 #if PL_CONFIG_IS_MASTER
@@ -136,13 +136,13 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
 
 #if PL_CONFIG_USE_LED_RING
 NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return NULL;
   }
 #if PL_CONFIG_USE_LED_STEPPER /* virtual stepper */
   return STEPPER_GetDevice(MATRIX_GetStepper(x, y, z));
 #elif PL_CONFIG_USE_X12_LED_STEPPER
-  return STEPBOARD_GetStepperLedRing(MATRIX_Boards[0], x, z);
+  return STEPBOARD_GetStepperLedRing(MATRIX_Boards[0], x, y, z);
 #else
   #error "wrong configuration"
 #endif
@@ -185,7 +185,7 @@ void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_SetHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   NEOSR_SetHandColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
@@ -194,7 +194,7 @@ void MATRIX_SetHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t g
 
 #if PL_CONFIG_USE_LED_DIMMING
 void MATRIX_SetHandBrightness(int32_t x, int32_t y, int32_t z, uint8_t brightness) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   NEOSR_SetHandBrightness(MATRIX_GetLedRingDevice(x, y, z), brightness);
@@ -203,7 +203,7 @@ void MATRIX_SetHandBrightness(int32_t x, int32_t y, int32_t z, uint8_t brightnes
 
 #if PL_CONFIG_USE_LED_DIMMING
 void MATRIX_StartHandDimming(int32_t x, int32_t y, int32_t z, uint8_t targetBrightness) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   NEOSR_StartHandDimming(MATRIX_GetLedRingDevice(x, y, z), targetBrightness);
@@ -212,7 +212,7 @@ void MATRIX_StartHandDimming(int32_t x, int32_t y, int32_t z, uint8_t targetBrig
 
 #if PL_CONFIG_USE_DUAL_HANDS
 void MATRIX_Set2ndHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   NEOSR_Set2ndHandColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
@@ -221,9 +221,9 @@ void MATRIX_Set2ndHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_SetHandColorAll(uint8_t red, uint8_t green, uint8_t blue) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_SetHandColor(x, y, z, red, green, blue);
     #if PL_CONFIG_USE_DUAL_HANDS
         MATRIX_Set2ndHandColor(x, y, z, red, green, blue);
@@ -236,9 +236,9 @@ void MATRIX_SetHandColorAll(uint8_t red, uint8_t green, uint8_t blue) {
 
 #if PL_CONFIG_USE_LED_DIMMING
 void MATRIX_SetHandBrightnessAll(uint8_t brightness) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_SetHandBrightness(x, y, z, brightness);
       }
     }
@@ -254,7 +254,7 @@ void MATRIX_SetRingPixelColor(int32_t x, int32_t y, uint8_t pos, uint8_t red, ui
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_SetRingColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   NEOSR_SetRingColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
@@ -263,9 +263,9 @@ void MATRIX_SetRingColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t g
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_SetRingColorAll(uint8_t red, uint8_t green, uint8_t blue) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_SetRingColor(x, y, z, red, green, blue);
       }
     }
@@ -275,7 +275,7 @@ void MATRIX_SetRingColorAll(uint8_t red, uint8_t green, uint8_t blue) {
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_SetRingLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -308,9 +308,9 @@ void MATRIX_SetRingLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_SetRingLedEnabledAll(bool on) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_SetRingLedEnabled(x, y, z, on);
       }
     }
@@ -327,7 +327,7 @@ void MATRIX_SetRingLedEnabledAll(bool on) {
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_SetHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -359,7 +359,7 @@ void MATRIX_SetHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
 
 #if PL_CONFIG_USE_DUAL_HANDS
 void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   NEOSR_Set2ndHandLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
@@ -368,9 +368,9 @@ void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
 
 #if PL_CONFIG_USE_DUAL_HANDS
 void MATRIX_Set2ndHandLedEnabledAll(bool on) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_Set2ndHandLedEnabled(x, y, z, on);
       }
     }
@@ -381,9 +381,9 @@ void MATRIX_Set2ndHandLedEnabledAll(bool on) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_SetHandLedEnabledAll(bool on) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_SetHandLedEnabled(x, y, z, on);
       }
     }
@@ -427,14 +427,14 @@ void MATRIX_Delay(int32_t ms) {
 
 #if PL_CONFIG_IS_MASTER
 void MATRIX_DrawClockHand(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   matrix.angleMap[x][y][z] = angle;
 }
 
 uint8_t MATRIX_DrawClockHands(uint8_t x, uint8_t y, int16_t angle0, int16_t angle1) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
     return ERR_FRAMING;
   }
   matrix.angleMap[x][y][0] = angle0;
@@ -444,7 +444,7 @@ uint8_t MATRIX_DrawClockHands(uint8_t x, uint8_t y, int16_t angle0, int16_t angl
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
     return;
   }
   MATRIX_SetHandLedEnabled(x, y, 0, on0);
@@ -453,8 +453,8 @@ void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1) {
 #endif
 
 uint8_t MATRIX_DrawAllClockHands(int16_t angle0, int16_t angle1) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       matrix.angleMap[x][y][0] = angle0;
       matrix.angleMap[x][y][1] = angle1;
     }
@@ -464,7 +464,7 @@ uint8_t MATRIX_DrawAllClockHands(int16_t angle0, int16_t angle1) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   matrix.colorHandMap[x][y][z] = color;
@@ -473,9 +473,9 @@ void MATRIX_DrawHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawAllHandColor(uint32_t color) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_DrawHandColor(x, y, z, color);
       }
     }
@@ -485,7 +485,7 @@ void MATRIX_DrawAllHandColor(uint32_t color) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y || z>=MATRIX_NOF_CLOCKS_Z) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return;
   }
   matrix.colorRingMap[x][y][z] = color;
@@ -494,9 +494,9 @@ void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawAllRingColor(uint32_t color) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_DrawRingColor(x, y, z, color);
       }
     }
@@ -505,7 +505,7 @@ void MATRIX_DrawAllRingColor(uint32_t color) {
 #endif
 
 uint8_t MATRIX_DrawClockDelays(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
     return ERR_FRAMING;
   }
   matrix.delayMap[x][y][0] = delay0;
@@ -514,8 +514,8 @@ uint8_t MATRIX_DrawClockDelays(uint8_t x, uint8_t y, uint8_t delay0, uint8_t del
 }
 
 uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       matrix.delayMap[x][y][0] = delay0;
       matrix.delayMap[x][y][1] = delay1;
     }
@@ -524,7 +524,7 @@ uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1) {
 }
 
 uint8_t MATRIX_DrawMoveMode(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
     return ERR_FRAMING;
   }
   matrix.moveMap[x][y][0] = mode0;
@@ -533,8 +533,8 @@ uint8_t MATRIX_DrawMoveMode(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEP
 }
 
 uint8_t MATRIX_DrawAllMoveMode(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       matrix.moveMap[x][y][0] = mode0;
       matrix.moveMap[x][y][1] = mode1;
     }
@@ -544,7 +544,7 @@ uint8_t MATRIX_DrawAllMoveMode(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode
 
 #if 0 /* NYI */
 uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1) {
-  if (x>=MATRIX_NOF_CLOCKS_X || y>=MATRIX_NOF_CLOCKS_Y) {
+  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
     return ERR_FRAMING;
   }
   matrix.isRelModeMap[x][y][0] = isRel0;
@@ -553,8 +553,8 @@ uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1) {
 }
 
 uint8_t MATRIX_DrawAllIsRelative(bool isRel0, bool isRel1) {
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       matrix.isRelModeMap[x][y][0] = isRel0;
       matrix.isRelModeMap[x][y][1] = isRel1;
     }
@@ -730,10 +730,10 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   McuUtility_strcpy(ledbuf, sizeof(ledbuf), (unsigned char*)"matrix q ");
 #endif
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) { /* every clock row */
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) { /* every clock in column */
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       if (clockMatrix[x][y].addr==addr && clockMatrix[x][y].enabled) { /* check if is a matching board and clock is enabled */
-        for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
           if (matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes or if it is a relative move */
             //isRelative = matrix.isRelModeMap[x][y][z];
             if (nof>0) {
@@ -800,10 +800,10 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
   int nof = 0;
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) { /* every clock row */
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) { /* every clock in column */
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       if (clockMatrix[x][y].addr==addr && clockMatrix[x][y].enabled) { /* check if is a matching board and clock is enabled */
-        for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
           if (matrix.colorHandMap[x][y][z]!=prevMatrix.colorHandMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
@@ -841,10 +841,10 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   int nof = 0;
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) { /* every clock row */
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) { /* every clock in column */
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       if (clockMatrix[x][y].addr==addr && clockMatrix[x][y].enabled) { /* check if is a matching board and clock is enabled */
-        for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
           if (matrix.colorRingMap[x][y][z]!=prevMatrix.colorRingMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
@@ -1039,9 +1039,9 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #elif PL_CONFIG_USE_STEPPER
   int x, y, z;
 
-  for(x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, z), hour*360/12, STEPPER_MOVE_MODE_CW, 4, true, true);
       }
     }
@@ -1055,7 +1055,7 @@ uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io) {
   return MATRIX_MoveAlltoHour(12, timeoutMs, io);
 }
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 #if PL_CONFIG_USE_RS485
   uint8_t buf[16];
@@ -1071,12 +1071,12 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
   return ERR_OK;
 #endif
 }
-#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void MATRIX_DrawBorder(void) {
 #if 1
-  MATRIX_DrawRectangle(0, 0, MATRIX_NOF_CLOCKS_X, MATRIX_NOF_CLOCKS_Y);
+  MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
 #else
   /* ------------ draw border ----------- */
   /* upper left corner */
@@ -1085,45 +1085,45 @@ static void MATRIX_DrawBorder(void) {
   MATRIX_DrawClockLEDs(0, 0, true, true);
 #endif
   /* upper right corner */
-  (void)MATRIX_DrawClockHands(MATRIX_NOF_CLOCKS_X-1, 0, 270, 180);
+  (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-1, 0, 270, 180);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(MATRIX_NOF_CLOCKS_X-1, 0, true, true);
+  MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-1, 0, true, true);
 #endif
   /* lower right corner */
-  (void)MATRIX_DrawClockHands(MATRIX_NOF_CLOCKS_X-1, MATRIX_NOF_CLOCKS_Y-1,  270, 0);
+  (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-1, MATRIX_NOF_STEPPERS_Y-1,  270, 0);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(MATRIX_NOF_CLOCKS_X-1, MATRIX_NOF_CLOCKS_Y-1, true, true);
+  MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-1, MATRIX_NOF_STEPPERS_Y-1, true, true);
 #endif
   /* lower left corner */
-  (void)MATRIX_DrawClockHands(0, MATRIX_NOF_CLOCKS_Y-1,  0, 90);
+  (void)MATRIX_DrawClockHands(0, MATRIX_NOF_STEPPERS_Y-1,  0, 90);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(0, MATRIX_NOF_CLOCKS_Y-1, true, true);
+  MATRIX_DrawClockLEDs(0, MATRIX_NOF_STEPPERS_Y-1, true, true);
 #endif
   /* horizontal lines */
-  for(uint8_t bx=1; bx<MATRIX_NOF_CLOCKS_X-1; bx++) {
+  for(uint8_t bx=1; bx<MATRIX_NOF_STEPPERS_X-1; bx++) {
     (void)MATRIX_DrawClockHands(bx, 0,  270, 90);
-    (void)MATRIX_DrawClockHands(bx, MATRIX_NOF_CLOCKS_Y-1,  270, 90);
+    (void)MATRIX_DrawClockHands(bx, MATRIX_NOF_STEPPERS_Y-1,  270, 90);
   #if PL_CONFIG_USE_NEO_PIXEL_HW
     MATRIX_DrawClockLEDs(bx, 0, true, true);
-    MATRIX_DrawClockLEDs(bx, MATRIX_NOF_CLOCKS_Y-1, true, true);
+    MATRIX_DrawClockLEDs(bx, MATRIX_NOF_STEPPERS_Y-1, true, true);
   #endif
   }
   /* vertical lines */
-  for(uint8_t by=1; by<MATRIX_NOF_CLOCKS_Y-1; by++) {
+  for(uint8_t by=1; by<MATRIX_NOF_STEPPERS_Y-1; by++) {
     (void)MATRIX_DrawClockHands(0, by,  0, 180);
     (void)MATRIX_DrawClockHands(1, by,225, 225);
-    (void)MATRIX_DrawClockHands(MATRIX_NOF_CLOCKS_X-2, by,225, 225);
-    (void)MATRIX_DrawClockHands(MATRIX_NOF_CLOCKS_X-1, by,  0, 180);
+    (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-2, by,225, 225);
+    (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-1, by,  0, 180);
   #if PL_CONFIG_USE_NEO_PIXEL_HW
     MATRIX_DrawClockLEDs(0, by, true, true);
     MATRIX_DrawClockLEDs(1, by, false, false);
-    MATRIX_DrawClockLEDs(MATRIX_NOF_CLOCKS_X-2, by, false, false);
-    MATRIX_DrawClockLEDs(MATRIX_NOF_CLOCKS_X-1, by, true, true);
+    MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-2, by, false, false);
+    MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-1, by, true, true);
   #endif
   }
 #endif
 }
-#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait) {
@@ -1134,13 +1134,13 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   x = 2; y = 1;
 
   if (hasBorder) {
     MATRIX_DrawBorder();
   }
-#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
   (void)hasBorder; /* not used */
   x = 0; y = 0;
 #else
@@ -1167,11 +1167,11 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   x = 2; y = 1;
 
   MATRIX_DrawBorder();
-#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
    x = 0; y = 0;
 #else
    #error "not supported"
@@ -1186,7 +1186,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   uint8_t buf[8];
 
@@ -1201,7 +1201,7 @@ uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
-#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
@@ -1211,11 +1211,11 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   x = 2; y = 1;
 
   MATRIX_DrawBorder();
-#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
    x = 0; y = 0;
 #else
    #error "not supported"
@@ -1229,7 +1229,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   uint8_t buf[8];
 
@@ -1243,7 +1243,7 @@ uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
-#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
@@ -1253,11 +1253,11 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
   MATRIX_SetHandLedEnabledAll(false);
 #endif
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
    x = 2; y = 1;
 
    MATRIX_DrawBorder();
-#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
    x = 0; y = 0;
 #else
    #error "not supported"
@@ -1271,7 +1271,7 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   uint8_t buf[8];
 
@@ -1285,7 +1285,7 @@ uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
-#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 #if PL_CONFIG_USE_MAG_SENSOR  && PL_CONFIG_IS_CLIENT
 static void MATRIX_MoveByOffset(STEPPER_Handle_t *motors[], int16_t offsets[], size_t nofMotors, uint16_t delay) {
@@ -1374,18 +1374,18 @@ static uint8_t MATRIX_ZeroHand(STEPPER_Handle_t *motors[], int16_t offsets[], si
 
 static uint8_t MATRIX_ZeroAllHands(void) {
   uint8_t res = ERR_OK;
-  STEPPER_Handle_t *motors[STEPPER_NOF_CLOCKS*STEPPER_NOF_CLOCK_MOTORS];
-  int16_t offsets[STEPPER_NOF_CLOCKS*STEPPER_NOF_CLOCK_MOTORS];
+  STEPPER_Handle_t *motors[MATRIX_NOF_STEPPERS];
+  int16_t offsets[MATRIX_NOF_STEPPERS];
   int i;
 
   /* fill in motor array information */
   i = 0;
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         motors[i] = MATRIX_GetStepper(x, y, z);
     #if PL_CONFIG_USE_NVMC
-        offsets[i] = NVMC_GetStepperZeroOffset(x, z);
+        offsets[i] = NVMC_GetStepperZeroOffset(x, y, z);
     #else
         offsets[i] = 0;
     #endif
@@ -1394,7 +1394,7 @@ static uint8_t MATRIX_ZeroAllHands(void) {
     }
   }
   /* zero all of them */
-  if (MATRIX_ZeroHand(motors, offsets, STEPPER_NOF_CLOCKS*STEPPER_NOF_CLOCK_MOTORS, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_ZeroHand(motors, offsets, MATRIX_NOF_STEPPERS, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
   }
   return res;
@@ -1403,8 +1403,8 @@ static uint8_t MATRIX_ZeroAllHands(void) {
 static uint8_t MATRIX_SetOffsetFrom12(void) {
   /* all hands shall be at 12-o-clock position */
   uint8_t res = ERR_OK;
-  STEPPER_Handle_t *motors[STEPPER_NOF_CLOCKS*STEPPER_NOF_CLOCK_MOTORS];
-  int16_t offsets[STEPPER_NOF_CLOCKS*STEPPER_NOF_CLOCK_MOTORS];
+  STEPPER_Handle_t *motors[MATRIX_NOF_STEPPERS];
+  int16_t offsets[MATRIX_NOF_STEPPERS];
   STEPPER_Handle_t stepper;
   int i;
 
@@ -1420,9 +1420,9 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
 #endif
   /* first zero position at current position and set delay */
   i = 0;
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         stepper = MATRIX_GetStepper(x, y, z);
         STEPPER_SetPos(stepper, 0);
         motors[i] = stepper;
@@ -1455,11 +1455,11 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   NVMC_Data_t data;
 
   data = *NVMC_GetDataPtr(); /* struct copy */
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         stepper = MATRIX_GetStepper(x, y, z);
-        data.zeroOffsets[x][z] = -STEPPER_GetPos(stepper);
+        data.zeroOffsets[x][y][z] = -STEPPER_GetPos(stepper);
       }
     }
   }
@@ -1471,13 +1471,17 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
 #endif
 
   /* fill in motor array information */
-  for(int c=0; c<STEPPER_NOF_CLOCKS; c++) {
-    for (int m=0; m<STEPPER_NOF_CLOCK_MOTORS; m++) {
-    #if PL_CONFIG_USE_NVMC
-      offsets[c*STEPPER_NOF_CLOCK_MOTORS + m] = NVMC_GetStepperZeroOffset(c, m);
-    #else
-      offsets[c*STEPPER_NOF_CLOCK_MOTORS + m] = 0;
-    #endif
+  int m = 0;
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+      #if PL_CONFIG_USE_NVMC
+        offsets[m] = NVMC_GetStepperZeroOffset(x, y, z);
+      #else
+        offsets[m] = 0;
+      #endif
+        m++;
+      }
     }
   }
   McuLog_trace("Move hands back CCW to zero position");
@@ -1493,9 +1497,9 @@ static uint8_t MATRIX_Test(void) {
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
 #endif
-  for (int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for (int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         STEPPER_MoveClockDegreeRel(MATRIX_GetStepper(x, y, z), 180, STEPPER_MOVE_MODE_CW, delay, true, true);
         STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 50);
         STEPPER_MoveClockDegreeRel(MATRIX_GetStepper(x, y, z), 180, STEPPER_MOVE_MODE_CCW, delay, true, true);
@@ -1572,9 +1576,9 @@ static uint8_t PrintStepperStatus(const McuShell_StdIOType *io) {
   uint8_t buf[128];
   uint8_t statusStr[16];
 
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         STEPPER_Handle_t stepper;
         uint8_t addr;
 
@@ -1638,9 +1642,9 @@ static uint8_t ParseMatrixCommand(const unsigned char **cmd, int32_t *xp, int32_
   /* parse a string like <x> <y> <z> <v> <d> <md> */
   int32_t x, y, z, v, d;
 
-  if (   McuUtility_xatoi(cmd, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-      && McuUtility_xatoi(cmd, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-      && McuUtility_xatoi(cmd, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+  if (   McuUtility_xatoi(cmd, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+      && McuUtility_xatoi(cmd, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+      && McuUtility_xatoi(cmd, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
       && McuUtility_xatoi(cmd, &v)==ERR_OK
       && McuUtility_xatoi(cmd, &d)==ERR_OK && d>=0
      )
@@ -1907,9 +1911,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       if (*p==',') { /* skip comma (multiple commands) */
         p++;
       }
-      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
          )
       {
         McuUtility_SkipSpaces(&p);
@@ -1987,9 +1991,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
     *handled = TRUE;
     p = cmd + sizeof("matrix hand enable ")-1;
-    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
        )
     {
       if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
@@ -2016,9 +2020,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
     *handled = TRUE;
     p = cmd + sizeof("matrix ring enable ")-1;
-    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
        )
     {
       if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
@@ -2059,9 +2063,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
     *handled = TRUE;
     p = cmd + sizeof("matrix 2nd enable ")-1;
-    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
        )
     {
       if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
@@ -2113,9 +2117,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       if (*p==',') { /* skip comma for multiple commands */
         p++;
       }
-      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
           && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
          )
       {
@@ -2142,9 +2146,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       if (*p==',') { /* skip comma for multiple commands */
         p++;
       }
-      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
           && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
          )
       {
@@ -2170,9 +2174,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       if (*p==',') { /* skip comma for multiple commands */
         p++;
       }
-      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && y<MATRIX_NOF_CLOCKS_Z
+      if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+          && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && y<MATRIX_NOF_STEPPERS_Z
           && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
          )
       {
@@ -2222,8 +2226,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
     *handled = TRUE;
     p = cmd + sizeof("matrix rgb pixel ")-1;
-    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
         && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<NEOSR_NOF_RING_LED
         && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
        )
@@ -2262,9 +2266,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
     *handled = TRUE;
     p = cmd + sizeof("matrix zero ")-1;
-    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
        )
     {
   #if PL_CONFIG_IS_CLIENT
@@ -2273,7 +2277,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
       motors[0] = MATRIX_GetStepper(x, y, z);
     #if PL_CONFIG_USE_NVMC
-      offset = NVMC_GetStepperZeroOffset(x, z);
+      offset = NVMC_GetStepperZeroOffset(x, y, z);
     #else
       offset = 0;
     #endif
@@ -2308,9 +2312,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 
     *handled = TRUE;
     p = cmd + sizeof("matrix hand brightness ")-1;
-    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_CLOCKS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_CLOCKS_Y
-        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_CLOCKS_Z
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
        )
     {
       res = McuUtility_ScanDecimal8uNumber(&p, &f);
@@ -2384,9 +2388,9 @@ void MATRIX_TimerCallback(void) {
   STEPPER_Handle_t stepper;
 
   /* go through all boards and update steps */
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-       for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) { /* go through all motors */
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
          stepper = MATRIX_GetStepper(x, y, z);
          workToDo |= STEPPER_TimerClockCallback(stepper);
        #if PL_CONFIG_USE_LED_DIMMING
@@ -2411,17 +2415,17 @@ void MATRIX_IlluminateHands(void) {
   STEPPER_Handle_t stepper;
   int32_t pos;
 
-  for(int b=0; b<MATRIX_NOF_BOARDS; b++) {
-    for(int i=0; i<STEPPER_NOF_CLOCKS; i++) {
-      for(int j=0; j<STEPPER_NOF_CLOCK_MOTORS; j++) {
-        stepper = STEPBOARD_GetStepper(MATRIX_Boards[b], i, j);
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        stepper = MATRIX_GetStepper(x, y, z);
         pos = STEPPER_GetPos(stepper);
     #if PL_CONFIG_USE_LED_STEPPER /* virtual LED stepper only */
         NEOSR_Illuminate(STEPPER_GetDevice(stepper), pos);
-    #elif PL_CONFIG_USE_X12_STEPPER /* stepper with LED */
+    #elif PL_CONFIG_USE_X12_LED_STEPPER /* stepper motor combined with LED ring */
         NEOSR_Handle_t ledRing;
 
-        ledRing = STEPBOARD_GetStepperLedRing(MATRIX_Boards[b], i, j);
+        ledRing = MATRIX_GetLedRingDevice(x, y, z);
         NEOSR_Illuminate(ledRing, pos);
     #endif
       }
@@ -2439,9 +2443,9 @@ static bool MatrixProcessAllQueues(void) {
   McuShell_ConstStdIOType *io = McuShell_GetStdio();
   QueueHandle_t queue;
 
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         stepper = MATRIX_GetStepper(x, y, z);
         if (STEPPER_IsIdle(stepper)) { /* no steps to do? */
           queue = STEPPER_GetQueue(stepper);
@@ -2495,9 +2499,9 @@ static bool MatrixProcessAllQueues(void) {
   /* check the number of items still pending in the queue */
   int nofPendingInQueues = 0;
 
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         stepper = MATRIX_GetStepper(x, y, z);
         queue = STEPPER_GetQueue(stepper);
         nofPendingInQueues += uxQueueMessagesWaiting(queue);
@@ -3223,13 +3227,13 @@ static void InitSteppers(void) {
   stepperRingConfig.ledStartPos = 0;
   stepperRingConfig.ledCw = false;
   #if MATRIX_NOF_STEPPERS>=2
-  stepBoardConfig.ledRing[0][0] = NEOSR_InitDevice(&stepperRingConfig);
-  stepBoardConfig.ledRing[0][1] = NEOSR_InitDevice(&stepperRingConfig);
+  stepBoardConfig.ledRing[0][0][0] = NEOSR_InitDevice(&stepperRingConfig);
+  stepBoardConfig.ledRing[0][0][1] = NEOSR_InitDevice(&stepperRingConfig);
   #endif
   #if MATRIX_NOF_STEPPERS>=4
   stepperRingConfig.ledLane = 6; /* PTC6 */
-  stepBoardConfig.ledRing[1][0] = NEOSR_InitDevice(&stepperRingConfig);
-  stepBoardConfig.ledRing[1][1] = NEOSR_InitDevice(&stepperRingConfig);
+  stepBoardConfig.ledRing[1][0][0] = NEOSR_InitDevice(&stepperRingConfig);
+  stepBoardConfig.ledRing[1][0][1] = NEOSR_InitDevice(&stepperRingConfig);
   #endif
 #endif
 

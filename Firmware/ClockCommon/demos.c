@@ -242,7 +242,7 @@ static const weather_clock_t weather_rainy[3][3] = {
 static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
   int xPos, yPos;
 
-  xPos = MATRIX_NOF_CLOCKS_X-3;
+  xPos = MATRIX_NOF_STEPPERS_X-3;
   yPos = 0;
 
 #if PL_CONFIG_USE_DUAL_HANDS
@@ -317,13 +317,13 @@ static NEO_PixelColor Rainbow(int32_t numOfSteps, int32_t step) {
 }
 
 static void DEMO_LedDemo1(void) {
-  uint8_t rowStartStep[MATRIX_NOF_CLOCKS_Y]; /* rainbow color starting values */
+  uint8_t rowStartStep[MATRIX_NOF_STEPPERS_Y]; /* rainbow color starting values */
   NEO_PixelColor color;
   uint8_t brightness = 2;
   int val = 0;
 
   /* fill in default row start values */
-  for(int i=0; i<MATRIX_NOF_CLOCKS_Y;i++) {
+  for(int i=0; i<MATRIX_NOF_STEPPERS_Y;i++) {
     rowStartStep[i] = val;
     val+=20;
     if(val>=0xff) {
@@ -338,12 +338,12 @@ static void DEMO_LedDemo1(void) {
   vTaskDelay(pdMS_TO_TICKS(100));
 
   for(int i=0; i<200; i++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       color = Rainbow(256, rowStartStep[y]);
       color = NEO_BrightnessPercentColor(color, brightness);
       rowStartStep[y]++;
-      for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-        for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+      for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
           MATRIX_SetRingColor(x, y, z, NEO_SPLIT_RGB(color));
         }
       }
@@ -391,8 +391,8 @@ static void MovePlayer(PongPlayer_t *player, int deltaY) {
   player->posY += deltaY;
   if (player->posY<0) {
     player->posY = 0;
-  } else if (player->posY>MATRIX_NOF_CLOCKS_Y-1) {
-    player->posY =MATRIX_NOF_CLOCKS_Y-1;
+  } else if (player->posY>MATRIX_NOF_STEPPERS_Y-1) {
+    player->posY =MATRIX_NOF_STEPPERS_Y-1;
   }
   DrawPlayer(player);
 }
@@ -448,8 +448,8 @@ static bool MoveBall(PongBall_t *b, PongPlayer_t *left, PongPlayer_t *right) {
   if (b->posY < 0) {
     b->posY = 1;
     b->dirY = -b->dirY;
-  } else if (b->posY >= MATRIX_NOF_CLOCKS_Y) {
-    b->posY = MATRIX_NOF_CLOCKS_Y-2;
+  } else if (b->posY >= MATRIX_NOF_STEPPERS_Y) {
+    b->posY = MATRIX_NOF_STEPPERS_Y-2;
     b->dirY = -b->dirY;
   }
   /* check collision with player */
@@ -522,8 +522,8 @@ static void DEMO_LedPong(void) {
   playerR.g = 0;
   playerR.b = 0x4;
   playerR.points = 0;
-  playerR.posX = MATRIX_NOF_CLOCKS_X-1;
-  playerR.posY = MATRIX_NOF_CLOCKS_Y/2;
+  playerR.posX = MATRIX_NOF_STEPPERS_X-1;
+  playerR.posY = MATRIX_NOF_STEPPERS_Y/2;
 
   DrawPlayer(&playerL);
   DrawPlayer(&playerR);
@@ -539,7 +539,7 @@ static void DEMO_LedPong(void) {
     if (gameOver) {
       break;
     }
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_X>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_X>=5
     if (i==1) {
       MovePlayer(&playerL, 1);
     } else if (i==3) {
@@ -560,7 +560,7 @@ static void DEMO_LedPong(void) {
     } else if (i==27) {
       MovePlayer(&playerR, 1);
     }
-#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
     if (i==1) {
       MovePlayer(&playerL, 1);
     } else if (i==3) {
@@ -587,8 +587,8 @@ static uint8_t DemoSquare(void) {
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   /* build initial squares */
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y+=2) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x+=2) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
       (void)MATRIX_DrawClockHands(x,     y, 180,  90);
       (void)MATRIX_DrawClockHands(x,   y+1,  90,   0);
       (void)MATRIX_DrawClockHands(x+1,   y, 270, 180);
@@ -614,8 +614,8 @@ static uint8_t DemoSquareRotate(void) {
   }
   /* make two turns (2x360) */
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y+=2) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x+=2) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
       (void)MATRIX_DrawClockHands(x,     y, 180+2*360,  90+2*360);
       (void)MATRIX_DrawClockHands(x,   y+1,  90+2*360,   0+2*360);
       (void)MATRIX_DrawClockHands(x+1,   y, 270+2*360, 180+2*360);
@@ -641,8 +641,8 @@ static uint8_t DemoSquareClap(void) {
   /* make two claps (2x360) */
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
   //(void)MATRIX_DrawAllIsRelative(true, true);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y+=2) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x+=2) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
       (void)MATRIX_DrawClockHands(x,     y, 180-2*360,  90+2*360);
       (void)MATRIX_DrawClockHands(x,   y+1,  90-2*360,   0+2*360);
       (void)MATRIX_DrawClockHands(x+1,   y, 270-2*360, 180+2*360);
@@ -667,8 +667,8 @@ static uint8_t DemoPropeller(void) {
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0,  180);
     }
   }
@@ -677,8 +677,8 @@ static uint8_t DemoPropeller(void) {
     return DEMO_FailedDemo(res);
   }
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0+2*360, 180+2*360);
     }
   }
@@ -699,8 +699,8 @@ static uint8_t DemoFalling(void) {
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0,  0);
     }
   }
@@ -708,9 +708,9 @@ static uint8_t DemoFalling(void) {
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y;y++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y;y++) {
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 180, 180);
     }
     res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -730,8 +730,8 @@ static uint8_t DemoRandomHandsPos(void) {
 
   (void)MATRIX_DrawAllClockDelays(2, 2);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
     }
   }
@@ -741,9 +741,9 @@ static uint8_t DemoRandomHandsPos(void) {
   }
   return ERR_OK;
 #else
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, z), McuUtility_random(0, 359), STEPPER_MOVE_MODE_SHORT, 2, true, true);
       }
     }
@@ -764,14 +764,14 @@ static uint8_t DEMO_Demo0(const McuShell_StdIOType *io) {
   (void)MATRIX_DrawAllClockDelays(2, 2);
   /* set move mode: */
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MATRIX_DrawClockDelays(x, y, 2+y, 2+y);
     }
   }
   /* set movement: */
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 90, 270);
     }
   }
@@ -780,8 +780,8 @@ static uint8_t DEMO_Demo0(const McuShell_StdIOType *io) {
     return DEMO_FailedDemo(res);
   }
 
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0, 180);
     }
   }
@@ -811,8 +811,8 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
     return DEMO_FailedDemo(res);
   }
   /* configure delays */
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockDelays(x, y, 5+x, 5+x);
     }
   }
@@ -856,7 +856,7 @@ static uint8_t DEMO_Demo3(const McuShell_StdIOType *io) {
   return MATRIX_MoveAllto12(10000, io);
 }
 
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -936,7 +936,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 
   MATRIX_DrawAllClockDelays(2, 2);
   McuTimeDate_GetTime(&time);
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   (void)MATRIX_ShowTimeLarge(time.Hour, time.Min, true);
 #else
   (void)MATRIX_ShowTime(time.Hour, time.Min, false, true);
@@ -999,9 +999,9 @@ static uint8_t DemoRandomHandsColor(void) {
 
   MATRIX_SetHandLedEnabledAll(true);
   for (int i=0; i<10; i++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-        for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
           (void)MATRIX_SetHandColor(x, y, z, McuUtility_random(1, 255),  McuUtility_random(1, 255), McuUtility_random(1, 255));
         }
       }
@@ -1015,9 +1015,9 @@ static uint8_t DemoRandomHandsColor(void) {
 #elif PL_MATRIX_CONFIG_IS_RGB
   uint8_t res;
 
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         uint8_t r, g, b;
 
         r = McuUtility_random(1, 255);
@@ -1044,9 +1044,9 @@ static uint8_t DemoRandomRingColor(void) {
   MATRIX_SetHandLedEnabledAll(false);
   MATRIX_SetRingLedEnabledAll(true);
   for(int i=0; i<10; i++) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-        for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
           (void)MATRIX_SetRingColor(x, y, z, McuUtility_random(0, 0x5),  McuUtility_random(0, 0x5), McuUtility_random(0, 0x5)); /* limit brightness */
         }
       }
@@ -1060,9 +1060,9 @@ static uint8_t DemoRandomRingColor(void) {
 #elif PL_MATRIX_CONFIG_IS_RGB
   uint8_t res;
 
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         uint8_t r, g, b;
 
         r = McuUtility_random(1, 5);
@@ -1091,8 +1091,8 @@ static uint8_t DemoClap(void) {
 #if PL_CONFIG_IS_MASTER
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0,  180);
     }
   }
@@ -1104,15 +1104,15 @@ static uint8_t DemoClap(void) {
   }
   for (int i=0; i<2; i++) {
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         (void)MATRIX_DrawClockHands(x, y, 90, 90);
       }
     }
     (void)MATRIX_SendToRemoteQueue();
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         (void)MATRIX_DrawClockHands(x, y, 0, 180);
       }
     }
@@ -1120,8 +1120,8 @@ static uint8_t DemoClap(void) {
   }
   return MATRIX_ExecuteRemoteQueueAndWait(true);
 #else
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, 0), 0, STEPPER_MOVE_MODE_SHORT, 4, true, true);
       STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, 1), 180, STEPPER_MOVE_MODE_SHORT, 4, true, true);
     }
@@ -1131,8 +1131,8 @@ static uint8_t DemoClap(void) {
     vTaskDelay(pdMS_TO_TICKS(100));
   }
 
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, 0), 90, STEPPER_MOVE_MODE_CW, 4, true, true);
       STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, 1), 90, STEPPER_MOVE_MODE_CCW, 4, true, true);
     }
@@ -1142,8 +1142,8 @@ static uint8_t DemoClap(void) {
     vTaskDelay(pdMS_TO_TICKS(100));
   }
 
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, 0), 0, STEPPER_MOVE_MODE_CCW, 4, true, true);
       STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, 1), 180, STEPPER_MOVE_MODE_CW, 4, true, true);
     }
@@ -1186,25 +1186,25 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  3", (unsigned char*)"Demo moving hand around\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  4", (unsigned char*)"Demo with LED and hand test\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <delay>", (unsigned char*)"Set default delay\r\n", io->stdOut);
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  time <time>", (unsigned char*)"Show time\r\n", io->stdOut);
 #endif
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  time large <time>", (unsigned char*)"Show large time\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  temperature <tt>", (unsigned char*)"Show temperature\r\n", io->stdOut);
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  temperature large <tt>", (unsigned char*)"Show large temperature\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  humidity <hh>", (unsigned char*)"Show humidity\r\n", io->stdOut);
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  humidity large <hh>", (unsigned char*)"Show large humidity\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  text <xy> <text>", (unsigned char*)"Write text at position\r\n", io->stdOut);
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  text large <xy> <text>", (unsigned char*)"Write large text at position\r\n", io->stdOut);
   #endif
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  nxp", (unsigned char*)"NXP demo\r\n", io->stdOut);
   #endif
 #endif
@@ -1318,7 +1318,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo 4")==0) {
     *handled = true;
     return DEMO_Demo4(io);
-#if MATRIX_NOF_CLOCKS_Y >= 5
+#if MATRIX_NOF_STEPPERS_Y >= 5
   } else if (McuUtility_strncmp((char*)cmd, "demo time large ", sizeof("demo time large ")-1)==0) {
     uint8_t hour, minute, second, hsec;
 
@@ -1340,7 +1340,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_CLOCKS_Y >= 5
+  #if MATRIX_NOF_STEPPERS_Y >= 5
   } else if (McuUtility_strncmp((char*)cmd, "demo temperature large ", sizeof("demo temperature large ")-1)==0) {
     uint8_t temperature;
 
@@ -1362,7 +1362,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_CLOCKS_Y >= 5
+  #if MATRIX_NOF_STEPPERS_Y >= 5
   } else if (McuUtility_strncmp((char*)cmd, "demo humidity large ", sizeof("demo humidity large ")-1)==0) {
     uint8_t humidity;
 
@@ -1384,7 +1384,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_CLOCKS_Y >= 5
+  #if MATRIX_NOF_STEPPERS_Y >= 5
   } else if (McuUtility_strncmp((char*)cmd, "demo lux large ", sizeof("demo lux large ")-1)==0) {
     uint16_t lux;
 
@@ -1406,12 +1406,12 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     } else {
       return ERR_FAILED;
     }
-  #if MATRIX_NOF_CLOCKS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_CLOCKS_Y >= MFONT_SIZE_Y_3x5
+  #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   } else if (McuUtility_strncmp((char*)cmd, "demo text large ", sizeof("demo text large ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("demo text large ")-1;
-    if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_CLOCKS_X
-        && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_CLOCKS_Y
+    if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
+        && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_STEPPERS_Y
         )
     {
       uint8_t buf[8];
@@ -1433,8 +1433,8 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strncmp((char*)cmd, "demo text ", sizeof("demo text ")-1)==0) {
   *handled = TRUE;
   p = cmd + sizeof("demo text ")-1;
-  if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_CLOCKS_X
-      && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_CLOCKS_Y
+  if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
+      && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_STEPPERS_Y
       )
   {
     uint8_t buf[8];

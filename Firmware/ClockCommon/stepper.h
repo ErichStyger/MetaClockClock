@@ -39,9 +39,6 @@ bool STEPPER_TimerClockCallback(STEPPER_Handle_t stepper);
 
 uint8_t STEPPER_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
-#define STEPPER_NOF_CLOCKS        (PL_CONFIG_NOF_STEPPER_ON_BOARD)      /* number of clocks on a board */
-#define STEPPER_NOF_CLOCK_MOTORS  (PL_CONFIG_NOF_STEPPER_ON_BOARD_Z)    /* number of motors for each clock */
-
 typedef enum {
   STEPPER_HAND_MM = 0, /* inner, mm */
   STEPPER_HAND_HH = 1  /* outer, hh */

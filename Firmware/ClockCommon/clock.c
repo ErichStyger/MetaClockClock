@@ -47,7 +47,7 @@
 #include "McuLog.h"
 
 static bool CLOCK_ClockIsOn = false;
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   static bool CLOCK_clockIsLarge = true; /* if clock is using large font */
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
 #endif
@@ -132,7 +132,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  second", buf, io->stdOut);
   #endif
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendStatusStr((unsigned char*)"  size", CLOCK_clockIsLarge?(unsigned char*)"large\r\n":(unsigned char*)"small\r\n", io->stdOut);
   McuShell_SendStatusStr((unsigned char*)"  border", CLOCK_clockHasBorder?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 #endif
@@ -195,7 +195,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_LED_DIMMING
   McuShell_SendHelpStr((unsigned char*)"  brightness <f>", (unsigned char*)"Set hand brightness factor (0-255)\r\n", io->stdOut);
 #endif
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  border on|off", (unsigned char*)"Show clock with border\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  small|large", (unsigned char*)"Use small or large clock digits\r\n", io->stdOut);
 #endif
@@ -279,7 +279,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     }
     return ERR_OK;
 #endif /* PL_CONFIG_USE_LED_DIMMING */
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strcmp((char*)cmd, "clock small")==0) {
     *handled = true;
     CLOCK_clockIsLarge = false;
@@ -516,7 +516,7 @@ static void ClockTask(void *pv) {
     #if PL_CONFIG_USE_NEO_PIXEL_HW
         MATRIX_SetHandColorAll((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
     #endif
-    #if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+    #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
         if (CLOCK_clockIsLarge) {
           (void)MATRIX_ShowTimeLarge(time.Hour, time.Min, false);
         } else {

@@ -193,7 +193,7 @@ static const MClockChar2x3_t clockCharSpace2x3 =
   }
 };
 
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 typedef struct MClockChar3x5_t {
   MClock_t digit[5][3]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
 } MClockChar3x5_t;
@@ -1053,7 +1053,7 @@ static const MClockChar3x5_t clockCharSpace3x5 =
 };
 #endif
 
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<5; y++) { /* every clock row */
     for(int x=0; x<3; x++) { /* every clock column */
@@ -1069,7 +1069,7 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
     }
   }
 }
-#endif /* MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<3; y++) { /* every clock row */
@@ -1093,7 +1093,7 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
   }
 }
 
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
   const MClockChar3x5_t *desc;
 
@@ -1142,7 +1142,7 @@ static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
     str++;
   }
 }
-#endif /* MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5 */
+#endif /* MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
   const MClockChar2x3_t *desc;
@@ -1173,7 +1173,7 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
   if (size==MFONT_SIZE_2x3) {
     PrintString2x3(str, xPos, yPos);
   }
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   else if (size==MFONT_SIZE_3x5) {
     PrintString3x5(str, xPos, yPos);
   }

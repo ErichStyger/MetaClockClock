@@ -39,8 +39,8 @@ static void IntermezzoDemo1(void) {
   /* move all clocks to '|' position */
   angle0 = 0;
   angle1 = 180;
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, angle0, angle1);
     }
   }
@@ -51,8 +51,8 @@ static void IntermezzoDemo1(void) {
   for(int i=0; i<2; i++) {
     angle0 = (angle0+90)%360;
     angle1 = (angle1+90)%360;
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-      for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         (void)MATRIX_DrawClockHands(x, y, angle0, angle1);
       }
     }
@@ -69,32 +69,32 @@ static void IntermezzoDemo3(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawMoveMode(x, y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
       MATRIX_DrawClockDelays(x, y, 1, 1);
     }
   }
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0, 180);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawMoveMode(x, y, STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
       MATRIX_DrawClockDelays(x, y, 0+x/2, y);
     }
   }
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 180, 0);
     }
   }
   (void)MATRIX_SendToRemoteQueue(); /* queue commands */
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawClockHands(x, y, 0, 180);
     }
   }
@@ -132,8 +132,8 @@ static void IntermezzoDemo5(void) {
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x+=2) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y+=2) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
       MATRIX_DrawClockHands(x, y,   135, 135);
       MATRIX_DrawClockHands(x, y+1,  45,  45);
 
@@ -144,8 +144,8 @@ static void IntermezzoDemo5(void) {
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x+=2) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y+=2) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
       MATRIX_DrawClockHands(x, y  , 135-1, 135+1);
       MATRIX_DrawClockHands(x, y+1,  45-1,  45+1);
 
@@ -156,8 +156,8 @@ static void IntermezzoDemo5(void) {
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
-  for(int x=0; x<MATRIX_NOF_CLOCKS_X; x+=2) {
-    for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y+=2) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
       MATRIX_DrawClockHands(x, y  , 135, 135);
       MATRIX_DrawClockHands(x, y+1,  45,  45);
 
@@ -249,9 +249,9 @@ static void IntermezzoRandomHandsAllOn(void) {
 #endif
   (void)MATRIX_DrawAllClockDelays(2, 5);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_CLOCKS_Z; z++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         (void)MATRIX_DrawClockHand(x, y, z,  McuUtility_random(0, 359));
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         MATRIX_SetHandColor(x, y, z, McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255));
@@ -271,8 +271,8 @@ static void IntermezzoRandomHands(void) {
 #endif
   MATRIX_DrawAllClockDelays(3, 7);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_CLOCKS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_CLOCKS_X; x++) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MATRIX_DrawClockHands(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
     }
   }
@@ -289,9 +289,9 @@ static void IntermezzoTemperature(void) {
     return ;
   }
   temperature -= 4.0; /* offset */
-#if MATRIX_NOF_CLOCKS_X>=12 && MATRIX_NOF_CLOCKS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   MATRIX_ShowTemperatureLarge(temperature, false);
-#elif MATRIX_NOF_CLOCKS_X>=8 && MATRIX_NOF_CLOCKS_Y>=3
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
   MATRIX_ShowTemperature(temperature, false);
 #endif
 }
@@ -321,7 +321,7 @@ static void IntermezzoRectangles(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
-  DrawNestedRectangles(0, 0, MATRIX_NOF_CLOCKS_X, MATRIX_NOF_CLOCKS_Y);
+  DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
 }
 
 static void IntermezzoRectangles2(void) {
@@ -331,8 +331,8 @@ static void IntermezzoRectangles2(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
-  DrawNestedRectangles(0, 0, MATRIX_NOF_CLOCKS_X/2, MATRIX_NOF_CLOCKS_Y);
-  DrawNestedRectangles(MATRIX_NOF_CLOCKS_X/2, 0, MATRIX_NOF_CLOCKS_X/2, MATRIX_NOF_CLOCKS_Y);
+  DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
+  DrawNestedRectangles(MATRIX_NOF_STEPPERS_X/2, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
 }
 
 static void IntermezzoRectangles3(void) {
@@ -342,9 +342,9 @@ static void IntermezzoRectangles3(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
-  DrawNestedRectangles(0, 0, MATRIX_NOF_CLOCKS_X/3, MATRIX_NOF_CLOCKS_Y);
-  DrawNestedRectangles(MATRIX_NOF_CLOCKS_X/3, 0, MATRIX_NOF_CLOCKS_X/3, MATRIX_NOF_CLOCKS_Y);
-  DrawNestedRectangles(2*MATRIX_NOF_CLOCKS_X/3, 0, MATRIX_NOF_CLOCKS_X/3, MATRIX_NOF_CLOCKS_Y);
+  DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
+  DrawNestedRectangles(MATRIX_NOF_STEPPERS_X/3, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
+  DrawNestedRectangles(2*MATRIX_NOF_STEPPERS_X/3, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
 }
 
 typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
