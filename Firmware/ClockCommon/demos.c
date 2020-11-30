@@ -1096,7 +1096,10 @@ static uint8_t DemoClap(void) {
       (void)MATRIX_DrawClockHands(x, y, 0,  180);
     }
   }
-  if (MATRIX_SendToRemoteQueueExecuteAndWait(true)!=ERR_OK) {
+  uint8_t res;
+
+  res = MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  if (res!=ERR_OK) {
     McuLog_error("failed executing: %d", res);
   }
   for (int i=0; i<2; i++) {
