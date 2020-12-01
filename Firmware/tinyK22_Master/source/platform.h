@@ -14,7 +14,8 @@
 #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_MASTER_K22FN512)
 
 /* assign matrix configuration used, only needed for master: */
-#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_CLOCK_12x5_MOD)
+//#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_CLOCK_12x5_MOD)
+#define PL_MATRIX_CONFIGURATION_ID PL_MATRIX_ID_CLOCK_8x3
 //#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_SMARTWALL_8x5)
 /* ********************************************************************* */
 /* override settings in platform_common.h: */

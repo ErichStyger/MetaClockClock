@@ -12,13 +12,37 @@
 #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
   const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
   {
-    [0][0]={.addr=BOARD_ADDR_00, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][0]={.addr=BOARD_ADDR_00, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][0]={.addr=BOARD_ADDR_00, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][0]={.addr=BOARD_ADDR_00, .nr=0, .board.x=3, .board.y=0, .enabled=true},
-    [0][1]={.addr=BOARD_ADDR_01, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][1]={.addr=BOARD_ADDR_01, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][1]={.addr=BOARD_ADDR_01, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][1]={.addr=BOARD_ADDR_01, .nr=0, .board.x=3, .board.y=0, .enabled=true},
-    [0][2]={.addr=BOARD_ADDR_02, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][2]={.addr=BOARD_ADDR_02, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][2]={.addr=BOARD_ADDR_02, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][2]={.addr=BOARD_ADDR_02, .nr=0, .board.x=3, .board.y=0, .enabled=true},
+    [0][0][0]={.addr=BOARD_ADDR_00, .nr=3, .board.x=0, .board.y=0, .board.z=0, .enabled=true},  [0][0][1]={.addr=BOARD_ADDR_00, .nr=3, .board.x=0, .board.y=0, .board.z=1, .enabled=true},
+    [0][1][0]={.addr=BOARD_ADDR_01, .nr=3, .board.x=0, .board.y=0, .board.z=0, .enabled=true},  [0][1][1]={.addr=BOARD_ADDR_01, .nr=3, .board.x=0, .board.y=0, .board.z=1, .enabled=true},
+    [0][2][0]={.addr=BOARD_ADDR_02, .nr=3, .board.x=0, .board.y=0, .board.z=0, .enabled=true},  [0][2][1]={.addr=BOARD_ADDR_02, .nr=3, .board.x=0, .board.y=0, .board.z=1, .enabled=true},
 
-    [4][0]={.addr=BOARD_ADDR_05, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [5][0]={.addr=BOARD_ADDR_05, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [6][0]={.addr=BOARD_ADDR_05, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [7][0]={.addr=BOARD_ADDR_05, .nr=0, .board.x=3, .board.y=0, .enabled=true},
-    [4][1]={.addr=BOARD_ADDR_06, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [5][1]={.addr=BOARD_ADDR_06, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [6][1]={.addr=BOARD_ADDR_06, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [7][1]={.addr=BOARD_ADDR_06, .nr=0, .board.x=3, .board.y=0, .enabled=true},
-    [4][2]={.addr=BOARD_ADDR_07, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [5][2]={.addr=BOARD_ADDR_07, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [6][2]={.addr=BOARD_ADDR_07, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [7][2]={.addr=BOARD_ADDR_07, .nr=0, .board.x=3, .board.y=0, .enabled=true},
+    [1][0][0]={.addr=BOARD_ADDR_00, .nr=2, .board.x=1, .board.y=0, .board.z=0, .enabled=true},  [1][0][1]={.addr=BOARD_ADDR_00, .nr=2, .board.x=1, .board.y=0, .board.z=1, .enabled=true},
+    [1][1][0]={.addr=BOARD_ADDR_01, .nr=2, .board.x=1, .board.y=0, .board.z=0, .enabled=true},  [1][1][1]={.addr=BOARD_ADDR_01, .nr=2, .board.x=1, .board.y=0, .board.z=1, .enabled=true},
+    [1][2][0]={.addr=BOARD_ADDR_02, .nr=2, .board.x=1, .board.y=0, .board.z=0, .enabled=true},  [1][2][1]={.addr=BOARD_ADDR_02, .nr=2, .board.x=1, .board.y=0, .board.z=1, .enabled=true},
+
+    [2][0][0]={.addr=BOARD_ADDR_00, .nr=1, .board.x=2, .board.y=0, .board.z=0, .enabled=true},  [2][0][1]={.addr=BOARD_ADDR_00, .nr=1, .board.x=2, .board.y=0, .board.z=1, .enabled=true},
+    [2][1][0]={.addr=BOARD_ADDR_01, .nr=1, .board.x=2, .board.y=0, .board.z=0, .enabled=true},  [2][1][1]={.addr=BOARD_ADDR_01, .nr=1, .board.x=2, .board.y=0, .board.z=1, .enabled=true},
+    [2][2][0]={.addr=BOARD_ADDR_02, .nr=1, .board.x=2, .board.y=0, .board.z=0, .enabled=true},  [2][2][1]={.addr=BOARD_ADDR_02, .nr=1, .board.x=2, .board.y=0, .board.z=1, .enabled=true},
+
+    [3][0][0]={.addr=BOARD_ADDR_00, .nr=0, .board.x=3, .board.y=0, .board.z=0, .enabled=true},  [3][0][1]={.addr=BOARD_ADDR_00, .nr=0, .board.x=3, .board.y=0, .board.z=1, .enabled=true},
+    [3][1][0]={.addr=BOARD_ADDR_01, .nr=0, .board.x=3, .board.y=0, .board.z=0, .enabled=true},  [3][1][1]={.addr=BOARD_ADDR_01, .nr=0, .board.x=3, .board.y=0, .board.z=1, .enabled=true},
+    [3][2][0]={.addr=BOARD_ADDR_02, .nr=0, .board.x=3, .board.y=0, .board.z=0, .enabled=true},  [3][2][1]={.addr=BOARD_ADDR_02, .nr=0, .board.x=3, .board.y=0, .board.z=1, .enabled=true},
+
+    [4][0][0]={.addr=BOARD_ADDR_05, .nr=3, .board.x=0, .board.y=0, .board.z=0, .enabled=true},  [4][0][1]={.addr=BOARD_ADDR_05, .nr=3, .board.x=0, .board.y=0, .board.z=1, .enabled=true},
+    [4][1][0]={.addr=BOARD_ADDR_06, .nr=3, .board.x=0, .board.y=0, .board.z=0, .enabled=true},  [4][1][1]={.addr=BOARD_ADDR_06, .nr=3, .board.x=0, .board.y=0, .board.z=1, .enabled=true},
+    [4][2][0]={.addr=BOARD_ADDR_07, .nr=3, .board.x=0, .board.y=0, .board.z=0, .enabled=true},  [4][2][1]={.addr=BOARD_ADDR_07, .nr=3, .board.x=0, .board.y=0, .board.z=1, .enabled=true},
+
+    [5][0][0]={.addr=BOARD_ADDR_05, .nr=2, .board.x=1, .board.y=0, .board.z=0, .enabled=true},  [5][0][1]={.addr=BOARD_ADDR_05, .nr=2, .board.x=1, .board.y=0, .board.z=1, .enabled=true},
+    [5][1][0]={.addr=BOARD_ADDR_06, .nr=2, .board.x=1, .board.y=0, .board.z=0, .enabled=true},  [5][1][1]={.addr=BOARD_ADDR_06, .nr=2, .board.x=1, .board.y=0, .board.z=1, .enabled=true},
+    [5][2][0]={.addr=BOARD_ADDR_07, .nr=2, .board.x=1, .board.y=0, .board.z=0, .enabled=true},  [5][2][1]={.addr=BOARD_ADDR_07, .nr=2, .board.x=1, .board.y=0, .board.z=1, .enabled=true},
+
+    [6][0][0]={.addr=BOARD_ADDR_05, .nr=1, .board.x=2, .board.y=0, .board.z=0, .enabled=true},  [6][0][1]={.addr=BOARD_ADDR_05, .nr=1, .board.x=2, .board.y=0, .board.z=1, .enabled=true},
+    [6][1][0]={.addr=BOARD_ADDR_06, .nr=1, .board.x=2, .board.y=0, .board.z=0, .enabled=true},  [6][1][1]={.addr=BOARD_ADDR_06, .nr=1, .board.x=2, .board.y=0, .board.z=1, .enabled=true},
+    [6][2][0]={.addr=BOARD_ADDR_07, .nr=1, .board.x=2, .board.y=0, .board.z=0, .enabled=true},  [6][2][1]={.addr=BOARD_ADDR_07, .nr=1, .board.x=2, .board.y=0, .board.z=1, .enabled=true},
+
+    [7][0][0]={.addr=BOARD_ADDR_05, .nr=0, .board.x=3, .board.y=0, .board.z=0, .enabled=true},  [7][0][1]={.addr=BOARD_ADDR_05, .nr=0, .board.x=3, .board.y=0, .board.z=1, .enabled=true},
+    [7][1][0]={.addr=BOARD_ADDR_06, .nr=0, .board.x=3, .board.y=0, .board.z=0, .enabled=true},  [7][1][1]={.addr=BOARD_ADDR_06, .nr=0, .board.x=3, .board.y=0, .board.z=1, .enabled=true},
+    [7][2][0]={.addr=BOARD_ADDR_07, .nr=0, .board.x=3, .board.y=0, .board.z=0, .enabled=true},  [7][2][1]={.addr=BOARD_ADDR_07, .nr=0, .board.x=3, .board.y=0, .board.z=1, .enabled=true},
   };
 
   MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
