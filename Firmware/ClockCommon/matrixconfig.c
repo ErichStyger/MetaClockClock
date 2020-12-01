@@ -177,6 +177,7 @@
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
   const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
   {
+      /* \TODO update table to new format */
     [0][0]={.addr=BOARD_ADDR_00, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][0]={.addr=BOARD_ADDR_00, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][0]={.addr=BOARD_ADDR_00, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][0]={.addr=BOARD_ADDR_00, .nr=0, .board.x=3, .board.y=0, .enabled=true},
     [0][1]={.addr=BOARD_ADDR_01, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][1]={.addr=BOARD_ADDR_01, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][1]={.addr=BOARD_ADDR_01, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][1]={.addr=BOARD_ADDR_01, .nr=0, .board.x=3, .board.y=0, .enabled=true},
     [0][2]={.addr=BOARD_ADDR_02, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][2]={.addr=BOARD_ADDR_02, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][2]={.addr=BOARD_ADDR_02, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][2]={.addr=BOARD_ADDR_02, .nr=0, .board.x=3, .board.y=0, .enabled=true},
@@ -218,6 +219,7 @@
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS
   const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
   {
+    /* \TODO update table to new format */
     [0][0]={.addr=BOARD_ADDR_00, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][0]={.addr=BOARD_ADDR_00, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][0]={.addr=BOARD_ADDR_00, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][0]={.addr=BOARD_ADDR_00, .nr=0, .board.x=3, .board.y=0, .enabled=true},
     [0][1]={.addr=BOARD_ADDR_01, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][1]={.addr=BOARD_ADDR_01, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][1]={.addr=BOARD_ADDR_01, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][1]={.addr=BOARD_ADDR_01, .nr=0, .board.x=3, .board.y=0, .enabled=true},
     [0][2]={.addr=BOARD_ADDR_02, .nr=3, .board.x=0, .board.y=0, .enabled=true}, [1][2]={.addr=BOARD_ADDR_02, .nr=2, .board.x=1, .board.y=0, .enabled=true}, [2][2]={.addr=BOARD_ADDR_02, .nr=1, .board.x=2, .board.y=0, .enabled=true}, [3][2]={.addr=BOARD_ADDR_02, .nr=0, .board.x=3, .board.y=0, .enabled=true},
