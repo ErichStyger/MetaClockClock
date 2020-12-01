@@ -266,10 +266,18 @@ uint8_t NEO_TransferPixels(void) {
 static uint8_t PrintStatus(McuShell_ConstStdIOType *io) {
   uint8_t buf[32];
 
-  McuShell_SendStatusStr((unsigned char*)"neo", (const unsigned char*)"\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"neo", (const unsigned char*)"Status of NeoPixels\r\n", io->stdOut);
   McuUtility_Num32uToStr(buf, sizeof(buf), NEO_NOF_LANES);
   McuUtility_strcat(buf, sizeof(buf), (uint8_t*)"\r\n");
-  McuShell_SendStatusStr((uint8_t*)"  Lanes", buf, io->stdOut);
+  McuShell_SendStatusStr((uint8_t*)"  nofLanes", buf, io->stdOut);
+
+  McuUtility_Num32uToStr(buf, sizeof(buf), NEOC_LANE_START);
+  McuUtility_strcat(buf, sizeof(buf), (uint8_t*)"\r\n");
+  McuShell_SendStatusStr((uint8_t*)"  laneStart", buf, io->stdOut);
+
+  McuUtility_Num32uToStr(buf, sizeof(buf), NEOC_LANE_END);
+  McuUtility_strcat(buf, sizeof(buf), (uint8_t*)"\r\n");
+  McuShell_SendStatusStr((uint8_t*)"  laneEnd", buf, io->stdOut);
 
   McuUtility_Num32uToStr(buf, sizeof(buf), NEO_NOF_LEDS_IN_LANE);
   McuUtility_strcat(buf, sizeof(buf), (uint8_t*)"\r\n");

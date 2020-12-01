@@ -62,6 +62,9 @@
 #if PL_CONFIG_USE_SHT31
   #include "McuSHT31.h"
 #endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  #include "NeoPixel.h"
+#endif
 #include "McuLog.h"
 #include "leds.h"
 
@@ -129,6 +132,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #if PL_CONFIG_USE_BLE
   BLE_ParseCommand,
   BLEUART_CMDMODE_ParseCommand,
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  NEO_ParseCommand,
 #endif
 #if McuLog_CONFIG_PARSE_COMMAND_ENABLED
   McuLog_ParseCommand,

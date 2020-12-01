@@ -41,7 +41,7 @@ static void TestRing(void) {
   i = 0;
   NEO_ClearAllPixel();
   for(;;) {
-    for(int lane=0; lane<NEOC_NOF_LANES; lane++) {
+    for(int lane=NEOC_LANE_START; lane<=NEOC_LANE_END; lane++) {
       NEO_SetPixelRGB(lane, i, cR, cG, cB);
     }
     NEO_TransferPixels();
@@ -75,7 +75,7 @@ static void NeoTask(void *pv) {
   McuLog_trace("Starting Neo Task");
   NEO_ClearAllPixel();
   NEO_TransferPixels();
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_USE_LED_RING
   uint32_t color;
 
   vTaskDelay(pdMS_TO_TICKS(500)); /* wait a bit until to turn on LED hands */
@@ -96,7 +96,9 @@ static void NeoTask(void *pv) {
     res = xSemaphoreTake(semNeoUpdate, portMAX_DELAY); /* block until we get a request to update */
     if (res==pdTRUE) { /* received the signal */
       NEO_ClearAllPixel();
+   #if PL_CONFIG_USE_LED_RING
       MATRIX_IlluminateHands();
+   #endif
       NEO_TransferPixels();
     }
 #endif

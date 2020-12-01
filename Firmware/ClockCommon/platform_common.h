@@ -25,11 +25,13 @@
 #define PL_CONFIG_IS_K02           (PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128) /* Kinetis K02FN64 or K02FN128 */
 /* ********************************************************************************************************** */
 
+#ifndef PL_CONFIG_IS_ANALOG_CLOCK
+   #define PL_CONFIG_IS_ANALOG_CLOCK  (1) /* if it is an analog clock */
+#endif
+
 /* selection if master or client */
 #define PL_CONFIG_IS_MASTER        (PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* Master configuration, otherwise it is the client */
 #define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
-
-
 
 /* predefined Matrix configurations: */
 #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3 /* first small 'meta-clock, 6 LPC845 boards building a 8x3 matrix */
@@ -137,12 +139,17 @@
 #ifndef PL_CONFIG_USE_NEO_PIXEL_HW
   #define PL_CONFIG_USE_NEO_PIXEL_HW    (0 && (PL_CONFIG_BOARD_MASTER_K22_WS2812B || PL_CONFIG_IS_K02)) /* 1: drives NeoPixels/WS2812B directly on the board */
 #endif
-#define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
+#ifndef PL_CONFIG_USE_MOTOR_ON_OFF
+  #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
+#endif
 
 #define PL_CONFIG_USE_VIRTUAL_STEPPER (PL_CONFIG_BOARD_MASTER_K22_WS2812B)
 #define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
 #ifndef PL_CONFIG_USE_LED_RING
   #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available. This is used for showing the hands, etc */
+#endif
+#ifndef PL_CONFIG_USE_LED_PIXEL
+  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel is available */
 #endif
 #define PL_CONFIG_USE_LED_STEPPER     (0 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */

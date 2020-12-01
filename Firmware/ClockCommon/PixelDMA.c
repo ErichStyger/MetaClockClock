@@ -27,18 +27,20 @@
  * See https://mcuoneclipse.com/2015/08/05/tutorial-adafruit-ws2812b-neopixels-with-the-freescale-frdm-k64f-board-part-5-dma/
  * It uses the 8bit port of f the DMA_GPIO_PORT for the data, so 8bits in parallel.
  * */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64
   /* values for a 36 MHz FTM0 clock and a 96 MHz core clock! */
   #define FTM_CH0_TICKS 0x0A /* go high, start bit */
   #define FTM_CH1_TICKS 0x1A /* data bit, go low for 0 after 0.35us, stay high for 1 */
   #define FTM_CH2_TICKS 0x33 /* end of 1 bit, go low after 0.9us */
   #define FTM_OVL_TICKS 0x3C /* end of 1.25 us cycle for a 0 or 1 bit */
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
+#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
   /* values for a 60 MHz FTM0 clock and a 120 core clock! */
   #define FTM_CH0_TICKS 0x10 /* go high, start bit */
   #define FTM_CH1_TICKS 0x25 /* data bit, go low for 0 after 0.35us, stay high for 1 */
   #define FTM_CH2_TICKS 0x45 /* end of 1 bit, go low after 0.9us */
   #define FTM_OVL_TICKS 0x4A /* end of 1.25 us cycle for a 0 or 1 bit */
+#else
+  #error "unknown MCU"
 #endif
 
 #define DMA_BASE_PTR      (DMA0) /*((DMA_MemMapPtr)0x40008000u)*/
@@ -46,10 +48,13 @@
 #define FTM0_BASE_PTR     (FTM0)
 
 /* GPIO port used */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
+#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128 \
+  ||PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   #define DMA_GPIO_PORT     (GPIOC)
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
   #define DMA_GPIO_PORT     (GPIOD)
+#else
+  #error "unknown board"
 #endif
 
 void FTM0_IRQHandler(void) {
@@ -58,15 +63,15 @@ void FTM0_IRQHandler(void) {
   }
   if (FTM_PDD_GetChannelInterruptFlag(FTM0_BASE_PTR, 0)) {
     FTM_PDD_ClearChannelInterruptFlag(FTM0_BASE_PTR, 0);
-//    GPIOD_PDOR ^= (1<<1);
+//    GPIOD_PDOR ^= (1<<1); /* for debugging only */
   }
   if (FTM_PDD_GetChannelInterruptFlag(FTM0_BASE_PTR, 1)) {
     FTM_PDD_ClearChannelInterruptFlag(FTM0_BASE_PTR, 1);
-//    GPIOD_PDOR ^= (1<<2);
+//    GPIOD_PDOR ^= (1<<2); /* for debugging only */
   }
   if (FTM_PDD_GetChannelInterruptFlag(FTM0_BASE_PTR, 2)) {
     FTM_PDD_ClearChannelInterruptFlag(FTM0_BASE_PTR, 2);
-//    GPIOD_PDOR ^= (1<<3);
+//    GPIOD_PDOR ^= (1<<3); /* for debugging only */
   }
   __DSB();
 }
