@@ -62,7 +62,7 @@ STEPBOARD_Handle_t STEPBOARD_InitDevice(STEPBOARD_Config_t *config) {
       for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
         for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
           handle->stepper[x][y][z] = config->stepper[x][y][z];
-        #if PL_CONFIG_USE_NEO_PIXEL_HW
+        #if PL_CONFIG_USE_LED_RING
           handle->ledRing[x][y][z] = config->ledRing[x][y][z];
         #endif
         }

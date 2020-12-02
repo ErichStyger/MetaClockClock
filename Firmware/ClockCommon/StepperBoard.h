@@ -24,7 +24,7 @@ typedef struct STEPBOARD_Config_t {
   uint8_t addr;      /* RS-485 address */
   bool enabled;      /* if board is enabled or not */
   STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   NEOSR_Handle_t *ledRing[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z]; /* points to the LED ring device */
 #endif
 } STEPBOARD_Config_t;

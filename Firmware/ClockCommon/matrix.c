@@ -36,7 +36,7 @@
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   static uint32_t MATRIX_LedHandColor = 0x0000FF;
   static uint8_t MATRIX_LedHandBrightness = 0x10; /* led brightness, 0-255 */
 #endif
@@ -1025,6 +1025,7 @@ static uint8_t MATRIX_SendMatrixCmdToAllBoards(const unsigned char *cmd) {
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
+#if PL_CONFIG_IS_ANALOG_CLOCK
 static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuShell_StdIOType *io) {
   if (hour>=12) {
     hour = 0;
@@ -1055,10 +1056,45 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
   return ERR_OK;
 #endif
 }
+#else
+static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io) {
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485
+#warning "todo NYI"
+  #if 0 /* \todo not implemented yet */
+  #if PL_CONFIG_USE_DUAL_HANDS
+    MATRIX_Set2ndHandLedEnabledAll(false);
+  #endif
+    MATRIX_DrawAllClockHands(hour*360/12, hour*360/12);
+    MATRIX_DrawAllClockDelays(2, 2);
+    MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+  #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+    MATRIX_SetHandLedEnabledAll(true);
+    MATRIX_SetRingLedEnabledAll(false);
+  #endif
+  #endif
+  return MATRIX_SendToRemoteQueueExecuteAndWait(true);
+#elif PL_CONFIG_USE_STEPPER
+  /* moving all stepper motors to the start position. Will move them by the max steps so they hit the end stop */
+  int x, y, z;
 
+  for(x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0);
+      }
+    }
+  }
+  STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
+  return ERR_OK;
+#endif
+}
+#endif
+
+#if PL_CONFIG_IS_ANALOG_CLOCK
 uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io) {
   return MATRIX_MoveAlltoHour(12, timeoutMs, io);
 }
+#endif
 
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
@@ -1505,9 +1541,17 @@ static uint8_t MATRIX_Test(void) {
   for (int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+      #if PL_CONFIG_IS_ANALOG_CLOCK
         STEPPER_MoveClockDegreeRel(MATRIX_GetStepper(x, y, z), 180, STEPPER_MOVE_MODE_CW, delay, true, true);
+      #else
+        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), 300, delay);
+      #endif
         STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 50);
+      #if PL_CONFIG_IS_ANALOG_CLOCK
         STEPPER_MoveClockDegreeRel(MATRIX_GetStepper(x, y, z), 180, STEPPER_MOVE_MODE_CCW, delay, true, true);
+      #else
+        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), -300, delay);
+      #endif
         STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 50);
       }
     }
@@ -1625,7 +1669,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  stepper", buf, io->stdOut);
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"hand: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), MATRIX_LedHandColor);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
@@ -1778,8 +1822,15 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  ch <xyz> <rgb>", (unsigned char*)"Color hand (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  cr <xyz> <rgb>", (unsigned char*)"Color ring (comma separated)\r\n", io->stdOut);
 #endif
+
+#if PL_CONFIG_IS_ANALOG_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  r <xyz> <a> <d> <md>", (unsigned char*)"Relative angle move (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  a <xyz> <a> <d> <md>", (unsigned char*)"Absolute angle move (comma separated)\r\n", io->stdOut);
+#else
+  McuShell_SendHelpStr((unsigned char*)"  r <xyz> <s> <d> <md>", (unsigned char*)"Relative step move (comma separated)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  a <xyz> <s> <d> <md>", (unsigned char*)"Absolute step move (comma separated)\r\n", io->stdOut);
+#endif
+
   McuShell_SendHelpStr((unsigned char*)"  q <xyz> <cmd>", (unsigned char*)"Queue a 'r' or 'a' command, e.g. 'matrix q 0 0 0 r 90 8 cc', (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  exq", (unsigned char*)"Execute commands in stepper queue\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
@@ -1873,7 +1924,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       return ERR_FAILED;
     }
   #endif /* PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW */
-  } else if (McuUtility_strncmp((char*)cmd, "matrix r ", sizeof("matrix r ")-1)==0) { /* relative move, "matrix r <x> <y> <z> <a> <d> <md>" */
+  } else if (McuUtility_strncmp((char*)cmd, "matrix r ", sizeof("matrix r ")-1)==0) { /* relative move, "matrix r <x> <y> <z> <v> <d> <md>" */
     int32_t x, y, z;
 
     *handled = TRUE;
@@ -1884,7 +1935,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       }
       res = ParseMatrixCommand(&p, &x, &y, &z, &v, &d, &mode, &speedUp, &slowDown);
       if (res==ERR_OK) {
+        #if PL_CONFIG_IS_ANALOG_CLOCK
         STEPPER_MoveClockDegreeRel(MATRIX_GetStepper(x, y, z), v, mode, d, speedUp, slowDown);
+        #else
+        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), v, 0);
+        #endif
         STEPPER_StartTimer();
         res = ERR_OK;
       } else {
@@ -1903,7 +1958,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       }
       res = ParseMatrixCommand(&p, &x, &y, &z, &v, &d, &mode, &speedUp, &slowDown);
       if (res==ERR_OK) {
+        #if PL_CONFIG_IS_ANALOG_CLOCK
         STEPPER_MoveClockDegreeAbs(MATRIX_GetStepper(x, y, z), v, mode, d, speedUp, slowDown);
+        #else
+        STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), v, 0);
+        #endif
         STEPPER_StartTimer();
         res = ERR_OK;
       } else {
@@ -2382,7 +2441,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park on")==0) {
     *handled = TRUE;
+  #if PL_CONFIG_IS_ANALOG_CLOCK
     MATRIX_MoveAlltoHour(12, 10000, io);
+  #else
+    MATRIX_MoveAllToStartPosition(10000, io);
+  #endif
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
@@ -2417,7 +2480,7 @@ void MATRIX_TimerCallback(void) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
          stepper = MATRIX_GetStepper(x, y, z);
-         workToDo |= STEPPER_TimerClockCallback(stepper);
+         workToDo |= STEPPER_TimerStepperCallback(stepper);
        #if PL_CONFIG_USE_LED_DIMMING
          workToDo |= NEOSR_HandDimmingNotFinished(STEPPER_GetDevice(stepper));
        #endif
@@ -3243,7 +3306,7 @@ static void InitSteppers(void) {
   #error "check your configuration!"
 #endif
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   /* setup ring */
   NEOSR_Config_t stepperRingConfig;
 

@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
 #include "NeoStepperRingConfig.h"
 #include "NeoStepperRing.h"
 #include "stepper.h"
@@ -364,4 +364,4 @@ void NEOSR_Init(void) {
   /* nothing needed */
 }
 
-#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+#endif /* PL_CONFIG_USE_LED_RING */

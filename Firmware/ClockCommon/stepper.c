@@ -120,9 +120,15 @@ STEPPER_Handle_t STEPPER_InitDevice(STEPPER_Config_t *config) {
   #define STEPPER_STOP_TIMER()         PIT_StopTimer(PIT_BASEADDR, PIT_CHANNEL)
 #endif
 
-/* the degree of the move at the beginning and end which is used for acceleration and de-acceleration */
-#define STEPPER_ACCELERATION_RANGE_DEGREE   (25)
-#define STEPS_TO_DEGREE(steps)              (((steps)*360u)/STEPPER_CLOCK_360_STEPS)
+/* configuration of acceleration/de-accelration moves. Note: ideally this should be table driven */
+#if PL_CONFIG_IS_ANALOG_CLOCK
+  /* Check  Check AccelDelayDegree()! */
+  #define STEPPER_ACCELERATION_RANGE_DEGREE   (25)  /* acceleration is at the first 25 degree and the last 25 degree of the movement */
+  #define STEPS_TO_DEGREE(steps)              (((steps)*360u)/STEPPER_CLOCK_360_STEPS)
+#else
+/* Check  Check AccelDelaySteps()! */
+  #define STEPPER_ACCELERATION_RANGE_STEPS    (200) /* acceleration is within the first 200 steps and the last 200 steps */
+#endif
 
 void STEPPER_StopTimer(void) {
   STEPPER_STOP_TIMER();
@@ -141,9 +147,10 @@ void STEPPER_StartTimer(void) {
 
 #define STEP_SIZE  (1)
 
-static void AccelDelay(STEPPER_Device_t *dev, int32_t degree) {
+#if PL_CONFIG_IS_ANALOG_CLOCK
+static void AccelDelayDegree(STEPPER_Device_t *dev, int32_t degree) {
   /* this defines the acceleration/de-acceleration ramp depending on the step counter (at the beginning or at the end)
-   * The delayCntr will be increased to have a slow start with a slow end.
+   * The delayCntr will be increased to have a slow start and a slow end.
    */
   if (degree<=STEPPER_ACCELERATION_RANGE_DEGREE) {
     if (degree<=2) {
@@ -159,13 +166,33 @@ static void AccelDelay(STEPPER_Device_t *dev, int32_t degree) {
     }
   }
 }
+#else
+static void AccelDelaySteps(STEPPER_Device_t *dev, int32_t steps) {
+  /* this defines the acceleration/de-acceleration ramp depending on the step counter (at the beginning or at the end)
+   * The delayCntr will be increased to have a slow start and a slow end.
+   */
+  if (steps<=STEPPER_ACCELERATION_RANGE_STEPS) {
+    if (steps<=20) {
+      dev->delayCntr += 10;
+    } else if (steps<=50) {
+      dev->delayCntr += 7;
+    } else if (steps<=100) {
+      dev->delayCntr += 5;
+    } else if (steps<=150) {
+      dev->delayCntr += 3;
+    } else if (steps<=STEPPER_ACCELERATION_RANGE_STEPS) {
+      dev->delayCntr += 1;
+    }
+  }
+}
+#endif
 
 bool STEPPER_IsIdle(STEPPER_Handle_t stepper) {
   STEPPER_Device_t *mot = (STEPPER_Device_t*)stepper;
   return mot->doSteps==0;
 }
 
-bool STEPPER_TimerClockCallback(STEPPER_Handle_t stepper) {
+bool STEPPER_TimerStepperCallback(STEPPER_Handle_t stepper) {
   STEPPER_Device_t *mot = (STEPPER_Device_t*)stepper;
   int n;
 
@@ -197,17 +224,31 @@ bool STEPPER_TimerClockCallback(STEPPER_Handle_t stepper) {
     if (stepsToGo<0) { /* make it positive */
       stepsToGo = -stepsToGo;
     }
+#if PL_CONFIG_IS_ANALOG_CLOCK
     if (mot->speedup && STEPS_TO_DEGREE(stepsToGo)>STEPPER_ACCELERATION_RANGE_DEGREE) { /* accelerate if we are starting up */
       if (STEPS_TO_DEGREE(mot->accelStepCntr)<=STEPPER_ACCELERATION_RANGE_DEGREE) {
         mot->accelStepCntr += STEP_SIZE; /* increase acceleration step counter position up to the cap value */
       }
-      AccelDelay(mot, STEPS_TO_DEGREE(mot->accelStepCntr));
+      AccelDelayDegree(mot, STEPS_TO_DEGREE(mot->accelStepCntr));
     } else if (mot->slowdown && STEPS_TO_DEGREE(stepsToGo)<STEPPER_ACCELERATION_RANGE_DEGREE) { /* slow down at the end */
       if (mot->accelStepCntr>0) {
         mot->accelStepCntr -= STEP_SIZE; /* decrease the current de-accleration counter down to zero */
       }
-      AccelDelay(mot, STEPS_TO_DEGREE(mot->accelStepCntr));
+      AccelDelayDegree(mot, STEPS_TO_DEGREE(mot->accelStepCntr));
     }
+#else
+    if (mot->speedup && stepsToGo>STEPPER_ACCELERATION_RANGE_STEPS) { /* accelerate if we are starting up */
+      if (mot->accelStepCntr<=STEPPER_ACCELERATION_RANGE_STEPS) {
+        mot->accelStepCntr += STEP_SIZE; /* increase acceleration step counter position up to the cap value */
+      }
+      AccelDelaySteps(mot, mot->accelStepCntr);
+    } else if (mot->slowdown && stepsToGo<STEPPER_ACCELERATION_RANGE_STEPS) { /* slow down at the end */
+      if (mot->accelStepCntr>0) {
+        mot->accelStepCntr -= STEP_SIZE; /* decrease the current de-accleration counter down to zero */
+      }
+      AccelDelaySteps(mot, mot->accelStepCntr);
+    }
+#endif
   } /* speed up or slow down */
   return true; /* still work to do */
 }
@@ -266,6 +307,7 @@ static void Timer_Init(void) {
 #endif
 
 int32_t STEPPER_NormalizePos(STEPPER_Handle_t stepper) {
+  /* used to normalize the analog stepper position within 0...359 degrees */
   STEPPER_Device_t *device = (STEPPER_Device_t*)stepper;
 
   int32_t currPos;
@@ -273,17 +315,26 @@ int32_t STEPPER_NormalizePos(STEPPER_Handle_t stepper) {
 
   McuCriticalSection_EnterCritical();
   currPos = device->pos;
+#if PL_CONFIG_IS_ANALOG_CLOCK
   if (currPos<0) {
     currPos = (-currPos)%STEPPER_CLOCK_360_STEPS;
     currPos = STEPPER_CLOCK_360_STEPS-currPos;
   } else {
     currPos %= STEPPER_CLOCK_360_STEPS;
   }
+#else
+  if (currPos<0) {
+    currPos = 0;
+  } else if (currPos>STEPPER_FULL_RANGE_NOF_STEPS-1) {
+    currPos = STEPPER_FULL_RANGE_NOF_STEPS-1;
+  }
+#endif
   device->pos = currPos;
   McuCriticalSection_ExitCritical();
   return currPos;
 }
 
+#if PL_CONFIG_IS_ANALOG_CLOCK
 /*!
  * \brief Move clock to absolute degree position
  */
@@ -347,11 +398,12 @@ void STEPPER_MoveClockDegreeAbs(STEPPER_Handle_t stepper, int32_t degree, STEPPE
   device->speedup = speedUp;
   device->slowdown = slowDown;
 }
+#endif
 
 void STEPPER_MoveMotorStepsRel(STEPPER_Handle_t stepper, int32_t steps, uint16_t delay) {
   STEPPER_Device_t *device = (STEPPER_Device_t*)stepper;
 
-  (void)STEPPER_NormalizePos(stepper);  /* make it normalized: 0..STEPPER_CLOCK_360_STEPS-1 */
+  (void)STEPPER_NormalizePos(stepper);  /* make it normalized: 0..STEPPER_CLOCK_360_STEPS-1 or within range */
   device->doSteps = steps;
   device->accelStepCntr = 0;
   device->delay = delay;
@@ -360,6 +412,20 @@ void STEPPER_MoveMotorStepsRel(STEPPER_Handle_t stepper, int32_t steps, uint16_t
   device->slowdown = false;
 }
 
+void STEPPER_MoveMotorStepsAbs(STEPPER_Handle_t stepper, int32_t targetPos, uint16_t delay) {
+  STEPPER_Device_t *device = (STEPPER_Device_t*)stepper;
+
+  (void)STEPPER_NormalizePos(stepper);  /* make it normalized: 0..STEPPER_CLOCK_360_STEPS-1 or within range */
+  device->doSteps = targetPos-device->pos;
+  device->accelStepCntr = 0;
+  device->delay = delay;
+  device->delayCntr = delay;
+  device->speedup = false;
+  device->slowdown = false;
+}
+
+
+#if PL_CONFIG_IS_ANALOG_CLOCK
 /*!
  * \brief Move clock by relative degree
  */
@@ -373,7 +439,9 @@ void STEPPER_MoveMotorDegreeRel(STEPPER_Handle_t stepper, int32_t degree, uint16
   }
   STEPPER_MoveMotorStepsRel(stepper, steps, delay);
 }
+#endif
 
+#if PL_CONFIG_IS_ANALOG_CLOCK
 /*!
  * \brief Move clock by relative degree
  */
@@ -393,6 +461,7 @@ void STEPPER_MoveClockDegreeRel(STEPPER_Handle_t stepper, int32_t degree, STEPPE
   device->speedup = speedUp;
   device->slowdown = slowDown;
 }
+#endif
 
 void *STEPPER_GetDevice(STEPPER_Handle_t stepper) {
   STEPPER_Device_t *device = (STEPPER_Device_t*)stepper;
@@ -425,9 +494,14 @@ void STEPPER_StrCatStatus(STEPPER_Handle_t stepper, unsigned char *buf, size_t b
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   unsigned char buf[128];
 
-  McuShell_SendStatusStr((unsigned char*)"stepper", (unsigned char*)"Stepper clock settings\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"stepper", (unsigned char*)"Stepper settings\r\n", io->stdOut);
+#if PL_CONFIG_IS_ANALOG_CLOCK
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"360 degree steps: ");
   McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_CLOCK_360_STEPS);
+#else /* linear stepper */
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"range steps: ");
+  McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_FULL_RANGE_NOF_STEPS);
+#endif
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  steps", buf, io->stdOut);
   return ERR_OK;
