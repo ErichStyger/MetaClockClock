@@ -256,8 +256,6 @@ void MATRIX_SetLEDPixelColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8
   NEO_SetPixelRGB(NEOC_LANE_START, x*2, red, green, blue); /* pixel one */
   NEO_SetPixelRGB(NEOC_LANE_START, (x*2)+1, red, green, blue); /* pixel two */
 }
-#else
-  #error "NYI"
 #endif /* PL_CONFIG_USE_LED_RING */
 
 #if PL_CONFIG_USE_LED_RING

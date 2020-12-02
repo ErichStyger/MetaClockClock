@@ -11,14 +11,12 @@
 #include "NeoConfig.h"
 #include "McuShell.h"
 
-#define NEO_NOF_LANES           NEOC_NOF_LANES  /* number of LED lanes */
+#define NEO_LANE_START          NEOC_LANE_START  /* starting lane number */
+#define NEO_LANE_END            NEOC_LANE_END  /* end lane number */
 #define NEO_NOF_LEDS_IN_LANE    NEOC_NOF_LEDS_IN_LANE /* number of LEDS in each lane */
 #define NEO_NOF_PIXEL           NEOC_NOF_PIXEL /* total number of pixels */
 
 #define NEO_PIXEL_FIRST         (0) /* index of first pixel */
-#if (NEOC_NOF_LANES>8)
-  #error "can only handle up to 8 bits"
-#endif
 
 uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
