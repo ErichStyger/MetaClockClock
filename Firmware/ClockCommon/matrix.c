@@ -2983,48 +2983,47 @@ static void InitSteppers(void) {
 
   x12device[1] = McuX12_017_InitDevice(&x12config);
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
-  #error "verify/change the pin settings below!"
-  /* M0_DIR: */
+  /* M4_DIR: */
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
   x12config.motor[X12_017_M0].hw_dir.port = PORTE;
-  x12config.motor[X12_017_M0].hw_dir.pin  = 17U;
+  x12config.motor[X12_017_M0].hw_dir.pin  = 24U;
 
-  /* M0_STEP: */
-  x12config.motor[X12_017_M0].hw_step.gpio = GPIOE;
-  x12config.motor[X12_017_M0].hw_step.port = PORTE;
-  x12config.motor[X12_017_M0].hw_step.pin  = 16U;
+  /* M4_STEP: */
+  x12config.motor[X12_017_M0].hw_step.gpio = GPIOC;
+  x12config.motor[X12_017_M0].hw_step.port = PORTC;
+  x12config.motor[X12_017_M0].hw_step.pin  = 6U;
 
-  /* M1_DIR: */
-  x12config.motor[X12_017_M1].hw_dir.gpio = GPIOE;
-  x12config.motor[X12_017_M1].hw_dir.port = PORTE;
-  x12config.motor[X12_017_M1].hw_dir.pin  = 18U;
+  /* M5_DIR: */
+  x12config.motor[X12_017_M1].hw_dir.gpio = GPIOA;
+  x12config.motor[X12_017_M1].hw_dir.port = PORTA;
+  x12config.motor[X12_017_M1].hw_dir.pin  = 1U;
 
-  /* M1_STEP:  */
+  /* M5_STEP:  */
   x12config.motor[X12_017_M1].hw_step.gpio = GPIOE;
   x12config.motor[X12_017_M1].hw_step.port = PORTE;
-  x12config.motor[X12_017_M1].hw_step.pin  = 19U;
+  x12config.motor[X12_017_M1].hw_step.pin  = 25U;
 
-  /* M2_DIR: */
-  x12config.motor[X12_017_M2].hw_dir.gpio = GPIOB;
-  x12config.motor[X12_017_M2].hw_dir.port = PORTB;
-  x12config.motor[X12_017_M2].hw_dir.pin  = 1U;
+  /* M6_DIR: */
+  x12config.motor[X12_017_M2].hw_dir.gpio = GPIOA;
+  x12config.motor[X12_017_M2].hw_dir.port = PORTA;
+  x12config.motor[X12_017_M2].hw_dir.pin  = 4U;
 
-  /* M2_STEP:  */
-  x12config.motor[X12_017_M2].hw_step.gpio = GPIOB;
-  x12config.motor[X12_017_M2].hw_step.port = PORTB;
-  x12config.motor[X12_017_M2].hw_step.pin  = 0U;
-  x12config.motor[X12_017_M2].isInverted  = true;
+  /* M6_STEP:  */
+  x12config.motor[X12_017_M2].hw_step.gpio = GPIOA;
+  x12config.motor[X12_017_M2].hw_step.port = PORTA;
+  x12config.motor[X12_017_M2].hw_step.pin  = 2U;
 
-  /* M3_DIR: */
+  /* M7_DIR: */
   x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
   x12config.motor[X12_017_M3].hw_dir.port = PORTD;
-  x12config.motor[X12_017_M3].hw_dir.pin  = 5U;
+  x12config.motor[X12_017_M3].hw_dir.pin  = 6U;
 
-  /* M3_STEP: */
+  /* M7_STEP: */
   x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;
   x12config.motor[X12_017_M3].hw_step.port = PORTD;
-  x12config.motor[X12_017_M3].hw_step.pin  = 4U;
-  x12config.motor[X12_017_M3].isInverted  = true;
+  x12config.motor[X12_017_M3].hw_step.pin  = 7U;
+
+  x12device[1] = McuX12_017_InitDevice(&x12config);
 #else
   #error "configure 2nd driver!"
 #endif
@@ -3396,4 +3395,3 @@ void MATRIX_Init(void) {
 #endif
 #endif
 }
-

@@ -130,7 +130,6 @@ void McuRTOS_vApplicationIdleHook(void)
 #endif
 }
 
-
 /*
 ** ===================================================================
 **     Description :
