@@ -14,9 +14,11 @@
 #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK)
 
 /* assign matrix configuration used, only needed for master: */
-//#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_CLOCK_12x5_MOD)  /* modular round clock version */
-#define PL_MATRIX_CONFIGURATION_ID PL_MATRIX_ID_CLOCK_8x3 /* original meta clock with 24 clocks */
-//#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_SMARTWALL_8x5) /* new Sm(A)rtWall project */
+//#define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3 /* original meta clock with 24 clocks */
+// nyi #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_60B
+//#define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_MOD  /* modular round clock version */
+#define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x9_ALEXIS
+//#define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_8x5 /* new Sm(A)rtWall project */
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
 

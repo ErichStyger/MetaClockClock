@@ -807,15 +807,15 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
-      if (clockMatrix[x][y].addr==addr && clockMatrix[x][y].enabled) { /* check if is a matching board and clock is enabled */
-        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
           if (matrix.colorHandMap[x][y][z]!=prevMatrix.colorHandMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.x); /* <x> */
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.y); /* <y> */
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
             McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hand rgb 0x");
@@ -848,15 +848,15 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
-      if (clockMatrix[x][y].addr==addr && clockMatrix[x][y].enabled) { /* check if is a matching board and clock is enabled */
-        for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
           if (matrix.colorRingMap[x][y][z]!=prevMatrix.colorRingMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.x); /* <x> */
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.y); /* <y> */
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
             McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ring rgb 0x");
