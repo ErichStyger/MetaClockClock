@@ -1473,7 +1473,7 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   }
   McuLog_trace("Move hands CCW to find sensor");
   /* move ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 3000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 10000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
