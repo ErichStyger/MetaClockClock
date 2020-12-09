@@ -114,9 +114,7 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
   STEPPER_Handle_t stepper;
   STEPBOARD_Handle_t board;
 
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return NULL;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_IS_MASTER
   board = MATRIX_AddrGetBoard(clockMatrix[x][y][z].addr);
   if (board==NULL) {
@@ -141,9 +139,7 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
 
 #if PL_CONFIG_USE_LED_RING
 NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return NULL;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_VIRTUAL_STEPPER /* virtual stepper */
   return STEPPER_GetDevice(MATRIX_GetStepper(x, y, z));
 #elif PL_CONFIG_USE_X12_LED_STEPPER
@@ -191,36 +187,28 @@ void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
 
 #if PL_CONFIG_USE_LED_RING
 void MATRIX_SetHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_SetHandColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
 }
 #endif
 
 #if PL_CONFIG_USE_LED_DIMMING
 void MATRIX_SetHandBrightness(int32_t x, int32_t y, int32_t z, uint8_t brightness) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_SetHandBrightness(MATRIX_GetLedRingDevice(x, y, z), brightness);
 }
 #endif
 
 #if PL_CONFIG_USE_LED_DIMMING
 void MATRIX_StartHandDimming(int32_t x, int32_t y, int32_t z, uint8_t targetBrightness) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_StartHandDimming(MATRIX_GetLedRingDevice(x, y, z), targetBrightness);
 }
 #endif
 
 #if PL_CONFIG_USE_DUAL_HANDS
 void MATRIX_Set2ndHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_Set2ndHandColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
 }
 #endif
@@ -266,9 +254,7 @@ void MATRIX_SetLEDPixelColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8
 
 #if PL_CONFIG_USE_LED_RING
 void MATRIX_SetRingColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_SetRingColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
 }
 #endif /* PL_CONFIG_USE_LED_RING */
@@ -287,9 +273,7 @@ void MATRIX_SetRingColorAll(uint8_t red, uint8_t green, uint8_t blue) {
 
 #if PL_CONFIG_USE_LED_RING
 void MATRIX_SetRingLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   NEOSR_SetRingLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
 #else
@@ -339,9 +323,7 @@ void MATRIX_SetRingLedEnabledAll(bool on) {
 
 #if PL_CONFIG_USE_LED_RING
 void MATRIX_SetHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   NEOSR_SetHandLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
 #else
@@ -371,9 +353,7 @@ void MATRIX_SetHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
 
 #if PL_CONFIG_USE_DUAL_HANDS
 void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_Set2ndHandLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
 }
 #endif
@@ -439,9 +419,7 @@ void MATRIX_Delay(int32_t ms) {
 
 #if PL_CONFIG_IS_MASTER
 void MATRIX_DrawClockHand(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   matrix.angleMap[x][y][z] = angle;
 }
 
@@ -456,9 +434,7 @@ uint8_t MATRIX_DrawClockHands(uint8_t x, uint8_t y, int16_t angle0, int16_t angl
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   MATRIX_SetHandLedEnabled(x, y, 0, on0);
   MATRIX_SetHandLedEnabled(x, y, 1, on1);
 }
@@ -476,9 +452,7 @@ uint8_t MATRIX_DrawAllClockHands(int16_t angle0, int16_t angle1) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   matrix.colorHandMap[x][y][z] = color;
 }
 #endif
@@ -497,9 +471,7 @@ void MATRIX_DrawAllHandColor(uint32_t color) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
-    return;
-  }
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   matrix.colorRingMap[x][y][z] = color;
 }
 #endif
@@ -3268,16 +3240,16 @@ static void InitSteppers(void) {
   stepBoardConfig.stepper[1][0][1] = stepper[3];
   #endif
   #if MATRIX_NOF_STEPPERS>=5
-  stepBoardConfig.stepper[1][0][0] = stepper[4];
+  stepBoardConfig.stepper[2][0][0] = stepper[4];
   #endif
   #if MATRIX_NOF_STEPPERS>=6
-  stepBoardConfig.stepper[1][0][1] = stepper[5];
+  stepBoardConfig.stepper[2][0][1] = stepper[5];
   #endif
   #if MATRIX_NOF_STEPPERS>=7
-  stepBoardConfig.stepper[1][1][0] = stepper[6];
+  stepBoardConfig.stepper[3][0][0] = stepper[6];
   #endif
   #if MATRIX_NOF_STEPPERS>=8
-  stepBoardConfig.stepper[1][1][1] = stepper[7];
+  stepBoardConfig.stepper[3][0][1] = stepper[7];
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   #if MATRIX_NOF_STEPPERS>=1

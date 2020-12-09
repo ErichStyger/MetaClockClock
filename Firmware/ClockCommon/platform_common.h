@@ -87,7 +87,7 @@
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (2)
   #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (2)
-#elif PL_CONFIG_USE_VIRTUAL_STEPPER /* artificial steppers for virtual (LED) steppers */
+#elif PL_CONFIG_USE_VIRTUAL_STEPPER /* artificial steppers for virtual (LED) steppers, using a 4x1 setting */
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_X   (4)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (2)
