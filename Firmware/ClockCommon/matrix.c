@@ -3228,28 +3228,28 @@ static void InitSteppers(void) {
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4
   #if MATRIX_NOF_STEPPERS>=1
-  stepBoardConfig.stepper[0][0][0] = stepper[0];
+  stepBoardConfig.stepper[0][0][0] = stepper[6];
   #endif
   #if MATRIX_NOF_STEPPERS>=2
-  stepBoardConfig.stepper[0][0][1] = stepper[1];
+  stepBoardConfig.stepper[0][0][1] = stepper[7];
   #endif
   #if MATRIX_NOF_STEPPERS>=3
-  stepBoardConfig.stepper[1][0][0] = stepper[2];
+  stepBoardConfig.stepper[1][0][0] = stepper[4];
   #endif
   #if MATRIX_NOF_STEPPERS>=4
-  stepBoardConfig.stepper[1][0][1] = stepper[3];
+  stepBoardConfig.stepper[1][0][1] = stepper[5];
   #endif
   #if MATRIX_NOF_STEPPERS>=5
-  stepBoardConfig.stepper[2][0][0] = stepper[4];
+  stepBoardConfig.stepper[2][0][0] = stepper[2];
   #endif
   #if MATRIX_NOF_STEPPERS>=6
-  stepBoardConfig.stepper[2][0][1] = stepper[5];
+  stepBoardConfig.stepper[2][0][1] = stepper[3];
   #endif
   #if MATRIX_NOF_STEPPERS>=7
-  stepBoardConfig.stepper[3][0][0] = stepper[6];
+  stepBoardConfig.stepper[3][0][0] = stepper[0];
   #endif
   #if MATRIX_NOF_STEPPERS>=8
-  stepBoardConfig.stepper[3][0][1] = stepper[7];
+  stepBoardConfig.stepper[3][0][1] = stepper[1];
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   #if MATRIX_NOF_STEPPERS>=1
