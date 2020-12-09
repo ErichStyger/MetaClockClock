@@ -17,7 +17,7 @@
 
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
-#define PL_CONFIG_USE_MAG_SENSOR        (1)
+#define PL_CONFIG_USE_MAG_SENSOR        (1) /* if using magnets */
 
 #include "platform_common.h"
 

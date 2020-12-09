@@ -1793,8 +1793,8 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  hand rgb all <rgb>", (unsigned char*)"Set color for all hands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  ring rgb all <rgb>", (unsigned char*)"Set color for all rings\r\n", io->stdOut);
 
-  McuShell_SendHelpStr((unsigned char*)"  hand rgb <xyz> <rgb>", (unsigned char*)"Set single hand color\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  ring rgb <xyz> <rgb>", (unsigned char*)"Set single ring color\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  hand rgb <xyz> <rgb>", (unsigned char*)"Set single hand color (comma separated)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  ring rgb <xyz> <rgb>", (unsigned char*)"Set single ring color (comma separated)\r\n", io->stdOut);
 
   #if PL_CONFIG_USE_DUAL_HANDS
   McuShell_SendHelpStr((unsigned char*)"  2nd enable <xyz> on|off", (unsigned char*)"Enable single 2nd hand LED\r\n", io->stdOut);
@@ -1819,11 +1819,6 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  R <xyz> <a> <d> <md>", (unsigned char*)"Relative angle move for LED and motor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  A <xyz> <a> <d> <md>", (unsigned char*)"Absolute angle move for LED and motor\r\n", io->stdOut);
 #endif
-#if PL_CONFIG_USE_LED_RING
-  McuShell_SendHelpStr((unsigned char*)"  ch <xyz> <rgb>", (unsigned char*)"Color hand (comma separated)\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  cr <xyz> <rgb>", (unsigned char*)"Color ring (comma separated)\r\n", io->stdOut);
-#endif
-
 #if PL_CONFIG_IS_ANALOG_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  r <xyz> <a> <d> <md>", (unsigned char*)"Relative angle move (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  a <xyz> <a> <d> <md>", (unsigned char*)"Absolute angle move (comma separated)\r\n", io->stdOut);

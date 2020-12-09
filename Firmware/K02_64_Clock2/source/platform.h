@@ -19,6 +19,7 @@
 #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* has NeoPixels */
 #define PL_CONFIG_USE_LED_RING          (1 && PL_CONFIG_USE_NEO_PIXEL_HW)
 #define PL_CONFIG_USE_X12_LED_STEPPER   (1 && PL_CONFIG_USE_LED_RING) /* stepper motors with rings */
+#define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
 
 #include "platform_common.h"
 

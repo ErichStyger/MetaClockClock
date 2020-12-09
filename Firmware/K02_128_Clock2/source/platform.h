@@ -13,15 +13,13 @@
 /* select the board used: */
 #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_K02FN128)
 
-///* assign matrix configuration used, only needed for master: */
-//#define PL_MATRIX_CONFIGURATION_ID    (PL_MATRIX_ID_SMARTWALL_8x5)
-
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
-#define PL_CONFIG_USE_MAG_SENSOR        (1)
 #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* has NeoPixels */
 #define PL_CONFIG_USE_LED_RING          (1 && PL_CONFIG_USE_NEO_PIXEL_HW)
 #define PL_CONFIG_USE_X12_LED_STEPPER   (1 && PL_CONFIG_USE_LED_RING) /* stepper motors with rings */
+#define PL_CONFIG_USE_MAG_SENSOR        (0) /* not using magnets */
+#define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
 
 #include "platform_common.h"
 

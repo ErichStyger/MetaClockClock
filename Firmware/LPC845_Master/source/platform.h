@@ -13,23 +13,24 @@
 /* select the board used: */
 #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK)
 
-#if 1
+#if 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3 /* original meta clock with 24 clocks */
-#elif 0 /* out of memory? */
+#elif 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_60B  /* 60 billion lights */
   #define PL_CONFIG_USE_VIRTUAL_STEPPER   (0) /* not have the hardware on LPC845-BRK */
-#elif 0
+#elif 1
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_MOD  /* modular round clock version */
+  #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
 #elif 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x9_ALEXIS
 #elif 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_8x5 /* new Sm(A)rtWall project */
+  #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
 #else
   #error
 #endif
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
-
 #include "platform_common.h"
 
 void PL_InitFromTask(void);
