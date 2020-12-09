@@ -16,12 +16,12 @@
 /* assign matrix configuration used, only needed for master: */
 #if 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3 /* original meta clock with 24 clocks */
-#elif 1
+#elif 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_60B  /* 60 billion lights */
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1)
   #define PL_CONFIG_USE_LED_RING          (1)
   #define PL_CONFIG_USE_VIRTUAL_STEPPER   (1)
-#elif 0
+#elif 1
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_MOD  /* modular round clock version */
 #elif 0
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x9_ALEXIS
