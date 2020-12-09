@@ -91,12 +91,14 @@ bool STEPBOARD_IsEnabled(STEPBOARD_Handle_t board) {
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int x, int y, int z) {
+  assert(x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X && y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y && z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z);
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
   return handle->ledRing[x][y][z];
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int x, int y, int z) {
+  assert(x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X && y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y && z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z);
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
   return handle->stepper[x][y][z];
 }

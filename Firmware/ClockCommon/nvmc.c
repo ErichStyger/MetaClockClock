@@ -388,7 +388,7 @@ int16_t NVMC_GetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z) {
 
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   const NVMC_Data_t *data;
-  uint8_t buf[48];
+  uint8_t buf[64];
 
   McuShell_SendStatusStr((unsigned char*)"nvmc", (unsigned char*)"Non-volatile memory configuration area\r\n", io->stdOut);
   if (NVMC_IsErased()) {

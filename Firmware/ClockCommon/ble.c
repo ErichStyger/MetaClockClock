@@ -502,7 +502,7 @@ uint8_t BLE_FactoryReset(void) {
 }
 
 static uint8_t BLE_PrintStatus(const McuShell_StdIOType *io) {
-  McuShell_SendStatusStr((const unsigned char*)"ble", (unsigned char*)"\r\n", io->stdOut);
+  McuShell_SendStatusStr((const unsigned char*)"ble", (unsigned char*)"Bluefruit status\r\n", io->stdOut);
   if (McuGPIO_GetValue(BLE_IRQ)) {
     McuShell_SendStatusStr((const unsigned char*)"  IRQ", (unsigned char*)"HIGH (data waiting)\r\n", io->stdOut);
   } else {

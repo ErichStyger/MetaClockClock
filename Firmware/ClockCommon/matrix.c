@@ -122,7 +122,12 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
   if (board==NULL) {
     return NULL;
   }
-  stepper = STEPBOARD_GetStepper(board, x, y, z);
+  int boardX, boardY, boardZ;
+
+  boardX = clockMatrix[x][y][z].board.x;
+  boardY = clockMatrix[x][y][z].board.y;
+  boardZ = clockMatrix[x][y][z].board.z;
+  stepper = STEPBOARD_GetStepper(board, boardX, boardY, boardZ);
 #else
   board = STEPBOARD_GetBoard();
   if (board==NULL) {
@@ -222,8 +227,8 @@ void MATRIX_Set2ndHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_
 
 #if PL_CONFIG_USE_LED_RING
 void MATRIX_SetHandColorAll(uint8_t red, uint8_t green, uint8_t blue) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MATRIX_SetHandColor(x, y, z, red, green, blue);
     #if PL_CONFIG_USE_DUAL_HANDS
@@ -2627,13 +2632,12 @@ static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, in
   STEPBOARD_GetDefaultConfig(&stepBoardConfig);
   NEOSR_GetDefaultConfig(&stepperRingConfig);
 
-  /* setup ring */
+  /* setup ring: note that we assume a virtual 1x4 board layout, so it has a total of 8 rings */
   stepperRingConfig.ledLane = ledLane;
   stepperRingConfig.ledStartPos = ledStartPos;
   stepperRingConfig.ledCw = false;
   ring[0] = NEOSR_InitDevice(&stepperRingConfig);
   ring[1] = NEOSR_InitDevice(&stepperRingConfig);
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
   stepperRingConfig.ledStartPos = ledStartPos+40;
   ring[2] = NEOSR_InitDevice(&stepperRingConfig);
   ring[3] = NEOSR_InitDevice(&stepperRingConfig);
@@ -2645,7 +2649,7 @@ static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, in
   stepperRingConfig.ledStartPos = ledStartPos+120;
   ring[6] = NEOSR_InitDevice(&stepperRingConfig);
   ring[7] = NEOSR_InitDevice(&stepperRingConfig);
-#endif
+
   /* setup stepper */
   stepperConfig.stepFn = NULL;
 
@@ -2653,7 +2657,6 @@ static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, in
   stepper[0] = STEPPER_InitDevice(&stepperConfig);
   stepperConfig.device = ring[1];
   stepper[1] = STEPPER_InitDevice(&stepperConfig);
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
   stepperConfig.device = ring[2];
   stepper[2] = STEPPER_InitDevice(&stepperConfig);
   stepperConfig.device = ring[3];
@@ -2666,28 +2669,32 @@ static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, in
   stepper[6] = STEPPER_InitDevice(&stepperConfig);
   stepperConfig.device = ring[7];
   stepper[7] = STEPPER_InitDevice(&stepperConfig);
-#endif
 
   /* setup board */
   stepBoardConfig.addr = addr;
   stepBoardConfig.enabled = boardEnabled;
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
-  stepBoardConfig.stepper[0][0] = stepper[1];
-  stepBoardConfig.stepper[0][1] = stepper[0];
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
-  stepBoardConfig.stepper[0][0][0] = stepper[7];
-  stepBoardConfig.stepper[0][0][1] = stepper[6];
-  stepBoardConfig.stepper[1][0][0] = stepper[5];
-  stepBoardConfig.stepper[1][0][1] = stepper[4];
-  stepBoardConfig.stepper[2][0][0] = stepper[3];
-  stepBoardConfig.stepper[2][0][1] = stepper[2];
-  stepBoardConfig.stepper[3][0][0] = stepper[1];
-  stepBoardConfig.stepper[3][0][1] = stepper[0];
-#endif
+
+  stepBoardConfig.ledRing[0][0][0] = ring[0];
+  stepBoardConfig.ledRing[0][0][1] = ring[1];
+  stepBoardConfig.ledRing[1][0][0] = ring[2];
+  stepBoardConfig.ledRing[1][0][1] = ring[3];
+  stepBoardConfig.ledRing[2][0][0] = ring[4];
+  stepBoardConfig.ledRing[2][0][1] = ring[5];
+  stepBoardConfig.ledRing[3][0][0] = ring[6];
+  stepBoardConfig.ledRing[3][0][1] = ring[7];
+
+  stepBoardConfig.stepper[0][0][0] = stepper[0];
+  stepBoardConfig.stepper[0][0][1] = stepper[1];
+  stepBoardConfig.stepper[1][0][0] = stepper[2];
+  stepBoardConfig.stepper[1][0][1] = stepper[3];
+  stepBoardConfig.stepper[2][0][0] = stepper[4];
+  stepBoardConfig.stepper[2][0][1] = stepper[5];
+  stepBoardConfig.stepper[3][0][0] = stepper[6];
+  stepBoardConfig.stepper[3][0][1] = stepper[7];
 
   MATRIX_Boards[boardNo] = STEPBOARD_InitDevice(&stepBoardConfig);
 }
-#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+#endif /* PL_CONFIG_USE_VIRTUAL_STEPPER */
 
 #if PL_CONFIG_USE_VIRTUAL_STEPPER
 static void InitLedRings(void) {
