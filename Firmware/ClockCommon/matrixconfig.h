@@ -14,27 +14,27 @@
 #if PL_CONFIG_IS_MASTER
 /* configuration for master: */
 #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
-  #define MATRIX_NOF_BOARDS         (6)   /* total number of boards in matrix */
+  #define MATRIX_NOF_BOARDS           (6)   /* total number of boards in matrix */
   #define MATRIX_NOF_STEPPERS_X       (8)   /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (3)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
-  #define MATRIX_NOF_BOARDS         (38)  /* total number of boards in matrix */
+  #define MATRIX_NOF_BOARDS           (38)  /* total number of boards in matrix */
   #define MATRIX_NOF_STEPPERS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
-  #define MATRIX_NOF_BOARDS         (15)  /* total number of boards in matrix */
+  #define MATRIX_NOF_BOARDS           (15)  /* total number of boards in matrix */
   #define MATRIX_NOF_STEPPERS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS
-  #define MATRIX_NOF_BOARDS         (4*9)  /* total number of boards in matrix */
+  #define MATRIX_NOF_BOARDS           (4*9)  /* total number of boards in matrix */
   #define MATRIX_NOF_STEPPERS_X       (16)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (9)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
-  #define MATRIX_NOF_BOARDS         (5)  /* total number of boards in matrix */
+  #define MATRIX_NOF_BOARDS           (5)  /* total number of boards in matrix */
   #define MATRIX_NOF_STEPPERS_X       (8)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (1)   /* number of clocks in z direction */

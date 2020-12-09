@@ -19,19 +19,12 @@
   #define NEOC_LANE_START        (5) /* this is the first GPIO pin used */
   #define NEOC_LANE_END          (5) /* this is the last GPIO pin used */
   #define NEOC_NOF_LEDS_IN_LANE  (2*8) /* number of LEDs in a lane */
-#else
-  #error "check!"
-  #if PL_MATRIX_CONFIG_IS_8x3
-    #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
-    #define NEOC_LANE_END          (3) /* this is the last GPIO pin used */
-    #define NEOC_NOF_LEDS_IN_LANE  (8*40) /* number of LEDs in each lane */
-  #elif PL_MATRIX_CONFIG_IS_12x5
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (4) /* this is the last GPIO pin used */
     #define NEOC_NOF_LEDS_IN_LANE  (12*40) /* number of LEDs in each lane */
-  #else
-    #error "unknown"
-  #endif
+#else
+  #error "unknown"
 #endif
 
 #if (NEOC_NOF_LANES>8)

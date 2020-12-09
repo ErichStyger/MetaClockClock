@@ -118,11 +118,11 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
     return NULL;
   }
 #if PL_CONFIG_IS_MASTER
-  board = MATRIX_AddrGetBoard(clockMatrix[x][y].addr);
+  board = MATRIX_AddrGetBoard(clockMatrix[x][y][z].addr);
   if (board==NULL) {
     return NULL;
   }
-  stepper = STEPBOARD_GetStepper(board, clockMatrix[x][y].nr, z);
+  stepper = STEPBOARD_GetStepper(board, x, y, z);
 #else
   board = STEPBOARD_GetBoard();
   if (board==NULL) {
@@ -139,12 +139,13 @@ NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
   if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y || z>=MATRIX_NOF_STEPPERS_Z) {
     return NULL;
   }
-#if PL_CONFIG_USE_LED_STEPPER /* virtual stepper */
+#if PL_CONFIG_USE_VIRTUAL_STEPPER /* virtual stepper */
   return STEPPER_GetDevice(MATRIX_GetStepper(x, y, z));
 #elif PL_CONFIG_USE_X12_LED_STEPPER
   return STEPBOARD_GetStepperLedRing(MATRIX_Boards[0], x, y, z);
 #else
   #error "wrong configuration"
+  return ERR_FAILED;
 #endif
 }
 #endif /* PL_CONFIG_USE_LED_RING */
@@ -688,9 +689,9 @@ static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_
 
   /*  matrix q <x> <y> <z> a <angle> <delay> <mode> */
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
-  McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.x); /* <x> */
+  McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
   McuUtility_chcat(buf, sizeof(buf), ' ');
-  McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y].board.y); /* <y> */
+  McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
   McuUtility_chcat(buf, sizeof(buf), ' ');
   McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
   McuUtility_strcat(buf, sizeof(buf), absolute?(unsigned char*)" a ":(unsigned char*)" r ");
@@ -699,7 +700,7 @@ static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_
   McuUtility_strcatNum16u(buf, sizeof(buf), delay); /* <d> */
   McuUtility_chcat(buf, sizeof(buf), ' ');
   McuUtility_strcat(buf, sizeof(buf), GetModeString(mode, speedUp, slowDown));
-  (void)RS485_SendCommand(clockMatrix[x][y].addr, buf, 1000, true, 1); /* queue the command for the remote boards */
+  (void)RS485_SendCommand(clockMatrix[x][y][z].addr, buf, 1000, true, 1); /* queue the command for the remote boards */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   /* build a command for the LED rings:  */
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
@@ -1037,7 +1038,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
   MATRIX_DrawAllClockHands(hour*360/12, hour*360/12);
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(true);
   MATRIX_SetRingLedEnabledAll(false);
 #endif
@@ -1067,7 +1068,7 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
     MATRIX_DrawAllClockHands(hour*360/12, hour*360/12);
     MATRIX_DrawAllClockDelays(2, 2);
     MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+  #if PL_CONFIG_USE_LED_RING
     MATRIX_SetHandLedEnabledAll(true);
     MATRIX_SetRingLedEnabledAll(false);
   #endif
@@ -1172,7 +1173,7 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
   uint8_t x, y;
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
@@ -1205,7 +1206,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
   uint8_t x, y;
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
@@ -1231,7 +1232,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
   buf[0] = '\0';
@@ -1249,7 +1250,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
   uint8_t x, y;
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
@@ -1274,7 +1275,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
   buf[0] = '\0';
@@ -1291,7 +1292,7 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
   uint8_t x, y;
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
@@ -1316,7 +1317,7 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   uint8_t buf[8];
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   MATRIX_SetHandLedEnabledAll(false);
 #endif
   buf[0] = '\0';
@@ -1918,7 +1919,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       /* send it to the ourselve as master first. RS485_SendCommand() below will wait for the OK which adds time. */
       (void)RS485_SendCommand(RS485_GetAddress(), (unsigned char*)"matrix exq", 1000, true, 0);
       /* send execute to the deviceon the bus: */
-      (void)RS485_SendCommand(clockMatrix[x][y].addr, (unsigned char*)"matrix exq", 1000, true, 0); /* execute the queue */
+      (void)RS485_SendCommand(clockMatrix[x][y][z].addr, (unsigned char*)"matrix exq", 1000, true, 0); /* execute the queue */
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -2508,7 +2509,7 @@ void MATRIX_IlluminateHands(void) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         stepper = MATRIX_GetStepper(x, y, z);
         pos = STEPPER_GetPos(stepper);
-    #if PL_CONFIG_USE_LED_STEPPER /* virtual LED stepper only */
+    #if PL_CONFIG_USE_VIRTUAL_STEPPER /* virtual LED stepper only */
         NEOSR_Illuminate(STEPPER_GetDevice(stepper), pos);
     #elif PL_CONFIG_USE_X12_LED_STEPPER /* stepper motor combined with LED ring */
         NEOSR_Handle_t ledRing;
@@ -2618,12 +2619,12 @@ static void MatrixQueueTask(void *pv) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_STEPPER
+#if PL_CONFIG_USE_VIRTUAL_STEPPER
 static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, int ledLane, int ledStartPos) {
   NEOSR_Config_t stepperRingConfig;
-  NEOSR_Handle_t ring[PL_CONFIG_NOF_STEPPER_ON_BOARD*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
+  NEOSR_Handle_t ring[PL_CONFIG_NOF_STEPPER_ON_BOARD_X*PL_CONFIG_NOF_STEPPER_ON_BOARD_Y*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
   STEPPER_Config_t stepperConfig;
-  STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
+  STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD_X*PL_CONFIG_NOF_STEPPER_ON_BOARD_Y*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
   STEPBOARD_Config_t stepBoardConfig;
 
   /* get default configurations */
@@ -2679,21 +2680,21 @@ static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, in
   stepBoardConfig.stepper[0][0] = stepper[1];
   stepBoardConfig.stepper[0][1] = stepper[0];
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
-  stepBoardConfig.stepper[0][0] = stepper[7];
-  stepBoardConfig.stepper[0][1] = stepper[6];
-  stepBoardConfig.stepper[1][0] = stepper[5];
-  stepBoardConfig.stepper[1][1] = stepper[4];
-  stepBoardConfig.stepper[2][0] = stepper[3];
-  stepBoardConfig.stepper[2][1] = stepper[2];
-  stepBoardConfig.stepper[3][0] = stepper[1];
-  stepBoardConfig.stepper[3][1] = stepper[0];
+  stepBoardConfig.stepper[0][0][0] = stepper[7];
+  stepBoardConfig.stepper[0][0][1] = stepper[6];
+  stepBoardConfig.stepper[1][0][0] = stepper[5];
+  stepBoardConfig.stepper[1][0][1] = stepper[4];
+  stepBoardConfig.stepper[2][0][0] = stepper[3];
+  stepBoardConfig.stepper[2][0][1] = stepper[2];
+  stepBoardConfig.stepper[3][0][0] = stepper[1];
+  stepBoardConfig.stepper[3][0][1] = stepper[0];
 #endif
 
   MATRIX_Boards[boardNo] = STEPBOARD_InitDevice(&stepBoardConfig);
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
-#if PL_CONFIG_USE_LED_STEPPER
+#if PL_CONFIG_USE_VIRTUAL_STEPPER
 static void InitLedRings(void) {
 #if PL_CONFIG_IS_MASTER
 #if PL_MATRIX_CONFIG_IS_8x3
@@ -2757,7 +2758,7 @@ static void InitLedRings(void) {
   CreateBoardLedRings(0, RS485_GetAddress(), true, 0, 0);
 #endif /* PL_CONFIG_IS_MASTER */
 }
-#endif /* PL_CONFIG_USE_LED_STEPPER */
+#endif /* PL_CONFIG_USE_VIRTUAL_STEPPER */
 
 #if PL_CONFIG_USE_X12_STEPPER
 static void InitSteppers(void) {
@@ -3347,7 +3348,7 @@ static void InitSteppers(void) {
 
 #if PL_CONFIG_USE_STEPPER
 static void InitMatrixHardware(void) {
-#if PL_CONFIG_USE_LED_STEPPER /* only using virtual LED stepper */
+#if PL_CONFIG_USE_VIRTUAL_STEPPER /* only using virtual LED stepper */
   InitLedRings();
 #elif PL_CONFIG_USE_X12_STEPPER /* stepper motors, with and without LEDs */
   InitSteppers();

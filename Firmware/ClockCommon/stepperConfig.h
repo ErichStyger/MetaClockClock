@@ -13,7 +13,7 @@
 
 #if PL_CONFIG_IS_ANALOG_CLOCK
   /* number of steps for a full round */
-  #if PL_CONFIG_USE_LED_STEPPER
+  #if PL_CONFIG_USE_VIRTUAL_STEPPER
     #define STEPPER_CLOCK_360_STEPS   (360) /* number of steps for 360 degrees */
   #else
     #define STEPPER_CLOCK_360_STEPS   (4320) /* number of steps for 360 degrees */

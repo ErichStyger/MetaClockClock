@@ -39,32 +39,27 @@
   #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (1 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD /* new 60 'modular' clock configuration */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (1 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (1) /* new modular boards with power-off switch */
-  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS /* 16x9 matrix by Alexis */
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_16x9   (1 && PL_CONFIG_IS_MASTER) /* new 16x9 matrix configuration with 144 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
   #define PL_MATRIX_CONFIG_IS_8x3    (0 && PL_CONFIG_IS_MASTER) /* original 8x3 matrix configuration with 24 clocks */
   #define PL_MATRIX_CONFIG_IS_12x5   (0 && PL_CONFIG_IS_MASTER) /* new 8x3 matrix configuration with 60 clocks */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix has RGB rings */
   #define PL_CONFIG_IS_NEW_MODULAR   (0) /* new modular boards with power-off switch */
-  #define PL_CONFIG_BOARD_MASTER_K22_WS2812B    (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512)  /* if it is the K22 master controlling the LEDs directly */
 #endif
 
 /* hardware versions for boards with LPC845:
@@ -97,18 +92,12 @@
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (2)
   #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (2)
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_BOARD_MASTER_K22_WS2812B
-  /* virtual steppers for LED rings: settings for a virtual LPC845_Clock4 board */
+#elif PL_CONFIG_USE_VIRTUAL_STEPPER /* artificial steppers for virtual (LED) steppers */
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_X   (4)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (2)
-  #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (2)
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 /* dummy entries only */
-  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_X   (0)
-  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (0)
-  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (0)
   #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (0)
-#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK /* dummy entries only */
+#else /* master: have only dummy entries */
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_X   (0)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (0)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (0)
@@ -137,13 +126,15 @@
 #endif
 #define PL_CONFIG_USE_SHT31           (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 && PL_CONFIG_USE_I2C) /* if using SHT31 sensor */
 #ifndef PL_CONFIG_USE_NEO_PIXEL_HW
-  #define PL_CONFIG_USE_NEO_PIXEL_HW    (0 && (PL_CONFIG_BOARD_MASTER_K22_WS2812B || PL_CONFIG_IS_K02)) /* 1: drives NeoPixels/WS2812B directly on the board */
+  #define PL_CONFIG_USE_NEO_PIXEL_HW    (0) /* 1: drives NeoPixels/WS2812B directly on the board */
 #endif
 #ifndef PL_CONFIG_USE_MOTOR_ON_OFF
   #define PL_CONFIG_USE_MOTOR_ON_OFF    (1 && (PL_CONFIG_IS_NEW_MODULAR || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* using hardware to turn off/on the stepper motors to reduce power */
 #endif
 
-#define PL_CONFIG_USE_VIRTUAL_STEPPER (PL_CONFIG_BOARD_MASTER_K22_WS2812B)
+#ifndef PL_CONFIG_USE_VIRTUAL_STEPPER
+  #define PL_CONFIG_USE_VIRTUAL_STEPPER (0)
+#endif
 #define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
 #ifndef PL_CONFIG_USE_LED_RING
   #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available. This is used for showing the hands, etc */
@@ -151,7 +142,6 @@
 #ifndef PL_CONFIG_USE_LED_PIXEL
   #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel is available */
 #endif
-#define PL_CONFIG_USE_LED_STEPPER     (0 && PL_CONFIG_USE_STEPPER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_TINYK22) /* virtual LED Stepper without real stepper motor */
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #ifndef PL_CONFIG_USE_X12_LED_STEPPER
   #define PL_CONFIG_USE_X12_LED_STEPPER (0 && PL_CONFIG_USE_X12_STEPPER && PL_CONFIG_USE_NEO_PIXEL_HW)  /* real X12 stepper with real LED ring */
@@ -166,10 +156,10 @@
   #define PL_CONFIG_USE_MAG_SENSOR      (0 && PL_CONFIG_IS_CLIENT)      /* has magnets and hall sensors */
 #endif
 #ifndef PL_CONFIG_USE_LED_DIMMING
-  #define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_NEO_PIXEL_HW)
+  #define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_LED_RING)
 #endif
 #ifndef PL_CONFIG_USE_DUAL_HANDS
-  #define PL_CONFIG_USE_DUAL_HANDS      (1 && PL_CONFIG_USE_NEO_PIXEL_HW)   /* dual hand on Z axis */
+  #define PL_CONFIG_USE_DUAL_HANDS      (1 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
 #endif
 #ifndef PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0 && PL_CONFIG_IS_CLIENT) /* play automatic demo after power-on */
