@@ -6,6 +6,7 @@
 
 #include "platform.h"
 
+#include <assert.h>
 #include "matrixconfig.h"
 #include "matrix.h"
 #include "rs485.h"

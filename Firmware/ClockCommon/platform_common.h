@@ -172,7 +172,9 @@
 #ifndef PL_CONFIG_USE_CLOCK
   #define PL_CONFIG_USE_CLOCK         (0 && PL_CONFIG_USE_RTC)  /* 1: application implements a clock */
 #endif
-#define PL_CONFIG_USE_INTERMEZZO    (1 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485)
+#ifndef PL_CONFIG_USE_INTERMEZZO
+  #define PL_CONFIG_USE_INTERMEZZO    (1 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485)
+#endif
 
 #ifndef PL_CONFIG_USE_MCU_LOG
   #define PL_CONFIG_USE_MCU_LOG       (McuLog_CONFIG_IS_ENABLED) /* configured in IncludeMcuLibConfig.h */
