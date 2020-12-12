@@ -15,6 +15,7 @@
 
 #if 1
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3 /* original meta clock with 24 clocks */
+  #define PL_CONFIG_USE_CLOCK             (1)
   #define PL_CONFIG_USE_INTERMEZZO        (1)
 #elif 1  /* note: not enough RAM */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_60B  /* 60 billion lights */
