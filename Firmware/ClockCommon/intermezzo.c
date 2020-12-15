@@ -11,9 +11,10 @@
 #include "Shell.h"
 #include "McuUtility.h"
 #include "McuExtRTC.h"
+#include "McuTimeDate.h"
 #include "McuLog.h"
 
-typedef enum {
+typedef enum Intermezzo_e {
   INTERMEZZO_NONE = 0,
   INTERMEZZO_FEW = 1,
   INTERMEZZO_MANY = 2, /* NYI! */
@@ -24,7 +25,86 @@ static Intermezzo_e IntermezzoMode = INTERMEZZO_NONE;
 //static Intermezzo_e IntermezzoMode = INTERMEZZO_FEW;
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 
-static void IntermezzoDemo1(void) {
+
+static void Intermezzo0(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MATRIX_Set2ndHandLedEnabledAll(false);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  MATRIX_SetHandLedEnabledAll(true);
+#endif
+  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  MATRIX_DrawAllClockHands(0, 90);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_DrawAllClockHands(270, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void Intermezzo1(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MATRIX_Set2ndHandLedEnabledAll(false);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  MATRIX_SetHandLedEnabledAll(true);
+#endif
+  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  MATRIX_DrawAllClockHands(0, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
+  MATRIX_DrawAllClockHands(180, 0);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void Intermezzo2(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MATRIX_Set2ndHandLedEnabledAll(false);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  MATRIX_SetHandLedEnabledAll(true);
+#endif
+  MATRIX_DrawAllClockDelays(6, 6);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  MATRIX_DrawAllClockHands(0, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_DrawAllClockDelays(4, 4);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+  MATRIX_DrawAllClockHands(180, 0);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void Intermezzo3(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MATRIX_Set2ndHandLedEnabledAll(false);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  MATRIX_SetHandLedEnabledAll(true);
+#endif
+  MATRIX_DrawAllClockDelays(4, 4);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CCW);
+  MATRIX_DrawAllClockHands(90, 270);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_DrawAllClockHands(0, 0);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void Intermezzo4(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MATRIX_Set2ndHandLedEnabledAll(false);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  MATRIX_SetHandLedEnabledAll(true);
+#endif
+  MATRIX_DrawAllClockDelays(6, 6);
+  MATRIX_DrawAllClockHands(315, 45);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_DrawAllClockDelays(4, 4);
+  MATRIX_DrawAllClockHands(180, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void Intermezzo5(void) {
   int angle0, angle1;
 
 #if PL_CONFIG_USE_DUAL_HANDS
@@ -62,7 +142,7 @@ static void IntermezzoDemo1(void) {
   (void)MATRIX_ExecuteRemoteQueueAndWait(true);
 }
 
-static void IntermezzoDemo3(void) {
+static void Intermezzo6(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
@@ -101,7 +181,7 @@ static void IntermezzoDemo3(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
-static void IntermezzoDemo4(void) {
+static void Intermezzo7(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
@@ -123,7 +203,7 @@ static void IntermezzoDemo4(void) {
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
-static void IntermezzoDemo5(void) {
+static void Intermezzo8(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
@@ -168,77 +248,27 @@ static void IntermezzoDemo5(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
-static void Intermezzo0(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
-#endif
-  MATRIX_DrawAllClockDelays(2, 2);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockHands(0, 90);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-}
+static void Intermezzo9(void) {
+  uint8_t res;
+  TIMEREC time;
 
-static void Intermezzo1(void) {
+  /* show time on each clock */
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
-  MATRIX_DrawAllClockDelays(5, 5);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockHands(0, 90);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-}
-
-static void Intermezzo2(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
-#endif
-  MATRIX_DrawAllClockDelays(6, 6);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockHands(0, 180);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  res = McuTimeDate_GetTimeDate(&time, NULL);
+  if (res!=ERR_OK) {
+    McuLog_error("Intermezzo: failed getting time");
+    return;
+  }
   MATRIX_DrawAllClockDelays(4, 4);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  MATRIX_DrawAllClockHands(180, 0);
+  time.Hour %= 12;
+  MATRIX_DrawAllClockHands(time.Min*360/60, time.Hour*360/12);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
-
-static void Intermezzo3(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
-#endif
-  MATRIX_DrawAllClockDelays(4, 4);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CCW);
-  MATRIX_DrawAllClockHands(90, 270);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-}
-
-static void Intermezzo4(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
-#endif
-  MATRIX_DrawAllClockDelays(6, 6);
-  MATRIX_DrawAllClockHands(315, 45);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MATRIX_DrawAllClockDelays(4, 4);
-  MATRIX_DrawAllClockHands(180, 180);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-}
-
 
 static void IntermezzoRandomHandsAllOn(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
@@ -355,16 +385,17 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo2,
     Intermezzo3,
     Intermezzo4,
+    Intermezzo5,
+    Intermezzo6,
+    Intermezzo7,
+    Intermezzo8,
+    Intermezzo9,
     IntermezzoRandomHands,
     IntermezzoRandomHandsAllOn,
     IntermezzoTemperature,
     IntermezzoRectangles,
     IntermezzoRectangles2,
     IntermezzoRectangles3,
-    IntermezzoDemo1,
-    IntermezzoDemo3,
-    IntermezzoDemo4,
-    IntermezzoDemo5,
 };
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
 
