@@ -778,7 +778,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
-  /* example command: "@14 03 63 cmd matrix q 0 0 0 hand rgb 0x100000 ,0 0 1 0x001000" */
+  /* example command: "@14 03 63 cmd matrix q 0 0 0 hc 0x100000 , ..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t resBoards;
   int nof = 0;
@@ -797,7 +797,7 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hand rgb 0x");
+            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hc 0x");
             McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorHandMap[x][y][z]); /* color */
             nof++;
           }
@@ -819,7 +819,7 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
-  /* example command: "@14 03 63 cmd matrix q 0 0 0 hand rgb 0x100000 ,0 0 1 0x001000" */
+  /* example command: "@14 03 63 cmd matrix q 0 0 0 rc 0x100000 ,..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t resBoards;
   int nof = 0;
@@ -838,7 +838,7 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ring rgb 0x");
+            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" rc 0x");
             McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorRingMap[x][y][z]); /* color */
             nof++;
           }
@@ -1768,11 +1768,11 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  ring enable <xyz> on|off", (unsigned char*)"Enable single ring LED\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_LED_RING
-  McuShell_SendHelpStr((unsigned char*)"  hand rgb all <rgb>", (unsigned char*)"Set color for all hands\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  ring rgb all <rgb>", (unsigned char*)"Set color for all rings\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  hc all <rgb>", (unsigned char*)"Set hand color for all hands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  rc all <rgb>", (unsigned char*)"Set ring color for all rings\r\n", io->stdOut);
 
-  McuShell_SendHelpStr((unsigned char*)"  hand rgb <xyz> <rgb>", (unsigned char*)"Set single hand color (comma separated)\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  ring rgb <xyz> <rgb>", (unsigned char*)"Set single ring color (comma separated)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  hc <xyz> <rgb>", (unsigned char*)"Set single hand color (comma separated)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  rc <xyz> <rgb>", (unsigned char*)"Set single ring color (comma separated)\r\n", io->stdOut);
 
   #if PL_CONFIG_USE_DUAL_HANDS
   McuShell_SendHelpStr((unsigned char*)"  2nd enable <xyz> on|off", (unsigned char*)"Enable single 2nd hand LED\r\n", io->stdOut);
@@ -1944,7 +1944,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       }
     } while(res==ERR_OK && *p==',');
     return res;
-  } else if (McuUtility_strncmp((char*)cmd, "matrix q ", sizeof("matrix q ")-1)==0) { /* queue a command */
+  } else if (McuUtility_strncmp((char*)cmd, "matrix q ", sizeof("matrix q ")-1)==0) { /* queue a command: example: matrix q 0 0 0 hc 0x10 ,0 0 1 r 90 0 sh */
     unsigned char *ptr, *data;
     STEPPER_Handle_t stepper;
     size_t len;
@@ -2129,9 +2129,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #endif /* PL_CONFIG_USE_DUAL_HANDS */
 #if PL_CONFIG_USE_LED_RING
   /* ---------------------- set color for all ---------------------------------- */
-  } else if (McuUtility_strncmp((char*)cmd, "matrix hand rgb all ", sizeof("matrix hand rgb all ")-1)==0) {
+  } else if (McuUtility_strncmp((char*)cmd, "matrix hc all ", sizeof("matrix hc all ")-1)==0) {
     *handled = TRUE;
-    p = cmd + sizeof("matrix hand rgb all ")-1;
+    p = cmd + sizeof("matrix hc all ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
       MATRIX_SetHandColorAll(r, g, b);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -2141,9 +2141,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     } else {
       return ERR_FAILED;
     }
-  } else if (McuUtility_strncmp((char*)cmd, "matrix ring rgb all ", sizeof("matrix ring rgb all ")-1)==0) {
+  } else if (McuUtility_strncmp((char*)cmd, "matrix rc all ", sizeof("matrix rc all ")-1)==0) {
     *handled = TRUE;
-    p = cmd + sizeof("matrix ring rgb all ")-1;
+    p = cmd + sizeof("matrix rc all ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
       MATRIX_SetRingColorAll(r, g, b);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -2156,11 +2156,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #endif
 #if PL_CONFIG_USE_LED_RING
     /* ---------------------- set color for hand or ring ---------------------------------- */
-  } else if (McuUtility_strncmp((char*)cmd, "matrix hand rgb ", sizeof("matrix hand rgb ")-1)==0) {
+  } else if (McuUtility_strncmp((char*)cmd, "matrix hc ", sizeof("matrix hc ")-1)==0) {
     int32_t x, y, z;
 
     *handled = TRUE;
-    p = cmd + sizeof("matrix hand rgb ")-1;
+    p = cmd + sizeof("matrix hc ")-1;
     do {
       if (*p==',') { /* skip comma for multiple commands */
         p++;
@@ -2213,11 +2213,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return res;
   #endif /* PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_DUAL_HANDS */
   #if PL_CONFIG_USE_LED_RING
-  } else if (McuUtility_strncmp((char*)cmd, "matrix ring rgb ", sizeof("matrix ring rgb ")-1)==0) {
+  } else if (McuUtility_strncmp((char*)cmd, "matrix rc ", sizeof("matrix rc ")-1)==0) {
     int32_t x, y, z;
 
     *handled = TRUE;
-    p = cmd + sizeof("matrix ring rgb ")-1;
+    p = cmd + sizeof("matrix rc ")-1;
     do {
       if (*p==',') { /* skip comma for multiple commands */
         p++;
@@ -2241,11 +2241,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return res;
   #endif
   #if PL_CONFIG_USE_LED_RING
-  } else if (McuUtility_strncmp((char*)cmd, "matrix hand color ", sizeof("matrix hand color ")-1)==0) {
+  } else if (McuUtility_strncmp((char*)cmd, "matrix hc ", sizeof("matrix hc ")-1)==0) {
     uint32_t color;
 
     *handled = TRUE;
-    p = cmd + sizeof("matrix hand color ")-1;
+    p = cmd + sizeof("matrix hc ")-1;
     res = McuUtility_ScanRGB32(&p, &MATRIX_LedHandColor);
     if (res!=ERR_OK) {
       return res;
@@ -2523,25 +2523,25 @@ static bool MatrixProcessAllQueues(void) {
               McuUtility_strcatNum8u(command, sizeof(command), z);
               McuUtility_chcat(command, sizeof(command), ' ');
               McuUtility_strcat(command, sizeof(command), cmd+2);
-            } else if (McuUtility_strncmp((char*)cmd, (char*)"hand rgb ", sizeof("hand rgb ")-1)==0) {
-              McuUtility_strcat(command, sizeof(command), (unsigned char*)"hand rgb ");
+            } else if (McuUtility_strncmp((char*)cmd, (char*)"hc ", sizeof("hc ")-1)==0) {
+              McuUtility_strcat(command, sizeof(command), (unsigned char*)"hc ");
               McuUtility_strcatNum8u(command, sizeof(command), x);
               McuUtility_chcat(command, sizeof(command), ' ');
               McuUtility_strcatNum8u(command, sizeof(command), y);
               McuUtility_chcat(command, sizeof(command), ' ');
               McuUtility_strcatNum8u(command, sizeof(command), z);
               McuUtility_chcat(command, sizeof(command), ' ');
-              McuUtility_strcat(command, sizeof(command), cmd+sizeof("hand rgb ")-1);
+              McuUtility_strcat(command, sizeof(command), cmd+sizeof("hc ")-1);
               McuUtility_strCutTail(command, (unsigned char*)" "); /* trim possible space at the end */
-            } else if (McuUtility_strncmp((char*)cmd, (char*)"ring rgb ", sizeof("ring rgb ")-1)==0) {
-              McuUtility_strcat(command, sizeof(command), (unsigned char*)"ring rgb ");
+            } else if (McuUtility_strncmp((char*)cmd, (char*)"rc ", sizeof("rc ")-1)==0) {
+              McuUtility_strcat(command, sizeof(command), (unsigned char*)"rc ");
               McuUtility_strcatNum8u(command, sizeof(command), x);
               McuUtility_chcat(command, sizeof(command), ' ');
               McuUtility_strcatNum8u(command, sizeof(command), y);
               McuUtility_chcat(command, sizeof(command), ' ');
               McuUtility_strcatNum8u(command, sizeof(command), z);
               McuUtility_chcat(command, sizeof(command), ' ');
-              McuUtility_strcat(command, sizeof(command), cmd+sizeof("ring rgb ")-1);
+              McuUtility_strcat(command, sizeof(command), cmd+sizeof("rc ")-1);
               McuUtility_strCutTail(command, (unsigned char*)" "); /* trim possible space at the end */
             } else { /* not expected command? pass as-is */
               McuUtility_strcat(command, sizeof(command), cmd);
@@ -2806,6 +2806,7 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
   x12config.motor[X12_017_M0].hw_dir.port = PORTE;
   x12config.motor[X12_017_M0].hw_dir.pin  = 17U;
+  x12config.motor[X12_017_M0].isInverted = true;
 
   /* M0_STEP: */
   x12config.motor[X12_017_M0].hw_step.gpio = GPIOE;
@@ -2961,6 +2962,7 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
   x12config.motor[X12_017_M0].hw_dir.port = PORTE;
   x12config.motor[X12_017_M0].hw_dir.pin  = 24U;
+  x12config.motor[X12_017_M0].isInverted  = true;
 
   /* M4_STEP: */
   x12config.motor[X12_017_M0].hw_step.gpio = GPIOC;
@@ -2991,6 +2993,7 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
   x12config.motor[X12_017_M3].hw_dir.port = PORTD;
   x12config.motor[X12_017_M3].hw_dir.pin  = 6U;
+  x12config.motor[X12_017_M3].isInverted  = true;
 
   /* M7_STEP: */
   x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;
