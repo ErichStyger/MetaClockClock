@@ -70,6 +70,7 @@ uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1);
 uint8_t MATRIX_DrawAllIsRelative(bool isRel0, bool isRel1);
 
 void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1);
+void MATRIX_EnableDisableHandLED(uint8_t x, uint8_t y, uint8_t z, bool enable);
 void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on);
 
 uint8_t MATRIX_DrawAllClockHands(int16_t angle0, int16_t angle1);
