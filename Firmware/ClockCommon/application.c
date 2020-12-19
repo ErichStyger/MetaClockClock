@@ -91,9 +91,21 @@ static void NeoTask(void *pv) {
 #if TEST_MODE
   TestRing();
 #endif
+#if 0 &&  PL_CONFIG_USE_LED_PIXEL
+  MATRIX_SetLEDPixelColor(0, 0, 0, 0, 0, 0x10);
+  MATRIX_SetLEDPixelColor(1, 0, 0, 0, 0x10, 0);
+  MATRIX_SetLEDPixelColor(2, 0, 0, 0x10, 0, 0);
+  MATRIX_SetLEDPixelColor(3, 0, 0, 0, 0x10, 0x10);
+  MATRIX_SetLEDPixelColor(4, 0, 0, 0x10, 0, 0x10);
+  MATRIX_SetLEDPixelColor(5, 0, 0, 0x5, 0x5, 0x10);
+  MATRIX_SetLEDPixelColor(6, 0, 0, 0, 0x5, 0x5);
+  MATRIX_SetLEDPixelColor(7, 0, 0, 0x5, 0, 0x10);
+  NEO_TransferPixels();
+#endif
   for(;;) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
     res = xSemaphoreTake(semNeoUpdate, portMAX_DELAY); /* block until we get a request to update */
+#if 1
     if (res==pdTRUE) { /* received the signal */
       NEO_ClearAllPixel();
    #if PL_CONFIG_USE_LED_RING
@@ -101,6 +113,7 @@ static void NeoTask(void *pv) {
    #endif
       NEO_TransferPixels();
     }
+#endif
 #endif
     vTaskDelay(pdMS_TO_TICKS(20)); /* can wait 20 ms until a next update is needed */
   } /* for */
