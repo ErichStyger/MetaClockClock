@@ -1912,7 +1912,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
         #if PL_CONFIG_IS_ANALOG_CLOCK
         STEPPER_MoveClockDegreeRel(MATRIX_GetStepper(x, y, z), v, mode, d, speedUp, slowDown);
         #else
-        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), v, 0);
+        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), v, d);
         #endif
         STEPPER_StartTimer();
         res = ERR_OK;
