@@ -2823,26 +2823,24 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M1].hw_step.pin  = 19U;
 
   /* M2_DIR: */
-  x12config.motor[X12_017_M2].hw_dir.gpio = GPIOB;
-  x12config.motor[X12_017_M2].hw_dir.port = PORTB;
-  x12config.motor[X12_017_M2].hw_dir.pin  = 1U;
+  x12config.motor[X12_017_M2].hw_dir.gpio = GPIOD;
+  x12config.motor[X12_017_M2].hw_dir.port = PORTD;
+  x12config.motor[X12_017_M2].hw_dir.pin  = 4U;
 
   /* M2_STEP:  */
-  x12config.motor[X12_017_M2].hw_step.gpio = GPIOB;
-  x12config.motor[X12_017_M2].hw_step.port = PORTB;
-  x12config.motor[X12_017_M2].hw_step.pin  = 0U;
-  x12config.motor[X12_017_M2].isInverted  = true;
+  x12config.motor[X12_017_M2].hw_step.gpio = GPIOD;
+  x12config.motor[X12_017_M2].hw_step.port = PORTD;
+  x12config.motor[X12_017_M2].hw_step.pin  = 5U;
 
   /* M3_DIR: */
-  x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
-  x12config.motor[X12_017_M3].hw_dir.port = PORTD;
-  x12config.motor[X12_017_M3].hw_dir.pin  = 5U;
+  x12config.motor[X12_017_M3].hw_dir.gpio = GPIOB;
+  x12config.motor[X12_017_M3].hw_dir.port = PORTB;
+  x12config.motor[X12_017_M3].hw_dir.pin  = 0U;
 
   /* M3_STEP: */
-  x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;
-  x12config.motor[X12_017_M3].hw_step.port = PORTD;
-  x12config.motor[X12_017_M3].hw_step.pin  = 4U;
-  x12config.motor[X12_017_M3].isInverted  = true;
+  x12config.motor[X12_017_M3].hw_step.gpio = GPIOB;
+  x12config.motor[X12_017_M3].hw_step.port = PORTB;
+  x12config.motor[X12_017_M3].hw_step.pin  = 1U;
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4/* LPC845 */
   /* Reset for both motor drivers: PIO0_14 */
   x12config.hw_reset.gpio = GPIO;
@@ -3314,8 +3312,14 @@ static void InitSteppers(void) {
   gpioSwitch = McuGPIO_InitGPIO(&gpioSwitchConfig);
   STEPBOARD_SetMotorSwitch(MATRIX_Boards[0], gpioSwitch);
 
+#if 1
   /* disable motors from the start to reduce current */
   STEPBOARD_MotorSwitchOnOff(MATRIX_Boards[0], false);
+#else
+  /* enable motors from the start */
+  STEPBOARD_MotorSwitchOnOff(MATRIX_Boards[0], true);
+#endif
+
 #endif /* PL_CONFIG_USE_MOTOR_ON_OFF */
   McuX12_017_ResetDriver(x12device[0]); /* shared reset line for all motor drivers */
 }
