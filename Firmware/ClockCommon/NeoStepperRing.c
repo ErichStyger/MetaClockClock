@@ -14,6 +14,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <string.h>
+#include "McuUtility.h"
 #if NEOSR_CONFIG_USE_FREERTOS_HEAP
   #include "McuRTOS.h"
 #endif
@@ -354,6 +355,48 @@ void NEOSR_SetRingLedEnabled(NEOSR_Handle_t device, bool on) {
 bool NEOSR_GetRingLedEnabled(NEOSR_Handle_t device) {
   NEOSR_Device_t *dev = (NEOSR_Device_t*)device;
   return dev->ring.enabled;
+}
+
+void NEOSR_StrCatRingStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bufSize) {
+  NEOSR_Device_t *dev = (NEOSR_Device_t*)device;
+  uint32_t rgb;
+
+  McuUtility_strcat(buf, bufSize, (unsigned char*)"enabled: ");
+  McuUtility_strcat(buf, bufSize, dev->ring.enabled?(unsigned char*)"yes":(unsigned char*)"no ");
+
+  rgb = NEO_COMBINE_RGB(dev->ring.red, dev->ring.green, dev->ring.blue);
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", rgb: 0x");
+  McuUtility_strcatNum24Hex(buf, bufSize, rgb);
+
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", lane: ");
+  McuUtility_strcatNum32u(buf, bufSize, dev->ledLane);
+
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", start: ");
+  McuUtility_strcatNum32u(buf, bufSize, dev->ledStartPos);
+
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", cw: ");
+  McuUtility_strcat(buf, bufSize, dev->ledCw?(unsigned char*)"yes":(unsigned char*)"no ");
+}
+
+void NEOSR_StrCatHandStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bufSize) {
+  NEOSR_Device_t *dev = (NEOSR_Device_t*)device;
+  uint32_t rgb;
+
+  McuUtility_strcat(buf, bufSize, (unsigned char*)"enabled: ");
+  McuUtility_strcat(buf, bufSize, dev->hand.enabled?(unsigned char*)"yes":(unsigned char*)"no ");
+
+  rgb = NEO_COMBINE_RGB(dev->hand.red, dev->hand.green, dev->hand.blue);
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", rgb: 0x");
+  McuUtility_strcatNum24Hex(buf, bufSize, rgb);
+
+#if PL_CONFIG_USE_DUAL_HANDS
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", 2nd enabled: ");
+  McuUtility_strcat(buf, bufSize, dev->hand2nd.enabled?(unsigned char*)"yes":(unsigned char*)"no ");
+
+  rgb = NEO_COMBINE_RGB(dev->hand2nd.red, dev->hand2nd.green, dev->hand2nd.blue);
+  McuUtility_strcat(buf, bufSize, (unsigned char*)", rgb: 0x");
+  McuUtility_strcatNum24Hex(buf, bufSize, rgb);
+#endif
 }
 
 void NEOSR_Deinit(void) {

@@ -58,6 +58,9 @@ void NEOSR_SetRingColor(NEOSR_Handle_t device, uint8_t red, uint8_t green, uint8
 
 void NEOSR_IlluminatePos(int stepperPos, int ledStartPos, int ledLane, bool cw, int ledRed, int ledGreen, int ledBlue);
 
+void NEOSR_StrCatRingStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bufSize);
+void NEOSR_StrCatHandStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bufSize);
+
 void NEOSR_Deinit(void);
 void NEOSR_Init(void);
 
