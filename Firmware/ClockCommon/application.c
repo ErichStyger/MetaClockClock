@@ -160,3 +160,13 @@ void APP_Run(void) {
   vTaskStartScheduler();
   for(;;) { /* should not get here */ }
 }
+
+/* overwrite assertion callback */
+void __assertion_failed(char *_Expr)  {
+  McuLog_fatal(_Expr);
+  McuLog_fatal("Assert failed!");
+  __asm volatile("bkpt #0");
+  for(;;) {
+    __asm("nop");
+  }
+}
