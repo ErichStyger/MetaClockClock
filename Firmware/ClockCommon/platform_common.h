@@ -134,10 +134,10 @@
 #endif
 #define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
 #ifndef PL_CONFIG_USE_LED_RING
-  #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available. This is used for showing the hands, etc */
+  #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available for the board. This is used for showing the hands, etc */
 #endif
 #ifndef PL_CONFIG_USE_LED_PIXEL
-  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel is available */
+  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel are available: this is for the 'Pixel' not for the clock! */
 #endif
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #ifndef PL_CONFIG_USE_X12_LED_STEPPER
@@ -156,7 +156,7 @@
   #define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_LED_RING)
 #endif
 #ifndef PL_CONFIG_USE_DUAL_HANDS
-  #define PL_CONFIG_USE_DUAL_HANDS      (1 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
+  #define PL_CONFIG_USE_DUAL_HANDS      (0 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
 #endif
 #ifndef PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0 && PL_CONFIG_IS_CLIENT) /* play automatic demo after power-on */

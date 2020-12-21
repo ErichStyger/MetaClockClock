@@ -1062,8 +1062,8 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       MATRIX_DrawClockLEDs(xPos+x, yPos+y, ch->digit[y][x].hands[0].enabled, ch->digit[y][x].hands[1].enabled);
     #elif PL_MATRIX_CONFIG_IS_RGB
-      MATRIX_EnableDisableHandLED(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
-      MATRIX_EnableDisableHandLED(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
+      MATRIX_DrawHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
+      MATRIX_DrawHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
     #if PL_CONFIG_USE_DUAL_HANDS
       MATRIX_Set2ndHandLedEnabled(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
@@ -1088,8 +1088,8 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
       MATRIX_DrawClockLEDs(xPos+x, yPos+y, ch->digit[y][x].hands[0].enabled, ch->digit[y][x].hands[1].enabled);
 #endif
     #elif PL_MATRIX_CONFIG_IS_RGB
-      MATRIX_EnableDisableHandLED(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
-      MATRIX_EnableDisableHandLED(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
+      MATRIX_DrawHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
+      MATRIX_DrawHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
     #if PL_CONFIG_USE_DUAL_HANDS
       MATRIX_Set2ndHandLedEnabled(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
