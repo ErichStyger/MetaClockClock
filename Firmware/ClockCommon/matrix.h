@@ -29,7 +29,7 @@
   #endif
     int32_t colorHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each hand */
     int32_t colorRingMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each ring */
-  #endif
+  #endif /* PL_MATRIX_CONFIG_IS_RGB */
   } MATRIX_Matrix_t;
 
   extern MATRIX_Matrix_t matrix; /* map of current matrix */
@@ -38,11 +38,6 @@
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
 
-  void MATRIX_SetHandLedEnabledAll(bool on);
-  void MATRIX_Set2ndHandLedEnabledAll(bool on);
-  void MATRIX_SetHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on);
-  void MATRIX_SetHandColorAll(uint8_t red, uint8_t green, uint8_t blue);
-  void MATRIX_SetHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue);
 
   void MATRIX_SetRingLedEnabledAll(bool on);
   void MATRIX_SetRingLedEnabled(int32_t x, int32_t y, uint8_t z, bool on);
@@ -56,8 +51,6 @@
   NEO_PixelColor MATRIX_GetHandColorAdjusted(void);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
-  void MATRIX_DrawHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color);
-  void MATRIX_DrawAllHandColor(uint32_t color);
   void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color);
   void MATRIX_DrawAllRingColor(uint32_t color);
 #endif
@@ -68,6 +61,11 @@
 
   void MATRIX_SetHandBrightnessAll(uint8_t brightness);
   void MATRIX_SetHandBrightness(int32_t x, int32_t y, int32_t z, uint8_t brightness);
+#endif
+
+#if PL_CONFIG_USE_LED_RING
+#include "NeoStepperRing.h"
+NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z);
 #endif
 
 void MATRIX_DrawHLine(int x, int y, int w);
@@ -89,10 +87,6 @@ uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1);
 
 uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1);
 uint8_t MATRIX_DrawAllIsRelative(bool isRel0, bool isRel1);
-
-void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1);
-void MATRIX_DrawHandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable);
-void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on);
 
 uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);

@@ -422,7 +422,7 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_LED_DIMMING
   MATRIX_SetHandBrightnessAll(CLOCK_HandBrightness);
 #endif
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
   APP_RequestUpdateLEDs(); /* update LEDs */
 #endif
 #if PL_CONFIG_USE_RTC
@@ -457,9 +457,9 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
       (void)MATRIX_SetRingColorAll(0, 0, 0);
-      (void)MATRIX_SetHandLedEnabledAll(false);
+      MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_DUAL_HANDS
-      MATRIX_Set2ndHandLedEnabledAll(false);
+      MHAND_2ndHandEnableAll(false);
     #endif
      APP_RequestUpdateLEDs(); /* update LEDs */
 #endif
@@ -472,9 +472,9 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
       (void)MATRIX_SetRingColorAll(0, 0, 0);
-      (void)MATRIX_SetHandLedEnabledAll(false);
+      MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_DUAL_HANDS
-      MATRIX_Set2ndHandLedEnabledAll(false);
+      MHAND_2ndHandEnableAll(false);
     #endif
       APP_RequestUpdateLEDs(); /* update LEDs */
 #endif

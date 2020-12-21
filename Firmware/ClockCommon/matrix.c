@@ -35,6 +35,7 @@
 #endif
 #include "mfont.h"
 #include "matrixposition.h"
+#include "matrixhand.h"
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
@@ -154,7 +155,7 @@ NEO_PixelColor MATRIX_GetHandColorAdjusted(void) {
 }
 #endif
 
-#if PL_CONFIG_USE_RS485 && PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_RS485 && PL_CONFIG_IS_MASTER
 void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
   uint8_t res;
   uint8_t addr;
@@ -176,13 +177,6 @@ void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
 }
 #endif /* PL_CONFIG_USE_RS485 */
 
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  NEOSR_SetHandColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
-}
-#endif
-
 #if PL_CONFIG_USE_LED_DIMMING
 void MATRIX_SetHandBrightness(int32_t x, int32_t y, int32_t z, uint8_t brightness) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
@@ -194,28 +188,6 @@ void MATRIX_SetHandBrightness(int32_t x, int32_t y, int32_t z, uint8_t brightnes
 void MATRIX_StartHandDimming(int32_t x, int32_t y, int32_t z, uint8_t targetBrightness) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   NEOSR_StartHandDimming(MATRIX_GetLedRingDevice(x, y, z), targetBrightness);
-}
-#endif
-
-#if PL_CONFIG_USE_DUAL_HANDS
-void MATRIX_Set2ndHandColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  NEOSR_Set2ndHandColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
-}
-#endif
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetHandColorAll(uint8_t red, uint8_t green, uint8_t blue) {
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_SetHandColor(x, y, z, red, green, blue);
-    #if PL_CONFIG_USE_DUAL_HANDS
-        MATRIX_Set2ndHandColor(x, y, z, red, green, blue);
-    #endif
-      }
-    }
-  }
 }
 #endif
 
@@ -312,76 +284,6 @@ void MATRIX_SetRingLedEnabledAll(bool on) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  NEOSR_SetHandLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
-#else
-  uint8_t addr, xb, yb;
-  unsigned char cmd[sizeof("matrix hand enable xx yy zz off")];
-
-  addr = MATRIX_GetAddress(x, y, z);
-  /* remap position */
-  xb = clockMatrix[x][y].board.x;
-  yb = clockMatrix[x][y].board.y;
-  McuUtility_strcpy(cmd, sizeof(cmd), (unsigned char*)"matrix hand enable ");
-  McuUtility_strcatNum8u(cmd, sizeof(cmd), xb);
-  McuUtility_chcat(cmd, sizeof(cmd), ' ');
-  McuUtility_strcatNum8u(cmd, sizeof(cmd), yb);
-  McuUtility_chcat(cmd, sizeof(cmd), ' ');
-  McuUtility_strcatNum8u(cmd, sizeof(cmd), z);
-  McuUtility_chcat(cmd, sizeof(cmd), ' ');
-  if (on) {
-    McuUtility_strcat(cmd, sizeof(cmd), (unsigned char*)"on");
-  } else {
-    McuUtility_strcat(cmd, sizeof(cmd), (unsigned char*)"off");
-  }
-  MATRIX_SendCmdToBoard(addr, cmd);
-#endif
-}
-#endif
-
-#if PL_CONFIG_USE_DUAL_HANDS
-void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  NEOSR_Set2ndHandLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
-}
-#endif
-
-#if PL_CONFIG_USE_DUAL_HANDS
-void MATRIX_Set2ndHandLedEnabledAll(bool on) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_Set2ndHandLedEnabled(x, y, z, on);
-      }
-    }
-  }
-}
-#endif
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetHandLedEnabledAll(bool on) {
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_SetHandLedEnabled(x, y, z, on);
-      }
-    }
-  }
-#elif PL_MATRIX_CONFIG_IS_RGB
-  unsigned char *cmd;
-  if (on) {
-    cmd = (unsigned char*)"matrix hand enable all on";
-  } else {
-    cmd = (unsigned char*)"matrix hand enable all off";
-  }
-  MATRIX_SendCmdToBoard(RS485_BROADCAST_ADDRESS, cmd);
-#endif
-}
-#endif
 
 uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z) {
 #if PL_CONFIG_IS_MASTER
@@ -409,72 +311,6 @@ void MATRIX_Delay(int32_t ms) {
 #endif
 
 #if PL_CONFIG_IS_MASTER
-
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  MATRIX_SetHandLedEnabled(x, y, 0, on0);
-  MATRIX_SetHandLedEnabled(x, y, 1, on1);
-}
-#endif
-
-
-#if PL_CONFIG_USE_DUAL_HANDS
-void MATRIX_Draw2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  matrix.color2ndHandMap[x][y][z] = color;
-}
-#endif
-
-#if PL_CONFIG_USE_DUAL_HANDS
-void MATRIX_DrawAll2ndHandEnable(bool enable) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_Draw2ndHandEnable(x, y, z, enable);
-      }
-    }
-  }
-}
-#endif
-
-#if PL_MATRIX_CONFIG_IS_RGB
-void MATRIX_DrawHandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  matrix.enabledHandMap[x][y][z] = enable;
-}
-#endif
-
-#if PL_MATRIX_CONFIG_IS_RGB
-void MATRIX_DrawAllHandEnable(bool enable) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_DrawHandEnable(x, y, z, enable);
-      }
-    }
-  }
-}
-#endif
-
-#if PL_MATRIX_CONFIG_IS_RGB
-void MATRIX_DrawHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  matrix.colorHandMap[x][y][z] = color;
-}
-#endif
-
-#if PL_MATRIX_CONFIG_IS_RGB
-void MATRIX_DrawAllHandColor(uint32_t color) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_DrawHandColor(x, y, z, color);
-      }
-    }
-  }
-}
-#endif
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
@@ -1069,16 +905,16 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
   }
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
 #if PL_CONFIG_USE_LED_RING
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
   MATRIX_SetRingLedEnabledAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(true);
+  MHAND_HandEnableAll(true);
 #endif
   return MATRIX_SendToRemoteQueueExecuteAndWait(true);
 #elif PL_CONFIG_USE_STEPPER
@@ -1101,13 +937,13 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
 #warning "todo NYI"
   #if 0 /* \todo not implemented yet */
   #if PL_CONFIG_USE_DUAL_HANDS
-    MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
   #endif
     MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
     MATRIX_DrawAllClockDelays(2, 2);
     MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
   #if PL_CONFIG_USE_LED_RING
-    MATRIX_SetHandLedEnabledAll(true);
+    MHAND_HandEnableAll(true);
     MATRIX_SetRingLedEnabledAll(false);
   #endif
   #endif
@@ -1141,6 +977,7 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
   uint8_t buf[16];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), hour/10);
   McuUtility_strcatNum8u(buf, sizeof(buf), hour%10);
@@ -1167,10 +1004,11 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   x = 2; y = 1;
@@ -1205,9 +1043,9 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   x = 2; y = 1;
@@ -1233,10 +1071,11 @@ uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), temperature/10);
@@ -1254,10 +1093,11 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   x = 2; y = 1;
@@ -1282,10 +1122,11 @@ uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), humidity);
@@ -1302,10 +1143,11 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
    x = 2; y = 1;
@@ -1329,10 +1171,11 @@ uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandEnable(false);
+  MHAND_HandEnableAll(false);
 #endif
   buf[0] = '\0';
   McuUtility_strcatNum16u(buf, sizeof(buf), lux);
@@ -1582,12 +1425,9 @@ void MATRIX_DrawHLine(int x, int y, int w) {
   for(int xb=x; xb<x+w; xb++) {
     MPOS_SetAngleZ0Z1(xb, y, 270, 90);
     /* upper left corner */
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
-    MATRIX_SetHandLedEnabled(xb, y, 0, true);
-    MATRIX_SetHandLedEnabled(xb, y, 1, true);
-  #else
-    MATRIX_DrawHandEnable(xb, y, 0, true);
-    MATRIX_DrawHandEnable(xb, y, 1, true);
+  #if PL_MATRIX_CONFIG_IS_RGB
+    MHAND_HandEnable(xb, y, 0, true);
+    MHAND_HandEnable(xb, y, 1, true);
   #endif
   }
 }
@@ -1596,12 +1436,9 @@ void MATRIX_DrawVLine(int x, int y, int h) {
   for(int yb=y; yb<y+h; yb++) {
     MPOS_SetAngleZ0Z1(x, yb, 0, 180);
     /* upper left corner */
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
-    MATRIX_SetHandLedEnabled(x, yb, 0, true);
-    MATRIX_SetHandLedEnabled(x, yb, 1, true);
-  #else
-    MATRIX_DrawHandEnable(x, yb, 0, true);
-    MATRIX_DrawHandEnable(x, yb, 1, true);
+  #if PL_MATRIX_CONFIG_IS_RGB
+    MHAND_HandEnable(x, yb, 0, true);
+    MHAND_HandEnable(x, yb, 1, true);
   #endif
   }
 }
@@ -1609,39 +1446,27 @@ void MATRIX_DrawVLine(int x, int y, int h) {
 void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MPOS_SetAngleZ0Z1(x, y, 180, 90);
   /* upper left corner */
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabled(x, y, 0, true);
-  MATRIX_SetHandLedEnabled(x, y, 1, true);
-#else
-  MATRIX_DrawHandEnable(x, y, 0, true);
-  MATRIX_DrawHandEnable(x, y, 1, true);
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnable(x, y, 0, true);
+  MHAND_HandEnable(x, y, 1, true);
 #endif
   /* upper right corner */
   MPOS_SetAngleZ0Z1(x+w-1, y, 270, 180);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabled(x+w-1, y, 0, true);
-  MATRIX_SetHandLedEnabled(x+w-1, y, 1, true);
-#else
-  MATRIX_DrawHandEnable(x+w-1, y, 0, true);
-  MATRIX_DrawHandEnable(x+w-1, y, 1, true);
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnable(x+w-1, y, 0, true);
+  MHAND_HandEnable(x+w-1, y, 1, true);
 #endif
   /* lower right corner */
   MPOS_SetAngleZ0Z1(x+w-1, y+h-1,  270, 0);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabled(x+w-1, y+h-1, 0, true);
-  MATRIX_SetHandLedEnabled(x+w-1, y+h-1, 1, true);
-#else
-  MATRIX_DrawHandEnable(x+w-1, y+h-1, 0, true);
-  MATRIX_DrawHandEnable(x+w-1, y+h-1, 1, true);
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnable(x+w-1, y+h-1, 0, true);
+  MHAND_HandEnable(x+w-1, y+h-1, 1, true);
 #endif
   /* lower left corner */
   MPOS_SetAngleZ0Z1(x, y+h-1,  0, 90);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabled(x, y+h-1, 0, true);
-  MATRIX_SetHandLedEnabled(x, y+h-1, 1, true);
-#else
-  MATRIX_DrawHandEnable(x, y+h-1, 0, true);
-  MATRIX_DrawHandEnable(x, y+h-1, 1, true);
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnable(x, y+h-1, 0, true);
+  MHAND_HandEnable(x, y+h-1, 1, true);
 #endif
   /* horizontal lines */
   MATRIX_DrawHLine(x+1, y, w-2);
@@ -2109,13 +1934,13 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     p = cmd + sizeof("matrix he all ")-1;
     if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
-      MATRIX_SetHandLedEnabledAll(true);
+      MHAND_HandEnableAll(true);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       APP_RequestUpdateLEDs();
     #endif
       return ERR_OK;
     } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
-      MATRIX_SetHandLedEnabledAll(false);
+      MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       APP_RequestUpdateLEDs();
     #endif
@@ -2166,13 +1991,13 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
          )
       {
         if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
-          MATRIX_SetHandLedEnabled(x, y, z, true);
+          MHAND_HandEnable(x, y, z, true);
         #if PL_CONFIG_USE_NEO_PIXEL_HW
           APP_RequestUpdateLEDs();
         #endif
           res = ERR_OK;
         } else if (McuUtility_strcmp((char*)p, (char*)" off")==0) {
-          MATRIX_SetHandLedEnabled(x, y, z, false);
+          MHAND_HandEnable(x, y, z, false);
          #if PL_CONFIG_USE_NEO_PIXEL_HW
           APP_RequestUpdateLEDs();
          #endif
@@ -2226,11 +2051,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     p = cmd + sizeof("matrix he2 all ")-1;
     if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
-      MATRIX_Set2ndHandLedEnabledAll(true);
+      MHAND_2ndHandEnableAll(true);
       APP_RequestUpdateLEDs();
       return ERR_OK;
     } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
-      MATRIX_Set2ndHandLedEnabledAll(false);
+      MHAND_2ndHandEnableAll(false);
       APP_RequestUpdateLEDs();
       return ERR_OK;
     }
@@ -2251,11 +2076,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
          )
       {
         if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
-          MATRIX_Set2ndHandLedEnabled(x, y, z, true);
+          MHAND_2ndHandEnable(x, y, z, true);
           APP_RequestUpdateLEDs();
           res = ERR_OK;
         } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
-          MATRIX_Set2ndHandLedEnabled(x, y, z, false);
+          MHAND_2ndHandEnable(x, y, z, false);
           APP_RequestUpdateLEDs();
           res = ERR_OK;
         }
@@ -2273,7 +2098,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     p = cmd + sizeof("matrix hc all ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
-      MATRIX_SetHandColorAll(r, g, b);
+      MHAND_SetHandColorAll(NEO_COMBINE_RGB(r, g, b));
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       APP_RequestUpdateLEDs();
     #endif
@@ -2311,7 +2136,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
          )
       {
-        MATRIX_SetHandColor(x, y, z, r, g, b);
+        MHAND_SetHandColor(x, y, z, NEO_COMBINE_RGB(r, g, b));
         res = ERR_OK;
       } else {
         res = ERR_FAILED;
@@ -2339,7 +2164,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
          )
       {
-        MATRIX_Set2ndHandColor(x, y, z, r, g, b);
+        MHAND_Set2ndHandColor(x, y, z, NEO_COMBINE_RGB(r, g, b));
         APP_RequestUpdateLEDs();
         res = ERR_OK;
       } else {
@@ -2391,7 +2216,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     uint32_t color;
 
     color = MATRIX_GetHandColorAdjusted();
-    MATRIX_SetHandColorAll(NEO_SPLIT_RGB(color));
+    MHAND_SetHandColorAll(color);
     APP_RequestUpdateLEDs();
   #else
     /* \todo send to all boards? */
@@ -2410,7 +2235,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       uint32_t color;
 
       color = MATRIX_GetHandColorAdjusted();
-      MATRIX_SetHandColorAll(NEO_SPLIT_RGB(color));
+      MHAND_SetHandColorAll(color);
       APP_RequestUpdateLEDs();
     #else
       /* \todo send to all boards? */
@@ -3556,9 +3381,9 @@ void MATRIX_Init(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   //MATRIX_DrawAllIsRelative(false, false);
 #if PL_MATRIX_CONFIG_IS_RGB
-  MATRIX_DrawAllHandColor(0x000010);
+  MHAND_SetHandColorAll(0x000010);
   MATRIX_DrawAllRingColor(0x000000);
-  MATRIX_DrawAllHandEnable(true);
+  MHAND_HandEnableAll(true);
 #endif
   MATRIX_CopyMatrix(&prevMatrix, &matrix); /* make backup */
 #if PL_CONFIG_USE_NEO_PIXEL_HW

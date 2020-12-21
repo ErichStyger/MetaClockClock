@@ -12,6 +12,7 @@
   #include "NeoStepperRing.h"
 #endif
 #include "matrix.h"
+#include "matrixhand.h"
 #include "McuLog.h"
 #include "McuUtility.h"
 #include "StepperBoard.h"
@@ -79,9 +80,9 @@ static void NeoTask(void *pv) {
   uint32_t color;
 
   vTaskDelay(pdMS_TO_TICKS(500)); /* wait a bit until to turn on LED hands */
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
   color = MATRIX_GetHandColorAdjusted();
-  MATRIX_SetHandColorAll(NEO_SPLIT_RGB(color));
+  MHAND_SetHandColorAll(color);
   APP_RequestUpdateLEDs();
 #endif
 #if 0 && PL_CONFIG_USE_MOTOR_ON_OFF

@@ -11,6 +11,7 @@
 #include "mfont.h"
 #include "matrix.h"
 #include "matrixposition.h"
+#include "matrixhand.h"
 
 typedef struct MHand_t {
   int16_t angle; /* absolute angle for clock hand position */
@@ -28,7 +29,7 @@ typedef struct MClockChar2x3_t {
   MClock_t digit[3][2]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
 } MClockChar2x3_t;
 
-/* smaller digits with 2x3. Angle of 225 is a special one ('disabled') */
+/* smaller digits with 2x3. Angle of 225 (MPOS_ANGLE_HIDE) is a special one ('disabled') */
 static const MClockChar2x3_t clockDigits2x3[10] = {
     [0].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
@@ -1070,15 +1071,13 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
     for(int x=0; x<3; x++) { /* every clock column */
       MPOS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       (void)MATRIX_DrawMoveMode(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      MATRIX_DrawClockLEDs(xPos+x, yPos+y, ch->digit[y][x].hands[0].enabled, ch->digit[y][x].hands[1].enabled);
-    #elif PL_MATRIX_CONFIG_IS_RGB
-      MATRIX_DrawHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
-      MATRIX_DrawHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
+    #if PL_MATRIX_CONFIG_IS_RGB
+      MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
+      MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
     #if PL_CONFIG_USE_DUAL_HANDS
-      MATRIX_Set2ndHandLedEnabled(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
-      MATRIX_Set2ndHandLedEnabled(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
+      MHAND_2ndHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
+      MHAND_2ndHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
     #endif
     }
   }
@@ -1090,21 +1089,18 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
     for(int x=0; x<2; x++) { /* every clock column */
       MPOS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       (void)MATRIX_DrawMoveMode(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
+    #if PL_MATRIX_CONFIG_IS_RGB
       /* should pass brightness as parameter! */
-#if 0 /* \todo */ /* does not work yet */
+      #if 0 /* \todo */ /* does not work yet */
       MATRIX_StartHandDimming(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled?0xff:0);
       MATRIX_StartHandDimming(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled?0xff:0);
-#else
-      MATRIX_DrawClockLEDs(xPos+x, yPos+y, ch->digit[y][x].hands[0].enabled, ch->digit[y][x].hands[1].enabled);
-#endif
-    #elif PL_MATRIX_CONFIG_IS_RGB
-      MATRIX_DrawHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
-      MATRIX_DrawHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
+      #endif
+      MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
+      MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
     #if PL_CONFIG_USE_DUAL_HANDS
-      MATRIX_Set2ndHandLedEnabled(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
-      MATRIX_Set2ndHandLedEnabled(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
+      MHAND_2ndHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
+      MHAND_2ndHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
     #endif
     }
   }

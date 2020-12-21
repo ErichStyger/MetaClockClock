@@ -11,6 +11,7 @@
 #include "stepper.h"
 #include "matrix.h"
 #include "matrixposition.h"
+#include "matrixhand.h"
 #include "McuUtility.h"
 #include "McuTimeDate.h"
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -247,14 +248,14 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
   yPos = 0;
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int x=0; x<3; x++) {
     for(int y=0; y<3; y++) {
       for(int z=0; z<2; z++) {
-        MATRIX_SetHandLedEnabled(xPos+x, yPos+y, z, weather[x][y].hand[z].enabled);
+        MHAND_HandEnable(xPos+x, yPos+y, z, weather[x][y].hand[z].enabled);
         MATRIX_SetHandColor(xPos+x, yPos+y, z, weather[x][y].hand[z].r, weather[x][y].hand[z].g, weather[x][y].hand[z].b);
         MATRIX_SetRingLedEnabled(xPos+x, yPos+y, z, weather[x][y].ring[z].enabled);
         MATRIX_SetRingColor(xPos+x, yPos+y, z, weather[x][y].ring[z].r, weather[x][y].ring[z].g, weather[x][y].ring[z].b); /* yellow */
@@ -499,8 +500,8 @@ static void DEMO_LedPong(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_SetHandLedEnabledAll(false);
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
+  MHAND_2ndHandEnableAll(false);
   MATRIX_SetRingLedEnabledAll(true);
 #endif
   /* ball: */
@@ -583,7 +584,7 @@ static uint8_t DemoSquare(void) {
   uint8_t res;
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -664,7 +665,7 @@ static uint8_t DemoPropeller(void) {
   uint8_t res;
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -696,7 +697,7 @@ static uint8_t DemoFalling(void) {
   uint8_t res;
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -756,59 +757,13 @@ static uint8_t DemoRandomHandsPos(void) {
 #endif
 
 #if PL_CONFIG_IS_MASTER
-static uint8_t DEMO_Demo0(const McuShell_StdIOType *io) {
-  uint8_t res;
-
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-  (void)MATRIX_DrawAllClockDelays(2, 2);
-  /* move to park position */
-  res = MATRIX_MoveAllto12(20000, io);
-  if (res!=ERR_OK) {
-    return DEMO_FailedDemo(res);
-  }
-  /* set move mode: */
-  (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      MATRIX_DrawClockDelays(x, y, 2+y, 2+y);
-    }
-  }
-  /* set movement: */
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      MPOS_SetAngleZ0Z1(x, y, 90, 270);
-    }
-  }
-  res = MATRIX_SendToRemoteQueue(); /* queue commands */
-  if (res!=ERR_OK) {
-    return DEMO_FailedDemo(res);
-  }
-
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      MPOS_SetAngleZ0Z1(x, y, 0, 180);
-    }
-  }
-  res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
-  if (res!=ERR_OK) {
-    return DEMO_FailedDemo(res);
-  }
-  /* move to park position */
-  res = MATRIX_MoveAllto12(20000, io);
-  if (res!=ERR_OK) {
-    return DEMO_FailedDemo(res);
-  }
-  return res;
-}
 
 static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
   int angle0, angle1;
   uint8_t res;
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   res = MATRIX_MoveAllto12(20000, io);
   if (res!=ERR_OK) {
@@ -823,7 +778,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
   /* configure delays */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockDelays(x, y, 5+x, 5+x);
+      (void)MATRIX_DrawClockDelays(x, y, 1+x, 1+x);
     }
   }
 
@@ -847,7 +802,7 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   uint8_t res;
 
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
   res = MATRIX_MoveAllto12(20000, io);
   if (res!=ERR_OK) {
@@ -861,48 +816,12 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   return MATRIX_MoveAllto12(10000, io);
 }
 
-static uint8_t DEMO_Demo3(const McuShell_StdIOType *io) {
-  uint8_t res;
-
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-  res = MATRIX_MoveAllto12(20000, io);
-  if (res!=ERR_OK) {
-    return DEMO_FailedDemo(res);
-  }
-  MATRIX_DrawAllClockDelays(2, 2);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MPOS_SetAngleZ0Z1All(270, 180);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  return MATRIX_MoveAllto12(10000, io);
-}
-
-static uint8_t DEMO_Demo4(const McuShell_StdIOType *io) {
-  uint8_t res;
-
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-  res = MATRIX_MoveAllto12(20000, io);
-  if (res!=ERR_OK) {
-    return DEMO_FailedDemo(res);
-  }
-  MATRIX_DrawAllClockDelays(2, 2);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  MPOS_SetAngleZ0Z1All(180, 0);
-  MATRIX_SendToRemoteQueue();
-  MPOS_SetAngleZ0Z1All(0, 0);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  return MATRIX_MoveAllto12(10000, io);
-}
-
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
   MATRIX_Delay(2000);
@@ -910,14 +829,14 @@ static void DEMO_Nxp(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
   MFONT_PrintString((unsigned char*)"WITH", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
   MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
@@ -927,7 +846,7 @@ static void DEMO_Nxp(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
   MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
@@ -937,7 +856,7 @@ static void DEMO_Nxp(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
   MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
@@ -947,12 +866,12 @@ static void DEMO_Nxp(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
 }
 #endif /* PL_MATRIX_CONFIG_IS_12x5 */
@@ -983,7 +902,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   }
   MATRIX_Delay(3000);
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
 
   MATRIX_DrawAllClockDelays(2, 2);
@@ -998,7 +917,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
     return DEMO_FailedDemo(res);
   }
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
 
   res = DEMO_Demo1(io);
@@ -1012,7 +931,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   MATRIX_Delay(3000);
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
 #endif
   MATRIX_Delay(3000);
   return MATRIX_MoveAllto12(10000, io);
@@ -1024,12 +943,12 @@ static uint8_t DemoRandomHandsColor(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   uint32_t color;
 
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
   for (int i=0; i<10; i++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-          (void)MATRIX_SetHandColor(x, y, z, McuUtility_random(1, 255),  McuUtility_random(1, 255), McuUtility_random(1, 255));
+          MHAND_SetHandColor(x, y, z, NEO_COMBINE_RGB(McuUtility_random(1, 255),  McuUtility_random(1, 255), McuUtility_random(1, 255)));
         }
       }
     }
@@ -1037,7 +956,7 @@ static uint8_t DemoRandomHandsColor(void) {
     vTaskDelay(pdMS_TO_TICKS(500));
   }
   color = MATRIX_GetHandColorAdjusted();
-  MATRIX_SetHandColorAll(NEO_SPLIT_RGB(color));
+  MHAND_SetHandColorAll(color);
   return ERR_OK;
 #elif PL_MATRIX_CONFIG_IS_RGB
   uint8_t res;
@@ -1050,7 +969,7 @@ static uint8_t DemoRandomHandsColor(void) {
         r = McuUtility_random(1, 255);
         g = McuUtility_random(1, 255);
         b = McuUtility_random(1, 255);
-        MATRIX_DrawHandColor(x, y, z, NEO_COMBINE_RGB(r,g,b));
+        MHAND_SetHandColor(x, y, z, NEO_COMBINE_RGB(r,g,b));
       }
     }
   }
@@ -1068,7 +987,7 @@ static uint8_t DemoRandomHandsColor(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB
 static uint8_t DemoRandomRingColor(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandLedEnabledAll(false);
+  MHAND_HandEnableAll(false);
   MATRIX_SetRingLedEnabledAll(true);
   for(int i=0; i<10; i++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -1082,7 +1001,7 @@ static uint8_t DemoRandomRingColor(void) {
     vTaskDelay(pdMS_TO_TICKS(500));
   } /* for */
   MATRIX_SetRingLedEnabledAll(false);
-  MATRIX_SetHandLedEnabledAll(true);
+  MHAND_HandEnableAll(true);
   return ERR_OK;
 #elif PL_MATRIX_CONFIG_IS_RGB
   uint8_t res;
@@ -1113,7 +1032,7 @@ static uint8_t DemoRandomRingColor(void) {
 #if PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
 static uint8_t DemoClap(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
+  MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_CONFIG_IS_MASTER
   (void)MATRIX_DrawAllClockDelays(4, 4);
@@ -1207,11 +1126,8 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  falling", (unsigned char*)"Falling hands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  propeller", (unsigned char*)"Rotating propeller\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  demo combined", (unsigned char*)"Combined demo\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  0", (unsigned char*)"Demo with propeller\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  1", (unsigned char*)"Demo with changing angles\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  2", (unsigned char*)"Demo fast clock\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  3", (unsigned char*)"Demo moving hand around\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  4", (unsigned char*)"Demo with LED and hand test\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <delay>", (unsigned char*)"Set default delay\r\n", io->stdOut);
   #if MATRIX_NOF_STEPPERS_X >= MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y >= MFONT_SIZE_Y_3x5
   McuShell_SendHelpStr((unsigned char*)"  time <time>", (unsigned char*)"Show time\r\n", io->stdOut);
@@ -1334,21 +1250,12 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo combined")==0) {
     *handled = true;
     return DEMO_DemoCombined(io);
-  } else if (McuUtility_strcmp((char*)cmd, "demo 0")==0) {
-    *handled = true;
-    return DEMO_Demo0(io);
   } else if (McuUtility_strcmp((char*)cmd, "demo 1")==0) {
     *handled = true;
     return DEMO_Demo1(io);
   } else if (McuUtility_strcmp((char*)cmd, "demo 2")==0) {
     *handled = true;
     return DEMO_Demo2(io);
-  } else if (McuUtility_strcmp((char*)cmd, "demo 3")==0) {
-    *handled = true;
-    return DEMO_Demo3(io);
-  } else if (McuUtility_strcmp((char*)cmd, "demo 4")==0) {
-    *handled = true;
-    return DEMO_Demo4(io);
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo time large ", sizeof("demo time large ")-1)==0) {
     uint8_t hour, minute, second, hsec;
