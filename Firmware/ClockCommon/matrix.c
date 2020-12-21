@@ -34,6 +34,7 @@
   #include "application.h"
 #endif
 #include "mfont.h"
+#include "hands.h"
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
@@ -51,24 +52,7 @@
 #endif
 
 #if PL_CONFIG_IS_MASTER
-  typedef struct MATRIX_Matrix_t {
-    int16_t angleMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* two hands per clock */
-    int8_t delayMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map of clocks with their speed delay */
-    //bool isRelModeMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map if angle is relative or absolute */
-    STEPPER_MoveMode_e moveMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z];
-  #if PL_MATRIX_CONFIG_IS_RGB
-    bool enabledRingMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* if ring is enabled */
-    bool enabledHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* if hand is enabled */
-  #if PL_CONFIG_USE_DUAL_HANDS
-    bool enabled2ndHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* if hand is enabled */
-    int32_t color2ndHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each 2nd hand */
-  #endif
-    int32_t colorHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each hand */
-    int32_t colorRingMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each ring */
-  #endif
-  } MATRIX_Matrix_t;
-
-  static MATRIX_Matrix_t matrix; /* map of current matrix */
+  MATRIX_Matrix_t matrix; /* map of current matrix */
   static MATRIX_Matrix_t prevMatrix; /* map of previous matrix, used to reduce communication traffic */
 #endif /* PL_CONFIG_IS_MASTER */
 
@@ -425,16 +409,6 @@ void MATRIX_Delay(int32_t ms) {
 #endif
 
 #if PL_CONFIG_IS_MASTER
-void MATRIX_DrawClockHand(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  matrix.angleMap[x][y][z] = angle;
-}
-
-uint8_t MATRIX_DrawClockHands(uint8_t x, uint8_t y, int16_t angle0, int16_t angle1) {
-  MATRIX_DrawClockHand(x, y, 0, angle0);
-  MATRIX_DrawClockHand(x, y, 1, angle1);
-  return ERR_OK;
-}
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1) {
@@ -453,7 +427,6 @@ uint8_t MATRIX_DrawAllClockHands(int16_t angle0, int16_t angle1) {
   }
   return ERR_OK;
 }
-
 
 #if PL_CONFIG_USE_DUAL_HANDS
 void MATRIX_Draw2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
@@ -1192,53 +1165,7 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void MATRIX_DrawBorder(void) {
-#if 1
   MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
-#else
-  /* ------------ draw border ----------- */
-  /* upper left corner */
-  (void)MATRIX_DrawClockHands(0, 0,  180, 90);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(0, 0, true, true);
-#endif
-  /* upper right corner */
-  (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-1, 0, 270, 180);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-1, 0, true, true);
-#endif
-  /* lower right corner */
-  (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-1, MATRIX_NOF_STEPPERS_Y-1,  270, 0);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-1, MATRIX_NOF_STEPPERS_Y-1, true, true);
-#endif
-  /* lower left corner */
-  (void)MATRIX_DrawClockHands(0, MATRIX_NOF_STEPPERS_Y-1,  0, 90);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_DrawClockLEDs(0, MATRIX_NOF_STEPPERS_Y-1, true, true);
-#endif
-  /* horizontal lines */
-  for(uint8_t bx=1; bx<MATRIX_NOF_STEPPERS_X-1; bx++) {
-    (void)MATRIX_DrawClockHands(bx, 0,  270, 90);
-    (void)MATRIX_DrawClockHands(bx, MATRIX_NOF_STEPPERS_Y-1,  270, 90);
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
-    MATRIX_DrawClockLEDs(bx, 0, true, true);
-    MATRIX_DrawClockLEDs(bx, MATRIX_NOF_STEPPERS_Y-1, true, true);
-  #endif
-  }
-  /* vertical lines */
-  for(uint8_t by=1; by<MATRIX_NOF_STEPPERS_Y-1; by++) {
-    (void)MATRIX_DrawClockHands(0, by,  0, 180);
-    (void)MATRIX_DrawClockHands(1, by,225, 225);
-    (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-2, by,225, 225);
-    (void)MATRIX_DrawClockHands(MATRIX_NOF_STEPPERS_X-1, by,  0, 180);
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
-    MATRIX_DrawClockLEDs(0, by, true, true);
-    MATRIX_DrawClockLEDs(1, by, false, false);
-    MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-2, by, false, false);
-    MATRIX_DrawClockLEDs(MATRIX_NOF_STEPPERS_X-1, by, true, true);
-  #endif
-  }
-#endif
 }
 #endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
@@ -1663,7 +1590,7 @@ static uint8_t MATRIX_Test(void) {
 #if PL_CONFIG_IS_MASTER
 void MATRIX_DrawHLine(int x, int y, int w) {
   for(int xb=x; xb<x+w; xb++) {
-    (void)MATRIX_DrawClockHands(xb, y, 270, 90);
+    HAND_SetHandAngleBoth(xb, y, 270, 90);
     /* upper left corner */
   #if PL_CONFIG_USE_NEO_PIXEL_HW
     MATRIX_SetHandLedEnabled(xb, y, 0, true);
@@ -1677,7 +1604,7 @@ void MATRIX_DrawHLine(int x, int y, int w) {
 
 void MATRIX_DrawVLine(int x, int y, int h) {
   for(int yb=y; yb<y+h; yb++) {
-    (void)MATRIX_DrawClockHands(x, yb, 0, 180);
+    HAND_SetHandAngleBoth(x, yb, 0, 180);
     /* upper left corner */
   #if PL_CONFIG_USE_NEO_PIXEL_HW
     MATRIX_SetHandLedEnabled(x, yb, 0, true);
@@ -1690,7 +1617,7 @@ void MATRIX_DrawVLine(int x, int y, int h) {
 }
 
 void MATRIX_DrawRectangle(int x, int y, int w, int h) {
-  (void)MATRIX_DrawClockHands(x, y, 180, 90);
+  HAND_SetHandAngleBoth(x, y, 180, 90);
   /* upper left corner */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x, y, 0, true);
@@ -1700,7 +1627,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawHandEnable(x, y, 1, true);
 #endif
   /* upper right corner */
-  (void)MATRIX_DrawClockHands(x+w-1, y, 270, 180);
+  HAND_SetHandAngleBoth(x+w-1, y, 270, 180);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x+w-1, y, 0, true);
   MATRIX_SetHandLedEnabled(x+w-1, y, 1, true);
@@ -1709,7 +1636,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawHandEnable(x+w-1, y, 1, true);
 #endif
   /* lower right corner */
-  (void)MATRIX_DrawClockHands(x+w-1, y+h-1,  270, 0);
+  HAND_SetHandAngleBoth(x+w-1, y+h-1,  270, 0);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x+w-1, y+h-1, 0, true);
   MATRIX_SetHandLedEnabled(x+w-1, y+h-1, 1, true);
@@ -1718,7 +1645,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawHandEnable(x+w-1, y+h-1, 1, true);
 #endif
   /* lower left corner */
-  (void)MATRIX_DrawClockHands(x, y+h-1,  0, 90);
+  HAND_SetHandAngleBoth(x, y+h-1,  0, 90);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x, y+h-1, 0, true);
   MATRIX_SetHandLedEnabled(x, y+h-1, 1, true);

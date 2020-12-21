@@ -8,6 +8,7 @@
 #if PL_CONFIG_USE_INTERMEZZO
 #include "intermezzo.h"
 #include "matrix.h"
+#include "hands.h"
 #include "Shell.h"
 #include "McuUtility.h"
 #include "McuExtRTC.h"
@@ -121,7 +122,7 @@ static void Intermezzo5(void) {
   angle1 = 180;
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, angle0, angle1);
+      HAND_SetHandAngleBoth(x, y, angle0, angle1);
     }
   }
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -133,7 +134,7 @@ static void Intermezzo5(void) {
     angle1 = (angle1+90)%360;
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-        (void)MATRIX_DrawClockHands(x, y, angle0, angle1);
+        HAND_SetHandAngleBoth(x, y, angle0, angle1);
       }
     }
     (void)MATRIX_SendToRemoteQueue(); /* queue command */
@@ -157,7 +158,7 @@ static void Intermezzo6(void) {
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0, 180);
+      HAND_SetHandAngleBoth(x, y, 0, 180);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -169,13 +170,13 @@ static void Intermezzo6(void) {
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 180, 0);
+      HAND_SetHandAngleBoth(x, y, 180, 0);
     }
   }
   (void)MATRIX_SendToRemoteQueue(); /* queue commands */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0, 180);
+      HAND_SetHandAngleBoth(x, y, 0, 180);
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -214,11 +215,11 @@ static void Intermezzo8(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      MATRIX_DrawClockHands(x, y,   135, 135);
-      MATRIX_DrawClockHands(x, y+1,  45,  45);
+      HAND_SetHandAngleBoth(x, y,   135, 135);
+      HAND_SetHandAngleBoth(x, y+1,  45,  45);
 
-      MATRIX_DrawClockHands(x+1, y  , 225, 225);
-      MATRIX_DrawClockHands(x+1, y+1, 315, 315);
+      HAND_SetHandAngleBoth(x+1, y  , 225, 225);
+      HAND_SetHandAngleBoth(x+1, y+1, 315, 315);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -226,11 +227,11 @@ static void Intermezzo8(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      MATRIX_DrawClockHands(x, y  , 135-1, 135+1);
-      MATRIX_DrawClockHands(x, y+1,  45-1,  45+1);
+      HAND_SetHandAngleBoth(x, y  , 135-1, 135+1);
+      HAND_SetHandAngleBoth(x, y+1,  45-1,  45+1);
 
-      MATRIX_DrawClockHands(x+1, y  , 225-1, 225+1);
-      MATRIX_DrawClockHands(x+1, y+1, 315-1, 315+1);
+      HAND_SetHandAngleBoth(x+1, y  , 225-1, 225+1);
+      HAND_SetHandAngleBoth(x+1, y+1, 315-1, 315+1);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -238,11 +239,11 @@ static void Intermezzo8(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      MATRIX_DrawClockHands(x, y  , 135, 135);
-      MATRIX_DrawClockHands(x, y+1,  45,  45);
+      HAND_SetHandAngleBoth(x, y  , 135, 135);
+      HAND_SetHandAngleBoth(x, y+1,  45,  45);
 
-      MATRIX_DrawClockHands(x+1, y  , 225, 225);
-      MATRIX_DrawClockHands(x+1, y+1, 315, 315);
+      HAND_SetHandAngleBoth(x+1, y  , 225, 225);
+      HAND_SetHandAngleBoth(x+1, y+1, 315, 315);
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -282,7 +283,7 @@ static void IntermezzoRandomHandsAllOn(void) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        (void)MATRIX_DrawClockHand(x, y, z,  McuUtility_random(0, 359));
+        HAND_SetHandAngleBoth(x, y, z,  McuUtility_random(0, 359));
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         MATRIX_SetHandColor(x, y, z, McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255));
       #endif
@@ -303,7 +304,7 @@ static void IntermezzoRandomHands(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      MATRIX_DrawClockHands(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
+      HAND_SetHandAngleBoth(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true);

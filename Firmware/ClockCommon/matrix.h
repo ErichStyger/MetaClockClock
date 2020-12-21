@@ -14,6 +14,27 @@
 #include "McuShell.h"
 #include "stepper.h"
 
+#if PL_CONFIG_IS_MASTER
+  typedef struct MATRIX_Matrix_t {
+    int16_t angleMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* two hands per clock */
+    int8_t delayMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map of clocks with their speed delay */
+    //bool isRelModeMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map if angle is relative or absolute */
+    STEPPER_MoveMode_e moveMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z];
+  #if PL_MATRIX_CONFIG_IS_RGB
+    bool enabledRingMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* if ring is enabled */
+    bool enabledHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* if hand is enabled */
+  #if PL_CONFIG_USE_DUAL_HANDS
+    bool enabled2ndHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* if hand is enabled */
+    int32_t color2ndHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each 2nd hand */
+  #endif
+    int32_t colorHandMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each hand */
+    int32_t colorRingMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* color for each ring */
+  #endif
+  } MATRIX_Matrix_t;
+
+  extern MATRIX_Matrix_t matrix; /* map of current matrix */
+#endif /* PL_CONFIG_IS_MASTER */
+
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
 

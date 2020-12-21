@@ -10,6 +10,7 @@
 #include "McuRTOS.h"
 #include "stepper.h"
 #include "matrix.h"
+#include "hands.h"
 #include "McuUtility.h"
 #include "McuTimeDate.h"
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -589,10 +590,10 @@ static uint8_t DemoSquare(void) {
   /* build initial squares */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-      (void)MATRIX_DrawClockHands(x,     y, 180,  90);
-      (void)MATRIX_DrawClockHands(x,   y+1,  90,   0);
-      (void)MATRIX_DrawClockHands(x+1,   y, 270, 180);
-      (void)MATRIX_DrawClockHands(x+1, y+1,   0, 270);
+      HAND_SetHandAngleBoth(x,     y, 180,  90);
+      HAND_SetHandAngleBoth(x,   y+1,  90,   0);
+      HAND_SetHandAngleBoth(x+1,   y, 270, 180);
+      HAND_SetHandAngleBoth(x+1, y+1,   0, 270);
     }
   }
   /* build squares */
@@ -616,10 +617,10 @@ static uint8_t DemoSquareRotate(void) {
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-      (void)MATRIX_DrawClockHands(x,     y, 180+2*360,  90+2*360);
-      (void)MATRIX_DrawClockHands(x,   y+1,  90+2*360,   0+2*360);
-      (void)MATRIX_DrawClockHands(x+1,   y, 270+2*360, 180+2*360);
-      (void)MATRIX_DrawClockHands(x+1, y+1,   0+2*360, 270+2*360);
+      HAND_SetHandAngleBoth(x,     y, 180+2*360,  90+2*360);
+      HAND_SetHandAngleBoth(x,   y+1,  90+2*360,   0+2*360);
+      HAND_SetHandAngleBoth(x+1,   y, 270+2*360, 180+2*360);
+      HAND_SetHandAngleBoth(x+1, y+1,   0+2*360, 270+2*360);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -643,10 +644,10 @@ static uint8_t DemoSquareClap(void) {
   //(void)MATRIX_DrawAllIsRelative(true, true);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-      (void)MATRIX_DrawClockHands(x,     y, 180-2*360,  90+2*360);
-      (void)MATRIX_DrawClockHands(x,   y+1,  90-2*360,   0+2*360);
-      (void)MATRIX_DrawClockHands(x+1,   y, 270-2*360, 180+2*360);
-      (void)MATRIX_DrawClockHands(x+1, y+1,   0-2*360, 270+2*360);
+      HAND_SetHandAngleBoth(x,     y, 180-2*360,  90+2*360);
+      HAND_SetHandAngleBoth(x,   y+1,  90-2*360,   0+2*360);
+      HAND_SetHandAngleBoth(x+1,   y, 270-2*360, 180+2*360);
+      HAND_SetHandAngleBoth(x+1, y+1,   0-2*360, 270+2*360);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -669,7 +670,7 @@ static uint8_t DemoPropeller(void) {
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0,  180);
+      HAND_SetHandAngleBoth(x, y, 0,  180);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -679,7 +680,7 @@ static uint8_t DemoPropeller(void) {
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0+2*360, 180+2*360);
+      HAND_SetHandAngleBoth(x, y, 0+2*360, 180+2*360);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -701,7 +702,7 @@ static uint8_t DemoFalling(void) {
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0,  0);
+      HAND_SetHandAngleBoth(x, y, 0,  0);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -711,7 +712,7 @@ static uint8_t DemoFalling(void) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y;y++) {
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 180, 180);
+      HAND_SetHandAngleBoth(x, y, 180, 180);
     }
     res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
     if (res!=ERR_OK) {
@@ -732,7 +733,7 @@ static uint8_t DemoRandomHandsPos(void) {
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
+      HAND_SetHandAngleBoth(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -772,7 +773,7 @@ static uint8_t DEMO_Demo0(const McuShell_StdIOType *io) {
   /* set movement: */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 90, 270);
+      HAND_SetHandAngleBoth(x, y, 90, 270);
     }
   }
   res = MATRIX_SendToRemoteQueue(); /* queue commands */
@@ -782,7 +783,7 @@ static uint8_t DEMO_Demo0(const McuShell_StdIOType *io) {
 
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0, 180);
+      HAND_SetHandAngleBoth(x, y, 0, 180);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -1093,7 +1094,7 @@ static uint8_t DemoClap(void) {
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockHands(x, y, 0,  180);
+      HAND_SetHandAngleBoth(x, y, 0,  180);
     }
   }
   uint8_t res;
@@ -1106,14 +1107,14 @@ static uint8_t DemoClap(void) {
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-        (void)MATRIX_DrawClockHands(x, y, 90, 90);
+        HAND_SetHandAngleBoth(x, y, 90, 90);
       }
     }
     (void)MATRIX_SendToRemoteQueue();
     (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-        (void)MATRIX_DrawClockHands(x, y, 0, 180);
+        HAND_SetHandAngleBoth(x, y, 0, 180);
       }
     }
     (void)MATRIX_SendToRemoteQueue();
