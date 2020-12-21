@@ -1,5 +1,5 @@
 /*
- * hands.h
+ * position.h
  *
  * Author: Erich Styger
  * License: PDX-License-Identifier: BSD-3-Clause
