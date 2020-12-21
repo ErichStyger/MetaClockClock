@@ -34,7 +34,7 @@
   #include "application.h"
 #endif
 #include "mfont.h"
-#include "position.h"
+#include "matrixposition.h"
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
@@ -1071,7 +1071,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
-  POS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
+  MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
 #if PL_CONFIG_USE_LED_RING
@@ -1103,7 +1103,7 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
   #if PL_CONFIG_USE_DUAL_HANDS
     MATRIX_Set2ndHandLedEnabledAll(false);
   #endif
-    POS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
+    MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
     MATRIX_DrawAllClockDelays(2, 2);
     MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
   #if PL_CONFIG_USE_LED_RING
@@ -1581,7 +1581,7 @@ static uint8_t MATRIX_Test(void) {
 #if PL_CONFIG_IS_MASTER
 void MATRIX_DrawHLine(int x, int y, int w) {
   for(int xb=x; xb<x+w; xb++) {
-    POS_SetAngleZ0Z1(xb, y, 270, 90);
+    MPOS_SetAngleZ0Z1(xb, y, 270, 90);
     /* upper left corner */
   #if PL_CONFIG_USE_NEO_PIXEL_HW
     MATRIX_SetHandLedEnabled(xb, y, 0, true);
@@ -1595,7 +1595,7 @@ void MATRIX_DrawHLine(int x, int y, int w) {
 
 void MATRIX_DrawVLine(int x, int y, int h) {
   for(int yb=y; yb<y+h; yb++) {
-    POS_SetAngleZ0Z1(x, yb, 0, 180);
+    MPOS_SetAngleZ0Z1(x, yb, 0, 180);
     /* upper left corner */
   #if PL_CONFIG_USE_NEO_PIXEL_HW
     MATRIX_SetHandLedEnabled(x, yb, 0, true);
@@ -1608,7 +1608,7 @@ void MATRIX_DrawVLine(int x, int y, int h) {
 }
 
 void MATRIX_DrawRectangle(int x, int y, int w, int h) {
-  POS_SetAngleZ0Z1(x, y, 180, 90);
+  MPOS_SetAngleZ0Z1(x, y, 180, 90);
   /* upper left corner */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x, y, 0, true);
@@ -1618,7 +1618,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawHandEnable(x, y, 1, true);
 #endif
   /* upper right corner */
-  POS_SetAngleZ0Z1(x+w-1, y, 270, 180);
+  MPOS_SetAngleZ0Z1(x+w-1, y, 270, 180);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x+w-1, y, 0, true);
   MATRIX_SetHandLedEnabled(x+w-1, y, 1, true);
@@ -1627,7 +1627,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawHandEnable(x+w-1, y, 1, true);
 #endif
   /* lower right corner */
-  POS_SetAngleZ0Z1(x+w-1, y+h-1,  270, 0);
+  MPOS_SetAngleZ0Z1(x+w-1, y+h-1,  270, 0);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x+w-1, y+h-1, 0, true);
   MATRIX_SetHandLedEnabled(x+w-1, y+h-1, 1, true);
@@ -1636,7 +1636,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawHandEnable(x+w-1, y+h-1, 1, true);
 #endif
   /* lower left corner */
-  POS_SetAngleZ0Z1(x, y+h-1,  0, 90);
+  MPOS_SetAngleZ0Z1(x, y+h-1,  0, 90);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabled(x, y+h-1, 0, true);
   MATRIX_SetHandLedEnabled(x, y+h-1, 1, true);
@@ -3552,7 +3552,7 @@ void MATRIX_Init(void) {
 #if PL_CONFIG_IS_MASTER
   MATRIX_ResetBoardListCmdSent();
   /* initialize matrix */
-  POS_SetAngleZ0Z1All(0, 0);
+  MPOS_SetAngleZ0Z1All(0, 0);
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   //MATRIX_DrawAllIsRelative(false, false);
