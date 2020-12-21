@@ -8,7 +8,7 @@
 #if PL_CONFIG_USE_INTERMEZZO
 #include "intermezzo.h"
 #include "matrix.h"
-#include "hands.h"
+#include "position.h"
 #include "Shell.h"
 #include "McuUtility.h"
 #include "McuExtRTC.h"
@@ -36,9 +36,9 @@ static void Intermezzo0(void) {
 #endif
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockHands(0, 90);
+  POS_SetAngleZ0Z1All(0, 90);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MATRIX_DrawAllClockHands(270, 180);
+  POS_SetAngleZ0Z1All(270, 180);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -51,10 +51,10 @@ static void Intermezzo1(void) {
 #endif
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockHands(0, 180);
+  POS_SetAngleZ0Z1All(0, 180);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
-  MATRIX_DrawAllClockHands(180, 0);
+  POS_SetAngleZ0Z1All(180, 0);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -67,11 +67,11 @@ static void Intermezzo2(void) {
 #endif
   MATRIX_DrawAllClockDelays(6, 6);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockHands(0, 180);
+  POS_SetAngleZ0Z1All(0, 180);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_DrawAllClockDelays(4, 4);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  MATRIX_DrawAllClockHands(180, 0);
+  POS_SetAngleZ0Z1All(180, 0);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -84,9 +84,9 @@ static void Intermezzo3(void) {
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CCW);
-  MATRIX_DrawAllClockHands(90, 270);
+  POS_SetAngleZ0Z1All(90, 270);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MATRIX_DrawAllClockHands(0, 0);
+  POS_SetAngleZ0Z1All(0, 0);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -98,10 +98,10 @@ static void Intermezzo4(void) {
   MATRIX_SetHandLedEnabledAll(true);
 #endif
   MATRIX_DrawAllClockDelays(6, 6);
-  MATRIX_DrawAllClockHands(315, 45);
+  POS_SetAngleZ0Z1All(315, 45);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_DrawAllClockDelays(4, 4);
-  MATRIX_DrawAllClockHands(180, 180);
+  POS_SetAngleZ0Z1All(180, 180);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -122,7 +122,7 @@ static void Intermezzo5(void) {
   angle1 = 180;
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      HAND_SetHandAngleBoth(x, y, angle0, angle1);
+      POS_SetAngleZ0Z1(x, y, angle0, angle1);
     }
   }
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -134,7 +134,7 @@ static void Intermezzo5(void) {
     angle1 = (angle1+90)%360;
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-        HAND_SetHandAngleBoth(x, y, angle0, angle1);
+        POS_SetAngleZ0Z1(x, y, angle0, angle1);
       }
     }
     (void)MATRIX_SendToRemoteQueue(); /* queue command */
@@ -158,7 +158,7 @@ static void Intermezzo6(void) {
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      HAND_SetHandAngleBoth(x, y, 0, 180);
+      POS_SetAngleZ0Z1(x, y, 0, 180);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -170,13 +170,13 @@ static void Intermezzo6(void) {
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      HAND_SetHandAngleBoth(x, y, 180, 0);
+      POS_SetAngleZ0Z1(x, y, 180, 0);
     }
   }
   (void)MATRIX_SendToRemoteQueue(); /* queue commands */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      HAND_SetHandAngleBoth(x, y, 0, 180);
+      POS_SetAngleZ0Z1(x, y, 0, 180);
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -192,15 +192,15 @@ static void Intermezzo7(void) {
   MATRIX_MoveAllto12(10000, NULL);
   MATRIX_DrawAllClockDelays(4, 4);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
-  MATRIX_DrawAllClockHands(180, 180);
+  POS_SetAngleZ0Z1All(180, 180);
   (void)MATRIX_SendToRemoteQueue(); /* queue commands */
-  MATRIX_DrawAllClockHands(0, 0);
+  POS_SetAngleZ0Z1All(0, 0);
   (void)MATRIX_SendToRemoteQueue(); /* queue commands */
 
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  MATRIX_DrawAllClockHands(0, 90);
+  POS_SetAngleZ0Z1All(0, 90);
   (void)MATRIX_SendToRemoteQueue(); /* queue commands */
-  MATRIX_DrawAllClockHands(270, 0);
+  POS_SetAngleZ0Z1All(270, 0);
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
@@ -215,11 +215,11 @@ static void Intermezzo8(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      HAND_SetHandAngleBoth(x, y,   135, 135);
-      HAND_SetHandAngleBoth(x, y+1,  45,  45);
+      POS_SetAngleZ0Z1(x, y,   135, 135);
+      POS_SetAngleZ0Z1(x, y+1,  45,  45);
 
-      HAND_SetHandAngleBoth(x+1, y  , 225, 225);
-      HAND_SetHandAngleBoth(x+1, y+1, 315, 315);
+      POS_SetAngleZ0Z1(x+1, y  , 225, 225);
+      POS_SetAngleZ0Z1(x+1, y+1, 315, 315);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -227,11 +227,11 @@ static void Intermezzo8(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      HAND_SetHandAngleBoth(x, y  , 135-1, 135+1);
-      HAND_SetHandAngleBoth(x, y+1,  45-1,  45+1);
+      POS_SetAngleZ0Z1(x, y  , 135-1, 135+1);
+      POS_SetAngleZ0Z1(x, y+1,  45-1,  45+1);
 
-      HAND_SetHandAngleBoth(x+1, y  , 225-1, 225+1);
-      HAND_SetHandAngleBoth(x+1, y+1, 315-1, 315+1);
+      POS_SetAngleZ0Z1(x+1, y  , 225-1, 225+1);
+      POS_SetAngleZ0Z1(x+1, y+1, 315-1, 315+1);
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -239,11 +239,11 @@ static void Intermezzo8(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      HAND_SetHandAngleBoth(x, y  , 135, 135);
-      HAND_SetHandAngleBoth(x, y+1,  45,  45);
+      POS_SetAngleZ0Z1(x, y  , 135, 135);
+      POS_SetAngleZ0Z1(x, y+1,  45,  45);
 
-      HAND_SetHandAngleBoth(x+1, y  , 225, 225);
-      HAND_SetHandAngleBoth(x+1, y+1, 315, 315);
+      POS_SetAngleZ0Z1(x+1, y  , 225, 225);
+      POS_SetAngleZ0Z1(x+1, y+1, 315, 315);
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -267,7 +267,7 @@ static void Intermezzo9(void) {
   }
   MATRIX_DrawAllClockDelays(4, 4);
   time.Hour %= 12;
-  MATRIX_DrawAllClockHands(time.Min*360/60, time.Hour*360/12);
+  POS_SetAngleZ0Z1All(time.Min*360/60, time.Hour*360/12);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -283,7 +283,7 @@ static void IntermezzoRandomHandsAllOn(void) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        HAND_SetHandAngleBoth(x, y, z,  McuUtility_random(0, 359));
+        POS_SetAngleZ0Z1(x, y, z,  McuUtility_random(0, 359));
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         MATRIX_SetHandColor(x, y, z, McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255));
       #endif
@@ -304,7 +304,7 @@ static void IntermezzoRandomHands(void) {
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      HAND_SetHandAngleBoth(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
+      POS_SetAngleZ0Z1(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true);

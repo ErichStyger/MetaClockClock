@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include "mfont.h"
 #include "matrix.h"
+#include "position.h"
 
 typedef struct MHand_t {
   int16_t angle; /* absolute angle for clock hand position */
@@ -1057,7 +1058,7 @@ static const MClockChar3x5_t clockCharSpace3x5 =
 static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<5; y++) { /* every clock row */
     for(int x=0; x<3; x++) { /* every clock column */
-      (void)MATRIX_DrawClockHands(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
+      POS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       (void)MATRIX_DrawMoveMode(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       MATRIX_DrawClockLEDs(xPos+x, yPos+y, ch->digit[y][x].hands[0].enabled, ch->digit[y][x].hands[1].enabled);
@@ -1077,7 +1078,7 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
 static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<3; y++) { /* every clock row */
     for(int x=0; x<2; x++) { /* every clock column */
-      (void)MATRIX_DrawClockHands(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
+      POS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       (void)MATRIX_DrawMoveMode(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* should pass brightness as parameter! */

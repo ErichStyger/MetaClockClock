@@ -94,10 +94,6 @@ void MATRIX_DrawClockLEDs(uint8_t x, uint8_t y, bool on0, bool on1);
 void MATRIX_DrawHandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable);
 void MATRIX_Set2ndHandLedEnabled(int32_t x, int32_t y, uint8_t z, bool on);
 
-uint8_t MATRIX_DrawAllClockHands(int16_t angle0, int16_t angle1);
-uint8_t MATRIX_DrawClockHands(uint8_t x, uint8_t y, int16_t angle0, int16_t angle1);
-void MATRIX_DrawClockHand(uint8_t x, uint8_t y, uint8_t z, int16_t angle);
-
 uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);
 uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait);
