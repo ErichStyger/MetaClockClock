@@ -326,6 +326,88 @@ static void Intermezzo11(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
+static void Intermezzo12(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+  (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  (void)MATRIX_DrawAllClockDelays(1, 1);
+  MPOS_SetAngleZ0Z1All(270, 270);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  (void)MATRIX_DrawAllClockDelays(1, 1);
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      MPOS_SetAngleZ0Z1(x, y, 270, 90);
+    }
+    MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+  }
+}
+
+static void Intermezzo13(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+  (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  (void)MATRIX_DrawAllClockDelays(1, 1);
+  MPOS_SetAngleZ0Z1All(0, 0);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  /* set move mode: */
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      MPOS_SetAngleZ0Z1(x, y, 0, 180);
+    }
+    MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+  }
+}
+
+static void Intermezzo14(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+  (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  (void)MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleZ0Z1All(0, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  /* set move mode: */
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      MPOS_SetAngleZ0Z1(x, y, 180, 0);
+    }
+  }
+  MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+
+  MPOS_SetAngleZ0Z1All(0, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void Intermezzo15(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+  (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  (void)MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleZ0Z1All(270, 90);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  /* set move mode: */
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      if ((x%2)==0) {
+        MATRIX_DrawMoveMode(x, y, STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+        MPOS_SetAngleZ0Z1(x, y, 269, 89);
+      } else {
+        MATRIX_DrawMoveMode(x, y, STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CCW);
+        MPOS_SetAngleZ0Z1(x, y, 271, 91);
+      }
+    }
+  }
+  MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+}
+
 static void IntermezzoTime(void) {
   uint8_t res;
   TIMEREC time;
@@ -470,6 +552,10 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo9,
     Intermezzo10,
     Intermezzo11,
+    Intermezzo12,
+    Intermezzo13,
+    Intermezzo14,
+    Intermezzo15,
     IntermezzoTime,
     IntermezzoRandomHands,
     IntermezzoRandomHandsAllOn,
