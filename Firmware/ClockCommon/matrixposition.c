@@ -10,10 +10,14 @@
 #include "matrix.h"
 #include <assert.h>
 
+#if PL_CONFIG_IS_MASTER // currently only for master configuration implemented */
+
 void MPOS_SetAngle(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_IS_MASTER
   matrix.angleMap[x][y][z] = angle;
+#else
+  assert(false);
 #endif
 }
 
@@ -29,3 +33,5 @@ void MPOS_SetAngleZ0Z1All(int16_t z0Angle, int16_t z1Angle) {
     }
   }
 }
+
+#endif /* PL_CONFIG_IS_MASTER */

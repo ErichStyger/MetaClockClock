@@ -1201,6 +1201,10 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  humidity large <hh>", (unsigned char*)"Show large humidity\r\n", io->stdOut);
   #endif
+  McuShell_SendHelpStr((unsigned char*)"  lux <lux>", (unsigned char*)"Show lux value\r\n", io->stdOut);
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  McuShell_SendHelpStr((unsigned char*)"  lux large <lux>", (unsigned char*)"Show large lux value\r\n", io->stdOut);
+  #endif
   McuShell_SendHelpStr((unsigned char*)"  text <xy> <text>", (unsigned char*)"Write text at position\r\n", io->stdOut);
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  text large <xy> <text>", (unsigned char*)"Write large text at position\r\n", io->stdOut);
@@ -1421,6 +1425,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
       if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
         return ERR_FAILED;
       }
+      MATRIX_DrawAllClockDelays(2, 2);
       MFONT_PrintString(buf, xPos, yPos, MFONT_SIZE_3x5);
       return MATRIX_SendToRemoteQueueExecuteAndWait(true);
     } else {
@@ -1444,6 +1449,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
       return ERR_FAILED;
     }
+    MATRIX_DrawAllClockDelays(2, 2);
     MFONT_PrintString(buf, xPos, yPos, MFONT_SIZE_2x3);
     return MATRIX_SendToRemoteQueueExecuteAndWait(true);
   } else {

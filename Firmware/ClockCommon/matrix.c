@@ -1317,7 +1317,6 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 #endif
    buf[0] = '\0';
    McuUtility_strcatNum16u(buf, sizeof(buf), lux);
-   McuUtility_chcat(buf, sizeof(buf), '%');
    McuUtility_chcat(buf, sizeof(buf), 'L');
    MFONT_PrintString(buf, x, y, MFONT_SIZE_2x3);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
@@ -1336,7 +1335,6 @@ uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
 #endif
   buf[0] = '\0';
   McuUtility_strcatNum16u(buf, sizeof(buf), lux);
-  McuUtility_chcat(buf, sizeof(buf), '%');
   McuUtility_chcat(buf, sizeof(buf), 'L');
   MFONT_PrintString(buf, 0, 0, MFONT_SIZE_3x5);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);

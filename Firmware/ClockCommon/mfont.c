@@ -155,11 +155,21 @@ static const MClockChar2x3_t clockCharPercent2x3 =
   }
 };
 
-
 static const MClockChar2x3_t clockCharC2x3 =
 { .digit = { /* C */
     [0][0]={.hands={{.angle=180, .enabled= true},{.angle= 90, .enabled= true}}},
     [0][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
+    [1][0]={.hands={{.angle=  0, .enabled= true},{.angle=180, .enabled= true}}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
+    [2][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
+  }
+};
+
+static const MClockChar2x3_t clockCharL2x3 =
+{ .digit = { /* C */
+    [0][0]={.hands={{.angle=180, .enabled= true},{.angle=180, .enabled= true}}},
+    [0][1]={.hands={{.angle=225, .enabled= true},{.angle=225, .enabled= true}}},
     [1][0]={.hands={{.angle=  0, .enabled= true},{.angle=180, .enabled= true}}},
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
@@ -1142,7 +1152,7 @@ static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
         default: desc = NULL; break;
       }
     }
-    if (desc!=NULL) {
+    if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_3x5 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_3x5) {
       DrawChar3x5(desc, xPos, yPos);
     }
     xPos += 3;
@@ -1161,6 +1171,7 @@ static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
     } else {
       switch(*str) {
         case ' ': desc = &clockCharSpace2x3; break;
+        case 'L': desc = &clockCharL2x3; break;
         case 'C': desc = &clockCharC2x3; break;
         case 'H': desc = &clockCharH2x3; break;
         case MFONT_CHAR_DEGREE: desc = &clockCharDegree2x3; break;
@@ -1168,7 +1179,7 @@ static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
         default: desc = NULL; break;
       }
     }
-    if (desc!=NULL) {
+    if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_2x3 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_2x3) {
       DrawChar2x3(desc, xPos, yPos);
     }
     xPos += 2;
