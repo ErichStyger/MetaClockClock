@@ -9,6 +9,7 @@
 #include "intermezzo.h"
 #include "matrix.h"
 #include "matrixposition.h"
+#include "matrixhand.h"
 #include "Shell.h"
 #include "McuUtility.h"
 #include "McuExtRTC.h"
@@ -144,11 +145,11 @@ static void Intermezzo5(void) {
 }
 
 static void Intermezzo6(void) {
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
-#endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MHAND_HandEnableAll(true);
 #endif
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -165,7 +166,7 @@ static void Intermezzo6(void) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       (void)MATRIX_DrawMoveMode(x, y, STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-      MATRIX_DrawClockDelays(x, y, 0+x/2, y);
+      MATRIX_DrawClockDelays(x, y, 1+x/2, y);
     }
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -213,13 +214,20 @@ static void Intermezzo8(void) {
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
       MPOS_SetAngleZ0Z1(x, y,   135, 135);
-      MPOS_SetAngleZ0Z1(x, y+1,  45,  45);
+      if (y+1<MATRIX_NOF_STEPPERS_Y) {
+        MPOS_SetAngleZ0Z1(x, y+1,  45,  45);
+      }
 
-      MPOS_SetAngleZ0Z1(x+1, y  , 225, 225);
-      MPOS_SetAngleZ0Z1(x+1, y+1, 315, 315);
+      if (x+1<MATRIX_NOF_STEPPERS_X) {
+        MPOS_SetAngleZ0Z1(x+1, y  , 225, 225);
+        if (y+1<MATRIX_NOF_STEPPERS_Y) {
+          MPOS_SetAngleZ0Z1(x+1, y+1, 315, 315);
+        }
+      }
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -228,25 +236,19 @@ static void Intermezzo8(void) {
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
       MPOS_SetAngleZ0Z1(x, y  , 135-1, 135+1);
-      MPOS_SetAngleZ0Z1(x, y+1,  45-1,  45+1);
+      if (y+1<MATRIX_NOF_STEPPERS_Y) {
+        MPOS_SetAngleZ0Z1(x, y+1,  45-1,  45+1);
+      }
 
-      MPOS_SetAngleZ0Z1(x+1, y  , 225-1, 225+1);
-      MPOS_SetAngleZ0Z1(x+1, y+1, 315-1, 315+1);
+      if (x+1<MATRIX_NOF_STEPPERS_X) {
+        MPOS_SetAngleZ0Z1(x+1, y  , 225-1, 225+1);
+        if (y+1<MATRIX_NOF_STEPPERS_Y) {
+          MPOS_SetAngleZ0Z1(x+1, y+1, 315-1, 315+1);
+        }
+      }
     }
   }
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
-
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
-      MPOS_SetAngleZ0Z1(x, y  , 135, 135);
-      MPOS_SetAngleZ0Z1(x, y+1,  45,  45);
-
-      MPOS_SetAngleZ0Z1(x+1, y  , 225, 225);
-      MPOS_SetAngleZ0Z1(x+1, y+1, 315, 315);
-    }
-  }
-  MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
 static void Intermezzo9(void) {
