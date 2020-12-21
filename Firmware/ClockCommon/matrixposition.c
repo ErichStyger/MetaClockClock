@@ -34,4 +34,14 @@ void MPOS_SetAngleZ0Z1All(int16_t z0Angle, int16_t z1Angle) {
   }
 }
 
+void MPOS_SetAngleAll(int16_t angle) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        MPOS_SetAngle(x, y, z, angle);
+      }
+    }
+  }
+}
+
 #endif /* PL_CONFIG_IS_MASTER */

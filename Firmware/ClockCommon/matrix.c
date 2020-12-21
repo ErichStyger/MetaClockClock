@@ -1203,6 +1203,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
   uint8_t buf[8];
 
   MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB

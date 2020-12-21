@@ -763,6 +763,11 @@ static uint8_t DEMO_Demo0(const McuShell_StdIOType *io) {
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(2, 2);
+  /* move to park position */
+  res = MATRIX_MoveAllto12(20000, io);
+  if (res!=ERR_OK) {
+    return DEMO_FailedDemo(res);
+  }
   /* set move mode: */
   (void)MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -805,6 +810,10 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
+  res = MATRIX_MoveAllto12(20000, io);
+  if (res!=ERR_OK) {
+    return DEMO_FailedDemo(res);
+  }
   (void)MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleZ0Z1All(0, 180);
   res = MATRIX_SendToRemoteQueue(); /* queue command */
@@ -835,9 +844,15 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
 }
 
 static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
+  uint8_t res;
+
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
+  res = MATRIX_MoveAllto12(20000, io);
+  if (res!=ERR_OK) {
+    return DEMO_FailedDemo(res);
+  }
   MATRIX_DrawAllClockDelays(1, 1);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for(int i=2;i<12;i++) {
@@ -847,12 +862,37 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
 }
 
 static uint8_t DEMO_Demo3(const McuShell_StdIOType *io) {
+  uint8_t res;
+
 #if PL_CONFIG_USE_DUAL_HANDS
   MATRIX_Set2ndHandLedEnabledAll(false);
 #endif
+  res = MATRIX_MoveAllto12(20000, io);
+  if (res!=ERR_OK) {
+    return DEMO_FailedDemo(res);
+  }
   MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   MPOS_SetAngleZ0Z1All(270, 180);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  return MATRIX_MoveAllto12(10000, io);
+}
+
+static uint8_t DEMO_Demo4(const McuShell_StdIOType *io) {
+  uint8_t res;
+
+#if PL_CONFIG_USE_DUAL_HANDS
+  MATRIX_Set2ndHandLedEnabledAll(false);
+#endif
+  res = MATRIX_MoveAllto12(20000, io);
+  if (res!=ERR_OK) {
+    return DEMO_FailedDemo(res);
+  }
+  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+  MPOS_SetAngleZ0Z1All(180, 0);
+  MATRIX_SendToRemoteQueue();
+  MPOS_SetAngleZ0Z1All(0, 0);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   return MATRIX_MoveAllto12(10000, io);
 }
@@ -861,7 +901,6 @@ static uint8_t DEMO_Demo3(const McuShell_StdIOType *io) {
 static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MATRIX_SetHandLedEnabledAll(true);
 #endif
@@ -917,19 +956,6 @@ static void DEMO_Nxp(void) {
 #endif
 }
 #endif /* PL_MATRIX_CONFIG_IS_12x5 */
-
-static uint8_t DEMO_Demo4(const McuShell_StdIOType *io) {
-#if PL_CONFIG_USE_DUAL_HANDS
-  MATRIX_Set2ndHandLedEnabledAll(false);
-#endif
-  MATRIX_DrawAllClockDelays(0, 0);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-  MPOS_SetAngleZ0Z1All(180, 0);
-  MATRIX_SendToRemoteQueue();
-  MPOS_SetAngleZ0Z1All(0, 0);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  return MATRIX_MoveAllto12(10000, io);
-}
 
 static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
