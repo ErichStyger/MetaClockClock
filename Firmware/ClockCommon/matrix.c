@@ -1176,7 +1176,7 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 #if PL_CONFIG_USE_RS485
   uint8_t buf[16];
 
-  MATRIX_DrawAllClockDelays(0, 0);
+  MATRIX_DrawAllClockDelays(2, 2);
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), hour/10);
   McuUtility_strcatNum8u(buf, sizeof(buf), hour%10);
@@ -3635,7 +3635,7 @@ void MATRIX_Init(void) {
   MATRIX_ResetBoardListCmdSent();
   /* initialize matrix */
   MATRIX_DrawAllClockHands(0, 0);
-  MATRIX_DrawAllClockDelays(0, 0);
+  MATRIX_DrawAllClockDelays(2, 2);
   MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   //MATRIX_DrawAllIsRelative(false, false);
 #if PL_MATRIX_CONFIG_IS_RGB
