@@ -44,6 +44,7 @@
 #endif
 #include "StepperBoard.h"
 #include "application.h"
+#include "matrixhand.h"
 #include "McuLog.h"
 
 static bool CLOCK_ClockIsOn = false;
@@ -246,7 +247,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     *handled = TRUE;
     p = cmd + sizeof("clock hand rgb ")-1;
     if (McuUtility_ScanRGB32(&p, &CLOCK_HandColor)==ERR_OK) {
-      MATRIX_SetHandColorAll((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
+      MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
       APP_RequestUpdateLEDs();
       return ERR_OK;
     } else {
@@ -418,7 +419,7 @@ static void ClockTask(void *pv) {
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   /* turn on the hand LEDs */
-  MATRIX_SetHandColorAll((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
+  MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
 #if PL_CONFIG_USE_LED_DIMMING
   MATRIX_SetHandBrightnessAll(CLOCK_HandBrightness);
 #endif
@@ -512,9 +513,9 @@ static void ClockTask(void *pv) {
     #if PL_CONFIG_IS_MASTER
         McuLog_info("Time: %02d:%02d", time.Hour, time.Min);
         MATRIX_DrawAllClockDelays(5,5);
-        MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+        MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
-        MATRIX_SetHandColorAll((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
+        MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
     #endif
     #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
         if (CLOCK_clockIsLarge) {

@@ -350,24 +350,6 @@ uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1) {
   return ERR_OK;
 }
 
-uint8_t MATRIX_DrawMoveMode(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
-    return ERR_FRAMING;
-  }
-  matrix.moveMap[x][y][0] = mode0;
-  matrix.moveMap[x][y][1] = mode1;
-  return ERR_OK;
-}
-
-uint8_t MATRIX_DrawAllMoveMode(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      matrix.moveMap[x][y][0] = mode0;
-      matrix.moveMap[x][y][1] = mode1;
-    }
-  }
-  return ERR_OK;
-}
 
 #if 0 /* NYI */
 uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1) {
@@ -620,7 +602,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
 
 #if PL_MATRIX_CONFIG_IS_RGB
 static uint8_t QueueBoardHandEnabledCommand(uint8_t addr, bool *cmdSent) {
-  /* example command: "@14 03 63 cmd matrix q 0 0 0 hc 0x100000 , ..." */
+  /* example command: "@14 03 63 cmd matrix q 0 0 0 he on, ..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t resBoards;
   int nof = 0;
@@ -640,6 +622,47 @@ static uint8_t QueueBoardHandEnabledCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
             McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he ");
+            McuUtility_strcat(buf, sizeof(buf), matrix.enabledHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
+            nof++;
+          }
+        }
+      }
+    }
+  }
+  if (nof>0) {
+    *cmdSent = true;
+    McuLog_trace("Queuing commands");
+    resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
+    if (resBoards!=ERR_OK) {
+      return ERR_FAILED;
+    }
+  }
+  return ERR_OK;
+}
+#endif
+
+#if PL_CONFIG_USE_DUAL_HANDS
+static uint8_t QueueBoard2ndHandEnabledCommand(uint8_t addr, bool *cmdSent) {
+  /* example command: "@14 03 63 cmd matrix q 0 0 0 he2 on, ..." */
+  uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
+  uint8_t resBoards;
+  int nof = 0;
+
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
+          if (matrix.enabled2ndHandMap[x][y][z]!=prevMatrix.enabled2ndHandMap[x][y][z]) { /* only send changes */
+            if (nof>0) {
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+            }
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+            McuUtility_chcat(buf, sizeof(buf), ' ');
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+            McuUtility_chcat(buf, sizeof(buf), ' ');
+            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he2 ");
             McuUtility_strcat(buf, sizeof(buf), matrix.enabledHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
             nof++;
           }
@@ -909,7 +932,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #endif
   MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
   MATRIX_DrawAllClockDelays(2, 2);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
 #if PL_CONFIG_USE_LED_RING
   MHAND_HandEnableAll(true);
   MATRIX_SetRingLedEnabledAll(false);
@@ -941,7 +964,7 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
   #endif
     MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
     MATRIX_DrawAllClockDelays(2, 2);
-    MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+    MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   #if PL_CONFIG_USE_LED_RING
     MHAND_HandEnableAll(true);
     MATRIX_SetRingLedEnabledAll(false);
@@ -3378,7 +3401,7 @@ void MATRIX_Init(void) {
   /* initialize matrix */
   MPOS_SetAngleZ0Z1All(0, 0);
   MATRIX_DrawAllClockDelays(2, 2);
-  MATRIX_DrawAllMoveMode(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   //MATRIX_DrawAllIsRelative(false, false);
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(0x000010);
@@ -3387,7 +3410,7 @@ void MATRIX_Init(void) {
 #endif
   MATRIX_CopyMatrix(&prevMatrix, &matrix); /* make backup */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  MATRIX_SetHandColorAll(0x08, 0x08, 0x08);
+  MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x08, 0x08, 0x08));
 #endif
 #endif
 }

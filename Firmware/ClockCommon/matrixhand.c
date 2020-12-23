@@ -6,14 +6,13 @@
  */
 
 #include "platform.h"
-#if PL_MATRIX_CONFIG_IS_RGB
 #include <assert.h>
 #include "matrixhand.h"
 #include "matrix.h"
 #include "NeoStepperRing.h"
 #include "NeoPixel.h"
 
-// old MATRIX_SetHandLedEnabled
+#if PL_MATRIX_CONFIG_IS_RGB
 void MHAND_HandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -85,8 +84,6 @@ void MHAND_2ndHandEnableAll(bool enable) {
 }
 #endif /* PL_CONFIG_USE_DUAL_HANDS */
 
-// old: MATRIX_DrawHandColor
-// old MATRIX_SetHandColor
 void MHAND_SetHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -96,7 +93,6 @@ void MHAND_SetHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
 #endif
 }
 
-// old MATRIX_DrawAllHandColor
 void MHAND_SetHandColorAll(uint32_t color) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -120,7 +116,6 @@ void MHAND_Set2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
 #endif
 
 #if PL_CONFIG_USE_DUAL_HANDS
-// old
 void MHAND_Set2ndHandColorAll(uint32_t color) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -131,5 +126,34 @@ void MHAND_Set2ndHandColorAll(uint32_t color) {
   }
 }
 #endif
-
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
+
+void MHAND_SetMoveMode(uint8_t x, uint8_t y, uint8_t z, STEPPER_MoveMode_e mode) {
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
+  matrix.moveMap[x][y][z] = mode;
+}
+
+void MHAND_SetMoveModeZ0Z1(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
+  MHAND_SetMoveMode(x, y, 0, mode0);
+  MHAND_SetMoveMode(x, y, 1, mode1);
+}
+
+void MHAND_SetMoveModeZ0Z1All(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      MHAND_SetMoveModeZ0Z1(x, y, mode0, mode1);
+    }
+  }
+}
+
+void MHAND_SetMoveModeAll(STEPPER_MoveMode_e mode) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        MHAND_SetMoveMode(x, y, z, mode);
+      }
+    }
+  }
+}
+
+
