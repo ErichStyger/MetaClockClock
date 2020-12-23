@@ -104,7 +104,9 @@
 #define PL_CONFIG_WORLD_CLOCK         (0) /* legacy, clock showing different time zones */
 
 #define PL_CONFIG_USE_SHELL           (1) /* use command line shell */
-#define PL_CONFIG_USE_RTT             (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_IS_TINYK22)) /* use SEGGER RTT (only possible with a J-Link */
+#ifndef PL_CONFIG_USE_RTT
+  #define PL_CONFIG_USE_RTT             (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_IS_TINYK22)) /* use SEGGER RTT (only possible with a J-Link */
+#endif
 #define PL_CONFIG_USE_RTC             (1 && (PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* 1: enable RTC; 0: disable it */
 #define PL_CONFIG_USE_RS485           (1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
 #ifndef PL_CONFIG_USE_NVMC
