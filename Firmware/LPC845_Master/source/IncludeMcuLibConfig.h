@@ -147,10 +147,13 @@ Instructions:
 #define McuEE24_CONFIG_HAS_WP_PIN               (0)   /* no WP Pin */
 #define McuEE24_CONFIG_DO_ACKNOWLEDGE_POLLING   (0)   /* no acknowledge polling */
 #define McuEE24_CONFIG_USE_TIMEOUT              (0)   /* no timeout */
-
-
-#define McuLog_CONFIG_IS_ENABLED (1) /* enable/disable logging */
-#define McuLog_CONFIG_USE_COLOR  (0) /* no color */
-
+/* -------------------------------------------------*/
+/* McuLog */
+#define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_USE_COLOR                       (0)
+#define McuLog_CONFIG_NOF_CONSOLE_LOGGER              (2) /* RTT plus UART */
+#define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
+#define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
+#define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

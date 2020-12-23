@@ -136,6 +136,8 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuLog */
 #define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_USE_COLOR                       (0)
+#define McuLog_CONFIG_NOF_CONSOLE_LOGGER              (2) /* RTT plus UART */
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)

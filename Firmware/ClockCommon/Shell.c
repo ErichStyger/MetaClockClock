@@ -286,10 +286,13 @@ void SHELL_Init(void) {
     for(;;){} /* error! probably out of memory */
   }
   McuShell_SetStdio(ios[0].stdio); /* default */
-#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK
-  McuLog_set_console(&McuShellUart_stdio);
-#else
-  McuLog_set_console(&McuRTT_stdio);
+#if PL_CONFIG_USE_RTT && PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER==2
+  McuLog_set_console(&McuRTT_stdio, 0);
+  McuLog_set_console(&McuShellUart_stdio, 1);
+#elif PL_CONFIG_USE_RTT
+  McuLog_set_console(&McuRTT_stdio, 1);
+#elif PL_CONFIG_USE_SHELL_UART
+  McuLog_set_console(&McuShellUart_stdio, 1);
 #endif
 }
 
