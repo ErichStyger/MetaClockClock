@@ -156,4 +156,18 @@ void MHAND_SetMoveModeAll(STEPPER_MoveMode_e mode) {
   }
 }
 
+void MHAND_SetRelativeMove(uint8_t x, uint8_t y, uint8_t z, bool isRelative) {
+  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
+  matrix.isRelModeMap[x][y][z] = isRelative;
+}
+
+void MHAND_SetRelativeMoveAll(bool isRelative) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        MHAND_SetRelativeMove(x, y, z, isRelative);
+      }
+    }
+  }
+}
 

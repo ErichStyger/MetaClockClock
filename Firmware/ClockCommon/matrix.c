@@ -349,28 +349,6 @@ uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1) {
   }
   return ERR_OK;
 }
-
-
-#if 0 /* NYI */
-uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1) {
-  if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
-    return ERR_FRAMING;
-  }
-  matrix.isRelModeMap[x][y][0] = isRel0;
-  matrix.isRelModeMap[x][y][1] = isRel1;
-  return ERR_OK;
-}
-
-uint8_t MATRIX_DrawAllIsRelative(bool isRel0, bool isRel1) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      matrix.isRelModeMap[x][y][0] = isRel0;
-      matrix.isRelModeMap[x][y][1] = isRel1;
-    }
-  }
-  return ERR_OK;
-}
-#endif
 #endif /* PL_CONFIG_IS_MASTER */
 
 #if PL_CONFIG_IS_MASTER
@@ -543,7 +521,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
           if (matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes or if it is a relative move */
-            //isRelative = matrix.isRelModeMap[x][y][z];
+            isRelative = matrix.isRelModeMap[x][y][z];
             if (nof>0) {
               McuUtility_chcat(buf, sizeof(buf), ',');
             }
@@ -3400,6 +3378,7 @@ void MATRIX_Init(void) {
   MATRIX_ResetBoardListCmdSent();
   /* initialize matrix */
   MPOS_SetAngleZ0Z1All(0, 0);
+  MHAND_SetRelativeMoveAll(false);
   MATRIX_DrawAllClockDelays(2, 2);
   MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   //MATRIX_DrawAllIsRelative(false, false);

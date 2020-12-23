@@ -575,6 +575,27 @@ static void Intermezzo16(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
+static void Intermezzo17(void) {
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+  MHAND_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  (void)MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleZ0Z1All(270, 90);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  /* switch to relative move mode */
+  MHAND_SetRelativeMoveAll(true);
+  MHAND_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
+  MPOS_SetAngleZ0Z1All(45, 45);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+
+  /* back to absolute move mode */
+  MHAND_SetRelativeMoveAll(false);
+  MPOS_SetAngleZ0Z1All(90, 90);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
+}
+
 static void IntermezzoTime(void) {
   uint8_t res;
   TIMEREC time;
@@ -724,6 +745,7 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo14,
     Intermezzo15,
     Intermezzo16,
+    Intermezzo17,
     IntermezzoTime,
     IntermezzoRandomHands,
     IntermezzoRandomHandsAllOn,

@@ -38,4 +38,7 @@ void MHAND_SetMoveModeZ0Z1(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPP
 void MHAND_SetMoveModeZ0Z1All(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1);
 void MHAND_SetMoveModeAll(STEPPER_MoveMode_e mode);
 
+void MHAND_SetRelativeMove(uint8_t x, uint8_t y, uint8_t z, bool isRelative);
+void MHAND_SetRelativeMoveAll(bool isRelative);
+
 #endif /* MATRIXHAND_H_ */
