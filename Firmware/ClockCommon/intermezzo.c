@@ -502,11 +502,7 @@ static const int circleMap[10][10] = {
     {9, 9, 9, 9, 8, 8, 9, 10, 11, 12},
 };
 
-typedef struct { /* used to configure hand movement in each quadrant. 0 is right upper quadrant, then going CCW */
-  STEPPER_MoveMode_e zm0, zm1;
-} QuadrantMove_t;
-
-static void MoveCircles(int x0, int y0, int r, int angle0, int angle1, QuadrantMove_t move[4]) {
+static void MoveCircles(int x0, int y0, int r, int angle0, int angle1) {
   int xpos, ypos;
   for(int x=0; x<10; x++) {
     for (int y=0; y<10; y++) {
@@ -515,18 +511,12 @@ static void MoveCircles(int x0, int y0, int r, int angle0, int angle1, QuadrantM
         xpos = x0+x;
         ypos = y0+y;
         MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
-        if (move!=NULL) {
-          MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[3].zm0, move[3].zm1);
-        }
 
         /* quadrant: right upper */
         if (y!=0) {
           xpos = x0+x;
           ypos = y0-y;
           MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
-          if (move!=NULL) {
-            MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[0].zm0, move[0].zm1);
-          }
         }
 
         /* quadrant: left upper */
@@ -534,9 +524,6 @@ static void MoveCircles(int x0, int y0, int r, int angle0, int angle1, QuadrantM
           xpos = x0-x;
           ypos = y0-y;
           MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
-          if (move!=NULL) {
-            MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[1].zm0, move[1].zm1);
-          }
         }
 
         /* quadrant: left lower */
@@ -544,9 +531,6 @@ static void MoveCircles(int x0, int y0, int r, int angle0, int angle1, QuadrantM
           xpos = x0-x;
           ypos = y0+y;
           MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
-          if (move!=NULL) {
-            MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[2].zm0, move[2].zm1);
-          }
         }
       }
     }
@@ -566,11 +550,19 @@ static void BuildCircles(void) {
   /* middle lines */
   x = MATRIX_NOF_STEPPERS_X/2;
   for(y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    MPOS_SetAngleZ0Z1(x, y, 270, 90);
+    if (y<MATRIX_NOF_STEPPERS_Y/2) {
+      MPOS_SetAngleZ0Z1(x, y, 90, 270);
+    } else {
+      MPOS_SetAngleZ0Z1(x, y, 270, 90);
+    }
   }
   y = MATRIX_NOF_STEPPERS_Y/2;
   for(x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    MPOS_SetAngleZ0Z1(x, y, 0, 180);
+    if (x<MATRIX_NOF_STEPPERS_X/2) {
+      MPOS_SetAngleZ0Z1(x, y, 0, 180);
+    } else {
+      MPOS_SetAngleZ0Z1(x, y, 180, 0);
+    }
   }
 
   /* right upper quadrant */
@@ -578,7 +570,7 @@ static void BuildCircles(void) {
   for(y=MATRIX_NOF_STEPPERS_Y/2 - 1; y>=0; y--) {
     angleX = angleY;
     for(x=MATRIX_NOF_STEPPERS_X/2 + 1; x<MATRIX_NOF_STEPPERS_X; x++) {
-      MPOS_SetAngleZ0Z1(x, y, 0-angleX, 180-angleX);
+      MPOS_SetAngleZ0Z1(x, y, 180-angleX, 0-angleX);
       angleX /= 2;
     }
     angleY += angleY/2;
@@ -588,7 +580,7 @@ static void BuildCircles(void) {
   for(y=MATRIX_NOF_STEPPERS_Y/2 + 1; y<MATRIX_NOF_STEPPERS_Y; y++) {
     angleX = angleY;
     for(x=MATRIX_NOF_STEPPERS_X/2 + 1; x<MATRIX_NOF_STEPPERS_X; x++) {
-      MPOS_SetAngleZ0Z1(x, y, 0+angleX, 180+angleX);
+      MPOS_SetAngleZ0Z1(x, y, 180+angleX, 0+angleX);
       angleX /= 2;
     }
     angleY += angleY/2;
@@ -620,25 +612,17 @@ static void Intermezzo16(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for (int r=0; r<MATRIX_NOF_STEPPERS_X/2+1; r++) {
-    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360, NULL);
+    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360);
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
 
 static void Intermezzo17(void) {
-  QuadrantMove_t move[4] =
-  {
-     {STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW},
-     {STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW},
-     {STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW},
-     {STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW},
-  };
-
   BuildCircles();
-  //MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
+  MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
   for (int r=0; r<MATRIX_NOF_STEPPERS_X/2+1; r++) {
-    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360, move);
+    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360);
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
@@ -646,12 +630,23 @@ static void Intermezzo17(void) {
 
 static void Intermezzo18(void) {
   BuildCircles();
+  MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
+  for (int r=0; r<MATRIX_NOF_STEPPERS_X/2+1; r++) {
+    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360);
+    MATRIX_SendToRemoteQueueExecuteAndWait(false);
+    vTaskDelay(pdMS_TO_TICKS(1000));
+  }
+}
+
+
+static void Intermezzo19(void) {
+  BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
   MPOS_RelativeMoveAll(-360);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
-static void Intermezzo19(void) {
+static void Intermezzo20(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
@@ -823,6 +818,7 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo17,
     Intermezzo18,
     Intermezzo19,
+    Intermezzo20,
     IntermezzoTime,
     IntermezzoRandomHands,
     IntermezzoRandomHandsAllOn,
