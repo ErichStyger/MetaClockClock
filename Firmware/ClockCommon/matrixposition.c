@@ -49,9 +49,21 @@ void MPOS_SetMoveMode(uint8_t x, uint8_t y, uint8_t z, STEPPER_MoveMode_e mode) 
   matrix.moveMap[x][y][z] = mode;
 }
 
+void MPOS_SetMoveModeChecked(uint8_t x, uint8_t y, uint8_t z, STEPPER_MoveMode_e mode) {
+  if (x>=0 && x<MATRIX_NOF_STEPPERS_X && y>=0 && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z) {
+    matrix.moveMap[x][y][z] = mode;
+  }
+}
+
 void MPOS_SetMoveModeZ0Z1(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
   MPOS_SetMoveMode(x, y, 0, mode0);
   MPOS_SetMoveMode(x, y, 1, mode1);
+}
+
+void MPOS_SetMoveModeZ0Z1Checked(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
+  /* do not set mode if coordinate is outside of matrix */
+  MPOS_SetMoveModeChecked(x, y, 0, mode0);
+  MPOS_SetMoveModeChecked(x, y, 1, mode1);
 }
 
 void MPOS_SetMoveModeZ0Z1All(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
@@ -82,6 +94,13 @@ void MPOS_RelativeMoveZ0Z1(uint8_t x, uint8_t y, int16_t angle0, int16_t angle1)
   MPOS_RelativeMove(x, y, 1, angle1);
 }
 
+void MPOS_SetRelativeMoveZ0Z1Checked(int x, int y, int angleZ0, int angleZ1) {
+  /* do not set angle if coordinate is outside of matrix */
+  if (x>=0 && x<MATRIX_NOF_STEPPERS_X && y>=0 && y<MATRIX_NOF_STEPPERS_Y) {
+    MPOS_RelativeMoveZ0Z1(x, y, angleZ0, angleZ1);
+  }
+}
+
 void MPOS_RelativeMoveAll(int16_t angle) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -91,4 +110,5 @@ void MPOS_RelativeMoveAll(int16_t angle) {
     }
   }
 }
+
 #endif /* PL_CONFIG_IS_MASTER */

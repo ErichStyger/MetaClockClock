@@ -488,13 +488,7 @@ static void DrawCircle(int x0, int y0, int radius) {
 }
 #endif
 
-static void SetRelativeAngleZ0Z1Checked(int x, int y, int angleZ0, int angleZ1) {
-  /* do not set angle if coordinate is outside of matrix */
-  if (x>=0 && x<MATRIX_NOF_STEPPERS_X && y>=0 && y<MATRIX_NOF_STEPPERS_Y) {
-    MPOS_RelativeMoveZ0Z1(x, y, angleZ0, angleZ1);
-  }
-}
-
+/* map of 'circles', limited for now to 10x10 quadrants. Same numbers correspond to the radius */
 static const int circleMap[10][10] = {
     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
     {1, 1, 2, 3, 4, 5, 6, 6, 8, 9},
@@ -508,14 +502,52 @@ static const int circleMap[10][10] = {
     {9, 9, 9, 9, 8, 8, 9, 10, 11, 12},
 };
 
-static void MapCircles(int x0, int y0, int r) {
+typedef struct { /* used to configure hand movement in each quadrant. 0 is right upper quadrant, then going CCW */
+  STEPPER_MoveMode_e zm0, zm1;
+} QuadrantMove_t;
+
+static void MoveCircles(int x0, int y0, int r, int angle0, int angle1, QuadrantMove_t move[4]) {
+  int xpos, ypos;
   for(int x=0; x<10; x++) {
     for (int y=0; y<10; y++) {
       if (circleMap[x][y]==r) {
-        SetRelativeAngleZ0Z1Checked(x0+x, y0+y, 360, 360);
-        SetRelativeAngleZ0Z1Checked(x0-x, y0-y, 360, 360);
-        SetRelativeAngleZ0Z1Checked(x0-x, y0+y, 360, 360);
-        SetRelativeAngleZ0Z1Checked(x0+x, y0-y, 360, 360);
+        /* quadrant: right lower */
+        xpos = x0+x;
+        ypos = y0+y;
+        MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
+        if (move!=NULL) {
+          MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[3].zm0, move[3].zm1);
+        }
+
+        /* quadrant: right upper */
+        if (y!=0) {
+          xpos = x0+x;
+          ypos = y0-y;
+          MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
+          if (move!=NULL) {
+            MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[0].zm0, move[0].zm1);
+          }
+        }
+
+        /* quadrant: left upper */
+        if (x!=0 && y!=0) {
+          xpos = x0-x;
+          ypos = y0-y;
+          MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
+          if (move!=NULL) {
+            MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[1].zm0, move[1].zm1);
+          }
+        }
+
+        /* quadrant: left lower */
+        if (x!=0) {
+          xpos = x0-x;
+          ypos = y0+y;
+          MPOS_SetRelativeMoveZ0Z1Checked(xpos, ypos, angle0, angle1);
+          if (move!=NULL) {
+            MPOS_SetMoveModeZ0Z1Checked(xpos, ypos, move[2].zm0, move[2].zm1);
+          }
+        }
       }
     }
   }
@@ -588,17 +620,25 @@ static void Intermezzo16(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   for (int r=0; r<MATRIX_NOF_STEPPERS_X/2+1; r++) {
-    MapCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r);
+    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360, NULL);
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
 
 static void Intermezzo17(void) {
+  QuadrantMove_t move[4] =
+  {
+     {STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW},
+     {STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW},
+     {STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW},
+     {STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW},
+  };
+
   BuildCircles();
-  MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
+  //MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
   for (int r=0; r<MATRIX_NOF_STEPPERS_X/2+1; r++) {
-    MapCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r);
+    MoveCircles(MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y/2, r, 360, 360, move);
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
@@ -610,7 +650,6 @@ static void Intermezzo18(void) {
   MPOS_RelativeMoveAll(-360);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
-
 
 static void Intermezzo19(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
