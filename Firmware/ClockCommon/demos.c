@@ -251,7 +251,7 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int x=0; x<3; x++) {
     for(int y=0; y<3; y++) {
       for(int z=0; z<2; z++) {
@@ -587,7 +587,7 @@ static uint8_t DemoSquare(void) {
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   /* build initial squares */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
@@ -615,7 +615,7 @@ static uint8_t DemoSquareRotate(void) {
     return DEMO_FailedDemo(res);
   }
   /* make two turns (2x360) */
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
       MPOS_SetAngleZ0Z1(x,     y, 180+2*360,  90+2*360);
@@ -641,7 +641,7 @@ static uint8_t DemoSquareClap(void) {
     return DEMO_FailedDemo(res);
   }
   /* make two claps (2x360) */
-  MHAND_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
+  MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
   //(void)MATRIX_DrawAllIsRelative(true, true);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
@@ -668,7 +668,7 @@ static uint8_t DemoPropeller(void) {
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetAngleZ0Z1(x, y, 0,  180);
@@ -678,7 +678,7 @@ static uint8_t DemoPropeller(void) {
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetAngleZ0Z1(x, y, 0+2*360, 180+2*360);
@@ -700,7 +700,7 @@ static uint8_t DemoFalling(void) {
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetAngleZ0Z1(x, y, 0,  0);
@@ -711,7 +711,7 @@ static uint8_t DemoFalling(void) {
     return DEMO_FailedDemo(res);
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y;y++) {
-    MHAND_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
+    MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetAngleZ0Z1(x, y, 180, 180);
     }
@@ -731,7 +731,7 @@ static uint8_t DemoRandomHandsPos(void) {
   uint8_t res;
 
   (void)MATRIX_DrawAllClockDelays(2, 2);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetAngleZ0Z1(x, y, McuUtility_random(0, 359),  McuUtility_random(0, 359));
@@ -809,7 +809,7 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
     return DEMO_FailedDemo(res);
   }
   MATRIX_DrawAllClockDelays(1, 1);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int i=2;i<12;i++) {
     MATRIX_ShowTime(21, i, true, true);
   }
@@ -819,7 +819,7 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void DEMO_Nxp(void) {
   MATRIX_DrawAllClockDelays(3, 3);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(true);
 #endif
@@ -1036,7 +1036,7 @@ static uint8_t DemoClap(void) {
 #endif
 #if PL_CONFIG_IS_MASTER
   (void)MATRIX_DrawAllClockDelays(4, 4);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetAngleZ0Z1(x, y, 0,  180);
@@ -1049,14 +1049,14 @@ static uint8_t DemoClap(void) {
     McuLog_error("failed executing: %d", res);
   }
   for (int i=0; i<2; i++) {
-    MHAND_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
+    MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         MPOS_SetAngleZ0Z1(x, y, 90, 90);
       }
     }
     (void)MATRIX_SendToRemoteQueue();
-    MHAND_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
+    MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         MPOS_SetAngleZ0Z1(x, y, 0, 180);

@@ -9,10 +9,8 @@
 #define MATRIXHAND_H_
 
 #include "platform.h"
-
 #include <stdint.h>
 #include <stdbool.h>
-#include "stepper.h"
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MHAND_HandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable);
@@ -32,13 +30,5 @@ void MHAND_Set2ndHandColorAll(uint32_t color);
 #endif
 
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
-
-void MHAND_SetMoveMode(uint8_t x, uint8_t y, uint8_t z, STEPPER_MoveMode_e mode);
-void MHAND_SetMoveModeZ0Z1(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1);
-void MHAND_SetMoveModeZ0Z1All(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1);
-void MHAND_SetMoveModeAll(STEPPER_MoveMode_e mode);
-
-void MHAND_SetRelativeMove(uint8_t x, uint8_t y, uint8_t z, bool isRelative);
-void MHAND_SetRelativeMoveAll(bool isRelative);
 
 #endif /* MATRIXHAND_H_ */

@@ -44,7 +44,7 @@
 #endif
 #include "StepperBoard.h"
 #include "application.h"
-#include "matrixhand.h"
+#include "matrixposition.h"
 #include "McuLog.h"
 
 static bool CLOCK_ClockIsOn = false;
@@ -513,7 +513,7 @@ static void ClockTask(void *pv) {
     #if PL_CONFIG_IS_MASTER
         McuLog_info("Time: %02d:%02d", time.Hour, time.Min);
         MATRIX_DrawAllClockDelays(5,5);
-        MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+        MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
         MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
     #endif

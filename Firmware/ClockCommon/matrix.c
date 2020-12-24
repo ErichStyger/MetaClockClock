@@ -520,8 +520,8 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
-          if (matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes or if it is a relative move */
-            isRelative = matrix.isRelModeMap[x][y][z];
+          isRelative = matrix.relAngleMap[x][y][z]!=0;
+          if (isRelative || matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_chcat(buf, sizeof(buf), ',');
             }
@@ -530,8 +530,15 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), isRelative?(unsigned char*)" r ":(unsigned char*)" a ");
-            McuUtility_strcatNum16s(buf, sizeof(buf), matrix.angleMap[x][y][z]); /* <a> */
+            if (isRelative) {
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" r ");
+              McuUtility_strcatNum16s(buf, sizeof(buf), matrix.relAngleMap[x][y][z]); /* <a> */
+              matrix.angleMap[x][y][z] += matrix.relAngleMap[x][y][z]; /* update to expected position */
+              matrix.relAngleMap[x][y][z] = 0; /* set back to zero as it gets executed */
+            } else {
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" a ");
+              McuUtility_strcatNum16s(buf, sizeof(buf), matrix.angleMap[x][y][z]); /* <a> */
+            }
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum16u(buf, sizeof(buf), matrix.delayMap[x][y][z]); /* <d> */
             McuUtility_chcat(buf, sizeof(buf), ' ');
@@ -910,7 +917,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #endif
   MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
   MATRIX_DrawAllClockDelays(2, 2);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
 #if PL_CONFIG_USE_LED_RING
   MHAND_HandEnableAll(true);
   MATRIX_SetRingLedEnabledAll(false);
@@ -3378,9 +3385,9 @@ void MATRIX_Init(void) {
   MATRIX_ResetBoardListCmdSent();
   /* initialize matrix */
   MPOS_SetAngleZ0Z1All(0, 0);
-  MHAND_SetRelativeMoveAll(false);
+  MPOS_RelativeMoveAll(0);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   MATRIX_DrawAllClockDelays(2, 2);
-  MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   //MATRIX_DrawAllIsRelative(false, false);
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(0x000010);
