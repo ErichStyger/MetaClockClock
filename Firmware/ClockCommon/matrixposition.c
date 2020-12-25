@@ -21,9 +21,20 @@ void MPOS_SetAngle(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
 #endif
 }
 
+void MPOS_SetAngleChecked(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
+  if (x>=0 && x<MATRIX_NOF_STEPPERS_X && y>=0 && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z) {
+    MPOS_SetAngle(x, y, z, angle);
+  }
+}
+
 void MPOS_SetAngleZ0Z1(uint8_t x, uint8_t y, int16_t z0Angle, int16_t z1Angle) {
   MPOS_SetAngle(x, y, 0, z0Angle);
   MPOS_SetAngle(x, y, 1, z1Angle);
+}
+
+void MPOS_SetAngleZ0Z1Checked(uint8_t x, uint8_t y, int16_t z0Angle, int16_t z1Angle) {
+  MPOS_SetAngleChecked(x, y, 0, z0Angle);
+  MPOS_SetAngleChecked(x, y, 1, z1Angle);
 }
 
 void MPOS_SetAngleZ0Z1All(int16_t z0Angle, int16_t z1Angle) {

@@ -507,7 +507,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
 #endif /* PL_CONFIG_USE_RS485 */
 
 #if PL_MATRIX_CONFIG_IS_RGB
-static uint8_t QueueBoardHandEnabledCommand(uint8_t addr, bool *cmdSent) {
+static uint8_t QueueBoardHandEnableCommand(uint8_t addr, bool *cmdSent) {
   /* example command: "@14 03 63 cmd matrix q 0 0 0 he on, ..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t resBoards;
@@ -548,7 +548,7 @@ static uint8_t QueueBoardHandEnabledCommand(uint8_t addr, bool *cmdSent) {
 #endif
 
 #if PL_CONFIG_USE_DUAL_HANDS
-static uint8_t QueueBoard2ndHandEnabledCommand(uint8_t addr, bool *cmdSent) {
+static uint8_t QueueBoard2ndHandEnableCommand(uint8_t addr, bool *cmdSent) {
   /* example command: "@14 03 63 cmd matrix q 0 0 0 he2 on, ..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t resBoards;
@@ -629,7 +629,7 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
 }
 #endif
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
 static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   /* example command: "@14 03 63 cmd matrix q 0 0 0 rc 0x100000 ,..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
@@ -670,6 +670,48 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
 }
 #endif
 
+#if PL_CONFIG_USE_LED_RING
+static uint8_t QueueBoardRingEnableCommand(uint8_t addr, bool *cmdSent) {
+  /* example command: "@14 03 63 cmd matrix q 0 0 0 he on, ..." */
+  uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
+  uint8_t resBoards;
+  int nof = 0;
+
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
+          if (matrix.enabledRingMap[x][y][z]!=prevMatrix.enabledRingMap[x][y][z]) { /* only send changes */
+            if (nof>0) {
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+            }
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+            McuUtility_chcat(buf, sizeof(buf), ' ');
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+            McuUtility_chcat(buf, sizeof(buf), ' ');
+            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" re ");
+            McuUtility_strcat(buf, sizeof(buf), matrix.enabledRingMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
+            nof++;
+          }
+        }
+      }
+    }
+  }
+  if (nof>0) {
+    *cmdSent = true;
+    McuLog_trace("Queuing commands");
+    resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
+    if (resBoards!=ERR_OK) {
+      return ERR_FAILED;
+    }
+  }
+  return ERR_OK;
+}
+#endif
+
+
 static void MATRIX_CopyMatrix(MATRIX_Matrix_t *dst, MATRIX_Matrix_t *src) {
   memcpy(dst, src, sizeof(MATRIX_Matrix_t));
 }
@@ -682,12 +724,12 @@ uint8_t MATRIX_SendToRemoteQueue(void) {
     if (MATRIX_BoardList[i].enabled) {
   #if PL_MATRIX_CONFIG_IS_RGB
       /* queue the color commands first so they get executed first */
-      res = QueueBoardHandEnabledCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
+      res = QueueBoardHandEnableCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
       if (res!=ERR_OK) {
         break;
       }
     #if PL_CONFIG_USE_DUAL_HANDS
-      res = QueueBoard2ndHandEnabledCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
+      res = QueueBoard2ndHandEnableCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
       if (res!=ERR_OK) {
         break;
       }
@@ -696,10 +738,16 @@ uint8_t MATRIX_SendToRemoteQueue(void) {
       if (res!=ERR_OK) {
         break;
       }
+    #if PL_CONFIG_USE_LED_RING
       res = QueueBoardRingColorCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
       if (res!=ERR_OK) {
         break;
       }
+      res = QueueBoardRingEnableCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
+      if (res!=ERR_OK) {
+        break;
+      }
+    #endif
   #endif
       res = QueueBoardMoveCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
       if (res!=ERR_OK) {

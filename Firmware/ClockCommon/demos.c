@@ -592,10 +592,10 @@ static uint8_t DemoSquare(void) {
   /* build initial squares */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-      MPOS_SetAngleZ0Z1(x,     y, 180,  90);
-      MPOS_SetAngleZ0Z1(x,   y+1,  90,   0);
-      MPOS_SetAngleZ0Z1(x+1,   y, 270, 180);
-      MPOS_SetAngleZ0Z1(x+1, y+1,   0, 270);
+      MPOS_SetAngleZ0Z1Checked(x,     y, 180,  90);
+      MPOS_SetAngleZ0Z1Checked(x,   y+1,  90,   0);
+      MPOS_SetAngleZ0Z1Checked(x+1,   y, 270, 180);
+      MPOS_SetAngleZ0Z1Checked(x+1, y+1,   0, 270);
     }
   }
   /* build squares */
@@ -619,10 +619,10 @@ static uint8_t DemoSquareRotate(void) {
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-      MPOS_SetAngleZ0Z1(x,     y, 180+2*360,  90+2*360);
-      MPOS_SetAngleZ0Z1(x,   y+1,  90+2*360,   0+2*360);
-      MPOS_SetAngleZ0Z1(x+1,   y, 270+2*360, 180+2*360);
-      MPOS_SetAngleZ0Z1(x+1, y+1,   0+2*360, 270+2*360);
+      MPOS_SetAngleZ0Z1Checked(x,     y, 180+2*360,  90+2*360);
+      MPOS_SetAngleZ0Z1Checked(x,   y+1,  90+2*360,   0+2*360);
+      MPOS_SetAngleZ0Z1Checked(x+1,   y, 270+2*360, 180+2*360);
+      MPOS_SetAngleZ0Z1Checked(x+1, y+1,   0+2*360, 270+2*360);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
@@ -646,10 +646,10 @@ static uint8_t DemoSquareClap(void) {
   //(void)MATRIX_DrawAllIsRelative(true, true);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
-      MPOS_SetAngleZ0Z1(x,     y, 180-2*360,  90+2*360);
-      MPOS_SetAngleZ0Z1(x,   y+1,  90-2*360,   0+2*360);
-      MPOS_SetAngleZ0Z1(x+1,   y, 270-2*360, 180+2*360);
-      MPOS_SetAngleZ0Z1(x+1, y+1,   0-2*360, 270+2*360);
+      MPOS_SetAngleZ0Z1Checked(x,     y, 180-2*360,  90+2*360);
+      MPOS_SetAngleZ0Z1Checked(x,   y+1,  90-2*360,   0+2*360);
+      MPOS_SetAngleZ0Z1Checked(x+1,   y, 270-2*360, 180+2*360);
+      MPOS_SetAngleZ0Z1Checked(x+1, y+1,   0-2*360, 270+2*360);
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
