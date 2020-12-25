@@ -897,10 +897,10 @@ static const MClockChar3x5_t clockCharV3x5 =
     .digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
         [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-        [0][2]={.hands={{.angle=180, .enabled=true },{.angle=  0, .enabled=true }}},
+        [0][2]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-        [1][2]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+        [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [2][2]={.hands={{.angle=180, .enabled=true },{.angle=  0, .enabled=true }}},
