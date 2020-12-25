@@ -499,10 +499,10 @@ static void DEMO_LedPong(void) {
   MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 
-#if PL_CONFIG_USE_DUAL_HANDS
   MHAND_HandEnableAll(false);
-  MHAND_2ndHandEnableAll(false);
   MRING_EnableRingAll(true);
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
 #endif
   /* ball: */
   ball.r = 0x4;
