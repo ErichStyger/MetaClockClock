@@ -1652,7 +1652,7 @@ static uint8_t ParseMatrixCommand(const unsigned char **cmd, int32_t *xp, int32_
 #endif
 
 #if PL_MATRIX_CONFIG_IS_RGB
-static void MATRIX_RequestRgbUpdate(void) {
+void MATRIX_RequestRgbUpdate(void) {
   /* request LED update either locally or remote */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   APP_RequestUpdateLEDs();

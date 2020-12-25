@@ -102,6 +102,8 @@ void MATRIX_TimerCallback(void);
 void MATRIX_EnableStepper(void *dev);
 void MATRIX_DisableStepper(void *dev);
 
+void MATRIX_RequestRgbUpdate(void);
+
 void MATRIX_Init(void);
 
 #endif /* MATRIX_H_ */
