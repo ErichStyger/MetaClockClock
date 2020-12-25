@@ -45,6 +45,7 @@
 #include "StepperBoard.h"
 #include "application.h"
 #include "matrixposition.h"
+#include "matrixring.h"
 #include "McuLog.h"
 
 static bool CLOCK_ClockIsOn = false;
@@ -349,15 +350,15 @@ static void ShowSeconds(const TIMEREC *time) {
     if (lastSecondShown!=-1) { /* turn off previous second */
       x = lastSecondShown%12;
       y = lastSecondShown/12;
-      MATRIX_SetRingLedEnabled(x, y, 0, false);
-      MATRIX_SetRingColor(x, y, 0, 0, 0, 0);
+      MRING_EnableRing(x, y, 0, false);
+      MRING_SetRingColor(x, y, 0, 0, 0, 0);
     }
     lastSecondShown = time->Sec;
     red = CLOCK_SecondColor>>16; green = (CLOCK_SecondColor>>8)&0xff; blue = CLOCK_SecondColor&0xff;
     x = lastSecondShown%12;
     y = lastSecondShown/12;
-    MATRIX_SetRingLedEnabled(x, y, 0, true);
-    MATRIX_SetRingColor(x, y, 0, red, green, blue);
+    MRING_EnableRing(x, y, 0, true);
+    MRING_SetRingColor(x, y, 0, red, green, blue);
     APP_RequestUpdateLEDs();
   }
 }
@@ -457,7 +458,7 @@ static void ClockTask(void *pv) {
       SHELL_ParseCommand((unsigned char*)"matrix hour 12", McuShell_GetStdio(), true); /* move to 12-o-clock position */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
-      (void)MATRIX_SetRingColorAll(0, 0, 0);
+      MRING_SetRingColor(0, 0, 0);
       MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_DUAL_HANDS
       MHAND_2ndHandEnableAll(false);
@@ -472,7 +473,7 @@ static void ClockTask(void *pv) {
       prevClockUpdateTimestampSec = 0;
 #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
-      (void)MATRIX_SetRingColorAll(0, 0, 0);
+      MRING_SetRingColor(0, 0, 0);
       MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_DUAL_HANDS
       MHAND_2ndHandEnableAll(false);

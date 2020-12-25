@@ -74,14 +74,16 @@ Time: 12:11
 - clock: second dots sometimes skips one dot?
 - clock: seconds off should turn off the dot (send signal)
 - clock border off should remove border
-cloc
 
 Slaves:
-- reduce stepper backlash
-- following gives an error (timeout):
+- reduce stepper backlash?
+- following gives an error (timeout)?
         rs sendcmd 0x28 matrix hour 1
         @28 01 37 cmd matrix hour 1
         *** Failed or unknown command: rs sendcmd 0x28 matrix hour 1
         *** Type help to get a list of available commands
         CMD> @01 28 96 OK
     Better: send back OK after CRC check!
+    
+    
+ @60 01 BB cmd matrix q 0 0 0 rc 0x010304 ,0 0 1 rc 0x050103

@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_NEO_PIXEL_HW
 #include "NeoStepperRingConfig.h"
 #include "NeoStepperRing.h"
 #include "stepper.h"

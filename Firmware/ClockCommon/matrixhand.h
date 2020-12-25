@@ -12,7 +12,7 @@
 #include <stdint.h>
 #include <stdbool.h>
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
 void MHAND_HandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable);
 void MHAND_HandEnableAll(bool enable);
 

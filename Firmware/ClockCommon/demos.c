@@ -12,6 +12,7 @@
 #include "matrix.h"
 #include "matrixposition.h"
 #include "matrixhand.h"
+#include "matrixring.h"
 #include "McuUtility.h"
 #include "McuTimeDate.h"
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -33,27 +34,27 @@ static uint8_t DEMO_FailedDemo(uint8_t res) {
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 static void DEMO_LedDemo0(void) {
-  MATRIX_SetRingLedEnabledAll(true);
-  MATRIX_SetRingColorAll(2, 0, 0);
+  MRING_EnableRingAll(true);
+  MRING_SetRingColorAll(2, 0, 0);
   APP_RequestUpdateLEDs();
   vTaskDelay(pdMS_TO_TICKS(2000));
 
-  MATRIX_SetRingColorAll(0, 2, 0);
+  MRING_SetRingColorAll(0, 2, 0);
   APP_RequestUpdateLEDs();
   vTaskDelay(pdMS_TO_TICKS(2000));
 
-  MATRIX_SetRingColorAll(0, 0, 1);
+  MRING_SetRingColorAll(0, 0, 1);
   APP_RequestUpdateLEDs();
   vTaskDelay(pdMS_TO_TICKS(2000));
 
-  MATRIX_SetRingColorAll(2, 2, 2);
+  MRING_SetRingColorAll(2, 2, 2);
   APP_RequestUpdateLEDs();
   vTaskDelay(pdMS_TO_TICKS(2000));
 
-  MATRIX_SetRingColorAll(0, 0, 0);
+  MRING_SetRingColorAll(0, 0, 0);
   APP_RequestUpdateLEDs();
   vTaskDelay(pdMS_TO_TICKS(2000));
-  MATRIX_SetRingLedEnabledAll(false);
+  MRING_EnableRingAll(false);
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
@@ -257,8 +258,8 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
       for(int z=0; z<2; z++) {
         MHAND_HandEnable(xPos+x, yPos+y, z, weather[x][y].hand[z].enabled);
         MHAND_SetHandColor(xPos+x, yPos+y, z, NEO_COMBINE_RGB(weather[x][y].hand[z].r, weather[x][y].hand[z].g, weather[x][y].hand[z].b));
-        MATRIX_SetRingLedEnabled(xPos+x, yPos+y, z, weather[x][y].ring[z].enabled);
-        MATRIX_SetRingColor(xPos+x, yPos+y, z, weather[x][y].ring[z].r, weather[x][y].ring[z].g, weather[x][y].ring[z].b); /* yellow */
+        MRING_EnableRing(xPos+x, yPos+y, z, weather[x][y].ring[z].enabled);
+        MRING_SetRingColor(xPos+x, yPos+y, z, weather[x][y].ring[z].r, weather[x][y].ring[z].g, weather[x][y].ring[z].b); /* yellow */
         MPOS_SetAngle(xPos+x, yPos+y, z, weather[x][y].hand[z].angle);
       }
     }
@@ -334,8 +335,8 @@ static void DEMO_LedDemo1(void) {
   }
 
   /* clear all */
-  MATRIX_SetRingColorAll(0, 0, 0);
-  MATRIX_SetRingLedEnabledAll(true);
+  MRING_SetRingColorAll(0, 0, 0);
+  MRING_EnableRingAll(true);
   APP_RequestUpdateLEDs();
   vTaskDelay(pdMS_TO_TICKS(100));
 
@@ -346,14 +347,14 @@ static void DEMO_LedDemo1(void) {
       rowStartStep[y]++;
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-          MATRIX_SetRingColor(x, y, z, NEO_SPLIT_RGB(color));
+          MRING_SetRingColor(x, y, z, NEO_SPLIT_RGB(color));
         }
       }
     }
     APP_RequestUpdateLEDs();
     vTaskDelay(pdMS_TO_TICKS(20));
   }
-  MATRIX_SetRingLedEnabledAll(false);
+  MRING_EnableRingAll(false);
   APP_RequestUpdateLEDs();
 }
 #endif
@@ -373,19 +374,19 @@ typedef struct {
 } PongPlayer_t;
 
 static void DrawBall(PongBall_t *b) {
-  MATRIX_SetRingColor(b->posX, b->posY, 0, b->r, b->g, b->b);
+  MRING_SetRingColor(b->posX, b->posY, 0, b->r, b->g, b->b);
 }
 
 static void ClearBall(PongBall_t *b) {
-  MATRIX_SetRingColor(b->posX, b->posY, 0, 0, 0, 0);
+  MRING_SetRingColor(b->posX, b->posY, 0, 0, 0, 0);
 }
 
 static void DrawPlayer(PongPlayer_t *player) {
-  MATRIX_SetRingColor(player->posX, player->posY, 0, player->r, player->g, player->b);
+  MRING_SetRingColor(player->posX, player->posY, 0, player->r, player->g, player->b);
 }
 
 static void ClearPlayer(PongPlayer_t *player) {
-  MATRIX_SetRingColor(player->posX, player->posY, 0, 0, 0, 0);
+  MRING_SetRingColor(player->posX, player->posY, 0, 0, 0, 0);
 }
 
 static void MovePlayer(PongPlayer_t *player, int deltaY) {
@@ -416,8 +417,8 @@ static void PongGameLost(PongPlayer_t *player, PongBall_t *ball) {
     APP_RequestUpdateLEDs();
     vTaskDelay(pdMS_TO_TICKS(100));
   }
-  MATRIX_SetRingColorAll(0, 0, 0);
-  MATRIX_SetRingLedEnabledAll(false);
+  MRING_SetRingColorAll(0, 0, 0);
+  MRING_EnableRingAll(false);
   MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5);
@@ -491,7 +492,7 @@ static void DEMO_LedPong(void) {
   bool gameOver;
 
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x12, 0x12, 0x12));
-  MATRIX_SetRingColorAll(0, 0, 0);
+  MRING_SetRingColorAll(0, 0, 0);
   MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MFONT_PrintString((unsigned char*)"PONG", 0, 0, MFONT_SIZE_3x5);
@@ -502,7 +503,7 @@ static void DEMO_LedPong(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_HandEnableAll(false);
   MHAND_2ndHandEnableAll(false);
-  MATRIX_SetRingLedEnabledAll(true);
+  MRING_EnableRingAll(true);
 #endif
   /* ball: */
   ball.r = 0x4;
@@ -988,24 +989,26 @@ static uint8_t DemoRandomHandsColor(void) {
 static uint8_t DemoRandomRingColor(void) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(false);
-  MATRIX_SetRingLedEnabledAll(true);
+  MRING_EnableRingAll(true);
   for(int i=0; i<10; i++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
         for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-          (void)MATRIX_SetRingColor(x, y, z, McuUtility_random(0, 0x5),  McuUtility_random(0, 0x5), McuUtility_random(0, 0x5)); /* limit brightness */
+          (void)MRING_SetRingColor(x, y, z, McuUtility_random(0, 0x5),  McuUtility_random(0, 0x5), McuUtility_random(0, 0x5)); /* limit brightness */
         }
       }
     }
     APP_RequestUpdateLEDs();
     vTaskDelay(pdMS_TO_TICKS(500));
   } /* for */
-  MATRIX_SetRingLedEnabledAll(false);
+  MRING_EnableRingAll(false);
   MHAND_HandEnableAll(true);
   return ERR_OK;
 #elif PL_MATRIX_CONFIG_IS_RGB
   uint8_t res;
 
+  MHAND_HandEnableAll(false);
+  MRING_EnableRingAll(true);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {

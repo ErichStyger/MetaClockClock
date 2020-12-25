@@ -36,6 +36,8 @@
 #include "mfont.h"
 #include "matrixposition.h"
 #include "matrixhand.h"
+#include "matrixring.h"
+#include "matrixpixel.h"
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
@@ -128,7 +130,7 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_NEO_PIXEL_HW
 NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_VIRTUAL_STEPPER /* virtual stepper */
@@ -149,7 +151,7 @@ void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness) {
 }
 #endif
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
 NEO_PixelColor MATRIX_GetHandColorAdjusted(void) {
   return NEO_BrightnessFactorColor(MATRIX_LedHandColor, MATRIX_LedHandBrightness);
 }
@@ -200,87 +202,6 @@ void MATRIX_SetHandBrightnessAll(uint8_t brightness) {
       }
     }
   }
-}
-#endif
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetRingPixelColor(int32_t x, int32_t y, uint8_t pos, uint8_t red, uint8_t green, uint8_t blue) {
-  NEOSR_SetRingPixelColor(MATRIX_GetLedRingDevice(x, y, 0), pos, red, green, blue);
-}
-#elif PL_CONFIG_USE_LED_PIXEL
-void MATRIX_SetLEDPixelColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  /* \todo assuming 8x2 pixels in line */
-  NEO_SetPixelRGB(NEOC_LANE_START, x*2, red, green, blue); /* pixel one */
-  NEO_SetPixelRGB(NEOC_LANE_START, (x*2)+1, red, green, blue); /* pixel two */
-}
-#endif /* PL_CONFIG_USE_LED_RING */
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetRingColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  NEOSR_SetRingColor(MATRIX_GetLedRingDevice(x, y, z), red, green, blue);
-}
-#endif /* PL_CONFIG_USE_LED_RING */
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetRingColorAll(uint8_t red, uint8_t green, uint8_t blue) {
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_SetRingColor(x, y, z, red, green, blue);
-      }
-    }
-  }
-}
-#endif /* PL_CONFIG_USE_LED_RING */
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetRingLedEnabled(int32_t x, int32_t y, uint8_t z, bool on) {
-  assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  NEOSR_SetRingLedEnabled(MATRIX_GetLedRingDevice(x, y, z), on);
-#else
-  uint8_t addr, xb, yb;
-  unsigned char cmd[sizeof("matrix ring enable xx yy zz off")];
-
-  addr = MATRIX_GetAddress(x, y, z);
-  /* remap position */
-  xb = clockMatrix[x][y].board.x;
-  yb = clockMatrix[x][y].board.y;
-  McuUtility_strcpy(cmd, sizeof(cmd), (unsigned char*)"matrix ring enable ");
-  McuUtility_strcatNum8u(cmd, sizeof(cmd), xb);
-  McuUtility_chcat(cmd, sizeof(cmd), ' ');
-  McuUtility_strcatNum8u(cmd, sizeof(cmd), yb);
-  McuUtility_chcat(cmd, sizeof(cmd), ' ');
-  McuUtility_strcatNum8u(cmd, sizeof(cmd), z);
-  McuUtility_chcat(cmd, sizeof(cmd), ' ');
-  if (on) {
-    McuUtility_strcat(cmd, sizeof(cmd), (unsigned char*)"on");
-  } else {
-    McuUtility_strcat(cmd, sizeof(cmd), (unsigned char*)"off");
-  }
-  MATRIX_SendCmdToBoard(addr, cmd);
-#endif
-}
-#endif /* PL_CONFIG_USE_LED_RING */
-
-#if PL_CONFIG_USE_LED_RING
-void MATRIX_SetRingLedEnabledAll(bool on) {
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        MATRIX_SetRingLedEnabled(x, y, z, on);
-      }
-    }
-  }
-#elif PL_MATRIX_CONFIG_IS_RGB
-  if (on) {
-    MATRIX_SendCmdToBoard(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix ring enable all on");
-  } else {
-    MATRIX_SendCmdToBoard(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix ring enable all off");
-  }
-#endif
 }
 #endif
 
@@ -920,7 +841,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
 #if PL_CONFIG_USE_LED_RING
   MHAND_HandEnableAll(true);
-  MATRIX_SetRingLedEnabledAll(false);
+  MRING_EnableRingAll(false);
 #elif PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
@@ -952,7 +873,7 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
     MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   #if PL_CONFIG_USE_LED_RING
     MHAND_HandEnableAll(true);
-    MATRIX_SetRingLedEnabledAll(false);
+    MRING_EnableRingAll(false);
   #endif
   #endif
   return MATRIX_SendToRemoteQueueExecuteAndWait(true);
@@ -1520,7 +1441,7 @@ static uint8_t PrintStepperStatus(const McuShell_StdIOType *io) {
 }
 #endif
 
-#if PL_CONFIG_USE_SHELL && PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_SHELL && PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_STEPPER
 static uint8_t PrintRingStatus(const McuShell_StdIOType *io) {
   uint8_t buf[128];
   uint8_t statusStr[16];
@@ -1682,6 +1603,17 @@ static uint8_t ParseMatrixCommand(const unsigned char **cmd, int32_t *xp, int32_
 }
 #endif
 
+#if PL_MATRIX_CONFIG_IS_RGB
+static void MATRIX_RequestRgbUpdate(void) {
+  /* request LED update either locally or remote */
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  APP_RequestUpdateLEDs();
+#else /* send over RS-485 */
+  (void)MATRIX_SendToRemoteQueueExecuteAndWait(true);
+#endif
+}
+#endif
+
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"matrix", (unsigned char*)"Group of matrix commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
@@ -1771,14 +1703,14 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 
 uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
   const unsigned char *p;
+  uint8_t res = ERR_OK;
 #if PL_CONFIG_USE_STEPPER || PL_CONFIG_USE_NEO_PIXEL_HW
-  uint8_t res;
   bool speedUp, slowDown;
   STEPPER_MoveMode_e mode;
   uint8_t d;
   int32_t v;
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   uint8_t r, g, b;
 #endif
 
@@ -1943,15 +1875,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     p = cmd + sizeof("matrix he all ")-1;
     if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
       MHAND_HandEnableAll(true);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      APP_RequestUpdateLEDs();
-    #endif
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
       MHAND_HandEnableAll(false);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      APP_RequestUpdateLEDs();
-    #endif
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -1964,16 +1892,12 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     p = cmd + sizeof("matrix re all ")-1;
     if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
-      MATRIX_SetRingLedEnabledAll(true);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      APP_RequestUpdateLEDs();
-    #endif
+      MRING_EnableRingAll(true);
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
-      MATRIX_SetRingLedEnabledAll(false);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      APP_RequestUpdateLEDs();
-    #endif
+      MRING_EnableRingAll(false);
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -1984,7 +1908,6 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #if PL_CONFIG_USE_LED_RING
   /* ---------------------- enabled/disable for a ring/hand ---------------------------------- */
   } else if (McuUtility_strncmp((char*)cmd, "matrix he ", sizeof("matrix he ")-1)==0) {
-
     int32_t x, y, z;
 
     *handled = TRUE;
@@ -2000,15 +1923,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       {
         if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
           MHAND_HandEnable(x, y, z, true);
-        #if PL_CONFIG_USE_NEO_PIXEL_HW
-          APP_RequestUpdateLEDs();
-        #endif
+          MATRIX_RequestRgbUpdate();
           res = ERR_OK;
         } else if (McuUtility_strcmp((char*)p, (char*)" off")==0) {
           MHAND_HandEnable(x, y, z, false);
-         #if PL_CONFIG_USE_NEO_PIXEL_HW
-          APP_RequestUpdateLEDs();
-         #endif
+          MATRIX_RequestRgbUpdate();
           res = ERR_OK;
         } else {
           res = ERR_FAILED;
@@ -2034,16 +1953,12 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
          )
       {
         if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
-          MATRIX_SetRingLedEnabled(x, y, z, true);
-        #if PL_CONFIG_USE_NEO_PIXEL_HW
-          APP_RequestUpdateLEDs();
-        #endif
+          MRING_EnableRing(x, y, z, true);
+          MATRIX_RequestRgbUpdate();
           res = ERR_OK;
         } else if (McuUtility_strcmp((char*)p, (char*)" off")==0) {
-          MATRIX_SetRingLedEnabled(x, y, z, false);
-       #if PL_CONFIG_USE_NEO_PIXEL_HW
-          APP_RequestUpdateLEDs();
-        #endif
+          MRING_EnableRing(x, y, z, false);
+          MATRIX_RequestRgbUpdate();
           res = ERR_OK;
         }
         res = ERR_OK;
@@ -2060,11 +1975,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     p = cmd + sizeof("matrix he2 all ")-1;
     if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
       MHAND_2ndHandEnableAll(true);
-      APP_RequestUpdateLEDs();
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
       MHAND_2ndHandEnableAll(false);
-      APP_RequestUpdateLEDs();
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     }
     return ERR_OK;
@@ -2085,11 +2000,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       {
         if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
           MHAND_2ndHandEnable(x, y, z, true);
-          APP_RequestUpdateLEDs();
+          MATRIX_RequestRgbUpdate();
           res = ERR_OK;
         } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
           MHAND_2ndHandEnable(x, y, z, false);
-          APP_RequestUpdateLEDs();
+          MATRIX_RequestRgbUpdate();
           res = ERR_OK;
         }
         res = ERR_OK;
@@ -2107,9 +2022,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     p = cmd + sizeof("matrix hc all ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
       MHAND_SetHandColorAll(NEO_COMBINE_RGB(r, g, b));
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      APP_RequestUpdateLEDs();
-    #endif
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -2118,10 +2031,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     p = cmd + sizeof("matrix rc all ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
-      MATRIX_SetRingColorAll(r, g, b);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      APP_RequestUpdateLEDs();
-    #endif
+      MRING_SetRingColorAll(r, g, b);
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -2153,7 +2064,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
         p++;
       }
     } while(res==ERR_OK && *p==',');
-    APP_RequestUpdateLEDs();
+    MATRIX_RequestRgbUpdate();
     return res;
 #endif
   #if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_DUAL_HANDS
@@ -2173,7 +2084,6 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
          )
       {
         MHAND_Set2ndHandColor(x, y, z, NEO_COMBINE_RGB(r, g, b));
-        APP_RequestUpdateLEDs();
         res = ERR_OK;
       } else {
         res = ERR_FAILED;
@@ -2182,7 +2092,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
         p++;
       }
     } while(res==ERR_OK && *p==',');
-    APP_RequestUpdateLEDs();
+    MATRIX_RequestRgbUpdate();
     return res;
   #endif /* PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_DUAL_HANDS */
   #if PL_CONFIG_USE_LED_RING
@@ -2201,7 +2111,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           && McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK
          )
       {
-        MATRIX_SetRingColor(x, y, z, r, g, b);
+        MRING_SetRingColor(x, y, z, r, g, b);
         res = ERR_OK;
       } else {
         res = ERR_FAILED;
@@ -2210,7 +2120,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
         p++;
       }
     } while(res==ERR_OK && *p==',');
-    APP_RequestUpdateLEDs();
+    MATRIX_RequestRgbUpdate();
     return res;
   #endif
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
@@ -2223,13 +2133,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     uint32_t color;
 
     color = MATRIX_GetHandColorAdjusted();
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
     MHAND_SetHandColorAll(color);
-    APP_RequestUpdateLEDs();
-  #else
-    MHAND_SetHandColorAll(color);
-    MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  #endif
+    MATRIX_RequestRgbUpdate();
     return ERR_OK;
 #endif
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
@@ -2243,13 +2148,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       uint32_t color;
 
       color = MATRIX_GetHandColorAdjusted();
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
       MHAND_SetHandColorAll(color);
-      APP_RequestUpdateLEDs();
-    #else
-      MHAND_SetHandColorAll(color);
-      MATRIX_SendToRemoteQueueExecuteAndWait(true);
-    #endif
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -2268,13 +2168,13 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
        )
     {
   #if PL_CONFIG_USE_LED_RING
-      MATRIX_SetRingPixelColor(x, y, z, r, g, b);
+      MRING_SetRingPixelColor(x, y, z, r, g, b);
   #elif PL_CONFIG_USE_LED_PIXEL
-      MATRIX_SetLEDPixelColor(x, y, z, r, g, b);
+      MPIXEL_SetColor(x, y, z, r, g, b);
   #else
     #error "NYI"
   #endif
-      NEO_TransferPixels();
+      MATRIX_RequestRgbUpdate();
       return ERR_OK;
     } else {
       return ERR_FAILED;
@@ -2345,7 +2245,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       return res;
     }
     MATRIX_SetHandBrightnessAll(f);
-    APP_RequestUpdateLEDs();
+    MATRIX_RequestRgbUpdate();
     return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "matrix hand brightness ", sizeof("matrix hand brightness ")-1)==0) {
     uint8_t f;
@@ -2363,7 +2263,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
         return res;
       }
       MATRIX_SetHandBrightness(x, y, z, f);
-      APP_RequestUpdateLEDs();
+      MATRIX_RequestRgbUpdate();
     }
     return ERR_OK;
 #endif
@@ -2423,7 +2323,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_SendMatrixCmdToAllBoards(p);
 #endif /* PL_CONFIG_IS_MASTER */
   }
-  return ERR_OK;
+  return res;
 }
 #endif
 
@@ -2455,7 +2355,7 @@ void MATRIX_TimerCallback(void) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_NEO_PIXEL_HW
 void MATRIX_IlluminateHands(void) {
   STEPPER_Handle_t stepper;
   int32_t pos;

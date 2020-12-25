@@ -15,7 +15,8 @@
 
 /* *************************************************************************************** */
 /* overwrite settings in platform_common.h */
-#define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* has NeoPixels */
+#define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* has NeoPixel hardware */
+#define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */
 #define PL_CONFIG_IS_ANALOG_CLOCK       (0) /* not an analog clock */
 #define PL_CONFIG_USE_DUAL_HANDS        (0) /* disable dual hand */
 #define PL_CONFIG_USE_LED_PIXEL         (1) /* enable LED pixel */

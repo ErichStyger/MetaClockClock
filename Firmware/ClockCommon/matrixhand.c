@@ -12,7 +12,7 @@
 #include "NeoStepperRing.h"
 #include "NeoPixel.h"
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
 void MHAND_HandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW

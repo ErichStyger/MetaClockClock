@@ -36,12 +36,6 @@ extern MATRIX_Matrix_t matrix; /* map of current matrix */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
 
-  void MATRIX_SetRingLedEnabledAll(bool on);
-  void MATRIX_SetRingLedEnabled(int32_t x, int32_t y, uint8_t z, bool on);
-  void MATRIX_SetRingColorAll(uint8_t red, uint8_t green, uint8_t blue);
-  void MATRIX_SetRingColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue);
-  void MATRIX_SetRingPixelColor(int32_t x, int32_t y, uint8_t pos, uint8_t red, uint8_t green, uint8_t blue);
-
   void MATRIX_IlluminateHands(void);
 
   void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness);
