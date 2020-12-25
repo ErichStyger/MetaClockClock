@@ -15,6 +15,7 @@
 #include "McuExtRTC.h"
 #include "McuTimeDate.h"
 #include "McuLog.h"
+#include "NeoPixel.h"
 #include <math.h>
 
 typedef enum Intermezzo_e {
@@ -33,7 +34,7 @@ static void Intermezzo0(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(2, 2);
@@ -48,7 +49,7 @@ static void Intermezzo1(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(2, 2);
@@ -64,7 +65,7 @@ static void Intermezzo2(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(6, 6);
@@ -81,7 +82,7 @@ static void Intermezzo3(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
@@ -96,7 +97,7 @@ static void Intermezzo4(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(6, 6);
@@ -113,7 +114,7 @@ static void Intermezzo5(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   (void)MATRIX_DrawAllClockDelays(6, 6);
@@ -146,11 +147,11 @@ static void Intermezzo5(void) {
 }
 
 static void Intermezzo6(void) {
-#if PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(true);
-#endif
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
 #endif
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -188,7 +189,7 @@ static void Intermezzo7(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_MoveAllto12(10000, NULL);
@@ -210,7 +211,7 @@ static void Intermezzo8(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(4, 4);
@@ -256,8 +257,8 @@ static void Intermezzo9(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_DUAL_HANDS
-  MHAND_2ndHandEnableAll(false);
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -279,6 +280,9 @@ static void Intermezzo10(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
 
@@ -295,6 +299,9 @@ static void Intermezzo10(void) {
 static void Intermezzo11(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
 #endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(2, 2);
@@ -331,6 +338,9 @@ static void Intermezzo12(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(1, 1);
   MPOS_SetAngleZ0Z1All(270, 270);
@@ -361,6 +371,9 @@ static void Intermezzo13(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(1, 1);
   MPOS_SetAngleZ0Z1All(0, 0);
@@ -390,6 +403,9 @@ static void Intermezzo14(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleZ0Z1All(0, 180);
@@ -412,6 +428,9 @@ static void Intermezzo15(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleZ0Z1All(270, 90);
@@ -431,62 +450,6 @@ static void Intermezzo15(void) {
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
-
-#if 0
-static void SetAngleZ0Z1Checked(int x, int y, int angleZ0, int angleZ1) {
-  /* do not set angle if coordinate is outside of matrix */
-  if (x>=0 && x<MATRIX_NOF_STEPPERS_X && y>=0 && y<MATRIX_NOF_STEPPERS_Y) {
-    MPOS_SetAngleZ0Z1(x, y, angleZ0, angleZ1);
-  }
-}
-
-static float TangensSlope(int x, int y) {
-  float slope;
-
-  if (y==0) {
-    slope = 0;
-  } else if (x==0) {
-    slope = 90;
-  } else {
-    slope = atan((float)y/(float)x);
-  }
-  return slope;
-}
-
-static void DrawCircle(int x0, int y0, int radius) {
-  /* draw a circle using the Bresenham method, see http://de.wikipedia.org/wiki/Bresenham-Algorithmus */
-  int f = 1 - radius;
-  int ddF_x = 0;
-  int ddF_y = -2 * radius;
-  int x = 0;
-  int y = radius;
-  float slope;
-
-  SetAngleZ0Z1Checked(x0, y0 + radius, 270, 90);
-  SetAngleZ0Z1Checked(x0, y0 - radius, 270, 90);
-  SetAngleZ0Z1Checked(x0 + radius, y0, 0, 180);
-  SetAngleZ0Z1Checked(x0 - radius, y0, 0, 180);
-  while(x < y) {
-    if(f >= 0) {
-      y--;
-      ddF_y += 2;
-      f += ddF_y;
-    }
-    x++;
-    ddF_x += 2;
-    f += ddF_x + 1;
-    slope = TangensSlope(x, y);
-    SetAngleZ0Z1Checked(x0 + x, y0 + y, 0-slope, 180-slope); /* right upper quadrant, bottom */
-    SetAngleZ0Z1Checked(x0 - x, y0 + y, 0+slope, 180+slope); /* left upper quadrant, bottom */
-    SetAngleZ0Z1Checked(x0 + x, y0 - y, 0+slope, 180+slope); /* right lower quadrant, top */
-    SetAngleZ0Z1Checked(x0 - x, y0 - y, 0-slope, 180-slope); /* left lower quadrant, top */
-    SetAngleZ0Z1Checked(x0 + y, y0 + x, 270-slope, 90+slope); /* right lower quadrant, bottom */
-    SetAngleZ0Z1Checked(x0 - y, y0 + x, 270+slope, 90+slope); /* left lower quadrant, bottom */
-    SetAngleZ0Z1Checked(x0 + y, y0 - x, 270+slope, 90+slope); /* right upper quadrant, top */
-    SetAngleZ0Z1Checked(x0 - y, y0 - x, 270-slope, 90-slope); /* left lower quadrant, top */
-  }
-}
-#endif
 
 /* map of 'circles', limited for now to 10x10 quadrants. Same numbers correspond to the radius */
 static const int circleMap[10][10] = {
@@ -543,6 +506,9 @@ static void BuildCircles(void) {
 
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
 #endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(2, 2);
@@ -638,7 +604,6 @@ static void Intermezzo18(void) {
   }
 }
 
-
 static void Intermezzo19(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
@@ -649,6 +614,9 @@ static void Intermezzo19(void) {
 static void Intermezzo20(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
 #endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
   (void)MATRIX_DrawAllClockDelays(2, 2);
@@ -674,7 +642,7 @@ static void IntermezzoTime(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   res = McuTimeDate_GetTimeDate(&time, NULL);
@@ -692,7 +660,7 @@ static void IntermezzoRandomHandsAllOn(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   (void)MATRIX_DrawAllClockDelays(2, 5);
@@ -701,7 +669,7 @@ static void IntermezzoRandomHandsAllOn(void) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MPOS_SetAngleZ0Z1(x, y, z,  McuUtility_random(0, 359));
-      #if PL_CONFIG_USE_NEO_PIXEL_HW
+      #if PL_MATRIX_CONFIG_IS_RGB
         MHAND_SetHandColor(x, y, z, NEO_COMBINE_RGB(McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255)));
       #endif
       }
@@ -714,7 +682,7 @@ static void IntermezzoRandomHands(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   MATRIX_DrawAllClockDelays(3, 7);
@@ -731,6 +699,12 @@ static void IntermezzoTemperature(void) {
   float temperature;
   uint8_t res;
 
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   (void)MATRIX_DrawAllClockDelays(3, 3);
   res = McuExtRTC_GetTemperature(&temperature);
   if (res!=ERR_OK) {
@@ -747,6 +721,12 @@ static void IntermezzoTemperature(void) {
 static void DrawNestedRectangles(int xPos, int yPos, int width, int height) {
   int x, y, w, h;
 
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   (void)MATRIX_DrawAllClockDelays(2, 2);
   x = xPos; y = yPos; w = width; h = height;
   while(w>0 && h>0) {
@@ -766,7 +746,7 @@ static void IntermezzoRectangles(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
@@ -776,7 +756,7 @@ static void IntermezzoRectangles2(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
@@ -787,7 +767,7 @@ static void IntermezzoRectangles3(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);

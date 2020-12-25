@@ -5,18 +5,9 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_NEO_PIXEL_HW
 #include "NeoPixel.h"
 #include "McuUtility.h"
 #include "PixelDMA.h"
-
-#define VAL0          0  /* 0 Bit: 0.396 us (need: 0.4 us low) */
-#define VAL1          1  /* 1 Bit: 0.792 us (need: 0.8 us high */
-
-#define NEO_NOF_BITS_PIXEL  24  /* 24 bits for pixel */
-#define NEO_DMA_NOF_BYTES   sizeof(transmitBuf)
-/* transmitBuf: Each bit in the byte is a lane/channel (X coordinate). Need 24bytes for all the RGB bits. The Pixel(0,0) is at transmitBuf[0], Pixel (0,1) at transmitBuf[24]. */
-static uint8_t transmitBuf[NEO_NOF_LEDS_IN_LANE*NEO_NOF_BITS_PIXEL];
 
 static const uint8_t gamma8[] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -50,6 +41,44 @@ uint32_t NEO_GammaCorrect24(uint32_t rgb) {
   rgb = (r<<16)|(g<<8)|b;
   return rgb;
 }
+
+/* the ones below do not depend on hardware */
+
+NEO_PixelColor NEO_BrightnessPercentColor(NEO_PixelColor rgbColor, uint8_t percent) {
+  uint8_t red, green, blue;
+
+  red = (rgbColor>>16)&0xff;
+  green = (rgbColor>>8)&0xff;
+  blue = rgbColor&0xff;
+  red = ((uint32_t)red*percent)/100;
+  green = ((uint32_t)green*percent)/100;
+  blue = ((uint32_t)blue*percent)/100;
+  rgbColor = (red<<16)|(green<<8)|blue;
+  return rgbColor;
+}
+
+NEO_PixelColor NEO_BrightnessFactorColor(NEO_PixelColor rgbColor, uint8_t factor) {
+  uint8_t red, green, blue;
+
+  red = (rgbColor>>16)&0xff;
+  green = (rgbColor>>8)&0xff;
+  blue = rgbColor&0xff;
+  red = ((uint32_t)red*factor)/255;
+  green = ((uint32_t)green*factor)/255;
+  blue = ((uint32_t)blue*factor)/255;
+  rgbColor = (red<<16)|(green<<8)|blue;
+  return rgbColor;
+}
+
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+
+#define VAL0          0  /* 0 Bit: 0.396 us (need: 0.4 us low) */
+#define VAL1          1  /* 1 Bit: 0.792 us (need: 0.8 us high */
+
+#define NEO_NOF_BITS_PIXEL  24  /* 24 bits for pixel */
+#define NEO_DMA_NOF_BYTES   sizeof(transmitBuf)
+/* transmitBuf: Each bit in the byte is a lane/channel (X coordinate). Need 24bytes for all the RGB bits. The Pixel(0,0) is at transmitBuf[0], Pixel (0,1) at transmitBuf[24]. */
+static uint8_t transmitBuf[NEO_NOF_LEDS_IN_LANE*NEO_NOF_BITS_PIXEL];
 
 uint8_t NEO_GetPixelColor(NEO_PixelIdxT column, NEO_PixelIdxT row, uint32_t *rgb) {
   uint8_t res, r,g,b;
@@ -183,33 +212,6 @@ uint8_t NEO_ClearPixel(NEO_PixelIdxT lane, NEO_PixelIdxT pos) {
   return NEO_SetPixelRGB(lane, pos, 0, 0, 0);
 }
 
-NEO_PixelColor NEO_BrightnessPercentColor(NEO_PixelColor rgbColor, uint8_t percent) {
-  uint8_t red, green, blue;
-
-  red = (rgbColor>>16)&0xff;
-  green = (rgbColor>>8)&0xff;
-  blue = rgbColor&0xff;
-  red = ((uint32_t)red*percent)/100;
-  green = ((uint32_t)green*percent)/100;
-  blue = ((uint32_t)blue*percent)/100;
-  rgbColor = (red<<16)|(green<<8)|blue;
-  return rgbColor;
-}
-
-NEO_PixelColor NEO_BrightnessFactorColor(NEO_PixelColor rgbColor, uint8_t factor) {
-  uint8_t red, green, blue;
-
-  red = (rgbColor>>16)&0xff;
-  green = (rgbColor>>8)&0xff;
-  blue = rgbColor&0xff;
-  red = ((uint32_t)red*factor)/255;
-  green = ((uint32_t)green*factor)/255;
-  blue = ((uint32_t)blue*factor)/255;
-  rgbColor = (red<<16)|(green<<8)|blue;
-  return rgbColor;
-}
-
-
 uint8_t NEO_DimmPercentPixel(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint8_t percent) {
   uint8_t red, green, blue;
   uint32_t dRed, dGreen, dBlue;
@@ -342,3 +344,4 @@ void NEO_Init(void) {
   NEO_ClearAllPixel();
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+

@@ -30,9 +30,9 @@
 #endif
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoStepperRing.h"
-  #include "NeoPixel.h"
   #include "application.h"
 #endif
+#include "NeoPixel.h"
 #include "mfont.h"
 #include "matrixposition.h"
 #include "matrixhand.h"
@@ -149,7 +149,7 @@ void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness) {
 }
 #endif
 
-#if PL_CONFIG_IS_ANALOG_CLOCK && PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_MATRIX_CONFIG_IS_RGB
 NEO_PixelColor MATRIX_GetHandColorAdjusted(void) {
   return NEO_BrightnessFactorColor(MATRIX_LedHandColor, MATRIX_LedHandBrightness);
 }
@@ -2220,14 +2220,15 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     if (McuUtility_ScanRGB32(&p, &MATRIX_LedHandColor)!=ERR_OK) {
       return ERR_FAILED;
     }
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
     uint32_t color;
 
     color = MATRIX_GetHandColorAdjusted();
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
     MHAND_SetHandColorAll(color);
     APP_RequestUpdateLEDs();
   #else
-    /* \todo send to all boards? */
+    MHAND_SetHandColorAll(color);
+    MATRIX_SendToRemoteQueueExecuteAndWait(true);
   #endif
     return ERR_OK;
 #endif
@@ -2239,14 +2240,15 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     p = cmd + sizeof("matrix hand brightness ")-1;
     if (McuUtility_xatoi(&p, &val)==ERR_OK && val>=0 && val<=0xff) {
       MATRIX_LedHandBrightness = val;
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
       uint32_t color;
 
       color = MATRIX_GetHandColorAdjusted();
+    #if PL_CONFIG_USE_NEO_PIXEL_HW
       MHAND_SetHandColorAll(color);
       APP_RequestUpdateLEDs();
     #else
-      /* \todo send to all boards? */
+      MHAND_SetHandColorAll(color);
+      MATRIX_SendToRemoteQueueExecuteAndWait(true);
     #endif
       return ERR_OK;
     } else {
