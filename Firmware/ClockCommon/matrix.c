@@ -543,7 +543,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
   }
   if (nof>0) {
     *cmdSent = true;
-    McuLog_trace("Queue he & re & move (0x%02x)", addr);
+    McuLog_trace("Queue enable & move (0x%02x)", addr);
     resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
     resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, true, 1); /* queue the command for ourself (LED ring) */
