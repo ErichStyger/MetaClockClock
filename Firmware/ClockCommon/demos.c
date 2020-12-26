@@ -614,7 +614,7 @@ static void show_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]) {
       MRING_EnableRing(x, y, 1, univ[x][y]);
     }
   }
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_SendToRemoteQueueExecuteAndWait(false);
 }
 
 static void DEMO_GameOfLife(void) {
@@ -622,8 +622,6 @@ static void DEMO_GameOfLife(void) {
 
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MRING_EnableRingAll(false);
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MFONT_PrintString((unsigned char*)" OF ", 0, 0, MFONT_SIZE_3x5);
@@ -632,6 +630,7 @@ static void DEMO_GameOfLife(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
   MHAND_HandEnableAll(false);
   MRING_EnableRingAll(true);
 #if PL_CONFIG_USE_DUAL_HANDS
@@ -647,18 +646,16 @@ static void DEMO_GameOfLife(void) {
       MRING_EnableRing(x, y, 1, false);
     }
   }
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no need to wait as only changing LEDs */
 
-  for(int i=0; i<100; i++) {
+  for(int i=0; i<50; i++) {
     evolve_univ(univ);
     show_univ(univ);
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
     vTaskDelay(pdMS_TO_TICKS(500));
-  #endif
   }
   MRING_EnableRingAll(false);
   MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no need to wait as only changing LEDs */
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 

@@ -287,7 +287,7 @@ uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t tim
       res = ERR_OK;
       break; /* leave loop */
     } else {
-      vTaskDelay(pdMS_TO_TICKS(20)); /* give some time for a response */
+      vTaskDelay(pdMS_TO_TICKS(10)); /* give back some time for a response */
       resp = WaitForResponse(500, dstAddr);
       if (resp==RS485_RESPONSE_OK) {
         res = ERR_OK;
