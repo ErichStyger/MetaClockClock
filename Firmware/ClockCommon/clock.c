@@ -440,6 +440,9 @@ static void ClockTask(void *pv) {
     McuUtility_randomSetSeed(seed);
   }
 #endif
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
+  (void)SHELL_ParseCommand((const unsigned char *)"matrix motor on", NULL, true);
+#endif
   for(;;) {
     vTaskDelay(pdMS_TO_TICKS(200));
 #if PL_CONFIG_USE_WDT
