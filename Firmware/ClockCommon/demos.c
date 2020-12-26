@@ -579,6 +579,90 @@ static void DEMO_LedPong(void) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
+#if PL_MATRIX_CONFIG_IS_RGB
+static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]) {
+  /* see https://rosettacode.org/wiki/Conway%27s_Game_of_Life#C */
+  unsigned newar[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y];
+
+  for (int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for (int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      int n = 0; /* number of neighbors */
+      for (int y1 = y - 1; y1 <= y + 1; y1++) {
+        for (int x1 = x - 1; x1 <= x + 1; x1++) {
+          if (univ[(x1 + MATRIX_NOF_STEPPERS_X) % MATRIX_NOF_STEPPERS_X][(y1 + MATRIX_NOF_STEPPERS_Y) % MATRIX_NOF_STEPPERS_Y]) {
+            n++;
+          }
+        }
+      }
+      if (univ[x][y]) { /* we counted ourself twice */
+        n--;
+      }
+      /* Any live cell with two or three live neighbors survives. Any dead cell with three live neighbors becomes a live cell. */
+      newar[x][y] = (n == 3 || (n == 2 && univ[x][y]));
+    }
+  }
+  for (int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for (int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      univ[x][y] = newar[x][y];
+    }
+  }
+}
+
+static void show_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      MRING_EnableRing(x, y, 1, univ[x][y]);
+    }
+  }
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void DEMO_GameOfLife(void) {
+  bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]; /* universum */
+
+  MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MRING_EnableRingAll(false);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MFONT_PrintString((unsigned char*)" OF ", 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MFONT_PrintString((unsigned char*)"LIFE", 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  MHAND_HandEnableAll(false);
+  MRING_EnableRingAll(true);
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+  MRING_SetRingColorAll(0, 1, 0); /* color for each ring */
+  /* seed random cells */
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      bool alive = McuUtility_random(0, 1);
+      univ[x][y] = alive;
+      MRING_EnableRing(x, y, 0, alive);
+      MRING_EnableRing(x, y, 1, false);
+    }
+  }
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  for(int i=0; i<100; i++) {
+    evolve_univ(univ);
+    show_univ(univ);
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
+    vTaskDelay(pdMS_TO_TICKS(500));
+  #endif
+  }
+  MRING_EnableRingAll(false);
+  MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+#endif /* PL_MATRIX_CONFIG_IS_RGB */
+
+
 #if PL_CONFIG_IS_MASTER
 static uint8_t DemoSquare(void) {
   uint8_t res;
@@ -1164,6 +1248,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  pong", (unsigned char*)"pong demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  weather <weather>", (unsigned char*)"Show weather: sunny, cloudy, rainy, icy\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  game of life", (unsigned char*)"Conway's Game of Life\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
@@ -1411,6 +1496,10 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo pong")==0) {
     *handled = TRUE;
     DEMO_LedPong();
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "demo game of life")==0) {
+    *handled = TRUE;
+    DEMO_GameOfLife();
     return ERR_OK;
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
