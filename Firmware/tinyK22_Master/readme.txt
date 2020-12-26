@@ -87,3 +87,30 @@ Slaves:
     
     
  @60 01 BB cmd matrix q 0 0 0 rc 0x010304 ,0 0 1 rc 0x050103
+ 
+ 
+demo hands random pos
+demo time large 14:34
+intermezzo 17
+demo temperature large 23
+demo time large 14:35
+demo text large 0 0 TEST
+demo text large 0 0 DONE
+
+
+matrix hc all 0x500;demo text large 0 0 "    ";demo text large 1 0 "YES "
+demo text large 0 0 "    ";matrix hc all 0x50000;demo text large 0 0 " NO "
+
+
+demo hands random pos
+matrix hc all 0x50500
+demo square
+demo hands random pos
+matrix hc all 0x500
+demo time large 20:54
+intermezzo 18
+matrix hc all 0x50008
+demo time 20:55
+intermezzo 16
+demo time 20:56
+
