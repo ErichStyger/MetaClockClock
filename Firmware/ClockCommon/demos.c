@@ -580,7 +580,7 @@ static void DEMO_LedPong(void) {
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
 #if PL_MATRIX_CONFIG_IS_RGB
-static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]) {
+static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y], bool *changed) {
   /* see https://rosettacode.org/wiki/Conway%27s_Game_of_Life#C */
   unsigned newar[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y];
 
@@ -603,6 +603,9 @@ static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y])
   }
   for (int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for (int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      if (univ[x][y] != newar[x][y]) {
+        *changed = true;
+      }
       univ[x][y] = newar[x][y];
     }
   }
@@ -619,6 +622,7 @@ static void show_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]) {
 
 static void DEMO_GameOfLife(void) {
   bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y]; /* universum */
+  bool changed;
 
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MRING_EnableRingAll(false);
@@ -640,7 +644,7 @@ static void DEMO_GameOfLife(void) {
   /* seed random cells */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      bool alive = McuUtility_random(0, 1);
+      bool alive = McuUtility_random(0, 2)==1;
       univ[x][y] = alive;
       MRING_EnableRing(x, y, 0, alive);
       MRING_EnableRing(x, y, 1, false);
@@ -649,8 +653,12 @@ static void DEMO_GameOfLife(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no need to wait as only changing LEDs */
 
   for(int i=0; i<50; i++) {
-    evolve_univ(univ);
+    changed = false;
+    evolve_univ(univ, &changed);
     show_univ(univ);
+    if (!changed) {
+      break;
+    }
     vTaskDelay(pdMS_TO_TICKS(500));
   }
   MRING_EnableRingAll(false);
