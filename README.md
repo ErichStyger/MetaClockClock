@@ -11,10 +11,10 @@ For more information about this project, see the following articles:
 - [“60 Billion Lights”: 2400 RGB LEDs and 120 Stepper Motors hiding behind Canvas Art”](https://mcuoneclipse.com/2020/05/24/60-billion-lights-2400-rgb-leds-and-120-stepper-motors-hiding-behind-canvas-art/)
 - [Behind the Canvas: Making of “60 Billion Lights”](https://mcuoneclipse.com/2020/06/07/behind-the-canvas-making-of-60-billion-lights/)
 - [New Version](https://mcuoneclipse.com/2020/07/19/new-version/) using a modular design
+- 60 Clock version built with the round modular PCBs: [New MetaClockClock V3 finished with 60 Clocks](https://mcuoneclipse.com/2020/12/26/new-metaclockclock-v3-finished-with-60-clocks/)
 
 
 Folders:
 - **Firmware**: contains the firmware for the different master and clock versions
 - **Hardware**: contains PCB files
 - **3D**: laser cutter and 3D printer files
-
