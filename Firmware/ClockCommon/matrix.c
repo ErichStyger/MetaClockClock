@@ -494,7 +494,11 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
           #endif
 
           /* *************** move command *********************** */
+#if PL_CONFIG_USE_RELATIVE_MOVES
           isRelative = matrix.relAngleMap[x][y][z]!=0;
+#else
+          isRelative = false;
+#endif
           if (isRelative || matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_chcat(buf, sizeof(buf), ',');
@@ -505,10 +509,12 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
             if (isRelative) {
+#if PL_CONFIG_USE_RELATIVE_MOVES
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" r ");
               McuUtility_strcatNum16s(buf, sizeof(buf), matrix.relAngleMap[x][y][z]); /* <a> */
               matrix.angleMap[x][y][z] += matrix.relAngleMap[x][y][z]; /* update to expected position */
               matrix.relAngleMap[x][y][z] = 0; /* set back to zero as it gets executed */
+#endif
             } else {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" a ");
               McuUtility_strcatNum16s(buf, sizeof(buf), matrix.angleMap[x][y][z]); /* <a> */
@@ -3255,7 +3261,9 @@ void MATRIX_Init(void) {
   MATRIX_ResetBoardListCmdSent();
   /* initialize matrix */
   MPOS_SetAngleZ0Z1All(0, 0);
+#if PL_CONFIG_USE_RELATIVE_MOVES
   MPOS_RelativeMoveAll(0);
+#endif
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   MATRIX_DrawAllClockDelays(2, 2);
   //MATRIX_DrawAllIsRelative(false, false);

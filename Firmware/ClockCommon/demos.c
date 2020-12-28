@@ -268,7 +268,7 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
 }
 #endif
 
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
+#if PL_MATRIX_CONFIG_IS_RGB
 static NEO_PixelColor Rainbow(int32_t numOfSteps, int32_t step) {
   float r = 0.0;
   float g = 0.0;
@@ -317,7 +317,9 @@ static NEO_PixelColor Rainbow(int32_t numOfSteps, int32_t step) {
   b *= 255;
   return ((((int)r)<<16)|(((int)g)<<8))+(int)b;
 }
+#endif /* PL_MATRIX_CONFIG_IS_RGB */
 
+#if PL_MATRIX_CONFIG_IS_RGB
 static void DEMO_LedDemo1(void) {
   uint8_t rowStartStep[MATRIX_NOF_STEPPERS_Y]; /* rainbow color starting values */
   NEO_PixelColor color;
@@ -356,7 +358,7 @@ static void DEMO_LedDemo1(void) {
   MRING_EnableRingAll(false);
   MATRIX_RequestRgbUpdate();
 }
-#endif
+#endif /* PL_MATRIX_CONFIG_IS_RGB */
 
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
 /* ------------------ PONG Game ------------------------------- */
@@ -579,7 +581,7 @@ static void DEMO_LedPong(void) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB
 static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y], bool *changed) {
   /* see https://rosettacode.org/wiki/Conway%27s_Game_of_Life#C */
   unsigned newar[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y];
@@ -665,7 +667,7 @@ static void DEMO_GameOfLife(void) {
   MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no need to wait as only changing LEDs */
 }
-#endif /* PL_MATRIX_CONFIG_IS_RGB */
+#endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB */
 
 
 #if PL_CONFIG_IS_MASTER

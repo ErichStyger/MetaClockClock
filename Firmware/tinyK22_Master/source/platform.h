@@ -25,7 +25,6 @@
 #elif 1
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_MOD  /* modular round clock version */
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_CLOCK             (1) /* round clock hardware */
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR      (0) /* not check for cmd errors to improve speed */
 #elif 0

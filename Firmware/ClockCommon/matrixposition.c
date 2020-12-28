@@ -95,6 +95,7 @@ void MPOS_SetMoveModeAll(STEPPER_MoveMode_e mode) {
   }
 }
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 void MPOS_RelativeMove(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   matrix.relAngleMap[x][y][z] = angle;
@@ -121,5 +122,6 @@ void MPOS_RelativeMoveAll(int16_t angle) {
     }
   }
 }
+#endif
 
 #endif /* PL_CONFIG_IS_MASTER */

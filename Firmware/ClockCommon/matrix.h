@@ -16,7 +16,9 @@
 
 typedef struct MATRIX_Matrix_t {
   int16_t angleMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* absolute angle move */
+#if PL_CONFIG_USE_RELATIVE_MOVES
   int16_t relAngleMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map of relative move (0 for no move) */
+#endif
   int8_t delayMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* map of motors with speed delay */
   STEPPER_MoveMode_e moveMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z];
 #if PL_MATRIX_CONFIG_IS_RGB

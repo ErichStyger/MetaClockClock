@@ -451,6 +451,7 @@ static void Intermezzo15(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 /* map of 'circles', limited for now to 10x10 quadrants. Same numbers correspond to the radius */
 static const int circleMap[10][10] = {
     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
@@ -573,7 +574,9 @@ static void BuildCircles(void) {
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 static void Intermezzo16(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -583,7 +586,9 @@ static void Intermezzo16(void) {
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 static void Intermezzo17(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
@@ -593,7 +598,9 @@ static void Intermezzo17(void) {
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 static void Intermezzo18(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
@@ -603,14 +610,18 @@ static void Intermezzo18(void) {
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 static void Intermezzo19(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
   MPOS_RelativeMoveAll(-360);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
 static void Intermezzo20(void) {
 #if PL_CONFIG_USE_DUAL_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -633,6 +644,7 @@ static void Intermezzo20(void) {
   MPOS_SetAngleZ0Z1All(270, 90);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
 static void IntermezzoTime(void) {
   uint8_t res;
@@ -794,11 +806,13 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo13,
     Intermezzo14,
     Intermezzo15,
+#if PL_CONFIG_USE_RELATIVE_MOVES
     Intermezzo16,
     Intermezzo17,
     Intermezzo18,
     Intermezzo19,
     Intermezzo20,
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
     IntermezzoTime,
     IntermezzoRandomHands,
     IntermezzoRandomHandsAllOn,
