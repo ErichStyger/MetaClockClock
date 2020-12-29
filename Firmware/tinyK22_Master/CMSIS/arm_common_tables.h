@@ -1,4 +1,4 @@
-/* ----------------------------------------------------------------------
+/* ---------------------------------------------------------------------- // @suppress("Lack of copyright information")
  * Project:      CMSIS DSP Library
  * Title:        arm_common_tables.h
  * Description:  Extern declaration for common tables

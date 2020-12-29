@@ -1,4 +1,4 @@
-/******************************************************************************
+/****************************************************************************** // @suppress("Lack of copyright information")
  * @file     arm_math.h
  * @brief    Public header file for CMSIS DSP Library
  * @version  V1.6.0

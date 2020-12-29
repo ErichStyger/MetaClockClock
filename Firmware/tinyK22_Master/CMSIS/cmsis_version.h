@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/**************************************************************************//** // @suppress("Lack of copyright information")
  * @file     cmsis_version.h
  * @brief    CMSIS Core(M) Version definitions
  * @version  V5.0.2

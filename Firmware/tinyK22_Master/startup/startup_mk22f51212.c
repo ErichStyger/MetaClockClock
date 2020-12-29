@@ -1,4 +1,4 @@
-//*****************************************************************************
+//***************************************************************************** // @suppress("Lack of copyright information")
 // MK22F51212 startup code for use with MCUXpresso IDE
 //
 // Version : 240119
@@ -262,9 +262,6 @@ extern void _vStackTop(void);
 // The vector table.
 // This relies on the linker script to place at correct location in memory.
 //*****************************************************************************
-extern void (* const g_pfnVectors[])(void);
-extern void * __Vectors __attribute__ ((alias ("g_pfnVectors")));
-
 __attribute__ ((used, section(".isr_vector")))
 void (* const g_pfnVectors[])(void) = {
     // Core Level - CM4
@@ -395,7 +392,6 @@ void bss_init(unsigned int start, unsigned int len) {
 //*****************************************************************************
 extern unsigned int __data_section_table;
 extern unsigned int __data_section_table_end;
-extern unsigned int __bss_section_table;
 extern unsigned int __bss_section_table_end;
 
 //*****************************************************************************

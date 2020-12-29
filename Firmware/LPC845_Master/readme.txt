@@ -3,8 +3,12 @@ readme.txt
 
 ClockClock Master project with the NXP LPC845-BRK board.
 
-USART0 is on 25/24 to the host usb cdc.
+Links:
+- https://github.com/ErichStyger/MetaClockClock
 
+
+Notes:
+USART0 is on 25/24 to the host usb cdc.
 
 Commands sent from the master:
 rs sendcmd 16 stepper m 0 0 359 10 cw

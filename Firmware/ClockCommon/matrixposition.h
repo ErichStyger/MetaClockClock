@@ -1,7 +1,7 @@
 /*
  * matrixposition.h
  *
- * Author: Erich Styger
+ * Copyright (c) 2020: Erich Styger
  * License: PDX-License-Identifier: BSD-3-Clause
  *
  * Interface to set motor position in the matrix

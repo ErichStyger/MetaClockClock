@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/**************************************************************************//** // @suppress("Lack of copyright information")
  * @file     core_cm4.h
  * @brief    CMSIS Cortex-M4 Core Peripheral Access Layer Header File
  * @version  V5.1.0

@@ -1,4 +1,4 @@
-/* ----------------------------------------------------------------------
+/* ---------------------------------------------------------------------- // @suppress("Lack of copyright information")
  * Project:      CMSIS DSP Library
  * Title:        arm_const_structs.h
  * Description:  Constant structs that are initialized for user convenience.

@@ -1,4 +1,4 @@
-/**************************************************************************//**
+/**************************************************************************//** // @suppress("Lack of copyright information")
  * @file     cmsis_compiler.h
  * @brief    CMSIS compiler generic header file
  * @version  V5.1.0
