@@ -25,9 +25,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="5.6"
-     inkscape:cx="386.66426"
-     inkscape:cy="688.52409"
+     inkscape:zoom="1.979899"
+     inkscape:cx="379.87294"
+     inkscape:cy="589.55939"
      inkscape:document-units="mm"
      inkscape:current-layer="layer1"
      showgrid="false"
@@ -61,7 +61,7 @@
     <path
        inkscape:connector-curvature="0"
        id="path5631"
-       d="m 105.39999,143.65118 a 2.6999982,2.7 0 0 1 -2.7,2.7 2.6999982,2.7 0 0 1 -2.699997,-2.7 2.6999982,2.7 0 0 1 2.699997,-2.7 2.6999982,2.7 0 0 1 2.7,2.7 z"
+       d="m 105.64999,143.65118 a 2.9499997,2.95 0 0 1 -2.95,2.95 2.9499997,2.95 0 0 1 -2.949995,-2.95 2.9499997,2.95 0 0 1 2.949995,-2.95 2.9499997,2.95 0 0 1 2.95,2.95 z"
        style="opacity:0.77999998;fill:none;fill-opacity:1;fill-rule:nonzero;stroke:#ff0000;stroke-width:0.1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:markers fill stroke" />
   </g>
 </svg>
