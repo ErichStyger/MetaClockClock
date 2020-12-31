@@ -3270,7 +3270,6 @@ void MATRIX_Init(void) {
 #endif
 #if PL_CONFIG_IS_MASTER
   MATRIX_ResetBoardListCmdSent();
-  /* initialize matrix */
   MPOS_SetAngleZ0Z1All(0, 0);
 #if PL_CONFIG_USE_RELATIVE_MOVES
   MPOS_RelativeMoveAll(0);
