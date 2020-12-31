@@ -2273,14 +2273,25 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   } else if (McuUtility_strcmp((char*)cmd, "matrix park on")==0) {
     *handled = TRUE;
   #if PL_CONFIG_IS_ANALOG_CLOCK
-    MATRIX_MoveAlltoHour(12, 10000, io);
+    MATRIX_MoveAlltoHour(12, 10000, io); /* move hands to 12-o-clock position */
   #else
     MATRIX_MoveAllToStartPosition(10000, io);
   #endif
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
+#if PL_MATRIX_CONFIG_IS_RGB
+    MHAND_HandEnableAll(false); /* disable hands */
+  #if PL_CONFIG_USE_DUAL_HANDS
+    MHAND_2ndHandEnableAll(false); /* disable 2nd hand */
+  #endif
+  #if PL_CONFIG_USE_LED_RING
+    MRING_EnableRingAll(false);
+  #endif
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+#endif
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
+    return ERR_OK;
   #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park off")==0) {
     *handled = TRUE;
