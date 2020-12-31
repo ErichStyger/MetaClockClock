@@ -2579,7 +2579,7 @@ static void CreateBoardLedRings(int boardNo, uint8_t addr, bool boardEnabled, in
 #if PL_CONFIG_USE_VIRTUAL_STEPPER
 static void InitLedRings(void) {
 #if PL_CONFIG_IS_MASTER
-#if PL_MATRIX_CONFIG_IS_8x3
+#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
   CreateBoardLedRings(0, BOARD_ADDR_00, true, 0, 0);
   CreateBoardLedRings(1, BOARD_ADDR_01, true, 1, 0);
   CreateBoardLedRings(2, BOARD_ADDR_02, true, 2, 0);
@@ -2587,7 +2587,7 @@ static void InitLedRings(void) {
   CreateBoardLedRings(3, BOARD_ADDR_05, true, 0, 4*40);
   CreateBoardLedRings(4, BOARD_ADDR_06, true, 1, 4*40);
   CreateBoardLedRings(5, BOARD_ADDR_07, true, 2, 4*40);
-#elif PL_MATRIX_CONFIG_IS_12x5
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B || PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
 #if MATRIX_NOF_BOARDS>=1
   CreateBoardLedRings(0, BOARD_ADDR_00, true, 0, 0);
 #endif
@@ -3277,7 +3277,6 @@ void MATRIX_Init(void) {
 #endif
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   MATRIX_DrawAllClockDelays(2, 2);
-  //MATRIX_DrawAllIsRelative(false, false);
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(0x000010);
   MATRIX_DrawAllRingColor(0x000000);

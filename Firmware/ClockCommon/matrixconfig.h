@@ -28,7 +28,7 @@
   #define MATRIX_NOF_STEPPERS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define MATRIX_NOF_BOARDS           (4*9)  /* total number of boards in matrix */
   #define MATRIX_NOF_STEPPERS_X       (16)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (9)   /* number of clocks in y (vertical) direction */
@@ -38,6 +38,11 @@
   #define MATRIX_NOF_STEPPERS_X       (8)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (1)   /* number of clocks in z direction */
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
+  #define MATRIX_NOF_BOARDS           (12)   /* total number of boards in matrix */
+  #define MATRIX_NOF_STEPPERS_X       (8)   /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_STEPPERS_Y       (3)   /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #else
   #error "unknown configuration"
 #endif
@@ -45,7 +50,7 @@
 /* no steppers on the master itself */
 #define MATRIX_NOF_STEPPERS       (0)  /* number of stepper on board: master does not have stepper motors */
 
-typedef enum {
+typedef enum MATRIX_BOARD_ADDR_e {
 #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
   BOARD_ADDR_00=0x25, /* first column, top board */
   BOARD_ADDR_01=0x24,
@@ -115,7 +120,7 @@ typedef enum {
   BOARD_ADDR_12=0x12,
   BOARD_ADDR_13=0x13,
   BOARD_ADDR_14=0x14,
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x9_ALEXIS
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   BOARD_ADDR_00=0x18, /* first column, top board */
   BOARD_ADDR_01=0x17,
   BOARD_ADDR_02=0x16,
@@ -161,6 +166,19 @@ typedef enum {
   BOARD_ADDR_02=0x22,
   BOARD_ADDR_03=0x23,
   BOARD_ADDR_04=0x24,
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
+  BOARD_ADDR_00=0x70,
+  BOARD_ADDR_01=0x71,
+  BOARD_ADDR_02=0x72,
+  BOARD_ADDR_03=0x73,
+  BOARD_ADDR_04=0x74,
+  BOARD_ADDR_05=0x75,
+  BOARD_ADDR_06=0x76,
+  BOARD_ADDR_07=0x77,
+  BOARD_ADDR_08=0x78,
+  BOARD_ADDR_09=0x79,
+  BOARD_ADDR_10=0x7A,
+  BOARD_ADDR_11=0x7B,
 #else
   #error "unknown matrix"
 #endif

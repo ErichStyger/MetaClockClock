@@ -27,7 +27,7 @@
   #define PL_MATRIX_CONFIG_IS_RGB         (0) /* disable color to fit into available RAM */
   #define PL_CONFIG_USE_RTT               (1) /* optional: enable RTT as extra interface beside UART */
 #elif 1
-  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x9_ALEXIS
+  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_RELATIVE_MOVES    (0) /* disable relative moves to fit into available RAM */
   #define PL_CONFIG_USE_RTT               (0) /* need to disable RTT to fit into available RAM */
 #elif 1

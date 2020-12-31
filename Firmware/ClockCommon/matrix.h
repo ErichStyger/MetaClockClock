@@ -76,9 +76,6 @@ uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io);
 uint8_t MATRIX_DrawClockDelays(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1);
 uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1);
 
-uint8_t MATRIX_DrawIsRelative(uint8_t x, uint8_t y, bool isRel0, bool isRel1);
-uint8_t MATRIX_DrawAllIsRelative(bool isRel0, bool isRel1);
-
 uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);
 uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait);

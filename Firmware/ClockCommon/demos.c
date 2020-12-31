@@ -733,7 +733,6 @@ static uint8_t DemoSquareClap(void) {
   }
   /* make two claps (2x360) */
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
-  //(void)MATRIX_DrawAllIsRelative(true, true);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
       MPOS_SetAngleZ0Z1Checked(x,     y, 180-2*360,  90+2*360);
@@ -743,7 +742,6 @@ static uint8_t DemoSquareClap(void) {
     }
   }
   res = MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
-  //(void)MATRIX_DrawAllIsRelative(false, false);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
@@ -965,7 +963,7 @@ static void DEMO_Nxp(void) {
   MHAND_2ndHandEnableAll(false);
 #endif
 }
-#endif /* PL_MATRIX_CONFIG_IS_12x5 */
+#endif
 
 static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
