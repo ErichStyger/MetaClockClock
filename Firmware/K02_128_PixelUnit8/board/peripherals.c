@@ -7,10 +7,10 @@
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
 product: Peripherals v8.0
-processor: MK02FN64xxx10
-package_id: MK02FN64VFM10
+processor: MK02FN128xxx10
+package_id: MK02FN128VFM10
 mcu_data: ksdk2_0
-processor_version: 0.8.4
+processor_version: 8.0.1
 functionalGroups:
 - name: BOARD_InitPeripherals
   UUID: d5656371-9895-44aa-9227-b3917716e6d6
