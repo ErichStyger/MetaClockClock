@@ -83,6 +83,10 @@ static void NeoTask(void *pv) {
   MHAND_HandEnableAll(true);
   color = MATRIX_GetHandColorAdjusted();
   MHAND_SetHandColorAll(color);
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+  MHAND_Set2ndHandColorAll(color);
+#endif
   APP_RequestUpdateLEDs();
 #endif
 #if 0 && PL_CONFIG_USE_MOTOR_ON_OFF

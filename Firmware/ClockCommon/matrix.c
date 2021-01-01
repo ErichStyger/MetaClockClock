@@ -1605,23 +1605,24 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
 #if PL_CONFIG_USE_LED_RING
   McuShell_SendHelpStr((unsigned char*)"  he all on|off", (unsigned char*)"Enabling all hand LEDs\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  re all on|off", (unsigned char*)"Enabling ring LEDs\r\n", io->stdOut);
-
   McuShell_SendHelpStr((unsigned char*)"  he <xyz> on|off", (unsigned char*)"Enable single hand LED (comma separated)\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  re <xyz> on|off", (unsigned char*)"Enable single ring LED (comma separated)\r\n", io->stdOut);
-#endif
-#if PL_CONFIG_USE_LED_RING
-  McuShell_SendHelpStr((unsigned char*)"  hc all <rgb>", (unsigned char*)"Set hand color for all hands\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  rc all <rgb>", (unsigned char*)"Set ring color for all rings\r\n", io->stdOut);
-
-  McuShell_SendHelpStr((unsigned char*)"  hc <xyz> <rgb>", (unsigned char*)"Set single hand color (comma separated)\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  rc <xyz> <rgb>", (unsigned char*)"Set single ring color (comma separated)\r\n", io->stdOut);
-
   #if PL_CONFIG_USE_EXTENDED_HANDS
   McuShell_SendHelpStr((unsigned char*)"  he2 all on|off", (unsigned char*)"Enable all 2nd hand LED\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  he2 <xyz> on|off", (unsigned char*)"Enable single 2nd hand LED (comma separated)\r\n", io->stdOut);
+
+  McuShell_SendHelpStr((unsigned char*)"  hc2 all <rgb>", (unsigned char*)"Set all 2nd hand color (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  hc2 <xyz> <rgb>", (unsigned char*)"Set single 2nd hand color (comma separated)\r\n", io->stdOut);
   #endif
+
+  McuShell_SendHelpStr((unsigned char*)"  re all on|off", (unsigned char*)"Enabling ring LEDs\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  re <xyz> on|off", (unsigned char*)"Enable single ring LED (comma separated)\r\n", io->stdOut);
+
+  McuShell_SendHelpStr((unsigned char*)"  hc all <rgb>", (unsigned char*)"Set hand color for all hands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  hc <xyz> <rgb>", (unsigned char*)"Set single hand color (comma separated)\r\n", io->stdOut);
+
+  McuShell_SendHelpStr((unsigned char*)"  rc all <rgb>", (unsigned char*)"Set ring color for all rings\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  rc <xyz> <rgb>", (unsigned char*)"Set single ring color (comma separated)\r\n", io->stdOut);
+
   #if PL_CONFIG_USE_LED_DIMMING
   McuShell_SendHelpStr((unsigned char*)"  hand brightness all <f>", (unsigned char*)"Set brightness (0-255) for all hands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  hand brightness <xyz> <f>", (unsigned char*)"Set brightness (0-255) for hands\r\n", io->stdOut);
@@ -2041,12 +2042,23 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     MATRIX_RequestRgbUpdate();
     return res;
 #endif
-  #if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_EXTENDED_HANDS
-  } else if (McuUtility_strncmp((char*)cmd, "matrix hc2 rgb ", sizeof("matrix hc2 rgb ")-1)==0) {
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_EXTENDED_HANDS
+  /* ---------------------- set color for all ---------------------------------- */
+  } else if (McuUtility_strncmp((char*)cmd, "matrix hc2 all ", sizeof("matrix hc2 all ")-1)==0) {
+    *handled = TRUE;
+    p = cmd + sizeof("matrix hc2 all ")-1;
+    if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
+      MHAND_Set2ndHandColorAll(NEO_COMBINE_RGB(r, g, b));
+      MATRIX_RequestRgbUpdate();
+      return ERR_OK;
+    } else {
+      return ERR_FAILED;
+    }
+  } else if (McuUtility_strncmp((char*)cmd, "matrix hc2 ", sizeof("matrix hc2 ")-1)==0) {
     int32_t x, y, z;
 
     *handled = TRUE;
-    p = cmd + sizeof("matrix hc2 rgb ")-1;
+    p = cmd + sizeof("matrix hc2 ")-1;
     do {
       if (*p==',') { /* skip comma for multiple commands */
         p++;
@@ -2068,7 +2080,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     } while(res==ERR_OK && *p==',');
     MATRIX_RequestRgbUpdate();
     return res;
-  #endif /* PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_EXTENDED_HANDS */
+#endif /* PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_EXTENDED_HANDS */
   #if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strncmp((char*)cmd, "matrix rc ", sizeof("matrix rc ")-1)==0) {
     int32_t x, y, z;

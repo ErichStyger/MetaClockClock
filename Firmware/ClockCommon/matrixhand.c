@@ -104,7 +104,6 @@ void MHAND_SetHandColorAll(uint32_t color) {
 }
 
 #if PL_CONFIG_USE_EXTENDED_HANDS
-// old MATRIX_Draw2ndHandColor
 void MHAND_Set2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
