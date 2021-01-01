@@ -1896,11 +1896,12 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
          )
       {
-        if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
+        McuUtility_SkipSpaces(&p); /* skip space(s) between coordinate and on/off */
+        if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
           MHAND_HandEnable(x, y, z, true);
           MATRIX_RequestRgbUpdate();
           res = ERR_OK;
-        } else if (McuUtility_strcmp((char*)p, (char*)" off")==0) {
+        } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
           MHAND_HandEnable(x, y, z, false);
           MATRIX_RequestRgbUpdate();
           res = ERR_OK;
@@ -1927,16 +1928,18 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
          )
       {
-        if (McuUtility_strcmp((char*)p, (char*)" on")==0) {
+        McuUtility_SkipSpaces(&p); /* skip space(s) between coordinate and on/off */
+        if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
           MRING_EnableRing(x, y, z, true);
           MATRIX_RequestRgbUpdate();
           res = ERR_OK;
-        } else if (McuUtility_strcmp((char*)p, (char*)" off")==0) {
+        } else if (McuUtility_strcmp((char*)p, (char*)"off")==0) {
           MRING_EnableRing(x, y, z, false);
           MATRIX_RequestRgbUpdate();
           res = ERR_OK;
+        } else {
+          res = ERR_FAILED;
         }
-        res = ERR_OK;
       } else {
         res = ERR_FAILED;
       }
@@ -1956,9 +1959,10 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       MHAND_2ndHandEnableAll(false);
       MATRIX_RequestRgbUpdate();
       return ERR_OK;
+    } else {
+      res = ERR_FAILED;
     }
-    return ERR_OK;
-
+    return res;
   } else if (McuUtility_strncmp((char*)cmd, "matrix he2 ", sizeof("matrix he2 ")-1)==0) {
     int32_t x, y, z;
 
@@ -1973,6 +1977,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
          )
       {
+        McuUtility_SkipSpaces(&p); /* skip space(s) between coordinate and on/off */
         if (McuUtility_strcmp((char*)p, (char*)"on")==0) {
           MHAND_2ndHandEnable(x, y, z, true);
           MATRIX_RequestRgbUpdate();
@@ -1981,8 +1986,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
           MHAND_2ndHandEnable(x, y, z, false);
           MATRIX_RequestRgbUpdate();
           res = ERR_OK;
+        } else {
+          res = ERR_FAILED;
         }
-        res = ERR_OK;
       } else {
         res = ERR_FAILED;
       }
@@ -2035,9 +2041,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       } else {
         res = ERR_FAILED;
       }
-      if (*p==' ') { /* skip space after color, e.g. at "0x10 ,0 0 1" */
-        p++;
-      }
+      McuUtility_SkipSpaces(&p); /* skip space after color, e.g. at "0x10 ,0 0 1" */
     } while(res==ERR_OK && *p==',');
     MATRIX_RequestRgbUpdate();
     return res;
@@ -2074,9 +2078,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       } else {
         res = ERR_FAILED;
       }
-      if (*p==' ') { /* skip space after color, e.g. at "0x10 ,0 0 1" */
-        p++;
-      }
+      McuUtility_SkipSpaces(&p); /* skip space after color, e.g. at "0x10 ,0 0 1" */
     } while(res==ERR_OK && *p==',');
     MATRIX_RequestRgbUpdate();
     return res;
@@ -2102,9 +2104,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       } else {
         res = ERR_FAILED;
       }
-      if (*p==' ') { /* skip space after color, e.g. at "0x10 ,0 0 1" */
-        p++;
-      }
+      McuUtility_SkipSpaces(&p); /* skip space after color, e.g. at "0x10 ,0 0 1" */
     } while(res==ERR_OK && *p==',');
     MATRIX_RequestRgbUpdate();
     return res;
@@ -2262,9 +2262,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   } else if (McuUtility_strcmp((char*)cmd, "matrix reset high")==0) {
     *handled = TRUE;
     McuX12_017_SetResetLine(x12Steppers[0].x12device, true); /* assuming shared reset line */
+    return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "matrix reset low")==0) {
     *handled = TRUE;
     McuX12_017_SetResetLine(x12Steppers[0].x12device, false); /* assuming shared reset line */
+    return ERR_OK;
 #endif
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor on")==0) {
@@ -2274,12 +2276,14 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     #else
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
     #endif
+    return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor off")==0) {
     *handled = TRUE;
     #if PL_CONFIG_IS_MASTER
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
     #else
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
+    return ERR_OK;
     #endif
 #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park on")==0) {
@@ -2290,16 +2294,16 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     MATRIX_MoveAllToStartPosition(10000, io);
   #endif
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
-#if PL_MATRIX_CONFIG_IS_RGB
+  #if PL_MATRIX_CONFIG_IS_RGB
     MHAND_HandEnableAll(false); /* disable hands */
-  #if PL_CONFIG_USE_EXTENDED_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
     MHAND_2ndHandEnableAll(false); /* disable 2nd hand */
-  #endif
-  #if PL_CONFIG_USE_LED_RING
+    #endif
+    #if PL_CONFIG_USE_LED_RING
     MRING_EnableRingAll(false);
-  #endif
+    #endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-#endif
+  #endif
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
@@ -2311,6 +2315,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
+    return ERR_OK;
   #endif
 #if PL_CONFIG_IS_MASTER
   } else if (McuUtility_strncmp((char*)cmd, "matrix sendcmd ", sizeof("matrix sendcmd ")-1)==0) {

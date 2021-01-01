@@ -13,6 +13,7 @@
 #endif
 #include "matrix.h"
 #include "matrixhand.h"
+#include "matrixring.h"
 #include "McuLog.h"
 #include "McuUtility.h"
 #include "StepperBoard.h"
@@ -87,6 +88,7 @@ static void NeoTask(void *pv) {
   MHAND_2ndHandEnableAll(false);
   MHAND_Set2ndHandColorAll(color);
 #endif
+  MRING_SetRingColorAll(0x1, 0, 0);
   APP_RequestUpdateLEDs();
 #endif
 #if 0 && PL_CONFIG_USE_MOTOR_ON_OFF
