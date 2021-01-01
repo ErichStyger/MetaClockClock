@@ -819,6 +819,12 @@ static uint8_t DemoRandomHandsPos(void) {
 #if PL_CONFIG_IS_MASTER
   uint8_t res;
 
+#if PL_CONFIG_USE_DUAL_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
   (void)MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
