@@ -13,6 +13,7 @@
 #include <stdbool.h>
 #include "McuShell.h"
 #include "stepper.h"
+#include "NeoPixel.h"
 
 typedef struct MATRIX_Matrix_t {
   int16_t angleMap[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z]; /* absolute angle move */
@@ -36,8 +37,6 @@ typedef struct MATRIX_Matrix_t {
 extern MATRIX_Matrix_t matrix; /* map of current matrix */
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  #include "NeoPixel.h"
-
   void MATRIX_IlluminateHands(void);
 
   void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness);
@@ -46,6 +45,8 @@ extern MATRIX_Matrix_t matrix; /* map of current matrix */
 #if PL_MATRIX_CONFIG_IS_RGB
   void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color);
   void MATRIX_DrawAllRingColor(uint32_t color);
+
+  NEO_PixelColor MATRIX_GetHandColorAdjusted(void);
 #endif
 
 #if PL_CONFIG_USE_LED_DIMMING

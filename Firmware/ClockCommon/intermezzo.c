@@ -342,11 +342,11 @@ static void Intermezzo12(void) {
   MHAND_HandEnableAll(true);
 #endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  (void)MATRIX_DrawAllClockDelays(1, 1);
+  (void)MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleZ0Z1All(270, 270);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 
-  (void)MATRIX_DrawAllClockDelays(1, 1);
+  (void)MATRIX_DrawAllClockDelays(2, 2);
 #if MATRIX_NOF_STEPPERS_X>6 /* speed up for larger clocks */
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=2) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -375,7 +375,7 @@ static void Intermezzo13(void) {
   MHAND_HandEnableAll(true);
 #endif
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-  (void)MATRIX_DrawAllClockDelays(1, 1);
+  (void)MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleZ0Z1All(0, 0);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 
@@ -688,6 +688,10 @@ static void IntermezzoRandomHandsAllOn(void) {
     }
   }
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
+#if PL_MATRIX_CONFIG_IS_RGB
+  /* restore normal hand color */
+  MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted());
+#endif
 }
 
 static void IntermezzoRandomHands(void) {
