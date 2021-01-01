@@ -157,8 +157,8 @@
 #ifndef PL_CONFIG_USE_LED_DIMMING
   #define PL_CONFIG_USE_LED_DIMMING     (0 && PL_CONFIG_USE_LED_RING)
 #endif
-#ifndef PL_CONFIG_USE_DUAL_HANDS
-  #define PL_CONFIG_USE_DUAL_HANDS      (0 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
+#ifndef PL_CONFIG_USE_EXTENDED_HANDS
+  #define PL_CONFIG_USE_EXTENDED_HANDS      (0 && PL_CONFIG_USE_LED_RING)   /* dual hand on Z axis */
 #endif
 #ifndef PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE  (0 && PL_CONFIG_IS_CLIENT) /* play automatic demo after power-on */

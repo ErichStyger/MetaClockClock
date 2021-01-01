@@ -248,7 +248,7 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
   xPos = MATRIX_NOF_STEPPERS_X-3;
   yPos = 0;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
@@ -503,7 +503,7 @@ static void DEMO_LedPong(void) {
 
   MHAND_HandEnableAll(false);
   MRING_EnableRingAll(true);
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   /* ball: */
@@ -639,7 +639,7 @@ static void DEMO_GameOfLife(void) {
 
   MHAND_HandEnableAll(false);
   MRING_EnableRingAll(true);
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   MRING_SetRingColorAll(0, 1, 0); /* color for each ring */
@@ -674,7 +674,7 @@ static void DEMO_GameOfLife(void) {
 static uint8_t DemoSquare(void) {
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
@@ -753,7 +753,7 @@ static uint8_t DemoSquareClap(void) {
 static uint8_t DemoPropeller(void) {
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
@@ -785,7 +785,7 @@ static uint8_t DemoPropeller(void) {
 static uint8_t DemoFalling(void) {
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   (void)MATRIX_DrawAllClockDelays(4, 4);
@@ -819,7 +819,7 @@ static uint8_t DemoRandomHandsPos(void) {
 #if PL_CONFIG_IS_MASTER
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -857,7 +857,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
   int angle0, angle1;
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   res = MATRIX_MoveAllto12(20000, io);
@@ -896,7 +896,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
 static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   res = MATRIX_MoveAllto12(20000, io);
@@ -965,7 +965,7 @@ static void DEMO_Nxp(void) {
 #endif
   DemoRandomHandsPos();
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 }
@@ -996,7 +996,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
     return DEMO_FailedDemo(res);
   }
   MATRIX_Delay(3000);
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 
@@ -1128,7 +1128,7 @@ static uint8_t DemoRandomRingColor(void) {
 
 #if PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
 static uint8_t DemoClap(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_CONFIG_IS_MASTER

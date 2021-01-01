@@ -459,7 +459,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
           }
           #endif
 
-          #if PL_CONFIG_USE_DUAL_HANDS
+          #if PL_CONFIG_USE_EXTENDED_HANDS
           /* *************** 2nd hand enable command *********************** */
           if (matrix.enabled2ndHandMap[x][y][z]!=prevMatrix.enabled2ndHandMap[x][y][z]) { /* only send changes */
             if (nof>0) {
@@ -807,7 +807,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
     hour = 0;
   }
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
   MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
@@ -839,7 +839,7 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485
 #warning "todo NYI"
   #if 0 /* \todo not implemented yet */
-  #if PL_CONFIG_USE_DUAL_HANDS
+  #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
   #endif
     MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
@@ -1617,7 +1617,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  hc <xyz> <rgb>", (unsigned char*)"Set single hand color (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  rc <xyz> <rgb>", (unsigned char*)"Set single ring color (comma separated)\r\n", io->stdOut);
 
-  #if PL_CONFIG_USE_DUAL_HANDS
+  #if PL_CONFIG_USE_EXTENDED_HANDS
   McuShell_SendHelpStr((unsigned char*)"  he2 all on|off", (unsigned char*)"Enable all 2nd hand LED\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  he2 <xyz> on|off", (unsigned char*)"Enable single 2nd hand LED (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  hc2 <xyz> <rgb>", (unsigned char*)"Set single 2nd hand color (comma separated)\r\n", io->stdOut);
@@ -1943,7 +1943,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return res;
 #endif
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   } else if (McuUtility_strncmp((char*)cmd, "matrix he2 all ", sizeof("matrix he2 all ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("matrix he2 all ")-1;
@@ -1987,7 +1987,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
       }
     } while(res==ERR_OK && *p==',');
     return res;
-#endif /* PL_CONFIG_USE_DUAL_HANDS */
+#endif /* PL_CONFIG_USE_EXTENDED_HANDS */
 
 #if PL_CONFIG_USE_LED_RING
   /* ---------------------- set color for all ---------------------------------- */
@@ -2041,7 +2041,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     MATRIX_RequestRgbUpdate();
     return res;
 #endif
-  #if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_DUAL_HANDS
+  #if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_EXTENDED_HANDS
   } else if (McuUtility_strncmp((char*)cmd, "matrix hc2 rgb ", sizeof("matrix hc2 rgb ")-1)==0) {
     int32_t x, y, z;
 
@@ -2068,7 +2068,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     } while(res==ERR_OK && *p==',');
     MATRIX_RequestRgbUpdate();
     return res;
-  #endif /* PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_DUAL_HANDS */
+  #endif /* PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_EXTENDED_HANDS */
   #if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strncmp((char*)cmd, "matrix rc ", sizeof("matrix rc ")-1)==0) {
     int32_t x, y, z;
@@ -2280,7 +2280,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
 #if PL_MATRIX_CONFIG_IS_RGB
     MHAND_HandEnableAll(false); /* disable hands */
-  #if PL_CONFIG_USE_DUAL_HANDS
+  #if PL_CONFIG_USE_EXTENDED_HANDS
     MHAND_2ndHandEnableAll(false); /* disable 2nd hand */
   #endif
   #if PL_CONFIG_USE_LED_RING
@@ -2420,7 +2420,7 @@ static bool MatrixProcessAllQueues(void) {
               McuUtility_strcatNum8u(command, sizeof(command), z);
               McuUtility_chcat(command, sizeof(command), ' ');
               McuUtility_strcat(command, sizeof(command), cmd+sizeof("he ")-1);
-          #if PL_CONFIG_USE_DUAL_HANDS
+          #if PL_CONFIG_USE_EXTENDED_HANDS
             } else if (McuUtility_strncmp((char*)cmd, (char*)"he2 ", sizeof("he2 ")-1)==0) {
               McuUtility_strcat(command, sizeof(command), (unsigned char*)"he2 ");
               McuUtility_strcatNum8u(command, sizeof(command), x);

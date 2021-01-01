@@ -45,7 +45,7 @@ void NEOSR_SetHandColor(NEOSR_Handle_t device, uint8_t red, uint8_t green, uint8
   bool NEOSR_HandDimmingNotFinished(NEOSR_Handle_t device);
 #endif
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   void NEOSR_Set2ndHandLedEnabled(NEOSR_Handle_t device, bool on);
   bool NEOSR_Get2ndHandLedEnabled(NEOSR_Handle_t device);
   void NEOSR_Set2ndHandColor(NEOSR_Handle_t device, uint8_t red, uint8_t green, uint8_t blue);

@@ -31,7 +31,7 @@ static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the
 
 
 static void Intermezzo0(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -46,7 +46,7 @@ static void Intermezzo0(void) {
 }
 
 static void Intermezzo1(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -62,7 +62,7 @@ static void Intermezzo1(void) {
 }
 
 static void Intermezzo2(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -79,7 +79,7 @@ static void Intermezzo2(void) {
 }
 
 static void Intermezzo3(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -94,7 +94,7 @@ static void Intermezzo3(void) {
 }
 
 static void Intermezzo4(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -111,7 +111,7 @@ static void Intermezzo4(void) {
 static void Intermezzo5(void) {
   int angle0, angle1;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -147,7 +147,7 @@ static void Intermezzo5(void) {
 }
 
 static void Intermezzo6(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -186,7 +186,7 @@ static void Intermezzo6(void) {
 }
 
 static void Intermezzo7(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -208,7 +208,7 @@ static void Intermezzo7(void) {
 }
 
 static void Intermezzo8(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -254,7 +254,7 @@ static void Intermezzo8(void) {
 }
 
 static void Intermezzo9(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -277,7 +277,7 @@ static void Intermezzo9(void) {
 }
 
 static void Intermezzo10(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -297,7 +297,7 @@ static void Intermezzo10(void) {
 }
 
 static void Intermezzo11(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -335,7 +335,7 @@ static void Intermezzo11(void) {
 }
 
 static void Intermezzo12(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -368,7 +368,7 @@ static void Intermezzo12(void) {
 }
 
 static void Intermezzo13(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -400,7 +400,7 @@ static void Intermezzo13(void) {
 }
 
 static void Intermezzo14(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -425,7 +425,7 @@ static void Intermezzo14(void) {
 }
 
 static void Intermezzo15(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -505,7 +505,7 @@ static void BuildCircles(void) {
   int angleX, angleY;
   int x, y;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -623,7 +623,7 @@ static void Intermezzo19(void) {
 
 #if PL_CONFIG_USE_RELATIVE_MOVES
 static void Intermezzo20(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -651,7 +651,7 @@ static void IntermezzoTime(void) {
   TIMEREC time;
 
   /* show time on each clock */
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -669,7 +669,7 @@ static void IntermezzoTime(void) {
 }
 
 static void IntermezzoRandomHandsAllOn(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -691,7 +691,7 @@ static void IntermezzoRandomHandsAllOn(void) {
 }
 
 static void IntermezzoRandomHands(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -711,7 +711,7 @@ static void IntermezzoTemperature(void) {
   float temperature;
   uint8_t res;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -733,7 +733,7 @@ static void IntermezzoTemperature(void) {
 static void DrawNestedRectangles(int xPos, int yPos, int width, int height) {
   int x, y, w, h;
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -755,7 +755,7 @@ static void DrawNestedRectangles(int xPos, int yPos, int width, int height) {
 }
 
 static void IntermezzoRectangles(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -765,7 +765,7 @@ static void IntermezzoRectangles(void) {
 }
 
 static void IntermezzoRectangles2(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
@@ -776,7 +776,7 @@ static void IntermezzoRectangles2(void) {
 }
 
 static void IntermezzoRectangles3(void) {
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB

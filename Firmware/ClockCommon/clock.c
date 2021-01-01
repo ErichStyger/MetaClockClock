@@ -463,7 +463,7 @@ static void ClockTask(void *pv) {
       /* turn off LEDs */
       MRING_SetRingColor(0, 0, 0);
       MHAND_HandEnableAll(false);
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
       MHAND_2ndHandEnableAll(false);
     #endif
      APP_RequestUpdateLEDs(); /* update LEDs */
@@ -478,7 +478,7 @@ static void ClockTask(void *pv) {
       /* turn off LEDs */
       MRING_SetRingColor(0, 0, 0);
       MHAND_HandEnableAll(false);
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
       MHAND_2ndHandEnableAll(false);
     #endif
       APP_RequestUpdateLEDs(); /* update LEDs */

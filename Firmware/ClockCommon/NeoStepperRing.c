@@ -52,7 +52,7 @@ typedef struct {
     uint8_t targetBrightness; /* value higher or lower than brightness: will gradually change */
 #endif
   } hand;
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   struct {
     bool enabled; /* if LED is on or off */
     uint8_t red, green, blue; /* colors */
@@ -95,7 +95,7 @@ NEOSR_Handle_t NEOSR_InitDevice(NEOSR_Config_t *config) {
     handle->hand.red = config->hand.red;
     handle->hand.green = config->hand.green;
     handle->hand.blue = config->hand.blue;
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
     handle->hand2nd.enabled = config->hand.enabled;
     handle->hand2nd.red = config->hand.red;
     handle->hand2nd.green = config->hand.green;
@@ -273,7 +273,7 @@ void NEOSR_Illuminate(NEOSR_Handle_t device, int32_t stepperPos) {
 #endif
     NEOSR_IlluminatePos(stepperPos, dev->ledLane, dev->ledStartPos, dev->ledCw, r, g, b);
   }
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   if (dev->hand2nd.enabled) {
     stepperPos += STEPPER_CLOCK_360_STEPS/2; /* extra 180 degree */
     NEOSR_IlluminatePos(stepperPos, dev->ledLane, dev->ledStartPos, dev->ledCw, dev->hand2nd.red, dev->hand2nd.green, dev->hand2nd.blue);
@@ -281,7 +281,7 @@ void NEOSR_Illuminate(NEOSR_Handle_t device, int32_t stepperPos) {
 #endif
 }
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
 void NEOSR_Set2ndHandColor(NEOSR_Handle_t device, uint8_t red, uint8_t green, uint8_t blue) {
   NEOSR_Device_t *dev = (NEOSR_Device_t*)device;
 
@@ -299,7 +299,7 @@ bool NEOSR_Get2ndHandLedEnabled(NEOSR_Handle_t device) {
   NEOSR_Device_t *dev = (NEOSR_Device_t*)device;
   return dev->hand2nd.enabled;
 }
-#endif /* PL_CONFIG_USE_DUAL_HANDS */
+#endif /* PL_CONFIG_USE_EXTENDED_HANDS */
 
 void NEOSR_SetHandColor(NEOSR_Handle_t device, uint8_t red, uint8_t green, uint8_t blue) {
   NEOSR_Device_t *dev = (NEOSR_Device_t*)device;
@@ -389,7 +389,7 @@ void NEOSR_StrCatHandStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bu
   McuUtility_strcat(buf, bufSize, (unsigned char*)", rgb: 0x");
   McuUtility_strcatNum24Hex(buf, bufSize, rgb);
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   McuUtility_strcat(buf, bufSize, (unsigned char*)", 2nd enabled: ");
   McuUtility_strcat(buf, bufSize, dev->hand2nd.enabled?(unsigned char*)"yes":(unsigned char*)"no ");
 

@@ -63,7 +63,7 @@ void MHAND_HandEnableAll(bool enable) {
 #endif
 }
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
 void MHAND_2ndHandEnable(int32_t x, int32_t y, uint8_t z, bool enable) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -82,7 +82,7 @@ void MHAND_2ndHandEnableAll(bool enable) {
     }
   }
 }
-#endif /* PL_CONFIG_USE_DUAL_HANDS */
+#endif /* PL_CONFIG_USE_EXTENDED_HANDS */
 
 void MHAND_SetHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
@@ -103,7 +103,7 @@ void MHAND_SetHandColorAll(uint32_t color) {
   }
 }
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
 // old MATRIX_Draw2ndHandColor
 void MHAND_Set2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
@@ -115,7 +115,7 @@ void MHAND_Set2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
 }
 #endif
 
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
 void MHAND_Set2ndHandColorAll(uint32_t color) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {

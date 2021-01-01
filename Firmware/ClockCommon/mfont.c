@@ -16,7 +16,7 @@
 typedef struct MHand_t {
   int16_t angle; /* absolute angle for clock hand position */
   bool enabled;  /* if hand is enabled or not */
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
   bool enabled2nd;
 #endif
 } MHand_t;
@@ -59,7 +59,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
         [1][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
     #else
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
@@ -71,7 +71,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
         [0][1]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
@@ -90,7 +90,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
     [6].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [1][0]={.hands={{.angle=90,.enabled=true},{.angle=0, .enabled=true, .enabled2nd=true}}},
       #else
         [1][0]={.hands={{.angle=0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -110,7 +110,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
     [8].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [1][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true, .enabled2nd=true}}},
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true, .enabled2nd=true}}},
       #else
@@ -124,7 +124,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=0, .enabled=true, .enabled2nd=true}}},
       #else
         [1][1]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -182,7 +182,7 @@ static const MClockChar2x3_t clockCharH2x3 =
 { .digit = { /* H */
     [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
     [0][1]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
     [1][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
     [1][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
 #else
@@ -272,7 +272,7 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
     #else
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -293,7 +293,7 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
     #else
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -329,7 +329,7 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -367,13 +367,13 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=180, .enabled=true }}},
       #endif
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
@@ -394,7 +394,7 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
 #else
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -417,13 +417,13 @@ static const MClockChar3x5_t clockCharA3x5 =
         [1][0]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=315, .enabled=true },{.angle=180, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
       #endif
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -446,7 +446,7 @@ static const MClockChar3x5_t clockCharB3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=315, .enabled=true },{.angle=225, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -513,7 +513,7 @@ static const MClockChar3x5_t clockCharE3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
 #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -538,7 +538,7 @@ static const MClockChar3x5_t clockCharF3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
 #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -584,13 +584,13 @@ static const MClockChar3x5_t clockCharH3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
       #endif
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -608,7 +608,7 @@ static const MClockChar3x5_t clockCharI3x5 =
 { /* I */
     .digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [0][1]={.hands={{.angle=180, .enabled=true },{.angle=270, .enabled=true , .enabled2nd=true}}},
       #else
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true}}},
@@ -624,7 +624,7 @@ static const MClockChar3x5_t clockCharI3x5 =
         [3][1]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [4][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=270, .enabled=true , .enabled2nd=true}}},
       #else
         [4][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true}}},
@@ -637,7 +637,7 @@ static const MClockChar3x5_t clockCharJ3x5 =
 { /* J */
     .digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [0][1]={.hands={{.angle=180, .enabled=true },{.angle=270, .enabled=true , .enabled2nd=true}}},
       #else
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true}}},
@@ -667,7 +667,7 @@ static const MClockChar3x5_t clockCharK3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=true },{.angle= 45, .enabled=true }}},
         [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 45, .enabled=true },{.angle=  0, .enabled=true , .enabled2nd=true}}},
       #else
         [2][0]={.hands={{.angle= 45, .enabled=true },{.angle=135, .enabled=true}}},
@@ -731,7 +731,7 @@ static const MClockChar3x5_t clockCharN3x5 =
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
         [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [0][2]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [1][0]={.hands={{.angle=135, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [1][0]={.hands={{.angle=180, .enabled=true },{.angle=  0, .enabled=true }}},
@@ -743,7 +743,7 @@ static const MClockChar3x5_t clockCharN3x5 =
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true}}},
         [3][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [3][2]={.hands={{.angle=315, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
       #else
         [3][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true}}},
@@ -763,7 +763,7 @@ static const MClockChar3x5_t clockCharP3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
 #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -809,7 +809,7 @@ static const MClockChar3x5_t clockCharR3x5 =
         [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
-#if PL_CONFIG_USE_DUAL_HANDS
+#if PL_CONFIG_USE_EXTENDED_HANDS
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
 #else
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
@@ -850,7 +850,7 @@ static const MClockChar3x5_t clockCharT3x5 =
 { /* T */
     .digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [0][1]={.hands={{.angle=180, .enabled=true },{.angle=270, .enabled=true , .enabled2nd=true}}},
       #else
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true}}},
@@ -944,7 +944,7 @@ static const MClockChar3x5_t clockCharX3x5 =
         [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=225, .enabled=true }}},
         [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-      #if PL_CONFIG_USE_DUAL_HANDS
+      #if PL_CONFIG_USE_EXTENDED_HANDS
         [2][1]={.hands={{.angle=315, .enabled=true },{.angle=45, .enabled=true, .enabled2nd=true}}},
       #else
         [2][1]={.hands={{.angle=225, .enabled=true },{.angle=135, .enabled=true }}},
@@ -1075,7 +1075,7 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
       MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
       MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
       MHAND_2ndHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
       MHAND_2ndHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
     #endif
@@ -1098,7 +1098,7 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
       MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
       MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
-    #if PL_CONFIG_USE_DUAL_HANDS
+    #if PL_CONFIG_USE_EXTENDED_HANDS
       MHAND_2ndHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
       MHAND_2ndHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
     #endif
