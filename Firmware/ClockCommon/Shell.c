@@ -290,9 +290,9 @@ void SHELL_Init(void) {
   McuLog_set_console(&McuRTT_stdio, 0);
   McuLog_set_console(&McuShellUart_stdio, 1);
 #elif PL_CONFIG_USE_RTT
-  McuLog_set_console(&McuRTT_stdio, 1);
+  McuLog_set_console(&McuRTT_stdio, 0);
 #elif PL_CONFIG_USE_SHELL_UART
-  McuLog_set_console(&McuShellUart_stdio, 1);
+  McuLog_set_console(&McuShellUart_stdio, 0);
 #endif
 }
 
