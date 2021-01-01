@@ -471,7 +471,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_chcat(buf, sizeof(buf), ' ');
             McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
             McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he2 ");
-            McuUtility_strcat(buf, sizeof(buf), matrix.enabledHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
+            McuUtility_strcat(buf, sizeof(buf), matrix.enabled2ndHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
             nof++;
           }
           #endif
@@ -875,6 +875,12 @@ uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io) {
 #endif
 
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+static void MATRIX_DrawBorder(void) {
+  MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
+}
+#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
+
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 #if PL_CONFIG_USE_RS485
   uint8_t buf[16];
@@ -894,12 +900,6 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 }
 #endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-static void MATRIX_DrawBorder(void) {
-  MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
-}
-#endif /* PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
-
 #if PL_CONFIG_IS_MASTER
 uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait) {
 #if PL_CONFIG_USE_RS485
@@ -908,12 +908,12 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
 
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MHAND_HandEnableAll(false);
-#elif PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(false);
-#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
+  MHAND_HandEnableAll(false);
+  #elif PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(false);
+  #endif
   x = 2; y = 1;
 
   if (hasBorder) {
@@ -945,12 +945,12 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MHAND_HandEnableAll(false);
-#elif PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(false);
-#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
+  MHAND_HandEnableAll(false);
+  #elif PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(false);
+  #endif
   x = 2; y = 1;
 
   MATRIX_DrawBorder();
@@ -997,12 +997,12 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MHAND_HandEnableAll(false);
-#elif PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(false);
-#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
+  MHAND_HandEnableAll(false);
+  #elif PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(false);
+  #endif
   x = 2; y = 1;
 
   MATRIX_DrawBorder();
@@ -1047,12 +1047,12 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 
   MATRIX_DrawAllClockDelays(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-  MHAND_HandEnableAll(false);
-#elif PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(false);
-#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
+  MHAND_HandEnableAll(false);
+  #elif PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(false);
+  #endif
    x = 2; y = 1;
 
    MATRIX_DrawBorder();

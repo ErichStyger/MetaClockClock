@@ -69,7 +69,7 @@ void MHAND_2ndHandEnable(int32_t x, int32_t y, uint8_t z, bool enable) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   NEOSR_Set2ndHandLedEnabled(MATRIX_GetLedRingDevice(x, y, z), enable);
 #elif PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB
-  matrix.enabledHandMap[x][y][z] = enable;
+  matrix.enabled2ndHandMap[x][y][z] = enable;
 #endif
 }
 
