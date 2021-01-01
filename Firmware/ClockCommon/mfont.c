@@ -111,7 +111,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
       #if PL_CONFIG_USE_DUAL_HANDS
-        [1][0]={.hands={{.angle= 90, .enabled=true },{.angle=  0, .enabled=true, .enabled2nd=true}}},
+        [1][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true, .enabled2nd=true}}},
         [1][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true, .enabled2nd=true}}},
       #else
         [1][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
