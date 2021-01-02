@@ -21,6 +21,7 @@
 #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* disable dual hand */
 #define PL_CONFIG_USE_LED_PIXEL         (1) /* enable LED pixel */
 #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
+#define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
 
 #include "platform_common.h"
 

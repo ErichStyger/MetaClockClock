@@ -251,7 +251,7 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-  (void)MATRIX_DrawAllClockDelays(4, 4);
+  (void)MATRIX_SetMoveDelayZ0Z1All(4, 4);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int x=0; x<3; x++) {
     for(int y=0; y<3; y++) {
@@ -677,7 +677,7 @@ static uint8_t DemoSquare(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-  (void)MATRIX_DrawAllClockDelays(4, 4);
+  (void)MATRIX_SetMoveDelayZ0Z1All(4, 4);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   /* build initial squares */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y+=2) {
@@ -756,7 +756,7 @@ static uint8_t DemoPropeller(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-  (void)MATRIX_DrawAllClockDelays(4, 4);
+  (void)MATRIX_SetMoveDelayZ0Z1All(4, 4);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -788,7 +788,7 @@ static uint8_t DemoFalling(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-  (void)MATRIX_DrawAllClockDelays(4, 4);
+  (void)MATRIX_SetMoveDelayZ0Z1All(4, 4);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -825,7 +825,7 @@ static uint8_t DemoRandomHandsPos(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-  (void)MATRIX_DrawAllClockDelays(2, 2);
+  (void)MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -864,7 +864,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
-  (void)MATRIX_DrawAllClockDelays(2, 2);
+  (void)MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetAngleZ0Z1All(0, 180);
   res = MATRIX_SendToRemoteQueue(); /* queue command */
   if (res!=ERR_OK) {
@@ -873,7 +873,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
   /* configure delays */
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-      (void)MATRIX_DrawClockDelays(x, y, 1+x, 1+x);
+      MATRIX_SetMoveDelayZ0Z1Checked(x, y, 1+x, 1+x);
     }
   }
 
@@ -903,7 +903,7 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
-  MATRIX_DrawAllClockDelays(1, 1);
+  MATRIX_SetMoveDelayZ0Z1All(1, 1);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int i=2;i<12;i++) {
     MATRIX_ShowTime(21, i, true, true);
@@ -913,7 +913,7 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
 
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
 static void DEMO_Nxp(void) {
-  MATRIX_DrawAllClockDelays(3, 3);
+  MATRIX_SetMoveDelayZ0Z1All(3, 3);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
   MHAND_HandEnableAll(true);
@@ -975,7 +975,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
   TIMEREC time;
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   (void)MATRIX_ShowTimeLarge(time.Hour, time.Min, true);
@@ -990,7 +990,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   (void)DemoRandomHandsPos();
   MATRIX_Delay(2000);
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   res = MATRIX_ShowTime(20, 34, false, true);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
@@ -1000,12 +1000,12 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   MHAND_2ndHandEnableAll(false);
 #endif
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
   (void)MATRIX_ShowTime(time.Hour, time.Min, false, true);
   MATRIX_Delay(3000);
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   res = MATRIX_ShowTemperature(22, true);
   MATRIX_Delay(3000);
   if (res!=ERR_OK) {
@@ -1020,7 +1020,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
     return DEMO_FailedDemo(res);
   }
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
   (void)MATRIX_ShowTime(time.Hour, time.Min, true, true);
   MATRIX_Delay(3000);
@@ -1132,7 +1132,7 @@ static uint8_t DemoClap(void) {
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_CONFIG_IS_MASTER
-  (void)MATRIX_DrawAllClockDelays(4, 4);
+  (void)MATRIX_SetMoveDelayZ0Z1All(4, 4);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -1483,7 +1483,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
       if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
         return ERR_FAILED;
       }
-      MATRIX_DrawAllClockDelays(2, 2);
+      MATRIX_SetMoveDelayZ0Z1All(2, 2);
       MFONT_PrintString(buf, xPos, yPos, MFONT_SIZE_3x5);
       return MATRIX_SendToRemoteQueueExecuteAndWait(true);
     } else {
@@ -1512,7 +1512,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
       return ERR_FAILED;
     }
-    MATRIX_DrawAllClockDelays(2, 2);
+    MATRIX_SetMoveDelayZ0Z1All(2, 2);
     MFONT_PrintString(buf, xPos, yPos, MFONT_SIZE_2x3);
     return MATRIX_SendToRemoteQueueExecuteAndWait(true);
   } else {

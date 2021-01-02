@@ -45,6 +45,7 @@
 #include "StepperBoard.h"
 #include "application.h"
 #include "matrixposition.h"
+#include "matrixhand.h"
 #include "matrixring.h"
 #include "McuLog.h"
 
@@ -461,7 +462,7 @@ static void ClockTask(void *pv) {
       SHELL_ParseCommand((unsigned char*)"matrix hour 12", McuShell_GetStdio(), true); /* move to 12-o-clock position */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
-      MRING_SetRingColor(0, 0, 0);
+      MRING_SetRingColorAll(0, 0, 0);
       MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_EXTENDED_HANDS
       MHAND_2ndHandEnableAll(false);
@@ -476,7 +477,7 @@ static void ClockTask(void *pv) {
       prevClockUpdateTimestampSec = 0;
 #if PL_CONFIG_USE_NEO_PIXEL_HW
       /* turn off LEDs */
-      MRING_SetRingColor(0, 0, 0);
+      MRING_SetRingColorAll(0, 0, 0);
       MHAND_HandEnableAll(false);
     #if PL_CONFIG_USE_EXTENDED_HANDS
       MHAND_2ndHandEnableAll(false);
@@ -519,7 +520,7 @@ static void ClockTask(void *pv) {
       if (res==ERR_OK && (McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0) >= prevClockUpdateTimestampSec+60*CLOCK_UpdatePeriodMinutes)) {
     #if PL_CONFIG_IS_MASTER
         McuLog_info("Time: %02d:%02d", time.Hour, time.Min);
-        MATRIX_DrawAllClockDelays(5,5);
+        MATRIX_SetMoveDelayZ0Z1All(5,5);
         MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
         MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));

@@ -252,23 +252,35 @@ void MATRIX_DrawAllRingColor(uint32_t color) {
 }
 #endif
 
-uint8_t MATRIX_DrawClockDelays(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1) {
+#if MATRIX_NOF_STEPPERS_Z==2
+void MATRIX_SetMoveDelayZ0Z1Checked(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1) {
   if (x>=MATRIX_NOF_STEPPERS_X || y>=MATRIX_NOF_STEPPERS_Y) {
-    return ERR_FRAMING;
+    return;
   }
   matrix.delayMap[x][y][0] = delay0;
   matrix.delayMap[x][y][1] = delay1;
-  return ERR_OK;
 }
+#endif
 
-uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1) {
+#if MATRIX_NOF_STEPPERS_Z==2
+void MATRIX_SetMoveDelayZ0Z1All(uint8_t delay0, uint8_t delay1) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       matrix.delayMap[x][y][0] = delay0;
       matrix.delayMap[x][y][1] = delay1;
     }
   }
-  return ERR_OK;
+}
+#endif
+
+void MATRIX_SetMoveDelayAll(uint8_t delay) {
+  for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+    for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        matrix.delayMap[x][y][z] = delay;
+      }
+    }
+  }
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
@@ -825,8 +837,8 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
-  MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
-  MATRIX_DrawAllClockDelays(2, 2);
+  MPOS_SetAngleAll(hour*360/12);
+  MATRIX_SetMoveDelayAll(2);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
 #if PL_CONFIG_USE_LED_RING
   MHAND_HandEnableAll(true);
@@ -858,7 +870,7 @@ static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_S
   MHAND_2ndHandEnableAll(false);
   #endif
     MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
-    MATRIX_DrawAllClockDelays(2, 2);
+    MATRIX_SetMoveDelayZ0Z1All(2, 2);
     MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   #if PL_CONFIG_USE_LED_RING
     MHAND_HandEnableAll(true);
@@ -900,7 +912,7 @@ uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait) {
 #if PL_CONFIG_USE_RS485
   uint8_t buf[16];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), hour/10);
@@ -921,7 +933,7 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
   uint8_t x, y;
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayAll(2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -938,7 +950,7 @@ uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait)
   (void)hasBorder; /* not used */
   x = 0; y = 0;
 #else
-  #error "not supported"
+  return ERR_FAILED; /* not implemented */
 #endif
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), hour/10);
@@ -958,7 +970,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
   uint8_t x, y;
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayAll(2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -970,9 +982,9 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 
   MATRIX_DrawBorder();
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
-   x = 0; y = 0;
+  x = 0; y = 0;
 #else
-   #error "not supported"
+  return ERR_FAILED; /* not implemented */
 #endif
   buf[0] = '\0';
   McuUtility_strcatNum8u(buf, sizeof(buf), temperature/10);
@@ -988,7 +1000,7 @@ uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait) {
 uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait) {
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(false);
@@ -1010,7 +1022,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
   uint8_t x, y;
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayAll(2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -1024,7 +1036,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
    x = 0; y = 0;
 #else
-   #error "not supported"
+   return ERR_FAILED; /* not supported */
 #endif
    buf[0] = '\0';
    McuUtility_strcatNum8u(buf, sizeof(buf), humidity);
@@ -1039,7 +1051,7 @@ uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait) {
 uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait) {
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(false);
@@ -1060,7 +1072,7 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
   uint8_t x, y;
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayAll(2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -1068,18 +1080,18 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
   #elif PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(false);
   #endif
-   x = 2; y = 1;
+  x = 2; y = 1;
 
-   MATRIX_DrawBorder();
+  MATRIX_DrawBorder();
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
-   x = 0; y = 0;
+  x = 0; y = 0;
 #else
-   #error "not supported"
+  return ERR_FAILED; /* not supported */
 #endif
-   buf[0] = '\0';
-   McuUtility_strcatNum16u(buf, sizeof(buf), lux);
-   McuUtility_chcat(buf, sizeof(buf), 'L');
-   MFONT_PrintString(buf, x, y, MFONT_SIZE_2x3);
+  buf[0] = '\0';
+  McuUtility_strcatNum16u(buf, sizeof(buf), lux);
+  McuUtility_chcat(buf, sizeof(buf), 'L');
+  MFONT_PrintString(buf, x, y, MFONT_SIZE_2x3);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
 #endif /* PL_CONFIG_IS_MASTER */
@@ -1088,7 +1100,7 @@ uint8_t MATRIX_ShowLux(uint16_t lux, bool wait) {
 uint8_t MATRIX_ShowLuxLarge(uint16_t lux, bool wait) {
   uint8_t buf[8];
 
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(false);
@@ -1339,6 +1351,8 @@ static uint8_t MATRIX_Test(void) {
 #endif
 
 #if PL_CONFIG_IS_MASTER
+
+#if MATRIX_NOF_STEPPERS_Z==2
 void MATRIX_DrawHLine(int x, int y, int w) {
   for(int xb=x; xb<x+w; xb++) {
     MPOS_SetAngleZ0Z1(xb, y, 270, 90);
@@ -1349,7 +1363,9 @@ void MATRIX_DrawHLine(int x, int y, int w) {
   #endif
   }
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2
 void MATRIX_DrawVLine(int x, int y, int h) {
   for(int yb=y; yb<y+h; yb++) {
     MPOS_SetAngleZ0Z1(x, yb, 0, 180);
@@ -1360,7 +1376,9 @@ void MATRIX_DrawVLine(int x, int y, int h) {
   #endif
   }
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2
 void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MPOS_SetAngleZ0Z1(x, y, 180, 90);
   /* upper left corner */
@@ -1393,6 +1411,7 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MATRIX_DrawVLine(x, y+1, h-2);
   MATRIX_DrawVLine(x+w-1, y+1, h-2);
 }
+#endif
 #endif /* PL_CONFIG_IS_MASTER */
 
 #if PL_CONFIG_USE_SHELL && PL_CONFIG_USE_STEPPER
@@ -1738,7 +1757,8 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = TRUE;
     p = cmd + sizeof("matrix delay ")-1;
     if (McuUtility_ScanDecimal8uNumber(&p, &delay)==ERR_OK) {
-      return MATRIX_DrawAllClockDelays(delay, delay);
+      MATRIX_SetMoveDelayAll(delay);
+      return ERR_OK;
     } else {
       return ERR_FAILED;
     }
@@ -3302,12 +3322,12 @@ void MATRIX_Init(void) {
 #endif
 #if PL_CONFIG_IS_MASTER
   MATRIX_ResetBoardListCmdSent();
-  MPOS_SetAngleZ0Z1All(0, 0);
+  MPOS_SetAngleAll(0);
 #if PL_CONFIG_USE_RELATIVE_MOVES
   MPOS_RelativeMoveAll(0);
 #endif
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
-  MATRIX_DrawAllClockDelays(2, 2);
+  MATRIX_SetMoveDelayAll(2);
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(0x000010);
   MATRIX_DrawAllRingColor(0x000000);

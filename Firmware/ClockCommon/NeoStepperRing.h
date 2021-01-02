@@ -10,6 +10,7 @@
 #include "platform.h"
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include "NeoStepperRingConfig.h"
 
 typedef void *NEOSR_Handle_t;

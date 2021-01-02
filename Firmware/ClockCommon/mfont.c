@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_IS_MASTER
+#if PL_CONFIG_USE_FONT
 #include <stdint.h>
 #include <stdbool.h>
 #include "mfont.h"
@@ -1194,4 +1194,4 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
 #endif
 }
 
-#endif /* PL_CONFIG_IS_MASTER */
+#endif /* PL_CONFIG_USE_FONT */

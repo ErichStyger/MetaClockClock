@@ -10,7 +10,7 @@
 #include "matrix.h"
 #include <assert.h>
 
-#if PL_CONFIG_IS_MASTER // currently only for master configuration implemented */
+#if PL_CONFIG_IS_MASTER /* currently only the master configuration is implemented */
 
 void MPOS_SetAngle(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
@@ -27,16 +27,21 @@ void MPOS_SetAngleChecked(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
   }
 }
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetAngleZ0Z1(uint8_t x, uint8_t y, int16_t z0Angle, int16_t z1Angle) {
   MPOS_SetAngle(x, y, 0, z0Angle);
   MPOS_SetAngle(x, y, 1, z1Angle);
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetAngleZ0Z1Checked(uint8_t x, uint8_t y, int16_t z0Angle, int16_t z1Angle) {
   MPOS_SetAngleChecked(x, y, 0, z0Angle);
   MPOS_SetAngleChecked(x, y, 1, z1Angle);
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetAngleZ0Z1All(int16_t z0Angle, int16_t z1Angle) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -44,6 +49,7 @@ void MPOS_SetAngleZ0Z1All(int16_t z0Angle, int16_t z1Angle) {
     }
   }
 }
+#endif
 
 void MPOS_SetAngleAll(int16_t angle) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -66,17 +72,22 @@ void MPOS_SetMoveModeChecked(uint8_t x, uint8_t y, uint8_t z, STEPPER_MoveMode_e
   }
 }
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetMoveModeZ0Z1(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
   MPOS_SetMoveMode(x, y, 0, mode0);
   MPOS_SetMoveMode(x, y, 1, mode1);
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetMoveModeZ0Z1Checked(uint8_t x, uint8_t y, STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
   /* do not set mode if coordinate is outside of matrix */
   MPOS_SetMoveModeChecked(x, y, 0, mode0);
   MPOS_SetMoveModeChecked(x, y, 1, mode1);
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetMoveModeZ0Z1All(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -84,6 +95,7 @@ void MPOS_SetMoveModeZ0Z1All(STEPPER_MoveMode_e mode0, STEPPER_MoveMode_e mode1)
     }
   }
 }
+#endif
 
 void MPOS_SetMoveModeAll(STEPPER_MoveMode_e mode) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -101,17 +113,21 @@ void MPOS_RelativeMove(uint8_t x, uint8_t y, uint8_t z, int16_t angle) {
   matrix.relAngleMap[x][y][z] = angle;
 }
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_RelativeMoveZ0Z1(uint8_t x, uint8_t y, int16_t angle0, int16_t angle1) {
   MPOS_RelativeMove(x, y, 0, angle0);
   MPOS_RelativeMove(x, y, 1, angle1);
 }
+#endif
 
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
 void MPOS_SetRelativeMoveZ0Z1Checked(int x, int y, int angleZ0, int angleZ1) {
   /* do not set angle if coordinate is outside of matrix */
   if (x>=0 && x<MATRIX_NOF_STEPPERS_X && y>=0 && y<MATRIX_NOF_STEPPERS_Y) {
     MPOS_RelativeMoveZ0Z1(x, y, angleZ0, angleZ1);
   }
 }
+#endif
 
 void MPOS_RelativeMoveAll(int16_t angle) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -122,6 +138,6 @@ void MPOS_RelativeMoveAll(int16_t angle) {
     }
   }
 }
-#endif
+#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
 #endif /* PL_CONFIG_IS_MASTER */

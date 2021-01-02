@@ -74,8 +74,11 @@ uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z);
 
 uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io);
 
-uint8_t MATRIX_DrawClockDelays(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1);
-uint8_t MATRIX_DrawAllClockDelays(uint8_t delay0, uint8_t delay1);
+#if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */
+void MATRIX_SetMoveDelayZ0Z1Checked(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1);
+void MATRIX_SetMoveDelayZ0Z1All(uint8_t delay0, uint8_t delay1);
+#endif
+void MATRIX_SetMoveDelayAll(uint8_t delay);
 
 uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);

@@ -21,7 +21,7 @@
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* we drive the NeoPixels directly by hardware */
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
   #define PL_CONFIG_USE_VIRTUAL_STEPPER   (1) /* LED rings are driven by virtual stepper motors */
-  #define PL_CONFIG_USE_EXTENDED_HANDS        (1) /* using extended hand */
+  #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* using extended hand */
 #elif 0 /* V3: modular round clock version */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_MOD
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
@@ -34,9 +34,13 @@
   #define PL_CONFIG_USE_EXTENDED_HANDS    (1) /* using extended hand */
 #elif 0 /* Alexis clock */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
-#elif 0 /* Sm(A)rtWall project */
+#elif 1 /* Sm(A)rtWall project */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_8x5
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
+  #define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
+  #define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
+  #define PL_CONFIG_USE_CLOCK             (0) /* only implemented for dual shaft motors */
+  #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
 #else
   #error
 #endif
