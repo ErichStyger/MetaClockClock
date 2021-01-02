@@ -313,7 +313,6 @@ static uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
   bool boardIsIdle[MATRIX_NOF_BOARDS];
   uint8_t res;
   uint8_t addr;
-  bool isEnabled;
 
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* initialize array */
     boardIsIdle[i] = false;
@@ -322,13 +321,11 @@ static uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
     for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* go through all boards */
       if (!boardIsIdle[i]) { /* ask board if it is still not idle */
 #if PL_CONFIG_IS_MASTER
-        isEnabled = MATRIX_BoardList[i].enabled;
         addr = MATRIX_BoardList[i].addr;
 #else
-        isEnabled = STEPBOARD_IsEnabled(MATRIX_Boards[i]);
         addr = STEPBOARD_GetAddress(MATRIX_Boards[i]);
 #endif
-        if (isEnabled && MATRIX_CommandHasBeenSentToBoard(i)) {
+        if (MATRIX_CommandHasBeenSentToBoard(i)) {
           McuLog_trace("Waiting for idle (addr 0x%02x)", addr);
           res = RS485_SendCommand(addr, (unsigned char*)"idle", 1000, false, 1); /* ask board if it is idle */
           if (res==ERR_OK) { /* board is idle */
@@ -452,7 +449,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
+        if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board */
 
           #if PL_MATRIX_CONFIG_IS_RGB
           /* *************** hand enable command *********************** */
@@ -684,26 +681,24 @@ uint8_t MATRIX_SendToRemoteQueue(void) {
   uint8_t res;
 
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) {
-    if (MATRIX_BoardList[i].enabled) {
-  #if PL_MATRIX_CONFIG_IS_RGB
-      /* queue the color commands first so they get executed first */
-      res = QueueBoardHandColorCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
-      if (res!=ERR_OK) {
-        break;
-      }
-    #if PL_CONFIG_USE_LED_RING
-      res = QueueBoardRingColorCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
-      if (res!=ERR_OK) {
-        break;
-      }
-    #endif
-  #endif
-      res = QueueBoardMoveCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
-      if (res!=ERR_OK) {
-        break;
-      }
+#if PL_MATRIX_CONFIG_IS_RGB
+    /* queue the color commands first so they get executed first */
+    res = QueueBoardHandColorCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
+    if (res!=ERR_OK) {
+      break;
     }
-  }
+  #if PL_CONFIG_USE_LED_RING
+    res = QueueBoardRingColorCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
+    if (res!=ERR_OK) {
+      break;
+    }
+  #endif
+#endif
+    res = QueueBoardMoveCommand(MATRIX_BoardList[i].addr, &MATRIX_BoardList[i].cmdSent);
+    if (res!=ERR_OK) {
+      break;
+    }
+  } /* for */
   if (res!=ERR_OK) {
     return res;
   }
@@ -717,7 +712,6 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
   bool boardHasError[MATRIX_NOF_BOARDS];
   uint8_t res;
   uint8_t addr;
-  bool isEnabled;
 
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) {
     boardHasError[i] = false;
@@ -725,13 +719,11 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) {
     if (!boardHasError[i]) { /* ask board if it is still not idle */
 #if PL_CONFIG_IS_MASTER
-      isEnabled = MATRIX_BoardList[i].enabled;
       addr = MATRIX_BoardList[i].addr;
 #else
-      isEnabled = STEPBOARD_IsEnabled(MATRIX_Boards[i]);
       addr = STEPBOARD_GetAddress(MATRIX_Boards[i]);
 #endif
-      if (isEnabled && MATRIX_CommandHasBeenSentToBoard(i)) {
+      if (MATRIX_CommandHasBeenSentToBoard(i)) {
         McuLog_trace("Checking last error (addr 0x%02x)", addr);
         res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, false, 1); /* ask board if there was an error */
         if (res==ERR_OK) { /* no error */
@@ -806,19 +798,15 @@ uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait) {
 static uint8_t MATRIX_SendMatrixCmdToAllBoards(const unsigned char *cmd) {
   uint8_t res;
   uint8_t addr;
-  bool isEnabled;
   bool hasError = false;
 
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* go through all boards */
     addr = MATRIX_BoardList[i].addr;
-    isEnabled = MATRIX_BoardList[i].enabled;
-    if (isEnabled) {
-      McuLog_trace("Sending '%s' to board 0x%02x", cmd, addr);
-      res = RS485_SendCommand(addr, cmd, 1000, false, 1);
-      if (res!=ERR_OK) {
-        McuLog_error("failed sending command '%s' to board 0x%x", cmd, addr);
-        hasError = true;
-      }
+    McuLog_trace("Sending '%s' to board 0x%02x", cmd, addr);
+    res = RS485_SendCommand(addr, cmd, 1000, false, 1);
+    if (res!=ERR_OK) {
+      McuLog_error("failed sending command '%s' to board 0x%x", cmd, addr);
+      hasError = true;
     }
   }
   if (hasError) {

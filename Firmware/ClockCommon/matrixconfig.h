@@ -189,13 +189,11 @@ typedef struct MatrixClock_t {
   struct {
     uint8_t x, y, z; /* coordinates on the board */
   } board;
-  bool enabled; /* if enabled or not */
 } MatrixClock_t;
 
 extern const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z];
 
 typedef struct MATRIX_BoardList_t {
-  bool enabled;  /* if board is enabled or not */
   uint8_t addr;  /* RS-485 address of the board */
   bool cmdSent;  /* if command has been sent or not to the board */
 } MATRIX_BoardList_t;
