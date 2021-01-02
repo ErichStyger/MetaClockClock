@@ -591,6 +591,21 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
             McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorHandMap[x][y][z]); /* color */
             nof++;
           }
+#if PL_CONFIG_USE_EXTENDED_HANDS
+          if (matrix.color2ndHandMap[x][y][z]!=prevMatrix.color2ndHandMap[x][y][z]) { /* only send changes */
+            if (nof>0) {
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+            }
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+            McuUtility_chcat(buf, sizeof(buf), ' ');
+            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+            McuUtility_chcat(buf, sizeof(buf), ' ');
+            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hc2 0x");
+            McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.color2ndHandMap[x][y][z]); /* color */
+            nof++;
+          }
+#endif
         }
       }
     }
