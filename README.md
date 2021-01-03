@@ -12,6 +12,7 @@ For more information about this project, see the following articles:
 - [Behind the Canvas: Making of “60 Billion Lights”](https://mcuoneclipse.com/2020/06/07/behind-the-canvas-making-of-60-billion-lights/)
 - [New Version](https://mcuoneclipse.com/2020/07/19/new-version/) using a modular design
 - 60 Clock version built with the round modular PCBs: [New MetaClockClock V3 finished with 60 Clocks](https://mcuoneclipse.com/2020/12/26/new-metaclockclock-v3-finished-with-60-clocks/)
+- V4 version using walnut veneer: [MetaClockClock V4 for the Year 2021](https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/)
 
 
 Folders:
