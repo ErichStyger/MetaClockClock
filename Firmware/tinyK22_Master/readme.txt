@@ -79,6 +79,9 @@ Time: 12:11
 - clock: second dots sometimes skips one dot?
 - clock: seconds off should turn off the dot (send signal)
 - clock border off should remove border
+- implement different/larger block font
+- new intermezzo: clock in the middle with analog hands
+- new intermezzo: ring, clock in the middle, then wave with clock
 
 Slaves:
 - reduce stepper backlash?
