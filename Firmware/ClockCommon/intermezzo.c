@@ -668,6 +668,30 @@ static void IntermezzoTime(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
+#if PL_CONFIG_USE_RELATIVE_MOVES
+static void IntermezzoHalfHalf(void) {
+  /* rotate left half CW, right half CCW */
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  MATRIX_SetMoveDelayAll(3);
+  MPOS_SetAngleZ0Z1All(270, 90);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        MPOS_RelativeMove(x, y, z, x<MATRIX_NOF_STEPPERS_X/2?2*360:-2*360);
+      }
+    }
+  }
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+#endif
+
 static void IntermezzoRandomHandsAllOn(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -816,6 +840,7 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo18,
     Intermezzo19,
     Intermezzo20,
+    IntermezzoHalfHalf,
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
     IntermezzoTime,
     IntermezzoRandomHands,
