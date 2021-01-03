@@ -586,7 +586,7 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
+        if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board and clock is enabled */
           if (matrix.colorHandMap[x][y][z]!=prevMatrix.colorHandMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
@@ -642,7 +642,7 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        if (clockMatrix[x][y][z].addr==addr && clockMatrix[x][y][z].enabled) { /* check if is a matching board and clock is enabled */
+        if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board and clock is enabled */
           if (matrix.colorRingMap[x][y][z]!=prevMatrix.colorRingMap[x][y][z]) { /* only send changes */
             if (nof>0) {
               McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
