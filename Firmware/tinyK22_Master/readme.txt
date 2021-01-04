@@ -84,7 +84,13 @@ Issues/open points:
 - stadium wave: follow hands with a rgb dot (ahead?)
 - clock: second dots sometimes skips one dot?
 - clock border off should remove border
-- implement different/larger block font
+- implement different/larger outline block font
+  +--+ +-+
+  |++| ++¦
+  ||||  ¦¦
+  |++| ++++
+  +--+ +--+
 - new intermezzo: clock in the middle with analog hands
 - new intermezzo: ring, clock in the middle, then wave with clock
+- new round clock: center, 12 around it
 - reduce stepper backlash?
