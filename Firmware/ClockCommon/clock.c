@@ -9,7 +9,7 @@
 #if PL_CONFIG_USE_CLOCK
 #include "McuWait.h"
 #include "McuRTOS.h"
-#if PL_CONFIG_USE_BUTTON
+#if PL_CONFIG_HAS_PARK_BUTTON
   #include "buttons.h"
 #endif
 #include "leds.h"
@@ -50,6 +50,7 @@
 #include "McuLog.h"
 
 static bool CLOCK_ClockIsOn = false;
+static bool CLOCK_ClockIsParked = false;
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   static bool CLOCK_clockIsLarge = true; /* if clock is using large font */
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
@@ -62,15 +63,47 @@ static bool CLOCK_ClockIsOn = false;
 #endif
 
 /* direct task notification messages: */
-#define CLOCK_TASK_NOTIFY_PARK    (1<<0) /* request to park the clock */
-#define CLOCK_TASK_NOTIFY_ON      (1<<1) /* request to turn the clock on */
-#define CLOCK_TASK_NOTIFY_OFF     (1<<2) /* request to turn the clock off */
+#define CLOCK_TASK_NOTIFY_PARK_ON        (1<<0) /* request to park the motors */
+#define CLOCK_TASK_NOTIFY_PARK_OFF       (1<<1) /* request to un-park the motors */
+#define CLOCK_TASK_NOTIFY_PARK_TOGGLE    (1<<2) /* request to toggle parking */
+#define CLOCK_TASK_NOTIFY_CLOCK_ON       (1<<3) /* request to turn the clock on */
+#define CLOCK_TASK_NOTIFY_CLOCK_OFF      (1<<4) /* request to turn the clock off */
+#define CLOCK_TASK_NOTIFY_CLOCK_TOGGLE   (1<<5) /* request to toggle clock on/off */
 
 static TaskHandle_t clockTaskHndl;
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
 
 bool CLOCK_GetClockIsOn(void) {
   return CLOCK_ClockIsOn;
+}
+
+void CLOCK_Park(CLOCK_Mode_e mode) {
+  switch(mode) {
+    case CLOCK_MODE_ON:       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_PARK_ON, eSetBits); break;
+    case CLOCK_MODE_OFF:      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_PARK_OFF, eSetBits); break;
+    case CLOCK_MODE_TOGGLE:
+      if (CLOCK_ClockIsParked) {
+        (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_PARK_OFF, eSetBits);
+      } else {
+        (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_PARK_ON, eSetBits);
+      }
+      break;
+    default: break;
+  }
+}
+
+void CLOCK_On(CLOCK_Mode_e mode) {
+  switch(mode) {
+    case CLOCK_MODE_ON:       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_CLOCK_ON, eSetBits); break;
+    case CLOCK_MODE_OFF:      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_CLOCK_OFF, eSetBits); break;
+    case CLOCK_MODE_TOGGLE:
+      if (CLOCK_ClockIsOn) {
+        (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_CLOCK_OFF, eSetBits);
+      } else {
+        (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_CLOCK_ON, eSetBits);
+      }
+    default: break;
+  }
 }
 
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
@@ -188,15 +221,15 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"clock", (unsigned char*)"Group of clock commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  on|off", (unsigned char*)"Enable or disable the clock\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  park", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  on|off|toggle", (unsigned char*)"Enable or disable the clock\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  park on|off|toggle", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  period <minute>", (unsigned char*)"Clock update period in minutes (>0)\r\n", io->stdOut);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   McuShell_SendHelpStr((unsigned char*)"  hand rgb <rgb>", (unsigned char*)"Set hand color\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  seconds on|off", (unsigned char*)"Show seconds\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_LED_DIMMING
-  McuShell_SendHelpStr((unsigned char*)"  brightness <f>", (unsigned char*)"Set hand brightness factor (0-255)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  brightness <v>", (unsigned char*)"Set hand brightness factor (0-255)\r\n", io->stdOut);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  border on|off", (unsigned char*)"Show clock with border\r\n", io->stdOut);
@@ -226,13 +259,22 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     return PrintStatus(io);
   } else if (McuUtility_strcmp((char*)cmd, "clock on")==0) {
     *handled = true;
-    (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_ON, eSetBits);
+    CLOCK_On(CLOCK_MODE_ON);
   } else if (McuUtility_strcmp((char*)cmd, "clock off")==0) {
     *handled = true;
-    (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_OFF, eSetBits);
-  } else if (McuUtility_strcmp((char*)cmd, "clock park")==0) {
+    CLOCK_On(CLOCK_MODE_OFF);
+  } else if (McuUtility_strcmp((char*)cmd, "clock toggle")==0) {
     *handled = true;
-    (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_PARK, eSetBits);
+    CLOCK_On(CLOCK_MODE_TOGGLE);
+  } else if (McuUtility_strcmp((char*)cmd, "clock park on")==0) {
+    *handled = true;
+    CLOCK_Park(CLOCK_MODE_ON);
+  } else if (McuUtility_strcmp((char*)cmd, "clock park off")==0) {
+    *handled = true;
+    CLOCK_Park(CLOCK_MODE_OFF);
+  } else if (McuUtility_strcmp((char*)cmd, "clock park toggle")==0) {
+    *handled = true;
+    CLOCK_Park(CLOCK_MODE_TOGGLE);
   } else if (McuUtility_strncmp((char*)cmd, "clock period ", sizeof("clock period ")-1)==0) {
     uint8_t val;
 
@@ -452,26 +494,31 @@ static void ClockTask(void *pv) {
   /* check task notifications */
   res = xTaskNotifyWait(
       0, /* do not clear anything on enter */
-      CLOCK_TASK_NOTIFY_PARK|CLOCK_TASK_NOTIFY_ON|CLOCK_TASK_NOTIFY_OFF, /* clear on exit */
+       CLOCK_TASK_NOTIFY_PARK_ON|CLOCK_TASK_NOTIFY_PARK_OFF|CLOCK_TASK_NOTIFY_PARK_TOGGLE
+      |CLOCK_TASK_NOTIFY_CLOCK_ON|CLOCK_TASK_NOTIFY_CLOCK_OFF|CLOCK_TASK_NOTIFY_CLOCK_TOGGLE, /* clear on exit */
       &ulNotificationValue,
       0);
   if (res==pdTRUE) { /* notification received */
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK) {
+    if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_ON) {
       McuLog_info("Start parking clock");
-      CLOCK_ClockIsOn = false; /* disable clock */
-      SHELL_ParseCommand((unsigned char*)"matrix hour 12", McuShell_GetStdio(), true); /* move to 12-o-clock position */
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-      /* turn off LEDs */
-      MRING_SetRingColorAll(0, 0, 0);
-      MHAND_HandEnableAll(false);
-    #if PL_CONFIG_USE_EXTENDED_HANDS
-      MHAND_2ndHandEnableAll(false);
-    #endif
-     APP_RequestUpdateLEDs(); /* update LEDs */
-#endif
+      SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
       McuLog_info("Parking done.");
+      CLOCK_ClockIsOn = false; /* disabled clock */
+      CLOCK_ClockIsParked = true;
     }
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_OFF) {
+    if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_OFF) {
+      McuLog_info("Start unparking clock");
+      SHELL_ParseCommand((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+      McuLog_info("Unparking done.");
+      CLOCK_ClockIsOn = false; /* disabled clock */
+      CLOCK_ClockIsParked = false;
+    }
+    if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
+      McuLog_info("Clock on");
+      CLOCK_ClockIsOn = true; /* enable clock */
+      prevClockUpdateTimestampSec = 0; /* to make sure it will update */
+    }
+    if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_OFF) {
       McuLog_info("Clock off");
       CLOCK_ClockIsOn = false; /* disable clock */
       prevClockUpdateTimestampSec = 0;
@@ -484,11 +531,6 @@ static void ClockTask(void *pv) {
     #endif
       APP_RequestUpdateLEDs(); /* update LEDs */
 #endif
-    }
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_ON) {
-      McuLog_info("Clock on");
-      CLOCK_ClockIsOn = true; /* enable clock */
-      prevClockUpdateTimestampSec = 0; /* to make sure it will update */
     }
   }
 #if PL_CONFIG_USE_RTC

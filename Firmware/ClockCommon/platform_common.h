@@ -29,6 +29,10 @@
   #define PL_CONFIG_IS_ANALOG_CLOCK  (1) /* if it is an analog clock */
 #endif
 
+#ifndef PL_CONFIG_HAS_PARK_BUTTON
+  #define PL_CONFIG_HAS_PARK_BUTTON  (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK)  /* if we have a push button to park and unpark the motors. Requires FreeRTOS timers for debouncing */
+#endif
+
 #ifndef PL_CONFIG_USE_FONT
   #define PL_CONFIG_USE_FONT  (1) /* using font */
 #endif
@@ -196,7 +200,6 @@
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)
-#define PL_CONFIG_USE_BUTTON        (0)
 #define PL_CONFIG_USE_USB_CDC       (0) /* not supported on LPC845 */
 #define PL_CONFIG_USE_I2C_SPY       (0 && PL_CONFIG_USE_I2C) /* using shell component to scan I2C bus */
 #define PL_CONFIG_USE_ULN2003       (0 && PL_CONFIG_USE_STEPPER) /* using ULN2003 stepper motors */

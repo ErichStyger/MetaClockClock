@@ -2325,7 +2325,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     #if PL_CONFIG_USE_LED_RING
     MRING_EnableRingAll(false);
     #endif
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+    MATRIX_SendToRemoteQueueExecuteAndWait(true);
   #endif
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF

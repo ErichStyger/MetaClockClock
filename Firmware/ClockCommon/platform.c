@@ -44,6 +44,7 @@
   #include "LowPower.h"
 #endif
 #include "McuLog.h"
+#include "McuButton.h"
 
 /* SDK */
 #include "fsl_gpio.h"
@@ -57,7 +58,7 @@
 #endif
 #include "matrix.h"
 #include "leds.h"
-#if PL_CONFIG_USE_BUTTON
+#if PL_CONFIG_HAS_PARK_BUTTON
   #include "buttons.h"
 #endif
 #if PL_CONFIG_USE_SHELL
@@ -175,7 +176,7 @@ void PL_Init(void) {
 
   /* application modules: */
   LEDS_Init();
-#if PL_CONFIG_USE_BUTTON
+#if PL_CONFIG_HAS_PARK_BUTTON
   BTN_Init();
 #endif
 #if PL_CONFIG_USE_SHELL_UART
