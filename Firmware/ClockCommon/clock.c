@@ -48,6 +48,7 @@
 #include "matrixhand.h"
 #include "matrixring.h"
 #include "McuLog.h"
+#include "mfont.h"
 
 static bool CLOCK_ClockIsOn = false;
 static bool CLOCK_ClockIsParked = false;
@@ -102,6 +103,7 @@ void CLOCK_On(CLOCK_Mode_e mode) {
       } else {
         (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_CLOCK_ON, eSetBits);
       }
+      break;
     default: break;
   }
 }
@@ -561,24 +563,29 @@ static void ClockTask(void *pv) {
     #endif
       if (res==ERR_OK && (McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0) >= prevClockUpdateTimestampSec+60*CLOCK_UpdatePeriodMinutes)) {
     #if PL_CONFIG_IS_MASTER
+        uint8_t buf[8];
+
         McuLog_info("Time: %02d:%02d", time.Hour, time.Min);
         MATRIX_SetMoveDelayZ0Z1All(5,5);
         MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
         MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
     #endif
+        buf[0] = '\0';
+        McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
+        McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Min, '0', 2);
     #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
         if (CLOCK_clockIsLarge) {
-          (void)MATRIX_ShowTimeLarge(time.Hour, time.Min, false);
+          res = MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, CLOCK_clockHasBorder, false);
         } else {
-          (void)MATRIX_ShowTime(time.Hour, time.Min, CLOCK_clockHasBorder, false);
+          res = MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, CLOCK_clockHasBorder, false);
         }
     #else
-        res = MATRIX_ShowTime(time.Hour, time.Min, false, false);
+        res = MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, false);
+    #endif
         if (res!=ERR_OK) {
           McuLog_error("Failed showing time");
         }
-    #endif
     #endif /* PL_CONFIG_IS_MASTER */
     #if PL_CONFIG_WORLD_CLOCK
         uint8_t hour;

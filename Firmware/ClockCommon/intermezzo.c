@@ -16,6 +16,7 @@
 #include "McuTimeDate.h"
 #include "McuLog.h"
 #include "NeoPixel.h"
+#include "mfont.h"
 #include <math.h>
 
 typedef enum Intermezzo_e {
@@ -738,6 +739,7 @@ static void IntermezzoRandomHands(void) {
 static void IntermezzoTemperature(void) {
   float temperature;
   uint8_t res;
+  uint8_t buf[8];
 
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -751,10 +753,14 @@ static void IntermezzoTemperature(void) {
     return ;
   }
   temperature -= 4.0; /* offset */
+  buf[0] = '\0';
+  McuUtility_strcatNumFloat(buf, sizeof(buf), temperature, 0);
+  McuUtility_chcat(buf, sizeof(buf), MFONT_CHAR_DEGREE);
+  McuUtility_chcat(buf, sizeof(buf), 'C');
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  MATRIX_ShowTemperatureLarge(temperature, false);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, true, true);
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
-  MATRIX_ShowTemperature(temperature, false);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
 #endif
 }
 

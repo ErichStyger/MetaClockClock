@@ -84,18 +84,6 @@ uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);
 uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait);
 
-uint8_t MATRIX_ShowTime(uint8_t hour, uint8_t minute, bool hasBorder, bool wait);
-uint8_t MATRIX_ShowTimeLarge(uint8_t hour, uint8_t minute, bool wait);
-
-uint8_t MATRIX_ShowTemperature(uint8_t temperature, bool wait);
-uint8_t MATRIX_ShowTemperatureLarge(uint8_t temperature, bool wait);
-
-uint8_t MATRIX_ShowHumidity(uint8_t humidity, bool wait);
-uint8_t MATRIX_ShowHumidityLarge(uint8_t humidity, bool wait);
-
-uint8_t MATRIX_ShowLux(uint16_t humidity, bool wait);
-uint8_t MATRIX_ShowLuxLarge(uint16_t humidity, bool wait);
-
 #if PL_CONFIG_USE_STEPPER
 STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z);
 #endif

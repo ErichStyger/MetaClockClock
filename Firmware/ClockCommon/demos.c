@@ -895,6 +895,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
 
 static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   uint8_t res;
+  uint8_t buf[8];
 
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -906,7 +907,10 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   MATRIX_SetMoveDelayZ0Z1All(1, 1);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   for(int i=2;i<12;i++) {
-    MATRIX_ShowTime(21, i, true, true);
+    buf[0] = '\0';
+    McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), 21, '0', 2);
+    McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), i, '0', 2);
+    MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
   }
   return MATRIX_MoveAllto12(10000, io);
 }
@@ -974,13 +978,17 @@ static void DEMO_Nxp(void) {
 static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
   TIMEREC time;
+  uint8_t buf[16];
 
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Hour, '0', 2);
+  McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  (void)MATRIX_ShowTimeLarge(time.Hour, time.Min, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, true);
 #else
-  (void)MATRIX_ShowTime(time.Hour, time.Min, false, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, true);
 #endif
 
   (void)DemoRandomHandsPos();
@@ -991,7 +999,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   MATRIX_Delay(2000);
 
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
-  res = MATRIX_ShowTime(20, 34, false, true);
+  res = MFONT_ShowFramedText(0, 0, (unsigned char*)"2034", MFONT_SIZE_2x3, false, true);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
@@ -1002,11 +1010,14 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
-  (void)MATRIX_ShowTime(time.Hour, time.Min, false, true);
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Hour, '0', 2);
+  McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, true);
   MATRIX_Delay(3000);
 
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
-  res = MATRIX_ShowTemperature(22, true);
+  res = MFONT_ShowFramedText(0, 0, (unsigned char*)"22" MFONT_STR_DEGREE "C", MFONT_SIZE_2x3, true, true);
   MATRIX_Delay(3000);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
@@ -1022,7 +1033,10 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
-  (void)MATRIX_ShowTime(time.Hour, time.Min, true, true);
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Hour, '0', 2);
+  McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
   MATRIX_Delay(3000);
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -1252,22 +1266,6 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  1", (unsigned char*)"Demo with changing angles\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  2", (unsigned char*)"Demo fast clock\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <delay>", (unsigned char*)"Set default delay\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  time <time>", (unsigned char*)"Show time\r\n", io->stdOut);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendHelpStr((unsigned char*)"  time large <time>", (unsigned char*)"Show large time\r\n", io->stdOut);
-  #endif
-  McuShell_SendHelpStr((unsigned char*)"  temperature <tt>", (unsigned char*)"Show temperature\r\n", io->stdOut);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendHelpStr((unsigned char*)"  temperature large <tt>", (unsigned char*)"Show large temperature\r\n", io->stdOut);
-  #endif
-  McuShell_SendHelpStr((unsigned char*)"  humidity <hh>", (unsigned char*)"Show humidity\r\n", io->stdOut);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendHelpStr((unsigned char*)"  humidity large <hh>", (unsigned char*)"Show large humidity\r\n", io->stdOut);
-  #endif
-  McuShell_SendHelpStr((unsigned char*)"  lux <lux>", (unsigned char*)"Show lux value\r\n", io->stdOut);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendHelpStr((unsigned char*)"  lux large <lux>", (unsigned char*)"Show large lux value\r\n", io->stdOut);
-  #endif
   McuShell_SendHelpStr((unsigned char*)"  text <xy> <text>", (unsigned char*)"Write text at position\r\n", io->stdOut);
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  text large <xy> <text>", (unsigned char*)"Write large text at position\r\n", io->stdOut);
@@ -1381,94 +1379,6 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo 2")==0) {
     *handled = true;
     return DEMO_Demo2(io);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (McuUtility_strncmp((char*)cmd, "demo time large ", sizeof("demo time large ")-1)==0) {
-    uint8_t hour, minute, second, hsec;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo time large ")-1;
-    if (McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK) {
-      return MATRIX_ShowTimeLarge(hour, minute, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #endif
-  } else if (McuUtility_strncmp((char*)cmd, "demo time ", sizeof("demo time ")-1)==0) {
-    uint8_t hour, minute, second, hsec;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo time ")-1;
-    if (McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK) {
-      return MATRIX_ShowTime(hour, minute, true, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (McuUtility_strncmp((char*)cmd, "demo temperature large ", sizeof("demo temperature large ")-1)==0) {
-    uint8_t temperature;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo temperature large ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &temperature)==ERR_OK) {
-      return MATRIX_ShowTemperatureLarge(temperature, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #endif
-  } else if (McuUtility_strncmp((char*)cmd, "demo temperature ", sizeof("demo temperature ")-1)==0) {
-    uint8_t temperature;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo temperature ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &temperature)==ERR_OK) {
-      return MATRIX_ShowTemperature(temperature, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (McuUtility_strncmp((char*)cmd, "demo humidity large ", sizeof("demo humidity large ")-1)==0) {
-    uint8_t humidity;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo humidity large ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &humidity)==ERR_OK) {
-      return MATRIX_ShowHumidityLarge(humidity, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #endif
-  } else if (McuUtility_strncmp((char*)cmd, "demo humidity ", sizeof("demo humidity ")-1)==0) {
-    uint8_t humidity;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo humidity ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &humidity)==ERR_OK) {
-      return MATRIX_ShowHumidity(humidity, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (McuUtility_strncmp((char*)cmd, "demo lux large ", sizeof("demo lux large ")-1)==0) {
-    uint16_t lux;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo lux large ")-1;
-    if (McuUtility_ScanDecimal16uNumber(&p, &lux)==ERR_OK) {
-      return MATRIX_ShowLuxLarge(lux, true);
-    } else {
-      return ERR_FAILED;
-    }
-  #endif
-  } else if (McuUtility_strncmp((char*)cmd, "demo lux ", sizeof("demo lux ")-1)==0) {
-    uint16_t lux;
-
-    *handled = TRUE;
-    p = cmd + sizeof("demo lux ")-1;
-    if (McuUtility_ScanDecimal16uNumber(&p, &lux)==ERR_OK) {
-      return MATRIX_ShowLux(lux, true);
-    } else {
-      return ERR_FAILED;
-    }
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo text large ", sizeof("demo text large ")-1)==0) {
     *handled = TRUE;

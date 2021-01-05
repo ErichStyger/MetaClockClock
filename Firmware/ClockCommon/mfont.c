@@ -8,6 +8,7 @@
 #if PL_CONFIG_USE_FONT
 #include <stdint.h>
 #include <stdbool.h>
+#include "McuUtility.h"
 #include "mfont.h"
 #include "matrix.h"
 #include "matrixposition.h"
@@ -1193,5 +1194,43 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
   }
 #endif
 }
+
+#if PL_CONFIG_IS_MASTER
+uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait) {
+  int xSize, ySize;
+
+  MATRIX_SetMoveDelayAll(2);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(false);
+#endif
+  switch(font) {
+    default:
+      return ERR_FAILED;
+    case MFONT_SIZE_2x3:
+      xSize = McuUtility_strlen((char*)text)*MFONT_SIZE_X_2x3;
+      ySize = MFONT_SIZE_Y_2x3;
+      break;
+    case MFONT_SIZE_3x5:
+      xSize = McuUtility_strlen((char*)text)*MFONT_SIZE_X_3x5;
+      ySize = MFONT_SIZE_Y_3x5;
+      break;
+  } /* switch */
+  if (withBorder && xSize<=MATRIX_NOF_STEPPERS_X-1 && ySize<=MATRIX_NOF_STEPPERS_Y-1) { /* only if enough space for border */
+    MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
+  }
+  /* calculate text start position */
+  x = (MATRIX_NOF_STEPPERS_X-xSize)/2;
+  if (x<0) {
+    x = 0;
+  }
+  y = (MATRIX_NOF_STEPPERS_Y-ySize)/2;
+  if (y<0) {
+    y = 0;
+  }
+  MFONT_PrintString(text, x, y, font);
+  return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
+}
+#endif /* PL_CONFIG_IS_MASTER */
 
 #endif /* PL_CONFIG_USE_FONT */

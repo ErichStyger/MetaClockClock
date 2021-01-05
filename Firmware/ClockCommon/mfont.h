@@ -21,7 +21,9 @@ typedef enum {
 #define MFONT_SIZE_Y_3x5   5  /* number of rows neede */
 
 #define MFONT_CHAR_DEGREE  '~' /* placeholder, need to use a 8bit ASCII code */
+#define MFONT_STR_DEGREE   "~" /* placeholder, need to use a 8bit ASCII code */
 
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e size);
+uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait);
 
 #endif /* MFONT_H_ */
