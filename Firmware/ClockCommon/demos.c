@@ -1214,6 +1214,7 @@ static uint8_t DemoClap(void) {
 }
 #endif
 
+#if PL_CONFIG_IS_MASTER
 static uint8_t DemoMiddle(void) {
   int x, y;
 
@@ -1246,6 +1247,7 @@ static uint8_t DemoMiddle(void) {
   (void)MATRIX_SendToRemoteQueue();
   return MATRIX_ExecuteRemoteQueueAndWait(true);
 }
+#endif
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
