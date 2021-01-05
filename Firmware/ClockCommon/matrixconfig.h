@@ -34,9 +34,9 @@
   #define MATRIX_NOF_STEPPERS_Y       (9)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
-  #define MATRIX_NOF_BOARDS           (5)  /* total number of boards in matrix */
-  #define MATRIX_NOF_STEPPERS_X       (8)  /* number of clocks in x (horizontal) direction */
-  #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_BOARDS           (1)   /* total number of boards in matrix */
+  #define MATRIX_NOF_STEPPERS_X       (8)   /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_STEPPERS_Y       (1)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (1)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
   #define MATRIX_NOF_BOARDS           (12)   /* total number of boards in matrix */
@@ -161,11 +161,12 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_34=0x38,
   BOARD_ADDR_35=0x37,
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
-  BOARD_ADDR_00=0x20,
-  BOARD_ADDR_01=0x21,
-  BOARD_ADDR_02=0x22,
-  BOARD_ADDR_03=0x23,
-  BOARD_ADDR_04=0x24,
+  BOARD_ADDR_00=0x10,
+  /*
+  BOARD_ADDR_01=0x11,
+  BOARD_ADDR_02=0x12,
+  BOARD_ADDR_03=0x13,
+  BOARD_ADDR_04=0x14, */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
   BOARD_ADDR_00=0x70,
   BOARD_ADDR_01=0x71,

@@ -486,7 +486,7 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
 			[5][0][0]={.addr=BOARD_ADDR_00, .board.x=5, .board.y=0, .board.z=0},
 			[6][0][0]={.addr=BOARD_ADDR_00, .board.x=6, .board.y=0, .board.z=0},
 			[7][0][0]={.addr=BOARD_ADDR_00, .board.x=7, .board.y=0, .board.z=0},
-
+#if 0 /* not enabled yet */
 			/* 2nd row */
 			[0][1][0]={.addr=BOARD_ADDR_01, .board.x=0, .board.y=0, .board.z=0},
 			[1][1][0]={.addr=BOARD_ADDR_01, .board.x=1, .board.y=0, .board.z=0},
@@ -526,14 +526,17 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
 			[5][4][0]={.addr=BOARD_ADDR_04, .board.x=5, .board.y=0, .board.z=0},
 			[6][4][0]={.addr=BOARD_ADDR_04, .board.x=6, .board.y=0, .board.z=0},
 			[7][4][0]={.addr=BOARD_ADDR_04, .board.x=7, .board.y=0, .board.z=0},
+#endif
 	};
 
 	MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
-		{	.enabled = true, .addr=BOARD_ADDR_00, .cmdSent=false},
-		{	.enabled = true, .addr=BOARD_ADDR_01, .cmdSent=false},
-		{	.enabled = true, .addr=BOARD_ADDR_02, .cmdSent=false},
-		{	.enabled = true, .addr=BOARD_ADDR_03, .cmdSent=false},
-		{	.enabled = true, .addr=BOARD_ADDR_04, .cmdSent=false},
+		{.addr=BOARD_ADDR_00, .cmdSent=false},
+#if 0
+		{.addr=BOARD_ADDR_01, .cmdSent=false},
+		{.addr=BOARD_ADDR_02, .cmdSent=false},
+		{.addr=BOARD_ADDR_03, .cmdSent=false},
+		{.addr=BOARD_ADDR_04, .cmdSent=false},
+#endif
 	};
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
   const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
