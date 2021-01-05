@@ -1285,7 +1285,7 @@ static const MClockChar4x5_t clockDigits4x5[10] = {
         [2][2]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
         [2][3]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [3][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
-        [3][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
+        [3][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
         [3][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
         [3][3]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [4][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
