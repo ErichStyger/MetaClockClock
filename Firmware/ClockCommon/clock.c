@@ -490,51 +490,51 @@ static void ClockTask(void *pv) {
 #endif
   for(;;) {
     vTaskDelay(pdMS_TO_TICKS(200));
-#if PL_CONFIG_USE_WDT
-  WDT_Report(WDT_REPORT_ID_TASK_CLOCK, 200);
-#endif
-  /* check task notifications */
-  res = xTaskNotifyWait(
-      0, /* do not clear anything on enter */
-       CLOCK_TASK_NOTIFY_PARK_ON|CLOCK_TASK_NOTIFY_PARK_OFF|CLOCK_TASK_NOTIFY_PARK_TOGGLE
-      |CLOCK_TASK_NOTIFY_CLOCK_ON|CLOCK_TASK_NOTIFY_CLOCK_OFF|CLOCK_TASK_NOTIFY_CLOCK_TOGGLE, /* clear on exit */
-      &ulNotificationValue,
-      0);
-  if (res==pdTRUE) { /* notification received */
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_ON) {
-      McuLog_info("Start parking clock");
-      SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
-      McuLog_info("Parking done.");
-      CLOCK_ClockIsOn = false; /* disabled clock */
-      CLOCK_ClockIsParked = true;
+  #if PL_CONFIG_USE_WDT
+    WDT_Report(WDT_REPORT_ID_TASK_CLOCK, 200);
+  #endif
+    /* check task notifications */
+    res = xTaskNotifyWait(
+       0, /* do not clear anything on enter */
+        CLOCK_TASK_NOTIFY_PARK_ON|CLOCK_TASK_NOTIFY_PARK_OFF|CLOCK_TASK_NOTIFY_PARK_TOGGLE
+       |CLOCK_TASK_NOTIFY_CLOCK_ON|CLOCK_TASK_NOTIFY_CLOCK_OFF|CLOCK_TASK_NOTIFY_CLOCK_TOGGLE, /* clear on exit */
+       &ulNotificationValue,
+       0);
+    if (res==pdTRUE) { /* notification received */
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_ON) {
+        McuLog_info("Start parking clock");
+        SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+        McuLog_info("Parking done.");
+        CLOCK_ClockIsOn = false; /* disabled clock */
+        CLOCK_ClockIsParked = true;
+      }
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_OFF) {
+        McuLog_info("Start unparking clock");
+        SHELL_ParseCommand((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+        McuLog_info("Unparking done.");
+        CLOCK_ClockIsOn = false; /* disabled clock */
+        CLOCK_ClockIsParked = false;
+      }
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
+        McuLog_info("Clock on");
+        CLOCK_ClockIsOn = true; /* enable clock */
+        prevClockUpdateTimestampSec = 0; /* to make sure it will update */
+      }
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_OFF) {
+        McuLog_info("Clock off");
+        CLOCK_ClockIsOn = false; /* disable clock */
+        prevClockUpdateTimestampSec = 0;
+  #if PL_CONFIG_USE_NEO_PIXEL_HW
+        /* turn off LEDs */
+        MRING_SetRingColorAll(0, 0, 0);
+        MHAND_HandEnableAll(false);
+      #if PL_CONFIG_USE_EXTENDED_HANDS
+        MHAND_2ndHandEnableAll(false);
+      #endif
+        APP_RequestUpdateLEDs(); /* update LEDs */
+  #endif
+      }
     }
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_OFF) {
-      McuLog_info("Start unparking clock");
-      SHELL_ParseCommand((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
-      McuLog_info("Unparking done.");
-      CLOCK_ClockIsOn = false; /* disabled clock */
-      CLOCK_ClockIsParked = false;
-    }
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
-      McuLog_info("Clock on");
-      CLOCK_ClockIsOn = true; /* enable clock */
-      prevClockUpdateTimestampSec = 0; /* to make sure it will update */
-    }
-    if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_OFF) {
-      McuLog_info("Clock off");
-      CLOCK_ClockIsOn = false; /* disable clock */
-      prevClockUpdateTimestampSec = 0;
-#if PL_CONFIG_USE_NEO_PIXEL_HW
-      /* turn off LEDs */
-      MRING_SetRingColorAll(0, 0, 0);
-      MHAND_HandEnableAll(false);
-    #if PL_CONFIG_USE_EXTENDED_HANDS
-      MHAND_2ndHandEnableAll(false);
-    #endif
-      APP_RequestUpdateLEDs(); /* update LEDs */
-#endif
-    }
-  }
 #if PL_CONFIG_USE_RTC
     tickCount = xTaskGetTickCount();
     /* update SW RTC from external RTC */

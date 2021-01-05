@@ -56,7 +56,7 @@ Instructions:
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
-#define SYSVIEW_APP_NAME                     "K02 LedStepper"
+#define SYSVIEW_APP_NAME                     "K02 Sm(A)rtWall PixelUnit"
 #define SYSVIEW_DEVICE_NAME                  "NXP K02FN64"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
 #define McuSystemView_CONFIG_RTT_CHANNEL     (2)
@@ -66,7 +66,7 @@ Instructions:
 #define McuPercepio_CONFIG_START_TRACE_IN_STARTUP_MODE  TRC_START
 /* -------------------------------------------------*/
 /* Shell */
-#define McuShell_CONFIG_PROJECT_NAME_STRING           "K02 LedStepper"
+#define McuShell_CONFIG_PROJECT_NAME_STRING           "K02 Sm(A)rtWall PixelUnit"
 #define McuShell_CONFIG_MULTI_CMD_ENABLED             (1)
 #define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256)
 #define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
@@ -90,7 +90,7 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER                 (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (0)
+#define McuLog_CONFIG_IS_ENABLED                      (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
