@@ -140,7 +140,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #if McuLog_CONFIG_PARSE_COMMAND_ENABLED
   McuLog_ParseCommand,
 #endif
+#if PL_CONFIG_USE_FONT
   MFONT_ParseCommand,
+#endif
   APP_ParseCommand,
   NULL /* Sentinel */
 };

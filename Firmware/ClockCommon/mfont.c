@@ -1249,16 +1249,15 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mfont", (unsigned char*)"Group of matrix font commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+#if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  text <xy> <f> <txt>", (unsigned char*)"Write text with font (2x3, 3x5) at position (~ for degree)\r\n", io->stdOut);
+#endif
   return ERR_OK;
 }
 #endif /* PL_CONFIG_USE_SHELL */
 
 #if PL_CONFIG_USE_SHELL
 uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
-  const unsigned char *p;
-  uint8_t xPos, yPos;
-  MFONT_Size_e font;
 
   if (McuUtility_strcmp((char*)cmd, McuShell_CMD_HELP)==0 || McuUtility_strcmp((char*)cmd, "mfont help")==0) {
     *handled = true;
@@ -1266,7 +1265,12 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "mfont status")==0)) {
     *handled = true;
     return PrintStatus(io);
+#if PL_CONFIG_IS_MASTER
   } else if (McuUtility_strncmp((char*)cmd, "mfont text ", sizeof("mfont text ")-1)==0) {
+    const unsigned char *p;
+    uint8_t xPos, yPos;
+    MFONT_Size_e font;
+
     *handled = TRUE;
     p = cmd + sizeof("mfont text ")-1;
     if (McuUtility_strncmp((char*)p, "2x3 ", sizeof("2x3 ")-1)==0) {
@@ -1296,6 +1300,7 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     } else {
       return ERR_FAILED;
     }
+#endif /* PL_CONFIG_IS_MASTER */
   }
   return ERR_OK;
 }
