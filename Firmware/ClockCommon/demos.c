@@ -1214,31 +1214,38 @@ static uint8_t DemoClap(void) {
 }
 #endif
 
-#if MATRIX_NOF_STEPPERS_Y==3
 static uint8_t DemoMiddle(void) {
-  int x;
+  int x, y;
 
+  /* top and bottom row */
   for(x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     MPOS_SetAngleZ0Z1(x, 0, 180, 180);
 #if PL_CONFIG_USE_EXTENDED_HANDS
     MHAND_2ndHandEnable(x, 0, 0, false);
     MHAND_2ndHandEnable(x, 0, 1, false);
 #endif
-    MPOS_SetAngleZ0Z1(x, 1, 0, 0);
-#if PL_CONFIG_USE_EXTENDED_HANDS
-    MHAND_2ndHandEnable(x, 1, 0, true);
-    MHAND_2ndHandEnable(x, 1, 1, true);
-#endif
+
     MPOS_SetAngleZ0Z1(x, MATRIX_NOF_STEPPERS_Y-1, 0, 0);
 #if PL_CONFIG_USE_EXTENDED_HANDS
     MHAND_2ndHandEnable(x, MATRIX_NOF_STEPPERS_Y-1, 0, false);
     MHAND_2ndHandEnable(x, MATRIX_NOF_STEPPERS_Y-1, 1, false);
 #endif
   }
+
+  /* remaining rows in the middle */
+  for(x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(y=1; y<MATRIX_NOF_STEPPERS_Y-1; y++) {
+      MPOS_SetAngleZ0Z1(x, y, 0, 0);
+  #if PL_CONFIG_USE_EXTENDED_HANDS
+      MHAND_2ndHandEnable(x, y, 0, true);
+      MHAND_2ndHandEnable(x, y, 1, true);
+  #endif
+    }
+  }
+
   (void)MATRIX_SendToRemoteQueue();
   return MATRIX_ExecuteRemoteQueueAndWait(true);
 }
-#endif
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
@@ -1273,9 +1280,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  nxp", (unsigned char*)"NXP demo\r\n", io->stdOut);
   #endif
-  #if MATRIX_NOF_STEPPERS_Y==3
   McuShell_SendHelpStr((unsigned char*)"  middle", (unsigned char*)"middle demo\r\n", io->stdOut);
-  #endif
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
   McuShell_SendHelpStr((unsigned char*)"  led 0", (unsigned char*)"LED color demo\r\n", io->stdOut);
@@ -1379,6 +1384,9 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo 2")==0) {
     *handled = true;
     return DEMO_Demo2(io);
+  } else if (McuUtility_strcmp((char*)cmd, "demo middle")==0) {
+    *handled = TRUE;
+    return DemoMiddle();
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "demo text large ", sizeof("demo text large ")-1)==0) {
     *handled = TRUE;
@@ -1404,11 +1412,6 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     DEMO_Nxp();
     return ERR_OK;
   #endif
-#if MATRIX_NOF_STEPPERS_Y==3
-  } else if (McuUtility_strcmp((char*)cmd, "demo middle")==0) {
-  *handled = TRUE;
-  return DemoMiddle();
-#endif
   } else if (McuUtility_strncmp((char*)cmd, "demo text ", sizeof("demo text ")-1)==0) {
   *handled = TRUE;
   p = cmd + sizeof("demo text ")-1;
