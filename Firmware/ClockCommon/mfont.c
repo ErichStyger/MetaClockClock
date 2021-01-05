@@ -1233,4 +1233,72 @@ uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Si
 }
 #endif /* PL_CONFIG_IS_MASTER */
 
+#if PL_CONFIG_USE_SHELL
+static uint8_t PrintStatus(const McuShell_StdIOType *io) {
+  McuShell_SendStatusStr((unsigned char*)"mfont", (unsigned char*)"Matrix font status\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  fonts", (unsigned char*)"2x3", io->stdOut);
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  McuShell_SendStr((unsigned char*)", 3x5", io->stdOut);
+#endif
+  McuShell_SendStr((unsigned char*)"\r\n", io->stdOut);
+  return ERR_OK;
+}
+#endif /* PL_CONFIG_USE_SHELL */
+
+#if PL_CONFIG_USE_SHELL
+static uint8_t PrintHelp(const McuShell_StdIOType *io) {
+  McuShell_SendHelpStr((unsigned char*)"mfont", (unsigned char*)"Group of matrix font commands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  text <xy> <f> <txt>", (unsigned char*)"Write text with font (2x3, 3x5) at position (~ for degree)\r\n", io->stdOut);
+  return ERR_OK;
+}
+#endif /* PL_CONFIG_USE_SHELL */
+
+#if PL_CONFIG_USE_SHELL
+uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
+  const unsigned char *p;
+  uint8_t xPos, yPos;
+  MFONT_Size_e font;
+
+  if (McuUtility_strcmp((char*)cmd, McuShell_CMD_HELP)==0 || McuUtility_strcmp((char*)cmd, "mfont help")==0) {
+    *handled = true;
+    return PrintHelp(io);
+  } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "mfont status")==0)) {
+    *handled = true;
+    return PrintStatus(io);
+  } else if (McuUtility_strncmp((char*)cmd, "mfont text ", sizeof("mfont text ")-1)==0) {
+    *handled = TRUE;
+    p = cmd + sizeof("mfont text ")-1;
+    if (McuUtility_strncmp((char*)p, "2x3 ", sizeof("2x3 ")-1)==0) {
+      font = MFONT_SIZE_2x3;
+      p += sizeof("3x5 ")-1;
+  #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+    } else if (McuUtility_strncmp((char*)p, "3x5 ", sizeof("3x5 ")-1)==0) {
+      font = MFONT_SIZE_3x5;
+      p += sizeof("3x5 ")-1;
+  #endif
+    } else {
+      return ERR_FAILED;
+    }
+    if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
+        && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_STEPPERS_Y
+        )
+    {
+      uint8_t buf[8];
+
+      McuUtility_SkipSpaces(&p);
+      if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
+        return ERR_FAILED;
+      }
+      MATRIX_SetMoveDelayZ0Z1All(2, 2);
+      MFONT_PrintString(buf, xPos, yPos, font);
+      return MATRIX_SendToRemoteQueueExecuteAndWait(true);
+    } else {
+      return ERR_FAILED;
+    }
+  }
+  return ERR_OK;
+}
+#endif /* PL_CONFIG_USE_SHELL */
+
 #endif /* PL_CONFIG_USE_FONT */

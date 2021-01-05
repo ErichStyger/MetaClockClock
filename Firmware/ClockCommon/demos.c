@@ -1273,10 +1273,6 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  1", (unsigned char*)"Demo with changing angles\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  2", (unsigned char*)"Demo fast clock\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <delay>", (unsigned char*)"Set default delay\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  text <xy> <text>", (unsigned char*)"Write text at position\r\n", io->stdOut);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendHelpStr((unsigned char*)"  text large <xy> <text>", (unsigned char*)"Write large text at position\r\n", io->stdOut);
-  #endif
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  nxp", (unsigned char*)"NXP demo\r\n", io->stdOut);
   #endif
@@ -1305,11 +1301,6 @@ static uint8_t CheckIfClockIsOn(const McuShell_StdIOType *io) {
 #endif
 
 uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
-#if PL_CONFIG_IS_MASTER
-  const unsigned char *p;
-  uint8_t xPos, yPos;
-#endif
-
   if (McuUtility_strcmp((char*)cmd, McuShell_CMD_HELP)==0 || McuUtility_strcmp((char*)cmd, "demo help")==0) {
     *handled = true;
     return PrintHelp(io);
@@ -1388,49 +1379,11 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     *handled = TRUE;
     return DemoMiddle();
   #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (McuUtility_strncmp((char*)cmd, "demo text large ", sizeof("demo text large ")-1)==0) {
-    *handled = TRUE;
-    p = cmd + sizeof("demo text large ")-1;
-    if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
-        && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_STEPPERS_Y
-        )
-    {
-      uint8_t buf[8];
-
-      McuUtility_SkipSpaces(&p);
-      if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
-        return ERR_FAILED;
-      }
-      MATRIX_SetMoveDelayZ0Z1All(2, 2);
-      MFONT_PrintString(buf, xPos, yPos, MFONT_SIZE_3x5);
-      return MATRIX_SendToRemoteQueueExecuteAndWait(true);
-    } else {
-      return ERR_FAILED;
-    }
   } else if (McuUtility_strcmp((char*)cmd, "demo nxp")==0) {
     *handled = TRUE;
     DEMO_Nxp();
     return ERR_OK;
   #endif
-  } else if (McuUtility_strncmp((char*)cmd, "demo text ", sizeof("demo text ")-1)==0) {
-  *handled = TRUE;
-  p = cmd + sizeof("demo text ")-1;
-  if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
-      && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_STEPPERS_Y
-      )
-  {
-    uint8_t buf[8];
-
-    McuUtility_SkipSpaces(&p);
-    if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
-      return ERR_FAILED;
-    }
-    MATRIX_SetMoveDelayZ0Z1All(2, 2);
-    MFONT_PrintString(buf, xPos, yPos, MFONT_SIZE_2x3);
-    return MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  } else {
-    return ERR_FAILED;
-  }
 #endif /* PL_CONFIG_IS_MASTER */
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
   } else if (McuUtility_strcmp((char*)cmd, "demo weather sunny")==0) {

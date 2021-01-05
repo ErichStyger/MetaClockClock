@@ -67,6 +67,7 @@
 #endif
 #include "McuLog.h"
 #include "leds.h"
+#include "mfont.h"
 
 #if PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
 static struct {
@@ -139,6 +140,7 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #if McuLog_CONFIG_PARSE_COMMAND_ENABLED
   McuLog_ParseCommand,
 #endif
+  MFONT_ParseCommand,
   APP_ParseCommand,
   NULL /* Sentinel */
 };

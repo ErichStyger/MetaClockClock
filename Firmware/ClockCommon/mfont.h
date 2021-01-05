@@ -8,6 +8,7 @@
 #define MFONT_H_
 
 #include "platform.h"
+#include "McuShell.h"
 
 typedef enum {
   MFONT_SIZE_2x3,
@@ -25,5 +26,8 @@ typedef enum {
 
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e size);
 uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait);
+
+uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
+
 
 #endif /* MFONT_H_ */
