@@ -103,6 +103,9 @@
   #include "esp32.h"
 #endif
 #include "StepperBoard.h"
+#if PL_CONFIG_USE_USB_CDC
+  #include "virtual_com.h"
+#endif
 
 void PL_InitFromTask(void) {
   /* call here things which need interrupts enabled */
@@ -175,6 +178,9 @@ void PL_Init(void) {
 #endif
 
   /* application modules: */
+#if PL_CONFIG_USE_USB_CDC
+  USB_APPInit(); /* Initialize USB first before the UART/Gateway, because this changes the clock settings! */
+#endif
   LEDS_Init();
 #if PL_CONFIG_HAS_PARK_BUTTON
   BTN_Init();

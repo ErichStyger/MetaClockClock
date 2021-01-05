@@ -65,6 +65,9 @@
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   #include "NeoPixel.h"
 #endif
+#if PL_CONFIG_USE_USB_CDC
+  #include "virtual_com.h"
+#endif
 #include "McuLog.h"
 #include "leds.h"
 #include "mfont.h"
