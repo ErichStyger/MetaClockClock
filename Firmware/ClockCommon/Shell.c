@@ -71,6 +71,9 @@
 #if PL_CONFIG_USE_LED_PIXEL
   #include "pixel.h"
 #endif
+#if PL_CONFIG_USE_ESP32_UART
+  #include "ESP32_Uart.h"
+#endif
 #include "McuLog.h"
 #include "leds.h"
 #include "mfont.h"
@@ -166,6 +169,9 @@ static const SHELL_IODesc ios[] =
 {
 #if PL_CONFIG_USE_SHELL_UART
   {&McuShellUart_stdio,  McuShellUart_DefaultShellBuffer,  sizeof(McuShellUart_DefaultShellBuffer)},
+#endif
+#if PL_CONFIG_USE_ESP32_UART
+  {&Esp32ShellUart_stdio,  Esp32ShellUart_DefaultShellBuffer,  sizeof(Esp32ShellUart_DefaultShellBuffer)},
 #endif
 #if PL_CONFIG_USE_RTT
   {&McuRTT_stdio,  McuRTT_DefaultShellBuffer,  sizeof(McuRTT_DefaultShellBuffer)},

@@ -46,6 +46,9 @@
 #if PL_CONFIG_USE_LED_PIXEL
   #include "pixel.h"
 #endif
+#if PL_CONFIG_USE_ESP32_UART
+  #include "ESP32_Uart.h"
+#endif
 #include "McuLog.h"
 #include "McuButton.h"
 
@@ -190,6 +193,9 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_SHELL_UART
   McuShellUart_Init();
+#endif
+#if PL_CONFIG_USE_ESP32_UART
+  Esp32ShellUart_Init();
 #endif
 #if PL_CONFIG_USE_SHELL
   SHELL_Init();

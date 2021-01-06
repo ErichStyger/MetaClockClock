@@ -178,7 +178,10 @@
 #endif
 
 /* master only: */
-#define PL_CONFIG_USE_SHELL_UART    (1 && PL_CONFIG_IS_MASTER) /* using UART for USB-CDC to host */
+#define PL_CONFIG_USE_SHELL_UART    (1 && PL_CONFIG_IS_MASTER) /* using UART for USB-CDC to host (USB bridge on tinyK22 and LPC845-BRK) */
+#ifndef PL_CONFIG_USE_ESP32_UART
+  #define PL_CONFIG_USE_ESP32_UART   (0)  /* using an extra UART (to one on the tinyK22 board which is supposed to be for the ESP32 */
+#endif
 #define PL_CONFIG_USE_I2C           (1 && PL_CONFIG_IS_MASTER) /* use I2C bus */
 #define PL_CONFIG_USE_HW_I2C        (CONFIG_USE_HW_I2C) /* this is set in IncludMcuLibConfig.h! */
 #define PL_CONFIG_USE_EXT_I2C_RTC   (1 && PL_CONFIG_USE_RTC && PL_CONFIG_USE_I2C) /* DS3231 with AT24C32 */
