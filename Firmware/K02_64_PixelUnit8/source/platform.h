@@ -22,6 +22,7 @@
 #define PL_CONFIG_USE_LED_PIXEL         (1) /* enable LED pixel */
 #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
 #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
+#define PL_CONFIG_USE_MOTOR_ON_OFF_AUTO (1) /* automatically turn on/off motors */
 
 #include "platform_common.h"
 

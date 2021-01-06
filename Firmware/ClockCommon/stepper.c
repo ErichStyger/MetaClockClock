@@ -132,15 +132,15 @@ STEPPER_Handle_t STEPPER_InitDevice(STEPPER_Config_t *config) {
 
 void STEPPER_StopTimer(void) {
   STEPPER_STOP_TIMER();
-#if PL_CONFIG_USE_MOTOR_ON_OFF
-  //STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false); /* turn off motors */
+#if PL_CONFIG_USE_MOTOR_ON_OFF && PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
+  STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false); /* turn off motors */
 #endif
 }
 
 void STEPPER_StartTimer(void) {
-#if PL_CONFIG_USE_MOTOR_ON_OFF
-  /* problem: depending on position the motor might make a jump */
-  //STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
+#if PL_CONFIG_USE_MOTOR_ON_OFF && PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
+  /* \todo problem: depending on position the motor might make a jump: check for pos%32 ? */
+  STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
 #endif
   STEPPER_START_TIMER();
 }

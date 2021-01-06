@@ -140,6 +140,9 @@
 #ifndef PL_CONFIG_USE_MOTOR_ON_OFF
   #define PL_CONFIG_USE_MOTOR_ON_OFF    (0) /* using hardware to turn off/on the stepper motors to reduce power */
 #endif
+#ifndef PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
+  #define PL_CONFIG_USE_MOTOR_ON_OFF_AUTO  (0 && PL_CONFIG_USE_MOTOR_ON_OFF) /* turn motors on only during timer run */
+#endif
 
 #ifndef PL_CONFIG_USE_VIRTUAL_STEPPER
   #define PL_CONFIG_USE_VIRTUAL_STEPPER (0)
