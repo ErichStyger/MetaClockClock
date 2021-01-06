@@ -88,3 +88,6 @@ Issues/open points:
 - new intermezzo: ring, clock in the middle, then wave with clock
 - new round clock: center, 12 around it
 - reduce stepper backlash?
+- add letters to 4x5 font
+- intermezzo with month (JAN 2021) with larger font
+

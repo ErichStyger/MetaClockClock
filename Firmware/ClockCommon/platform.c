@@ -43,6 +43,9 @@
 #if PL_CONFIG_USE_LOW_POWER
   #include "LowPower.h"
 #endif
+#if PL_CONFIG_USE_LED_PIXEL
+  #include "pixel.h"
+#endif
 #include "McuLog.h"
 #include "McuButton.h"
 
@@ -207,12 +210,15 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_NVMC
   NVMC_Init();
 #endif
-MATRIX_Init();
+  MATRIX_Init();
 #if PL_CONFIG_USE_WDT
   WDT_Init();
 #endif
 #if PL_CONFIG_USE_CLOCK
   CLOCK_Init();
+#endif
+#if PL_CONFIG_USE_LED_PIXEL
+  PIXEL_Init();
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   INTERMEZZO_Init();
