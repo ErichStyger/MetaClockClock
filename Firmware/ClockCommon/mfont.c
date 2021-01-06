@@ -1394,6 +1394,7 @@ static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
         case 'X': desc = &clockCharX3x5; break;
         case 'Y': desc = &clockCharY3x5; break;
         case 'Z': desc = &clockCharZ3x5; break;
+        case 176: /* '°' */
         case MFONT_CHAR_DEGREE: desc = &clockCharDegree3x5; break;
         case '%': desc = &clockCharPercent3x5; break;
         default: desc = NULL; break;
@@ -1441,6 +1442,7 @@ static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
         case 'L': desc = &clockCharL2x3; break;
         case 'C': desc = &clockCharC2x3; break;
         case 'H': desc = &clockCharH2x3; break;
+        case 176: /* '°' */
         case MFONT_CHAR_DEGREE: desc = &clockCharDegree2x3; break;
         case '%': desc = &clockCharPercent2x3; break;
         default: desc = NULL; break;
@@ -1526,7 +1528,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mfont", (unsigned char*)"Group of matrix font commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
-  McuShell_SendHelpStr((unsigned char*)"  text <xy> <f> <txt>", (unsigned char*)"Write text with font (2x3, 3x5) at position (" MFONT_STR_DEGREE " for degree)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  text <f> <xy> <txt>", (unsigned char*)"Write text with font (2x3, 3x5) at position (" MFONT_STR_DEGREE " for degree)\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
@@ -1534,7 +1536,6 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 
 #if PL_CONFIG_USE_SHELL
 uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
-
   if (McuUtility_strcmp((char*)cmd, McuShell_CMD_HELP)==0 || McuUtility_strcmp((char*)cmd, "mfont help")==0) {
     *handled = true;
     return PrintHelp(io);
