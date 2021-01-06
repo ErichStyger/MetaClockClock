@@ -25,7 +25,7 @@
   /* period needed for a single step in microseconds */
   #define STEPPER_TIME_STEP_US        ((STEPPER_TIME_360_DEGREE_MS*1000U)/STEPPER_CLOCK_360_STEPS)
 #else /* not an analog clock: it is a linear stepper */
-  #define STEPPER_FULL_RANGE_NOF_STEPS     (3000) /* number of steps for the full motion */
+  #define STEPPER_FULL_RANGE_NOF_STEPS     (7350) /* number of steps for the full motion */
   #define STEPPER_TIME_FULL_RANGE_MS       (2000) /* time for a full movement of the stepper */
   #define STEPPER_TIME_STEP_US        ((STEPPER_TIME_FULL_RANGE_MS*1000U)/STEPPER_FULL_RANGE_NOF_STEPS)
 #endif

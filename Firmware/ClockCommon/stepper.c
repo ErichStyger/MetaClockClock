@@ -34,7 +34,7 @@
 
 #define STEPPER_CMD_QUEUE_LENGTH    (8) /* maximum number of items in stepper command queue */
 
-typedef enum {
+typedef enum SCT_CHANNEL_MASK_e {
   SCT_CHANNEL_MASK_0 = (1<<0),
   SCT_CHANNEL_MASK_1 = (1<<1),
   SCT_CHANNEL_MASK_2 = (1<<2),
@@ -53,7 +53,7 @@ static const STEPPER_Config_t defaultConfig =
 };
 
 /* device for a single LED ring */
-typedef struct {
+typedef struct STEPPER_Device_t {
   void *device; /* point to the actual motor device */
   void (*stepFn)(void *device, int step); /* function pointer to perform a single step forward (1) or backward (-1) */
   int32_t pos; /* current position */

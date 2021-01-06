@@ -1300,7 +1300,12 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"  brightness", buf, io->stdOut);
 #endif
 #if PL_CONFIG_USE_MOTOR_ON_OFF && !PL_CONFIG_IS_MASTER
-  McuShell_SendStatusStr((unsigned char*)"  motor on", STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  motor on",
+  #if PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
+      STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes (auto)\r\n":(unsigned char*)"no (auto)\r\n", io->stdOut);
+  #else
+      STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+  #endif
 #endif
   return ERR_OK;
 }
@@ -1462,7 +1467,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif /* PL_CONFIG_USE_STEPPER */
 
   McuShell_SendHelpStr((unsigned char*)"  q <xyz> <cmd>", (unsigned char*)"Queue a 'r' or 'a' command, e.g. 'matrix q 0 0 0 r 90 8 cc', (comma separated)\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  exq", (unsigned char*)"Execute commands in stepper queue\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  exq", (unsigned char*)"Execute commands in queues\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  lastError", (unsigned char*)"Check remotes for last error\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  waitidle", (unsigned char*)"Check remotes for idle state\r\n", io->stdOut);
@@ -2539,7 +2544,6 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
   x12config.motor[X12_017_M0].hw_dir.port = PORTE;
   x12config.motor[X12_017_M0].hw_dir.pin  = 17U;
-  x12config.motor[X12_017_M0].isInverted = true;
 
   /* M0_STEP: */
   x12config.motor[X12_017_M0].hw_step.gpio = GPIOE;
@@ -2695,7 +2699,6 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M0].hw_dir.gpio = GPIOE;
   x12config.motor[X12_017_M0].hw_dir.port = PORTE;
   x12config.motor[X12_017_M0].hw_dir.pin  = 24U;
-  x12config.motor[X12_017_M0].isInverted  = true;
 
   /* M4_STEP: */
   x12config.motor[X12_017_M0].hw_step.gpio = GPIOC;
@@ -2726,7 +2729,6 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
   x12config.motor[X12_017_M3].hw_dir.port = PORTD;
   x12config.motor[X12_017_M3].hw_dir.pin  = 6U;
-  x12config.motor[X12_017_M3].isInverted  = true;
 
   /* M7_STEP: */
   x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;

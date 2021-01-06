@@ -68,6 +68,9 @@
 #if PL_CONFIG_USE_USB_CDC
   #include "virtual_com.h"
 #endif
+#if PL_CONFIG_USE_LED_PIXEL
+  #include "pixel.h"
+#endif
 #include "McuLog.h"
 #include "leds.h"
 #include "mfont.h"
@@ -145,6 +148,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #endif
 #if PL_CONFIG_USE_FONT
   MFONT_ParseCommand,
+#endif
+#if PL_CONFIG_USE_LED_PIXEL
+  PIXEL_ParseCommand,
 #endif
   APP_ParseCommand,
   NULL /* Sentinel */
