@@ -30,7 +30,7 @@ typedef struct BTN_Desc_t {
 static BTN_Desc_t BTN_Infos[BTN_NOF_BUTTONS];
 
 bool BTN_IsPressed(BTN_Buttons_e btn) {
-  assert(btn<BTN_NAV_NOF_BUTTONS);
+  assert(btn<BTN_NOF_BUTTONS);
   return McuBtn_IsOn(BTN_Infos[btn].handle);
 }
 
