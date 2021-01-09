@@ -1528,7 +1528,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mfont", (unsigned char*)"Group of matrix font commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
-  McuShell_SendHelpStr((unsigned char*)"  text <f> <xy> <txt>", (unsigned char*)"Write text with font (2x3, 3x5) at position (" MFONT_STR_DEGREE " for degree)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  text <f> <xy> <txt>", (unsigned char*)"Write text with font (e.g. 2x3) at position (" MFONT_STR_DEGREE " for degree)\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
