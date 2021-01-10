@@ -149,7 +149,7 @@ Instructions:
 #define McuEE24_CONFIG_USE_TIMEOUT              (0)   /* no timeout */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_IS_ENABLED                      (0)
 #define McuLog_CONFIG_USE_COLOR                       (0)
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER              (2) /* RTT plus UART */
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
