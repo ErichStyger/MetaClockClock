@@ -22,7 +22,6 @@
 typedef enum Intermezzo_e {
   INTERMEZZO_NONE = 0,
   INTERMEZZO_FEW = 1,
-  INTERMEZZO_MANY = 2, /* NYI! */
   INTERMEZZO_NOF /* must be last in list */
 } Intermezzo_e;
 
@@ -872,9 +871,6 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
       McuLog_info("Intermezzo: %d done", intermezzo);
       *intermezzoShown = true;
     }
-  } else if(IntermezzoMode==INTERMEZZO_MANY) {
-    /* not implemented yet */
-    *intermezzoShown = true;
   }
 }
 
