@@ -31,7 +31,6 @@ uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 #define TEST_MODE   (0)  /* test mode for rings */
-#define DEMO_MODE   (1)  /* demo mode after power-on */
 
 #if TEST_MODE
 static void TestRing(void) {
@@ -128,9 +127,9 @@ static void NeoTask(void *pv) {
 
 #if configUSE_HEAP_SCHEME==5
   static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[8*1024]; /* placed in in no_init section inside SRAM_LOWER */
-  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[4*1024]; /* placed in in no_init section inside SRAM_UPPER */
+  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[3*1024]; /* placed in in no_init section inside SRAM_UPPER */
 
-  static HeapRegion_t xHeapRegions[] =
+  static const HeapRegion_t xHeapRegions[] =
   {
    { &heap_sram_lower[0], sizeof(heap_sram_lower)},
    { &heap_sram_upper[0], sizeof(heap_sram_upper)},
