@@ -552,7 +552,7 @@ static void ClockTask(void *pv) {
     }
     if (CLOCK_ClockIsOn) {
     #if PL_CONFIG_USE_INTERMEZZO
-      if (!intermezzoShown) { /* show intermezzo? */
+      if (!intermezzoShown) { /* not shown intermezzo? */
         INTERMEZZO_Play(lastClockUpdateTickCount, &intermezzoShown);
         if (intermezzoShown) {
           prevClockUpdateTimestampSec = 0; /* if there is time after the intermezzo: trigger showing clock again */
