@@ -1834,13 +1834,13 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"mfont", (unsigned char*)"Matrix font status\r\n", io->stdOut);
   McuShell_SendStatusStr((unsigned char*)"  fonts", (unsigned char*)"", io->stdOut);
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
-  McuShell_SendStr((unsigned char*)", 2x3", io->stdOut);
+  McuShell_SendStr((unsigned char*)"2x3 ", io->stdOut);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
-  McuShell_SendStr((unsigned char*)", 3x5", io->stdOut);
+  McuShell_SendStr((unsigned char*)"3x5 ", io->stdOut);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
-  McuShell_SendStr((unsigned char*)", 4x5", io->stdOut);
+  McuShell_SendStr((unsigned char*)"4x5 ", io->stdOut);
 #endif
   McuShell_SendStr((unsigned char*)"\r\n", io->stdOut);
   return ERR_OK;
