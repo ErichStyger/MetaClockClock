@@ -52,8 +52,8 @@
 
 static bool CLOCK_ClockIsOn = false;
 static bool CLOCK_ClockIsParked = false;
+static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  static bool CLOCK_clockIsLarge = true; /* if clock is using large font */
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
 #endif
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -169,11 +169,13 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcatNum24Hex(buf, sizeof(buf), CLOCK_SecondColor);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  second", buf, io->stdOut);
-  #endif
+#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendStatusStr((unsigned char*)"  size", CLOCK_clockIsLarge?(unsigned char*)"large\r\n":(unsigned char*)"small\r\n", io->stdOut);
   McuShell_SendStatusStr((unsigned char*)"  border", CLOCK_clockHasBorder?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 #endif
+  MFONT_FontToStr(CLOCK_font, buf, sizeof(buf));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  font", buf, io->stdOut);
 
 #if PL_CONFIG_USE_NVMC
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
@@ -235,8 +237,8 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  border on|off", (unsigned char*)"Show clock with border\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  small|large", (unsigned char*)"Use small or large clock digits\r\n", io->stdOut);
 #endif
+  McuShell_SendHelpStr((unsigned char*)"  font <f>", (unsigned char*)"Set clock font, e.g. 2x3\r\n", io->stdOut);
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  time <c> <time>", (unsigned char*)"Show time on clock (0..3)\r\n", io->stdOut);
 #endif
@@ -326,13 +328,15 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     }
     return ERR_OK;
 #endif /* PL_CONFIG_USE_LED_DIMMING */
+  } else if (McuUtility_strncmp((char*)cmd, "clock font ", sizeof("clock font")-1)==0) {
+    *handled = true;
+    p = cmd + sizeof("clock font ")-1;
+    MFONT_ParseFontName(&p, &CLOCK_font);
+    if (CLOCK_font==MFONT_SIZE_ERROR) {
+      CLOCK_font = MFONT_SIZE_2x3;
+      return ERR_FAILED;
+    }
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (McuUtility_strcmp((char*)cmd, "clock small")==0) {
-    *handled = true;
-    CLOCK_clockIsLarge = false;
-  } else if (McuUtility_strcmp((char*)cmd, "clock large")==0) {
-    *handled = true;
-    CLOCK_clockIsLarge = true;
   } else if (McuUtility_strncmp((char*)cmd, "clock border ", sizeof("clock border ")-1)==0) {
     *handled = true;
     p = cmd + sizeof("clock border ")-1;
@@ -524,7 +528,7 @@ static void ClockTask(void *pv) {
         McuLog_info("Clock off");
         CLOCK_ClockIsOn = false; /* disable clock */
         prevClockUpdateTimestampSec = 0;
-  #if PL_CONFIG_USE_NEO_PIXEL_HW
+    #if PL_CONFIG_USE_NEO_PIXEL_HW
         /* turn off LEDs */
         MRING_SetRingColorAll(0, 0, 0);
         MHAND_HandEnableAll(false);
@@ -532,7 +536,7 @@ static void ClockTask(void *pv) {
         MHAND_2ndHandEnableAll(false);
       #endif
         APP_RequestUpdateLEDs(); /* update LEDs */
-  #endif
+    #endif
       }
     }
 #if PL_CONFIG_USE_RTC
@@ -540,7 +544,7 @@ static void ClockTask(void *pv) {
     /* update SW RTC from external RTC */
     if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(60*60*1000)) { /* every hour */
       McuLog_info("Updating RTC from external RTC");
-      res = McuTimeDate_SyncWithExternalRTC(); /* update sw RTC with external HW RTC to avoid too much clock drift */
+      res = McuTimeDate_SyncWithExternalRTC(); /* update SW RTC with external HW RTC to avoid too much clock drift */
       if (res!=ERR_OK) {
         McuLog_error("Updating RTC from external RTC");
       }
@@ -575,13 +579,9 @@ static void ClockTask(void *pv) {
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Min, '0', 2);
     #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-        if (CLOCK_clockIsLarge) {
-          res = MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, CLOCK_clockHasBorder, false);
-        } else {
-          res = MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, CLOCK_clockHasBorder, false);
-        }
+        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, false);
     #else
-        res = MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, false);
+        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, false);
     #endif
         if (res!=ERR_OK) {
           McuLog_error("Failed showing time");

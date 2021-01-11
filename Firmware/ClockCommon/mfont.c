@@ -1911,15 +1911,15 @@ void MFONT_FontToStr(MFONT_Size_e font, unsigned char *buf, size_t bufSize) {
 }
 
 void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font) {
-  if (McuUtility_strncmp((char*)p, "2x3", sizeof("2x3")-1)==0) {
+  if (McuUtility_strncmp((char*)*p, "2x3", sizeof("2x3")-1)==0) {
     *font = MFONT_SIZE_2x3;
-    p += sizeof("3x5")-1;
-  } else if (McuUtility_strncmp((char*)p, "3x5", sizeof("3x5")-1)==0) {
+    *p += sizeof("3x5")-1;
+  } else if (McuUtility_strncmp((char*)*p, "3x5", sizeof("3x5")-1)==0) {
     *font = MFONT_SIZE_3x5;
-    p += sizeof("3x5")-1;
-  } else if (McuUtility_strncmp((char*)p, "4x5", sizeof("4x5")-1)==0) {
+    *p += sizeof("3x5")-1;
+  } else if (McuUtility_strncmp((char*)*p, "4x5", sizeof("4x5")-1)==0) {
     *font = MFONT_SIZE_4x5;
-    p += sizeof("4x5")-1;
+    *p += sizeof("4x5")-1;
   } else {
     *font = MFONT_SIZE_ERROR;
   }
