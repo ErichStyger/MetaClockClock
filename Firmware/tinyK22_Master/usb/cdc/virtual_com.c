@@ -69,6 +69,10 @@ usb_status_t USB_DeviceCallback(usb_device_handle handle, uint32_t event, void *
 #define USB_RB_SIZE  (256*DATA_BUFF_SIZE)  /* size of USB ring buffers */
 static McuRB_Handle_t usb_rxBuf, usb_txBuf;
 
+size_t USB_CdcGetFreeBytesInTxBuffer(void) {
+  return McuRB_NofFreeElements(usb_txBuf);
+}
+
 static void USB_CdcStdIOReadChar(uint8_t *c) {
   if (McuRB_NofElements(usb_rxBuf)==0) {
     *c = '\0';
@@ -92,6 +96,10 @@ static void USB_CdcStdIOSendChar(uint8_t ch) {
   }
 }
 
+static void USB_CdcStdIOSendCharNonBlocking(uint8_t ch) {
+  (void)McuRB_Put(usb_txBuf, &ch);
+}
+
 static bool USB_CdcStdIOKeyPressed(void) {
   return McuRB_NofElements(usb_rxBuf)!=0;
 }
@@ -102,6 +110,14 @@ McuShell_ConstStdIOType USB_CdcStdio = {
     (McuShell_StdIO_OutErr_FctType)USB_CdcStdIOSendChar, /* stderr */
     USB_CdcStdIOKeyPressed /* if input is not empty */
   };
+McuShell_ConstStdIOType USB_CdcStdioNonBlockingSend = {
+    (McuShell_StdIO_In_FctType)USB_CdcStdIOReadChar, /* stdin */
+    (McuShell_StdIO_OutErr_FctType)USB_CdcStdIOSendCharNonBlocking, /* stdout */
+    (McuShell_StdIO_OutErr_FctType)USB_CdcStdIOSendCharNonBlocking, /* stderr */
+    USB_CdcStdIOKeyPressed /* if input is not empty */
+  };
+
+
 uint8_t USB_CdcDefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* default buffer which can be used by the application */
 #endif /* << EST */
 

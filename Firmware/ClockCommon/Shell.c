@@ -310,7 +310,7 @@ void SHELL_Init(void) {
 #if PL_CONFIG_USE_USB_CDC && PL_CONFIG_USE_RTT && PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER==3
   McuLog_set_console(&McuRTT_stdio, 0);
   McuLog_set_console(&McuShellUart_stdio, 1);
-  McuLog_set_console(&USB_CdcStdio, 2);
+  McuLog_set_console(&USB_CdcStdioNonBlockingSend, 2);
 #elif PL_CONFIG_USE_RTT && PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER==2
   McuLog_set_console(&McuRTT_stdio, 0);
   McuLog_set_console(&McuShellUart_stdio, 1);
