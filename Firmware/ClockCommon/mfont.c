@@ -26,6 +26,7 @@ typedef struct MClock_t {
   MHand_t hands[2]; /* each clock has two hands */
 } MClock_t;
 
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
 typedef struct MClockChar2x3_t {
   MClock_t digit[3][2]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
 } MClockChar2x3_t;
@@ -481,8 +482,9 @@ static const MClockChar2x3_t clockCharSpace2x3 =  /* <space> */
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   }
 };
+#endif /* MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3 */
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
 typedef struct MClockChar3x5_t {
   MClock_t digit[5][3]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
 } MClockChar3x5_t;
@@ -1342,7 +1344,7 @@ static const MClockChar3x5_t clockCharSpace3x5 =
 };
 #endif
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
 typedef struct MClockChar4x5_t {
   MClock_t digit[5][4]; /* a digit is built by 4 (vertical) and 2 (horizontal) clocks */
 } MClockChar4x5_t;
@@ -1572,7 +1574,7 @@ static const MClockChar4x5_t clockDigits4x5[10] = {
 };
 #endif
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
 static void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<MFONT_SIZE_Y_4x5; y++) { /* every clock row */
     for(int x=0; x<MFONT_SIZE_X_4x5; x++) { /* every clock column */
@@ -1592,7 +1594,7 @@ static void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos) {
 #endif /* MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
 static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<MFONT_SIZE_Y_3x5; y++) { /* every clock row */
     for(int x=0; x<MFONT_SIZE_X_3x5; x++) { /* every clock column */
@@ -1611,6 +1613,7 @@ static void DrawChar3x5(const MClockChar3x5_t *ch, uint8_t xPos, uint8_t yPos) {
 }
 #endif /* MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
 static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<MFONT_SIZE_Y_2x3; y++) { /* every clock row */
     for(int x=0; x<MFONT_SIZE_X_2x3; x++) { /* every clock column */
@@ -1632,8 +1635,9 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
     }
   }
 }
+#endif /* MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3 */
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
 static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
   const MClockChar3x5_t *desc;
 
@@ -1685,7 +1689,7 @@ static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
 }
 #endif /* MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
 static void PrintString4x5(const unsigned char *str, int xPos, int yPos) {
   const MClockChar4x5_t *desc;
 
@@ -1705,6 +1709,7 @@ static void PrintString4x5(const unsigned char *str, int xPos, int yPos) {
 }
 #endif /* MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 */
 
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
 static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
   const MClockChar2x3_t *desc;
 
@@ -1759,17 +1764,27 @@ static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
     str++;
   }
 }
+#endif /* MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3 */
 
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font) {
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
   if (font==MFONT_SIZE_2x3) {
     PrintString2x3(str, xPos, yPos);
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  } else if (font==MFONT_SIZE_3x5) {
-    PrintString3x5(str, xPos, yPos);
-  } else if (font==MFONT_SIZE_4x5) {
-    PrintString4x5(str, xPos, yPos);
-#endif
+    return;
   }
+#endif
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
+  if (font==MFONT_SIZE_3x5) {
+    PrintString3x5(str, xPos, yPos);
+    return;
+  }
+#endif
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
+  if (font==MFONT_SIZE_4x5) {
+    PrintString4x5(str, xPos, yPos);
+    return;
+  }
+#endif
 }
 
 #if PL_CONFIG_IS_MASTER
@@ -1817,9 +1832,14 @@ uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Si
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"mfont", (unsigned char*)"Matrix font status\r\n", io->stdOut);
-  McuShell_SendStatusStr((unsigned char*)"  fonts", (unsigned char*)"2x3", io->stdOut);
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  McuShell_SendStatusStr((unsigned char*)"  fonts", (unsigned char*)"", io->stdOut);
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
+  McuShell_SendStr((unsigned char*)", 2x3", io->stdOut);
+#endif
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
   McuShell_SendStr((unsigned char*)", 3x5", io->stdOut);
+#endif
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
   McuShell_SendStr((unsigned char*)", 4x5", io->stdOut);
 #endif
   McuShell_SendStr((unsigned char*)"\r\n", io->stdOut);
@@ -1854,18 +1874,8 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 
     *handled = TRUE;
     p = cmd + sizeof("mfont text ")-1;
-    if (McuUtility_strncmp((char*)p, "2x3 ", sizeof("2x3 ")-1)==0) {
-      font = MFONT_SIZE_2x3;
-      p += sizeof("3x5 ")-1;
-  #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-    } else if (McuUtility_strncmp((char*)p, "3x5 ", sizeof("3x5 ")-1)==0) {
-      font = MFONT_SIZE_3x5;
-      p += sizeof("3x5 ")-1;
-    } else if (McuUtility_strncmp((char*)p, "4x5 ", sizeof("4x5 ")-1)==0) {
-      font = MFONT_SIZE_4x5;
-      p += sizeof("4x5 ")-1;
-  #endif
-    } else {
+    MFONT_ParseFontName(&p, &font);
+    if (font==MFONT_SIZE_ERROR) {
       return ERR_FAILED;
     }
     if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
@@ -1889,5 +1899,30 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   return ERR_OK;
 }
 #endif /* PL_CONFIG_USE_SHELL */
+
+void MFONT_FontToStr(MFONT_Size_e font, unsigned char *buf, size_t bufSize) {
+  switch(font) {
+    case MFONT_SIZE_2x3: McuUtility_strcpy(buf, bufSize, (unsigned char*)"2x3"); break;
+    case MFONT_SIZE_3x5: McuUtility_strcpy(buf, bufSize, (unsigned char*)"3x5"); break;
+    case MFONT_SIZE_4x5: McuUtility_strcpy(buf, bufSize, (unsigned char*)"4x5"); break;
+    case MFONT_SIZE_ERROR:
+    default: McuUtility_strcpy(buf, bufSize, (unsigned char*)"ERROR"); break;
+  }
+}
+
+void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font) {
+  if (McuUtility_strncmp((char*)p, "2x3", sizeof("2x3")-1)==0) {
+    *font = MFONT_SIZE_2x3;
+    p += sizeof("3x5")-1;
+  } else if (McuUtility_strncmp((char*)p, "3x5", sizeof("3x5")-1)==0) {
+    *font = MFONT_SIZE_3x5;
+    p += sizeof("3x5")-1;
+  } else if (McuUtility_strncmp((char*)p, "4x5", sizeof("4x5")-1)==0) {
+    *font = MFONT_SIZE_4x5;
+    p += sizeof("4x5")-1;
+  } else {
+    *font = MFONT_SIZE_ERROR;
+  }
+}
 
 #endif /* PL_CONFIG_USE_FONT */
