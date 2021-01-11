@@ -106,7 +106,9 @@ static int32_t ConvertFloatRadixNumToString(char *numstr, void *nump, int32_t ra
 /*!
 *
  */
+#if PRINTF_FLOAT_ENABLE
 double modf(double input_dbl, double *intpart_ptr);
+#endif
 
 /*************Code for process formatted data*******************************/
 
