@@ -67,9 +67,9 @@ demo time 20:55
 intermezzo 16
 demo time 20:56
 
-Issues/open points:
--------------------
-- watchdog K22
+Issues/open points/wish list:
+-----------------------------
+- watchdog for K22
 - matrix R 0 4 0 360 3 CW
   led is behind, while
   matrix R 0 4 0 360 3 CC
@@ -87,7 +87,7 @@ Issues/open points:
 - new intermezzo: clock in the middle with analog hands
 - new intermezzo: ring, clock in the middle, then wave with clock
 - new round clock: center, 12 around it
-- reduce stepper backlash?
+- reduce stepper backlash
 - add letters to 4x5 font
 - intermezzo with month (JAN 2021) with larger font
-
+- have 'intermezzo only' mode

@@ -415,14 +415,14 @@ static void ShowSeconds(const TIMEREC *time) {
 
 static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_RTC
-  int32_t prevClockUpdateTimestampSec = 0; /* time of previous clock update timestamp, seconds since 1972 */
+  int32_t prevClockUpdateTimestampSec = 0; /* time of previous clock update time stamp, seconds since 1972 */
   TIMEREC time;
   DATEREC date;
   uint8_t res;
-  TickType_t tickCount, lastUpdateFromRTCtickCount;
+  TickType_t lastUpdateFromRTCtickCount; /* time stamp when last time the SW RTC has been update from HW RTC: it gets updated every hour */
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
-  TickType_t lastClockUpdateTickCount = -1;
+  TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
   bool intermezzoShown = false;
 #endif
   uint32_t ulNotificationValue;
@@ -539,8 +539,10 @@ static void ClockTask(void *pv) {
     #endif
       }
     }
-#if PL_CONFIG_USE_RTC
-    tickCount = xTaskGetTickCount();
+  #if PL_CONFIG_USE_RTC
+    /* ----------------------------------------------------------------------------------*/
+    /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
+    TickType_t tickCount = xTaskGetTickCount();
     /* update SW RTC from external RTC */
     if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(60*60*1000)) { /* every hour */
       McuLog_info("Updating RTC from external RTC");
@@ -550,16 +552,22 @@ static void ClockTask(void *pv) {
       }
       lastUpdateFromRTCtickCount = tickCount;
     }
+    /* ----------------------------------------------------------------------------------*/
+    /* Intermezzo */
+    /* ----------------------------------------------------------------------------------*/
     if (CLOCK_ClockIsOn) {
-    #if PL_CONFIG_USE_INTERMEZZO
+      #if PL_CONFIG_USE_INTERMEZZO
       if (!intermezzoShown) { /* not shown intermezzo? */
         INTERMEZZO_Play(lastClockUpdateTickCount, &intermezzoShown);
         if (intermezzoShown) {
           prevClockUpdateTimestampSec = 0; /* if there is time after the intermezzo: trigger showing clock again */
         }
       }
-    #endif
+      #endif
     } /* if clock is on */
+    /* ----------------------------------------------------------------------------------*/
+    /* Clock */
+    /* ----------------------------------------------------------------------------------*/
     if (CLOCK_ClockIsOn) { /* show time */
       res = McuTimeDate_GetTimeDate(&time, &date);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -569,20 +577,20 @@ static void ClockTask(void *pv) {
     #if PL_CONFIG_IS_MASTER
         uint8_t buf[8];
 
-        McuLog_info("Time: %02d:%02d", time.Hour, time.Min);
-        MATRIX_SetMoveDelayZ0Z1All(5,5);
+        McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time.Hour, time.Min, date.Day, date.Month, date.Year);
+        MATRIX_SetMoveDelayAll(5);
         MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
+      #if PL_CONFIG_USE_NEO_PIXEL_HW
         MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
-    #endif
+      #endif
         buf[0] = '\0';
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Min, '0', 2);
-    #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+      #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
         res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, false);
-    #else
+      #else
         res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, false);
-    #endif
+      #endif
         if (res!=ERR_OK) {
           McuLog_error("Failed showing time");
         }
@@ -602,10 +610,11 @@ static void ClockTask(void *pv) {
         lastClockUpdateTickCount = xTaskGetTickCount();
         intermezzoShown = false;
       #endif
-      }
+        McuLog_info("finished showing clock");
+      } /* if */
     } /* if clock is on */
-#endif /* PL_CONFIG_USE_RTC */
-  }
+  #endif /* PL_CONFIG_USE_RTC */
+  } /* for */
 }
 
 void CLOCK_Init(void) {
