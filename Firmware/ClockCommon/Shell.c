@@ -152,7 +152,7 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #if PL_CONFIG_USE_FONT
   MFONT_ParseCommand,
 #endif
-#if PL_CONFIG_USE_LED_PIXEL
+#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
   PIXEL_ParseCommand,
 #endif
   APP_ParseCommand,

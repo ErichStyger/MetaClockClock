@@ -6,7 +6,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_LED_PIXEL
+#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
 #include "pixel.h"
 #include "matrix.h"
 #include "matrixpixel.h"
@@ -37,15 +37,6 @@ static void PIXEL_ZeroAll(void) {
     }
   }
 }
-
-#if 0
-static void PixelTask(void *pv) {
-  //MPIXEL_SetColor(x, y, z, red, green, blue);
-  for(;;) {
-    vTaskDelay(pdMS_TO_TICKS(100));
-  }
-}
-#endif
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
@@ -105,19 +96,6 @@ uint8_t PIXEL_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #endif /* PL_CONFIG_USE_SHELL */
 
 void PIXEL_Init(void) {
-#if 0
-  if (xTaskCreate(
-      PixelTask,  /* pointer to the task */
-      "Pixel", /* task name for kernel awareness debugging */
-      1024/sizeof(StackType_t), /* task stack size */
-      (void*)NULL, /* optional task startup argument */
-      tskIDLE_PRIORITY+1,  /* initial priority */
-      NULL /* optional task handle to create */
-    ) != pdPASS) {
-     McuLog_fatal("failed creating Pixel task");
-     for(;;){} /* error! probably out of memory */
-  }
-#endif
 }
 
 #endif /* PL_CONFIG_USE_LED_PIXEL */

@@ -11,7 +11,7 @@
 #include "NeoPixel.h"
 #include "assert.h"
 
-#if PL_CONFIG_USE_LED_PIXEL
+#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
 void MPIXEL_SetColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
   /* \todo assuming 8x2 pixels in line */
   NEO_SetPixelRGB(NEOC_LANE_START, NEOC_NOF_LEDS_IN_LANE-1-x*2, red, green, blue); /* pixel one */

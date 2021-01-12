@@ -48,6 +48,58 @@ McuShell_ConstStdIOType BLEUART_stdio = {
 
 uint8_t BLEUart_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* default buffer which can be used by the application */
 
+void BLEUart_SendString(const unsigned char *str) {
+  McuLog_debug("BLE Tx: %s", str);
+  while(*str!='\0') {
+    BLEUart_SendChar(*str);
+    str++;
+  }
+}
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+static void commandVersion(const unsigned char *buf) {
+  #define NEOPIXEL_VERSION_STRING "Neopixel v2.0"
+  (void)buf; /* not used */
+  BLEUart_SendString((const unsigned char*)NEOPIXEL_VERSION_STRING);
+}
+#endif
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+static void commandSetup(const unsigned char *buf) {
+  //uint8_t width, height, stride, componentsValue, is400Hz;
+  (void)buf; /* not used */
+  BLEUart_SendString((const unsigned char*)"OK");
+}
+#endif
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+static void commandClearColor(const unsigned char *buf) {
+  (void)buf; /* not used */
+  BLEUart_SendString((const unsigned char*)"OK");
+}
+#endif
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+static void commandSetBrightness(const unsigned char *buf) {
+  (void)buf; /* not used */
+  BLEUart_SendString((const unsigned char*)"OK");
+}
+#endif
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+static void commandSetPixel(const unsigned char *buf) {
+  (void)buf; /* not used */
+  BLEUart_SendString((const unsigned char*)"OK");
+}
+#endif
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+static void commandImage(const unsigned char *buf) {
+  (void)buf; /* not used */
+  BLEUart_SendString((const unsigned char*)"OK");
+}
+#endif
+
 static void BleUartTask(void *pvParameters) {
   uint8_t buf[MAX_TX_MSG_SIZE];
   uint8_t txBuf[MAX_TX_MSG_SIZE+sizeof("[Tx] ")+sizeof("AT+BLEUARTTX=\n")];
@@ -74,7 +126,7 @@ static void BleUartTask(void *pvParameters) {
     }
     if (isEnabled) {
       while(isEnabled && !(isConnected=BLE_IsConnected())) { /* wait until connected */
-        //McuShell_SendStr((unsigned char*)"Waiting for BLE UART connection...\r\n", io->stdOut);
+        /* McuShell_SendStr((unsigned char*)"Waiting for BLE UART connection...\r\n", io->stdOut); */
         for(i=0;i<2 && isEnabled;i++) {
           vTaskDelay(pdMS_TO_TICKS(1000));
         }
@@ -128,8 +180,24 @@ static void BleUartTask(void *pvParameters) {
             /* print response */
             McuUtility_strCutTail(buf, (unsigned char*)"OK\r\n"); /* cut off the OK part */
         #if PL_CONFIG_USE_BLE_MSG
+            McuLog_debug("BLE Rx: %s", buf);
             if (buf[0]=='!') { /* special callback */
               BLEMSG_RxCallback(buf);
+#if PL_CONFIG_USE_BLE_NEOPIXEL
+            /* see https://github.com/adafruit/Adafruit_BluefruitLE_nRF51/blob/master/examples/neopixel/neopixel.ino */
+            } else if (buf[0]=='V') {
+              commandVersion(buf);
+            } else if (buf[0]=='S') {
+              commandSetup(buf);
+            } else if (buf[0]=='C') {
+              commandClearColor(buf);
+            } else if (buf[0]=='B') {
+              commandSetBrightness(buf);
+            } else if (buf[0]=='P') {
+              commandSetPixel(buf);
+            } else if (buf[0]=='I') {
+              commandImage(buf);
+#endif
             } else {
               McuRB_Putn(BleRxBuffer, buf, strlen((char*)buf)); /* pass to the shell parser */
             }

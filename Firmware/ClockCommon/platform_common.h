@@ -109,8 +109,9 @@
   #define PL_CONFIG_USE_RELATIVE_MOVES    (1)  /* use relative moves, increases the need for RAM on the master */
 #endif
 
-#define PL_CONFIG_WORLD_CLOCK         (0) /* legacy, clock showing different time zones */
-
+#ifndef PL_CONFIG_WORLD_CLOCK
+  #define PL_CONFIG_WORLD_CLOCK         (0) /* legacy, clock showing different time zones */
+#endif
 #define PL_CONFIG_USE_SHELL           (1) /* use command line shell */
 #ifndef PL_CONFIG_USE_RTT
   #define PL_CONFIG_USE_RTT             (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_IS_TINYK22)) /* use SEGGER RTT (only possible with a J-Link */
@@ -126,8 +127,15 @@
 #ifndef PL_CONFIG_USE_DEMOS
   #define PL_CONFIG_USE_DEMOS           (1 && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
 #endif
-#define PL_CONFIG_USE_BLE             (1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
-#define PL_CONFIG_USE_BLE_MSG         (1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit app messages */
+#ifndef PL_CONFIG_USE_BLE
+  #define PL_CONFIG_USE_BLE             (1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
+#endif
+#ifndef PL_CONFIG_USE_BLE_MSG
+  #define PL_CONFIG_USE_BLE_MSG         (1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit app messages */
+#endif
+#ifndef PL_CONFIG_USE_BLE_NEOPIXEL
+  #define PL_CONFIG_USE_BLE_NEOPIXEL    (1 && PL_CONFIG_USE_BLE) /* if using BLE Bluefuit NeoPixel messages */
+#endif
 #ifndef PL_CONFIG_USE_ESP32
   #define PL_CONFIG_USE_ESP32           (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* if using the ESP32 */
 #endif
