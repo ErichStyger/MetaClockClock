@@ -587,9 +587,9 @@ static void ClockTask(void *pv) {
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Min, '0', 2);
       #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, false);
+        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
       #else
-        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, false);
+        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
       #endif
         if (res!=ERR_OK) {
           McuLog_error("Failed showing time");
