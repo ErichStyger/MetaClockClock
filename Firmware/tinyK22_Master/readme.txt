@@ -91,3 +91,9 @@ Issues/open points/wish list:
 - add letters to 4x5 font
 - intermezzo with month (JAN 2021) with larger font
 - have 'intermezzo only' mode
+- Booster to 5V: 
+  https://hackaday.com/2021/01/12/smart-power-delivery-for-long-led-strips/
+  https://roboticsbrno.github.io/RB0004-NeopixelBooster/eval_v2/index.html
+  https://cadlab.io/project/23122/master/files
+  https://github.com/RoboticsBrno/RB0004-NeopixelBooster
+  
