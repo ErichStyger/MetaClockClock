@@ -57,6 +57,10 @@ void BLEUart_SendString(const unsigned char *str) {
 }
 
 #if PL_CONFIG_USE_BLE_NEOPIXEL
+static uint8_t NeoBrightness = 0;
+#endif
+
+#if PL_CONFIG_USE_BLE_NEOPIXEL
 static void commandVersion(const unsigned char *buf) {
   #define NEOPIXEL_VERSION_STRING "Neopixel v2.0"
   (void)buf; /* not used */
@@ -81,7 +85,7 @@ static void commandClearColor(const unsigned char *buf) {
 
 #if PL_CONFIG_USE_BLE_NEOPIXEL
 static void commandSetBrightness(const unsigned char *buf) {
-  (void)buf; /* not used */
+  NeoBrightness = buf[1];
   BLEUart_SendString((const unsigned char*)"OK");
 }
 #endif
