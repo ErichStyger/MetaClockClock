@@ -96,4 +96,5 @@ Issues/open points/wish list:
   https://roboticsbrno.github.io/RB0004-NeopixelBooster/eval_v2/index.html
   https://cadlab.io/project/23122/master/files
   https://github.com/RoboticsBrno/RB0004-NeopixelBooster
+  https://hackaday.com/2021/01/13/stepping-down-voltage-with-reliability/
   
