@@ -167,7 +167,7 @@ static void Intermezzo6(void) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
       MPOS_SetMoveModeZ0Z1(x, y, STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
-      MATRIX_SetMoveDelayZ0Z1Checked(x, y, 1+x/2, y);
+      MATRIX_SetMoveDelayZ0Z1Checked(x, y, 2+x/2, 2+y);
     }
   }
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
