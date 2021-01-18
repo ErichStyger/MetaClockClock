@@ -1790,11 +1790,12 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
 #if PL_CONFIG_IS_MASTER
 uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait) {
   int xSize, ySize;
+  int xPos, yPos;
 
   MATRIX_SetMoveDelayAll(2);
-  MPOS_SetAngleAll(MPOS_ANGLE_HIDE);
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE); /* move to 'hide' position all by default */
 #if PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(false);
+  MHAND_HandEnableAll(false); /* turn all off, they will be turned on while writing the font */
 #endif
   switch(font) {
     default:
@@ -1816,15 +1817,15 @@ uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Si
     MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
   }
   /* calculate text start position */
-  x = (MATRIX_NOF_STEPPERS_X-xSize)/2;
-  if (x<0) {
-    x = 0;
+  xPos = (MATRIX_NOF_STEPPERS_X-xSize)/2;
+  if (xPos<0) {
+    xPos = 0;
   }
-  y = (MATRIX_NOF_STEPPERS_Y-ySize)/2;
-  if (y<0) {
-    y = 0;
+  yPos = (MATRIX_NOF_STEPPERS_Y-ySize)/2;
+  if (yPos<0) {
+    yPos = 0;
   }
-  MFONT_PrintString(text, x, y, font);
+  MFONT_PrintString(text, xPos, yPos, font);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
 #endif /* PL_CONFIG_IS_MASTER */
