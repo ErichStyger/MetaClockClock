@@ -51,6 +51,7 @@
 #include "mfont.h"
 
 static bool CLOCK_ClockIsOn = false;
+static bool CLOCK_ClockIs24h = true; /* if showing time in 24h format (17:35) or 12h format (5:35) */
 static bool CLOCK_ClockIsParked = false;
 static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
@@ -157,6 +158,8 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), CLOCK_UpdatePeriodMinutes==1?(unsigned char*)" minute\r\n":(unsigned char*)" minutes\r\n");
   McuShell_SendStatusStr((unsigned char*)"  period", buf, io->stdOut);
 
+  McuShell_SendStatusStr((unsigned char*)"  24h", CLOCK_ClockIs24h?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
+
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"color: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), CLOCK_HandColor);
@@ -226,6 +229,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"clock", (unsigned char*)"Group of clock commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  on|off|toggle", (unsigned char*)"Enable or disable the clock\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  24h on|off", (unsigned char*)"Show time in 24h (17:35) or 12h (5:35) format\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  park on|off|toggle", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  period <minute>", (unsigned char*)"Clock update period in minutes (>0)\r\n", io->stdOut);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -267,6 +271,12 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   } else if (McuUtility_strcmp((char*)cmd, "clock off")==0) {
     *handled = true;
     CLOCK_On(CLOCK_MODE_OFF);
+  } else if (McuUtility_strcmp((char*)cmd, "clock 24h on")==0) {
+    *handled = true;
+    CLOCK_ClockIs24h = true;
+  } else if (McuUtility_strcmp((char*)cmd, "clock 24h off")==0) {
+    *handled = true;
+    CLOCK_ClockIs24h = false;
   } else if (McuUtility_strcmp((char*)cmd, "clock toggle")==0) {
     *handled = true;
     CLOCK_On(CLOCK_MODE_TOGGLE);
@@ -584,7 +594,15 @@ static void ClockTask(void *pv) {
         MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
       #endif
         buf[0] = '\0';
-        McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
+        if (CLOCK_ClockIs24h) {
+          McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
+        } else {
+          int hour = time.Hour%12;
+          if (hour==0) {
+            hour = 12;
+          }
+          McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
+        }
         McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Min, '0', 2);
       #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
         res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
