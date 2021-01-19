@@ -174,7 +174,7 @@ static const MClockChar2x3_t clockCharB2x3 = /* B */
     [0][0]={.hands={{.angle=180, .enabled= true},{.angle= 90, .enabled= true}}},
     [0][1]={.hands={{.angle=270, .enabled= true},{.angle=180, .enabled= true}}},
     [1][0]={.hands={{.angle=  0, .enabled= true},{.angle=180, .enabled= true}}},
-    [1][1]={.hands={{.angle=270, .enabled= true},{.angle=180, .enabled= true}}},
+    [1][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
   }
