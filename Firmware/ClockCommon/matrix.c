@@ -1464,9 +1464,8 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  r <xyz> <s> <d> <md>", (unsigned char*)"Relative step move (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  a <xyz> <s> <d> <md>", (unsigned char*)"Absolute step move (comma separated)\r\n", io->stdOut);
 #endif
-#endif /* PL_CONFIG_USE_STEPPER */
-
   McuShell_SendHelpStr((unsigned char*)"  q <xyz> <cmd>", (unsigned char*)"Queue a 'r' or 'a' command, e.g. 'matrix q 0 0 0 r 90 8 cc', (comma separated)\r\n", io->stdOut);
+#endif /* PL_CONFIG_USE_STEPPER */
   McuShell_SendHelpStr((unsigned char*)"  exq", (unsigned char*)"Execute commands in queues\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  lastError", (unsigned char*)"Check remotes for last error\r\n", io->stdOut);
@@ -2524,7 +2523,6 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M2].hw_step.gpio = GPIOB;
   x12config.motor[X12_017_M2].hw_step.port = PORTB;
   x12config.motor[X12_017_M2].hw_step.pin  = 0U;
-  x12config.motor[X12_017_M2].isInverted  = true;
 
   /* M3_DIR: */
   x12config.motor[X12_017_M3].hw_dir.gpio = GPIOD;
@@ -2535,7 +2533,6 @@ static void InitSteppers(void) {
   x12config.motor[X12_017_M3].hw_step.gpio = GPIOD;
   x12config.motor[X12_017_M3].hw_step.port = PORTD;
   x12config.motor[X12_017_M3].hw_step.pin  = 4U;
-  x12config.motor[X12_017_M3].isInverted  = true;
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   x12config.hw_reset.gpio = GPIOA;
   x12config.hw_reset.port = PORTA;
