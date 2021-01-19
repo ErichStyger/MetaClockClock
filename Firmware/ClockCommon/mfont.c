@@ -1787,8 +1787,30 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
 #endif
 }
 
+void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xSize, int *ySize) {
+  size_t len = McuUtility_strlen((char*)text);
+  switch(font) {
+    case MFONT_SIZE_2x3:
+      *xSize = len*MFONT_SIZE_X_2x3;
+      *ySize = MFONT_SIZE_Y_2x3;
+      break;
+    case MFONT_SIZE_3x5:
+      *xSize = len*MFONT_SIZE_X_3x5;
+      *ySize = MFONT_SIZE_Y_3x5;
+      break;
+    case MFONT_SIZE_4x5:
+      *xSize = len*MFONT_SIZE_X_4x5;
+      *ySize = MFONT_SIZE_Y_4x5;
+      break;
+    default: /* error case */
+      *xSize = 0;
+      *ySize = 0;
+      break;
+  } /* switch */
+}
+
 #if PL_CONFIG_IS_MASTER
-uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait) {
+uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait) {
   int xSize, ySize;
   int xPos, yPos;
 
@@ -1797,22 +1819,7 @@ uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, unsigned char *text, MFONT_Si
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(false); /* turn all off, they will be turned on while writing the font */
 #endif
-  switch(font) {
-    default:
-      return ERR_FAILED;
-    case MFONT_SIZE_2x3:
-      xSize = McuUtility_strlen((char*)text)*MFONT_SIZE_X_2x3;
-      ySize = MFONT_SIZE_Y_2x3;
-      break;
-    case MFONT_SIZE_3x5:
-      xSize = McuUtility_strlen((char*)text)*MFONT_SIZE_X_3x5;
-      ySize = MFONT_SIZE_Y_3x5;
-      break;
-    case MFONT_SIZE_4x5:
-      xSize = McuUtility_strlen((char*)text)*MFONT_SIZE_X_4x5;
-      ySize = MFONT_SIZE_Y_4x5;
-      break;
-  } /* switch */
+  MFONT_GetFontTextSize(text, font, &xSize, &ySize);
   if (withBorder && xSize<=MATRIX_NOF_STEPPERS_X-1 && ySize<=MATRIX_NOF_STEPPERS_Y-1) { /* only if enough space for border */
     MATRIX_DrawRectangle(0, 0, MATRIX_NOF_STEPPERS_X, MATRIX_NOF_STEPPERS_Y);
   }
