@@ -166,6 +166,8 @@ void APP_Run(void) {
 }
 
 /* overwrite assertion callback */
+#include "McuLog.h"
+
 void __assertion_failed(char *_Expr)  {
   McuLog_fatal(_Expr);
   McuLog_fatal("Assert failed!");
