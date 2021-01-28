@@ -116,7 +116,9 @@
 #ifndef PL_CONFIG_USE_RTT
   #define PL_CONFIG_USE_RTT             (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_IS_TINYK22)) /* use SEGGER RTT (only possible with a J-Link */
 #endif
-#define PL_CONFIG_USE_RTC             (1 && (PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* 1: enable RTC; 0: disable it */
+#ifndef PL_CONFIG_USE_RTC
+  #define PL_CONFIG_USE_RTC             (1 && (PL_CONFIG_IS_MASTER)) /* 1: enable RTC; 0: disable it */
+#endif
 #define PL_CONFIG_USE_RS485           (1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
 #ifndef PL_CONFIG_USE_NVMC
   #define PL_CONFIG_USE_NVMC            (1 && PL_CONFIG_IS_CLIENT) /* using non-volatile configuration memory */
@@ -125,7 +127,7 @@
   #define PL_CONFIG_USE_WDT             (0) /* if using watchdog timer, disable for easier debugging */
 #endif
 #ifndef PL_CONFIG_USE_DEMOS
-  #define PL_CONFIG_USE_DEMOS           (1 && ((PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128)) /* if using demos or not */
+  #define PL_CONFIG_USE_DEMOS           (1 && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) /* if using demos or not */
 #endif
 #ifndef PL_CONFIG_USE_BLE
   #define PL_CONFIG_USE_BLE             (1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
