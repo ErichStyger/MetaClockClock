@@ -3,6 +3,7 @@ Project to build a clock with clocks: the Meta Clock Clock!
 The idea is to use many 'clocks' to display information with text, digits and color. The design is very modular, and it can be customized in many ways:
 - number of clocks, There are builds with 24, 60 or even 120 clocks
 - with or without RGB LEDs
+[[/Hardware/images/Temperature.jpg|Temperature display]]
 
 Please check out as well the https://github.com/ErichStyger/MetaClockClock/wiki pages.
 
