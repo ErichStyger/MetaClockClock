@@ -37,8 +37,8 @@ Instructions:
 
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
-#define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
-#define configTOTAL_HEAP_SIZE                (8*1024)
+#define configUSE_HEAP_SCHEME                (4) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
+#define configTOTAL_HEAP_SIZE                (16*1024)
 #define configUSE_HEAP_SECTION_NAME          (1)
 #define configHEAP_SECTION_NAME_STRING       ".bss.$SRAM_LOWER.FreeRTOS"
 #define configQUEUE_REGISTRY_SIZE            (16)
@@ -66,7 +66,7 @@ Instructions:
 #define McuPercepio_CONFIG_START_TRACE_IN_STARTUP_MODE  TRC_START
 /* -------------------------------------------------*/
 /* Shell */
-#define McuShell_CONFIG_PROJECT_NAME_STRING           "K02 LedStepper"
+#define McuShell_CONFIG_PROJECT_NAME_STRING           "K64F STSPIN220"
 #define McuShell_CONFIG_MULTI_CMD_ENABLED             (1)
 #define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256)
 #define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
@@ -85,14 +85,6 @@ Instructions:
   #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (1)
   #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (1)
 #endif
-/* ------------------- I2C ---------------------------*/
-#define CONFIG_USE_HW_I2C                             (0) /* if using HW I2C, otherwise use software bit banging */
-#define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)
-#define McuGenericI2C_CONFIG_USE_ON_REQUEST_BUS_EVENT (0)
-#define McuGenericI2C_CONFIG_USE_MUTEX                (0 && McuLib_CONFIG_SDK_USE_FREERTOS)
-/* -------------------------------------------------*/
-/* stepper motor driver */
-#define McuX12_017_CONFIG_QUAD_DRIVER                 (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
 #define McuLog_CONFIG_IS_ENABLED                      (1)
