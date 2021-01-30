@@ -56,8 +56,8 @@ Instructions:
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
-#define SYSVIEW_APP_NAME                     "K02 LedStepper"
-#define SYSVIEW_DEVICE_NAME                  "NXP K02FN64"
+#define SYSVIEW_APP_NAME                     "K64F"
+#define SYSVIEW_DEVICE_NAME                  "NXP K64F"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
 #define McuSystemView_CONFIG_RTT_CHANNEL     (1)
 /* -------------------------------------------------*/
@@ -73,7 +73,7 @@ Instructions:
 #define McuShellUart_CONFIG_UART                      McuShellUart_CONFIG_UART_NONE
 /* -------------------------------------------------*/
 /* RTT */
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (128)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (256)
 #define McuRTT_CONFIG_BLOCKING_SEND                   (1)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
@@ -90,7 +90,7 @@ Instructions:
 #define McuLog_CONFIG_IS_ENABLED                      (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
-#define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
+#define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (256)
 /* -------------------------------------------------*/
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */
