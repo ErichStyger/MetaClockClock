@@ -68,9 +68,9 @@ void STS220_DoSteps(STS220_DeviceHandle device, int nof) {
   }
   while(nof>0) {
     McuGPIO_SetHigh(dev->step);
-    vTaskDelay(pdMS_TO_TICKS(2));
+    vTaskDelay(pdMS_TO_TICKS(1));
     McuGPIO_SetLow(dev->step);
-    vTaskDelay(pdMS_TO_TICKS(2));
+    vTaskDelay(pdMS_TO_TICKS(1));
     nof--;
   }
   STS220_SetStandby(device, true);

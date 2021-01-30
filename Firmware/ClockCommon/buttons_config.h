@@ -20,7 +20,7 @@
   #define BUTTONS_USER_PIN        4
   #define BUTTONS_USER_IOCON      IOCON_INDEX_PIO0_4
 
-  #define BUTTONS_ENABLE_CLOCK() GPIO_PortInit(GPIO, 0) /* ungate the clocks for GPIO0: used for user button */
+  #define BUTTONS_ENABLE_CLOCK() GPIO_PortInit(GPIO, 0) /* ungate the clocks for GPIO0 (Port 0): used for user button */
 #endif
 
 typedef enum {
