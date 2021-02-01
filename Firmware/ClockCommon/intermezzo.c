@@ -19,14 +19,7 @@
 #include "mfont.h"
 #include <math.h>
 
-typedef enum Intermezzo_e {
-  INTERMEZZO_NONE = 0,
-  INTERMEZZO_FEW = 1,
-  INTERMEZZO_NOF /* must be last in list */
-} Intermezzo_e;
-
-//static Intermezzo_e IntermezzoMode = INTERMEZZO_FEW;
-static Intermezzo_e IntermezzoMode = INTERMEZZO_NONE;
+static bool IntermezzoOn = false; /* if intermezzos are on by default or not */
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 
 static void Intermezzo0(void) {
@@ -860,7 +853,7 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
   TickType_t tickCount;
   uint8_t intermezzo;
 
-  if (IntermezzoMode==INTERMEZZO_FEW) {
+  if (IntermezzoOn) {
     tickCount = xTaskGetTickCount();
     if (tickCount-lastClockUpdateTickCount > pdMS_TO_TICKS(IntermezzoDelaySec*1000)) { /* after a delay: start intermezzo */
       intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
@@ -874,22 +867,22 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
-  uint8_t res = ERR_OK;
   uint8_t buf[64];
 
   McuShell_SendStatusStr((unsigned char*)"intermezzo", (unsigned char*)"Intermezzo settings\r\n", io->stdOut);
-  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"mode: ");
-  McuUtility_strcatNum32u(buf, sizeof(buf), IntermezzoMode);
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" nof: ");
+  McuShell_SendStatusStr((unsigned char*)"  on", IntermezzoOn?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+
+  buf[0] = '\0';
   McuUtility_strcatNum32u(buf, sizeof(buf), NOF_INTERMEZZOS);
-
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" delay: ");
-  McuUtility_strcatNum32u(buf, sizeof(buf), IntermezzoDelaySec);
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" s");
-
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  McuShell_SendStatusStr((unsigned char*)"  intermezzo", buf, io->stdOut);
-  return res;
+  McuShell_SendStatusStr((unsigned char*)"  nof", buf, io->stdOut);
+
+  buf[0] = '\0';
+  McuUtility_strcatNum32u(buf, sizeof(buf), IntermezzoDelaySec);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" s\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  delay", buf, io->stdOut);
+
+  return ERR_OK;
 }
 #endif
 
@@ -897,10 +890,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"intermezzo", (unsigned char*)"Group of intermezzo commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  mode <nr>", (unsigned char*)"Set Intermezzo mode (0-2):\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"0: no intermezzos\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"1: few intermezzos\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"2: many intermezzos (not implemented yet!)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  on|off|toggle", (unsigned char*)"Turn intermezzos on, off or toggle\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <sec>", (unsigned char*)"Intermezzo delay in seconds\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  <nr>", (unsigned char*)"Play Intermezzo (0-", io->stdOut);
   McuShell_SendNum32u(NOF_INTERMEZZOS-1, io->stdOut);
@@ -918,16 +908,17 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "intermezzo status")==0)) {
     *handled = true;
     return PrintStatus(io);
-  } else if (McuUtility_strncmp((char*)cmd, "intermezzo mode ", sizeof("intermezzo mode ")-1)==0) {
-    uint8_t val;
-
-    *handled = TRUE;
-    p = cmd + sizeof("intermezzo mode ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &val)==ERR_OK && val<INTERMEZZO_NOF) {
-      IntermezzoMode = val;
-    } else {
-      return ERR_FAILED;
-    }
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo on")==0) {
+    *handled = true;
+    IntermezzoOn = true;
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo off")==0) {
+    *handled = true;
+    IntermezzoOn = false;
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo toggle")==0) {
+    *handled = true;
+    IntermezzoOn = !IntermezzoOn;
     return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo delay ", sizeof("intermezzo delay ")-1)==0) {
     uint8_t sec;
