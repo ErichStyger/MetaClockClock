@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_HAS_PARK_BUTTON
+#if PL_CONFIG_HAS_BUTTONS
 #include "buttons.h"
 #include "buttons_config.h"
 #include <assert.h>
@@ -288,4 +288,4 @@ void BTN_Init(void) {
     for(;;); /* failure! */
   }
 }
-#endif /* PL_CONFIG_HAS_PARK_BUTTON */
+#endif /* PL_CONFIG_HAS_BUTTONS */

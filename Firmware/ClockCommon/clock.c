@@ -9,7 +9,7 @@
 #if PL_CONFIG_USE_CLOCK
 #include "McuWait.h"
 #include "McuRTOS.h"
-#if PL_CONFIG_HAS_PARK_BUTTON
+#if PL_CONFIG_HAS_BUTTONS
   #include "buttons.h"
 #endif
 #include "leds.h"

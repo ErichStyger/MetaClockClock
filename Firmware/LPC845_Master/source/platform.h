@@ -26,19 +26,19 @@
   #define PL_MATRIX_CONFIG_IS_RGB         (0) /* disable color to fit into available RAM */
   #define PL_CONFIG_USE_RTT               (0) /* optional: enable RTT as extra interface beside UART */
   #define PL_CONFIG_CHECK_LAST_ERROR      (0) /* not check for cmd errors to improve speed */
-  #define PL_CONFIG_HAS_PARK_BUTTON       (1) /* requires FreeRTOS timers enabled */
+  #define PL_CONFIG_HAS_BUTTONS           (1) /* requires FreeRTOS timers enabled */
 #elif 1 /* V4: 24 clock version with round PCBs */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
   #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* using extended hand */
   #define PL_CONFIG_USE_RTT               (0) /* need to disable RTT to fit into available RAM */
-  #define PL_CONFIG_HAS_PARK_BUTTON       (1) /* requires FreeRTOS timers enabled */
+  #define PL_CONFIG_HAS_BUTTONS           (1) /* requires FreeRTOS timers enabled */
 #elif 0 /* Alexis clock: won't fit anymore into the available amount of RAM */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_RELATIVE_MOVES    (0) /* disable relative moves to fit into available RAM */
   #define PL_CONFIG_USE_RTT               (0) /* need to disable RTT to fit into available RAM */
-  #define PL_CONFIG_HAS_PARK_BUTTON       (0) /* disable to fit into available of RAM: would need to disable FreeRTOS timers too and tweak HEAP size */
+  #define PL_CONFIG_HAS_BUTTONS           (0) /* disable to fit into available of RAM: would need to disable FreeRTOS timers too and tweak HEAP size */
 #elif 0 /* Sm(A)rtWall project */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_8x5
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */

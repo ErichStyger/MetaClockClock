@@ -29,8 +29,8 @@
   #define PL_CONFIG_IS_ANALOG_CLOCK  (1) /* if it is an analog clock */
 #endif
 
-#ifndef PL_CONFIG_HAS_PARK_BUTTON
-  #define PL_CONFIG_HAS_PARK_BUTTON  (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK)  /* if we have a push button to park and unpark the motors. Requires FreeRTOS timers for debouncing */
+#ifndef PL_CONFIG_HAS_BUTTONS
+  #define PL_CONFIG_HAS_BUTTONS  (0 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK)  /* if we have a push button to park and unpark the motors. Requires FreeRTOS timers for debouncing */
 #endif
 
 #ifndef PL_CONFIG_USE_FONT

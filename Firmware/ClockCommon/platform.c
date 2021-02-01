@@ -64,7 +64,7 @@
 #endif
 #include "matrix.h"
 #include "leds.h"
-#if PL_CONFIG_HAS_PARK_BUTTON
+#if PL_CONFIG_HAS_BUTTONS
   #include "buttons.h"
 #endif
 #if PL_CONFIG_USE_SHELL
@@ -188,7 +188,7 @@ void PL_Init(void) {
   USB_APPInit(); /* Initialize USB first before the UART/Gateway, because this changes the clock settings! */
 #endif
   LEDS_Init();
-#if PL_CONFIG_HAS_PARK_BUTTON
+#if PL_CONFIG_HAS_BUTTONS
   BTN_Init();
 #endif
 #if PL_CONFIG_USE_SHELL_UART
