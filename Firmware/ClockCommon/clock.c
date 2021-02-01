@@ -65,18 +65,31 @@ static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
 #endif
 
 /* direct task notification messages: */
-#define CLOCK_TASK_NOTIFY_PARK_ON        (1<<0) /* request to park the motors */
-#define CLOCK_TASK_NOTIFY_PARK_OFF       (1<<1) /* request to un-park the motors */
-#define CLOCK_TASK_NOTIFY_PARK_TOGGLE    (1<<2) /* request to toggle parking */
-#define CLOCK_TASK_NOTIFY_CLOCK_ON       (1<<3) /* request to turn the clock on */
-#define CLOCK_TASK_NOTIFY_CLOCK_OFF      (1<<4) /* request to turn the clock off */
-#define CLOCK_TASK_NOTIFY_CLOCK_TOGGLE   (1<<5) /* request to toggle clock on/off */
+#define CLOCK_TASK_NOTIFY_PARK_ON             (1<<0) /* request to park the motors */
+#define CLOCK_TASK_NOTIFY_PARK_OFF            (1<<1) /* request to un-park the motors */
+#define CLOCK_TASK_NOTIFY_PARK_TOGGLE         (1<<2) /* request to toggle parking */
+#define CLOCK_TASK_NOTIFY_CLOCK_ON            (1<<3) /* request to turn the clock on */
+#define CLOCK_TASK_NOTIFY_CLOCK_OFF           (1<<4) /* request to turn the clock off */
+#define CLOCK_TASK_NOTIFY_CLOCK_TOGGLE        (1<<5) /* request to toggle clock on/off */
+#define CLOCK_TASK_NOTIFY_BUTTON_PRESSED      (1<<6) /* request to toggle clock on/off */
+#define CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG (1<<7) /* request to toggle clock on/off */
 
 static TaskHandle_t clockTaskHndl;
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
 
 bool CLOCK_GetClockIsOn(void) {
   return CLOCK_ClockIsOn;
+}
+
+void CLOCK_Notify(CLOCK_Notify_e msg) {
+  switch(msg) {
+    case CLOCK_NOTIFY_BUTTON_PRESSED:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_PRESSED, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_LONG:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG, eSetBits);
+      break;
+  }
 }
 
 void CLOCK_Park(CLOCK_Mode_e mode) {
@@ -511,10 +524,21 @@ static void ClockTask(void *pv) {
     res = xTaskNotifyWait(
        0, /* do not clear anything on enter */
         CLOCK_TASK_NOTIFY_PARK_ON|CLOCK_TASK_NOTIFY_PARK_OFF|CLOCK_TASK_NOTIFY_PARK_TOGGLE
-       |CLOCK_TASK_NOTIFY_CLOCK_ON|CLOCK_TASK_NOTIFY_CLOCK_OFF|CLOCK_TASK_NOTIFY_CLOCK_TOGGLE, /* clear on exit */
+       |CLOCK_TASK_NOTIFY_CLOCK_ON|CLOCK_TASK_NOTIFY_CLOCK_OFF|CLOCK_TASK_NOTIFY_CLOCK_TOGGLE
+       |CLOCK_TASK_NOTIFY_BUTTON_PRESSED|CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG,
+       /* clear on exit */
        &ulNotificationValue,
        0);
     if (res==pdTRUE) { /* notification received */
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_PRESSED) {
+        McuLog_info("Notification: button pressed");
+        SHELL_ParseCommand((unsigned char*)"clock toggle", McuShell_GetStdio(), true);
+      }
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG) {
+        McuLog_info("Notification: button pressed long");
+        SHELL_ParseCommand((unsigned char*)"intermezzo toggle", McuShell_GetStdio(), true);
+      }
+
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_ON) {
         McuLog_info("Start parking clock");
         SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
@@ -529,6 +553,23 @@ static void ClockTask(void *pv) {
         CLOCK_ClockIsOn = false; /* disabled clock */
         CLOCK_ClockIsParked = false;
       }
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_TOGGLE) {
+        McuLog_info("toggle park");
+        if (CLOCK_ClockIsParked) {
+          McuLog_info("Start unparking clock");
+          SHELL_ParseCommand((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+          McuLog_info("Unparking done.");
+          CLOCK_ClockIsOn = false; /* disabled clock */
+          CLOCK_ClockIsParked = false;
+        } else {
+          McuLog_info("Start parking clock");
+          SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+          McuLog_info("Parking done.");
+          CLOCK_ClockIsOn = false; /* disabled clock */
+          CLOCK_ClockIsParked = true;
+        }
+      }
+
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
         McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
@@ -547,6 +588,22 @@ static void ClockTask(void *pv) {
       #endif
         APP_RequestUpdateLEDs(); /* update LEDs */
     #endif
+      }
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
+        McuLog_info("Clock toggle");
+        CLOCK_ClockIsOn = !CLOCK_ClockIsOn; /* toggle clock */
+        prevClockUpdateTimestampSec = 0; /* to make sure it will update */
+      #if PL_CONFIG_USE_NEO_PIXEL_HW
+        if (!CLOCK_ClockIsOn) {
+          /* turn off LEDs */
+          MRING_SetRingColorAll(0, 0, 0);
+          MHAND_HandEnableAll(false);
+        #if PL_CONFIG_USE_EXTENDED_HANDS
+          MHAND_2ndHandEnableAll(false);
+        #endif
+          APP_RequestUpdateLEDs(); /* update LEDs */
+        }
+      #endif
       }
     }
   #if PL_CONFIG_USE_RTC

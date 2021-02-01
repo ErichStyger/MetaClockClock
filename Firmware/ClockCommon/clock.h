@@ -16,6 +16,13 @@ typedef enum CLOCK_Mode_e {
   CLOCK_MODE_TOGGLE,
 } CLOCK_Mode_e;
 
+typedef enum CLOCK_Notify_e { /* direct task notification bits */
+  CLOCK_NOTIFY_BUTTON_PRESSED      = (1<<0),
+  CLOCK_NOTIFY_BUTTON_PRESSED_LONG = (1<<1),
+} CLOCK_Notify_e;
+
+void CLOCK_Notify(CLOCK_Notify_e msg);
+
 void CLOCK_Park(CLOCK_Mode_e mode);
 void CLOCK_On(CLOCK_Mode_e mode);
 

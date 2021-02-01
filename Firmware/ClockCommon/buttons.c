@@ -73,11 +73,11 @@ static void OnDebounceEvent(McuDbnc_EventKinds event, uint32_t buttons) {
       break;
 
     case MCUDBNC_EVENT_RELEASED:
-      CLOCK_On(CLOCK_MODE_TOGGLE);
+      CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED);
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
-      CLOCK_Park(CLOCK_MODE_TOGGLE);
+      CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_LONG);
       break;
 
     default:
