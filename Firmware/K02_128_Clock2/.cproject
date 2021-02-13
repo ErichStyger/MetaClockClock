@@ -349,7 +349,7 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="com.nxp.mcuxpresso.core.datamodels">
 		<sdkName>SDK_2.x_MK02FN128xxx10</sdkName>
-		<sdkVersion>2.8.2</sdkVersion>
+		<sdkVersion>2.9.0</sdkVersion>
 		<sdkComponents>middleware.baremetal.MK02F12810;platform.drivers.clock.MK02F12810;platform.drivers.common.MK02F12810;device.MK02F12810_CMSIS.MK02F12810;platform.Include_core_cm4.MK02F12810;platform.Include_common.MK02F12810;platform.Include_dsp.MK02F12810;platform.drivers.flash.MK02F12810;platform.drivers.ftm.MK02F12810;platform.drivers.gpio.MK02F12810;platform.drivers.pit.MK02F12810;platform.drivers.port.MK02F12810;platform.drivers.sim.MK02F12810;platform.drivers.smc.MK02F12810;platform.drivers.uart.MK02F12810;platform.drivers.wdog.MK02F12810;platform.drivers.crc.MK02F12810;device.MK02F12810_startup.MK02F12810;platform.drivers.dmamux.MK02F12810;platform.drivers.edma.MK02F12810;platform.drivers.llwu.MK02F12810;platform.drivers.lptmr.MK02F12810;platform.drivers.rcm.MK02F12810;platform.drivers.pmc.MK02F12810;platform.utilities.notifier.MK02F12810;</sdkComponents>
 		<package>MK02FN128VFM10</package>
 		<core>cm4</core>
