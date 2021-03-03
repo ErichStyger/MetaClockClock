@@ -1,0 +1,5 @@
+Note:
+Up and including K02 V1.5 the order of motor connections for the external motor on J8 and J10 is not correct:
+The order of pins is A1, A2, A4, A3 (should be A1, A2, A3, A4), samd for Bx.
+With this, the pins in the cable for A3 and A4 (resp. B3 and B4) need to be swapped, otherwise the external motor makes more noise than necessary.
+A future revision of the board should correct this.
