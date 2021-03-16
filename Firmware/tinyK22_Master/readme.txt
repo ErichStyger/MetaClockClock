@@ -69,6 +69,7 @@ demo time 20:56
 
 Issues/open points/wish list:
 -----------------------------
+- add ability to change hour/minute using buttons (2-4 buttons)
 - watchdog for K22
 - matrix R 0 4 0 360 3 CW
   led is behind, while
