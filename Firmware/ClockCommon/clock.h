@@ -9,6 +9,7 @@
 
 #include <stdbool.h>
 #include "McuShell.h"
+#include "McuDebounce.h"
 
 typedef enum CLOCK_Mode_e {
   CLOCK_MODE_ON,
@@ -22,6 +23,7 @@ typedef enum CLOCK_Notify_e { /* direct task notification bits */
 } CLOCK_Notify_e;
 
 void CLOCK_Notify(CLOCK_Notify_e msg);
+void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons);
 
 void CLOCK_Park(CLOCK_Mode_e mode);
 void CLOCK_On(CLOCK_Mode_e mode);

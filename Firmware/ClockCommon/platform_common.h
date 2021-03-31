@@ -213,6 +213,10 @@
   #define PL_CONFIG_USE_MCU_LOG       (McuLog_CONFIG_IS_ENABLED) /* configured in IncludeMcuLibConfig.h */
 #endif
 
+#ifndef PL_CONFIG_SWITCH_7WAY
+  #define PL_CONFIG_SWITCH_7WAY   (0)  /* using 7-way switch with up/down/left/right/center/set/reset */
+#endif
+
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)

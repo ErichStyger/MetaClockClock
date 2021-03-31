@@ -51,6 +51,9 @@
 #endif
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
+
+#define PL_CONFIG_SWITCH_7WAY   (1) /* using 7-way switch with up/down/left/right/center/set/reset */
+
 #include "platform_common.h"
 
 

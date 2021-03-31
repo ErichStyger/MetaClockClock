@@ -73,11 +73,11 @@ static void OnDebounceEvent(McuDbnc_EventKinds event, uint32_t buttons) {
       break;
 
     case MCUDBNC_EVENT_RELEASED:
-      CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED);
+      CLOCK_ButtonHandler(event, buttons);
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
-      CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_LONG);
+      CLOCK_ButtonHandler(event, buttons);
       break;
 
     default:
@@ -268,8 +268,65 @@ void BTN_Init(void) {
   btnConfig.hw.pin = BUTTONS_USER_PIN;
   btnConfig.hw.iocon = BUTTONS_USER_IOCON;
   BTN_Infos[BTN_USER].handle = McuBtn_InitButton(&btnConfig);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_USER_PINTSEL);
 
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, kSYSCON_GpioPort0Pin4ToPintsel);
+#if PL_CONFIG_SWITCH_7WAY
+  btnConfig.hw.gpio = BUTTONS_UP_GPIO;
+  btnConfig.hw.port = BUTTONS_UP_PORT;
+  btnConfig.hw.pin = BUTTONS_UP_PIN;
+  btnConfig.hw.iocon = BUTTONS_UP_IOCON;
+  BTN_Infos[BTN_UP].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_UP].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_UP_PINTSEL);
+
+  btnConfig.hw.gpio = BUTTONS_DOWN_GPIO;
+  btnConfig.hw.port = BUTTONS_DOWN_PORT;
+  btnConfig.hw.pin = BUTTONS_DOWN_PIN;
+  btnConfig.hw.iocon = BUTTONS_DOWN_IOCON;
+  BTN_Infos[BTN_DOWN].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_DOWN].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_DOWN_PINTSEL);
+
+  btnConfig.hw.gpio = BUTTONS_LEFT_GPIO;
+  btnConfig.hw.port = BUTTONS_LEFT_PORT;
+  btnConfig.hw.pin = BUTTONS_LEFT_PIN;
+  btnConfig.hw.iocon = BUTTONS_LEFT_IOCON;
+  BTN_Infos[BTN_LEFT].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_LEFT].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_LEFT_PINTSEL);
+
+  btnConfig.hw.gpio = BUTTONS_RIGHT_GPIO;
+  btnConfig.hw.port = BUTTONS_RIGHT_PORT;
+  btnConfig.hw.pin = BUTTONS_RIGHT_PIN;
+  btnConfig.hw.iocon = BUTTONS_RIGHT_IOCON;
+  BTN_Infos[BTN_RIGHT].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_RIGHT].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_RIGHT_PINTSEL);
+
+  btnConfig.hw.gpio = BUTTONS_MID_GPIO;
+  btnConfig.hw.port = BUTTONS_MID_PORT;
+  btnConfig.hw.pin = BUTTONS_MID_PIN;
+  btnConfig.hw.iocon = BUTTONS_MID_IOCON;
+  BTN_Infos[BTN_MID].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_MID].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_MID_PINTSEL);
+
+  btnConfig.hw.gpio = BUTTONS_SET_GPIO;
+  btnConfig.hw.port = BUTTONS_SET_PORT;
+  btnConfig.hw.pin = BUTTONS_SET_PIN;
+  btnConfig.hw.iocon = BUTTONS_SET_IOCON;
+  BTN_Infos[BTN_SET].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_SET].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_SET_PINTSEL);
+
+  btnConfig.hw.gpio = BUTTONS_RST_GPIO;
+  btnConfig.hw.port = BUTTONS_RST_PORT;
+  btnConfig.hw.pin = BUTTONS_RST_PIN;
+  btnConfig.hw.iocon = BUTTONS_RST_IOCON;
+  BTN_Infos[BTN_RST].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_RST].handle);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_RST_PINTSEL);
+#endif
 
   PINT_Init(PINT); /* Initialize PINT */
   /* Setup Pin Interrupt 0 for rising edge */

@@ -11,6 +11,7 @@
 #include "McuRTOS.h"
 #if PL_CONFIG_HAS_BUTTONS
   #include "buttons.h"
+  #include "McuButton.h"
 #endif
 #include "leds.h"
 #if PL_CONFIG_USE_SHELL
@@ -79,6 +80,38 @@ static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every 
 
 bool CLOCK_GetClockIsOn(void) {
   return CLOCK_ClockIsOn;
+}
+
+void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
+  switch(event) {
+    case MCUDBNC_EVENT_PRESSED:
+      break;
+
+    case MCUDBNC_EVENT_PRESSED_REPEAT:
+      break;
+
+    case MCUDBNC_EVENT_LONG_PRESSED:
+      break;
+
+    case MCUDBNC_EVENT_LONG_PRESSED_REPEAT:
+      break;
+
+    case MCUDBNC_EVENT_RELEASED:
+      if (buttons&BTN_BIT_USER) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED);
+      }
+      break;
+
+    case MCUDBNC_EVENT_LONG_RELEASED:
+      if (buttons&BTN_BIT_USER) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_LONG);
+      }
+      break;
+
+    default:
+      break;
+  }
+
 }
 
 void CLOCK_Notify(CLOCK_Notify_e msg) {
