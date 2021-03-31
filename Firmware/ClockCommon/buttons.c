@@ -177,7 +177,20 @@ static void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status) {
   McuSystemView_Print((const char*)"Pressed button\r\n");
   McuSystemView_OnUserStart(MCU_SYSTEM_VIEW_USER_ID_BUTTON_INTERRUPT);
 #endif
-  StartDebounce(BTN_BIT_USER, true);
+  switch(pintr) {
+    case kPINT_PinInt0: StartDebounce(BTN_BIT_USER, true); break;
+  #if PL_CONFIG_SWITCH_7WAY
+    case kPINT_PinInt1: StartDebounce(BTN_BIT_UP, true); break;
+    case kPINT_PinInt2: StartDebounce(BTN_BIT_DOWN, true); break;
+    case kPINT_PinInt3: StartDebounce(BTN_BIT_LEFT, true); break;
+    case kPINT_PinInt4: StartDebounce(BTN_BIT_RIGHT, true); break;
+    case kPINT_PinInt5: StartDebounce(BTN_BIT_MID, true); break;
+    case kPINT_PinInt6: StartDebounce(BTN_BIT_SET, true); break;
+    case kPINT_PinInt7: StartDebounce(BTN_BIT_RST, true); break;
+  #endif
+    default:
+      break;
+  }
 #if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
   McuSystemView_OnUserStop(MCU_SYSTEM_VIEW_USER_ID_BUTTON_INTERRUPT);
   McuSystemView_RecordExitISR();
@@ -277,7 +290,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_UP_IOCON;
   BTN_Infos[BTN_UP].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_UP].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_UP_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt1, BUTTONS_UP_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_DOWN_GPIO;
   btnConfig.hw.port = BUTTONS_DOWN_PORT;
@@ -285,7 +298,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_DOWN_IOCON;
   BTN_Infos[BTN_DOWN].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_DOWN].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_DOWN_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt2, BUTTONS_DOWN_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_LEFT_GPIO;
   btnConfig.hw.port = BUTTONS_LEFT_PORT;
@@ -293,7 +306,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_LEFT_IOCON;
   BTN_Infos[BTN_LEFT].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_LEFT].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_LEFT_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt3, BUTTONS_LEFT_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_RIGHT_GPIO;
   btnConfig.hw.port = BUTTONS_RIGHT_PORT;
@@ -301,7 +314,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_RIGHT_IOCON;
   BTN_Infos[BTN_RIGHT].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_RIGHT].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_RIGHT_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt4, BUTTONS_RIGHT_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_MID_GPIO;
   btnConfig.hw.port = BUTTONS_MID_PORT;
@@ -309,7 +322,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_MID_IOCON;
   BTN_Infos[BTN_MID].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_MID].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_MID_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt5, BUTTONS_MID_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_SET_GPIO;
   btnConfig.hw.port = BUTTONS_SET_PORT;
@@ -317,7 +330,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_SET_IOCON;
   BTN_Infos[BTN_SET].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_SET].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_SET_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt6, BUTTONS_SET_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_RST_GPIO;
   btnConfig.hw.port = BUTTONS_RST_PORT;
@@ -325,7 +338,7 @@ void BTN_Init(void) {
   btnConfig.hw.iocon = BUTTONS_RST_IOCON;
   BTN_Infos[BTN_RST].handle = McuBtn_InitButton(&btnConfig);
   McuBtn_EnablePullResistor(BTN_Infos[BTN_RST].handle);
-  SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_RST_PINTSEL);
+  SYSCON_AttachSignal(SYSCON, kPINT_PinInt7, BUTTONS_RST_PINTSEL);
 #endif
 
   PINT_Init(PINT); /* Initialize PINT */
@@ -333,6 +346,23 @@ void BTN_Init(void) {
   PINT_PinInterruptConfig(PINT, kPINT_PinInt0, kPINT_PinIntEnableFallEdge, pint_intr_callback);
   /* Enable callbacks for PINT0 by Index */
   PINT_EnableCallbackByIndex(PINT, kPINT_PinInt0);
+
+#if PL_CONFIG_SWITCH_7WAY
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt1, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt1);
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt2, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt2);
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt3, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt3);
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt4, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt4);
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt5, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt5);
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt6, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt6);
+  PINT_PinInterruptConfig(PINT, kPINT_PinInt7, kPINT_PinIntEnableFallEdge, pint_intr_callback);
+  PINT_EnableCallbackByIndex(PINT, kPINT_PinInt7);
+#endif
 #endif
 
   data.timer = xTimerCreate(

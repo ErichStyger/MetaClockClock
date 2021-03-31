@@ -37,14 +37,14 @@
   #define BUTTONS_LEFT_GPIO       GPIO
   #define BUTTONS_LEFT_PORT       0
   #define BUTTONS_LEFT_PIN        31
-  #define BUTTONS_LEFT_IOCON      IOCON_INDEX_PIO0_31
-  #define BUTTONS_LEFT_PINTSEL    kSYSCON_GpioPort0Pin31ToPintsel
+  #define BUTTONS_LEFT_IOCON      IOCON_INDEX_PIO0_26
+  #define BUTTONS_LEFT_PINTSEL    kSYSCON_GpioPort0Pin26ToPintsel
 
   #define BUTTONS_RIGHT_GPIO      GPIO
   #define BUTTONS_RIGHT_PORT      0
   #define BUTTONS_RIGHT_PIN       30
-  #define BUTTONS_RIGHT_IOCON     IOCON_INDEX_PIO0_30
-  #define BUTTONS_RIGHT_PINTSEL   kSYSCON_GpioPort0Pin30ToPintsel
+  #define BUTTONS_RIGHT_IOCON     IOCON_INDEX_PIO0_23
+  #define BUTTONS_RIGHT_PINTSEL   kSYSCON_GpioPort0Pin23ToPintsel
 
   #define BUTTONS_MID_GPIO        GPIO
   #define BUTTONS_MID_PORT        0
