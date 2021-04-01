@@ -72,8 +72,20 @@ static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
 #define CLOCK_TASK_NOTIFY_CLOCK_ON            (1<<3) /* request to turn the clock on */
 #define CLOCK_TASK_NOTIFY_CLOCK_OFF           (1<<4) /* request to turn the clock off */
 #define CLOCK_TASK_NOTIFY_CLOCK_TOGGLE        (1<<5) /* request to toggle clock on/off */
-#define CLOCK_TASK_NOTIFY_BUTTON_PRESSED      (1<<6) /* request to toggle clock on/off */
-#define CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG (1<<7) /* request to toggle clock on/off */
+#define CLOCK_TASK_NOTIFY_BUTTON_USR          (1<<6) /* request to toggle clock on/off */
+#define CLOCK_TASK_NOTIFY_BUTTON_USR_LONG     (1<<7) /* request to toggle clock on/off */
+#if PL_CONFIG_SWITCH_7WAY
+#define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<8) /* up button */
+#define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<9) /* down button */
+#define CLOCK_TASK_NOTIFY_BUTTON_LEFT         (1<<10) /* left button */
+#define CLOCK_TASK_NOTIFY_BUTTON_RIGHT        (1<<11) /* right button */
+#define CLOCK_TASK_NOTIFY_BUTTON_MID          (1<<12) /* middle button */
+#define CLOCK_TASK_NOTIFY_BUTTON_RST          (1<<13) /* reset button */
+#define CLOCK_TASK_NOTIFY_BUTTON_SET          (1<<14) /* set button */
+#define CLOCK_TASK_NOTIFY_ALL                ((1<<15)-1) /* all notification bits */
+#else
+#define CLOCK_TASK_NOTIFY_ALL                 ((1<<8)-1) /* all notification bits */
+#endif
 
 static TaskHandle_t clockTaskHndl;
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
@@ -82,6 +94,114 @@ bool CLOCK_GetClockIsOn(void) {
   return CLOCK_ClockIsOn;
 }
 
+static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
+  uint8_t buf[8], res;
+
+  McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
+  MATRIX_SetMoveDelayAll(5);
+  MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
+#endif
+  buf[0] = '\0';
+  if (CLOCK_ClockIs24h) {
+    McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Hour, '0', 2);
+  } else {
+    int hour = time->Hour%12;
+    if (hour==0) {
+      hour = 12;
+    }
+    McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
+  }
+  McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Min, '0', 2);
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
+#else
+  res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
+#endif
+  if (res!=ERR_OK) {
+    McuLog_error("Failed showing time");
+  }
+#if PL_CONFIG_WORLD_CLOCK
+  uint8_t hour;
+
+  hour = AdjustHourForTimeZone(time->Hour, -1); /* local time is GMT+1 */
+  SetTime(STEPPER_CLOCK_0, AdjustHourForTimeZone(hour, 0), time->Min); /* London, GMT+0, top left */
+  SetTime(STEPPER_CLOCK_1, AdjustHourForTimeZone(hour, 8), time->Min); /* Beijing, GMT+8, top left */
+  SetTime(STEPPER_CLOCK_2, AdjustHourForTimeZone(hour, 1), time->Min); /* Lucerne, GMT+1, top left */
+  SetTime(STEPPER_CLOCK_3, AdjustHourForTimeZone(hour, -4), time->Min); /* New York,, GMT-4, top left */
+  STEPBOARD_MoveAndWait(board, 5);
+#endif /* PL_CONFIG_WORLD_CLOCK */
+}
+
+#if PL_CONFIG_SWITCH_7WAY
+static void GetTimeString(unsigned char *buf, size_t bufSize, TIMEREC *time, DATEREC *date) {
+  buf[0] = '\0';
+  McuTimeDate_AddDateString(buf, bufSize, date, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_DATE_FORMAT_STR);
+  McuUtility_chcat(buf, bufSize, ' ');
+  McuTimeDate_AddTimeString(buf, bufSize, time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+}
+
+static void CLOCK_ButtonMenu(uint32_t notification) {
+  static uint8_t currDigit = 0;
+  TIMEREC time;
+  DATEREC date;
+  uint8_t buf[24];
+  static uint32_t seconds;
+
+  if (notification&CLOCK_TASK_NOTIFY_BUTTON_RST) {
+    if (CLOCK_GetClockIsOn()) {
+      CLOCK_ClockIsOn = false; /* disable clock */
+    }
+    McuTimeDate_GetTimeDate(&time, &date);
+    CLOCK_ShowTimeDate(&time, &date);
+    seconds = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
+    currDigit = 3;
+    GetTimeString(buf, sizeof(buf), &time, &date);
+    McuLog_info("Start setting time: %s", buf);
+  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_UP) {
+    switch(currDigit) {
+      case 0: seconds += 10*60*60; break; /* 1x:xx (10x hour) */
+      case 1: seconds += 60*60; break;    /* x1:xx (hour) */
+      case 2: seconds += 10*60; break;    /* xx:1x (10x Minute) */
+      case 3: seconds += 60; break;       /* xx:x1 (minute) */
+      default: break;
+    }
+    McuTimeDate_UnixSecondsToTimeDate(seconds, 0, &time, &date);
+    GetTimeString(buf, sizeof(buf), &time, &date);
+    McuLog_info("Incremented: %s", buf);
+    CLOCK_ShowTimeDate(&time, &date);
+  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_DOWN) {
+    switch(currDigit) {
+      case 0: seconds -= 10*60*60; break; /* 1x:xx (10x hour) */
+      case 1: seconds -= 60*60; break;    /* x1:xx (hour) */
+      case 2: seconds -= 10*60; break;    /* xx:1x (10x Minute) */
+      case 3: seconds -= 60; break;       /* xx:x1 (minute) */
+      default: break;
+    }
+    McuTimeDate_UnixSecondsToTimeDate(seconds, 0, &time, &date);
+    GetTimeString(buf, sizeof(buf), &time, &date);
+    McuLog_info("Decremented: %s", buf);
+    CLOCK_ShowTimeDate(&time, &date);
+  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_LEFT) {
+    currDigit--;
+    currDigit %= 4;
+    McuLog_info("Digit pos: %d", currDigit);
+  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_RIGHT) {
+    currDigit++;
+    currDigit %= 4;
+    McuLog_info("Digit pos: %d", currDigit);
+  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_SET) { /* store it */
+    McuTimeDate_UnixSecondsToTimeDate(seconds, 0, &time, &date);
+    GetTimeString(buf, sizeof(buf), &time, &date);
+    McuLog_info("Storing time: %s", buf);
+    McuTimeDate_SetTimeDate(&time, &date);
+    CLOCK_ClockIsOn = true; /* enable clock */
+  }
+}
+#endif /* #if PL_CONFIG_SWITCH_7WAY */
+
+#if PL_CONFIG_HAS_BUTTONS
 void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
   switch(event) {
     case MCUDBNC_EVENT_PRESSED:
@@ -98,29 +218,77 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
 
     case MCUDBNC_EVENT_RELEASED:
       if (buttons&BTN_BIT_USER) {
-        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED);
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_USR);
       }
+   #if PL_CONFIG_SWITCH_7WAY
+      if (buttons&BTN_BIT_RST) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_RST);
+      }
+      if (buttons&BTN_BIT_UP) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_UP);
+      }
+      if (buttons&BTN_BIT_DOWN) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_DOWN);
+      }
+      if (buttons&BTN_BIT_LEFT) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_LEFT);
+      }
+      if (buttons&BTN_BIT_RIGHT) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_RIGHT);
+      }
+      if (buttons&BTN_BIT_MID) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_MID);
+      }
+      if (buttons&BTN_BIT_SET) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_SET);
+      }
+   #endif /* PL_CONFIG_SWITCH_7WAY */
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
       if (buttons&BTN_BIT_USER) {
-        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_LONG);
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG);
       }
       break;
 
     default:
       break;
   }
-
 }
+#endif
 
 void CLOCK_Notify(CLOCK_Notify_e msg) {
   switch(msg) {
-    case CLOCK_NOTIFY_BUTTON_PRESSED:
-      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_PRESSED, eSetBits);
+    case CLOCK_NOTIFY_BUTTON_PRESSED_USR:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_USR, eSetBits);
       break;
-    case CLOCK_NOTIFY_BUTTON_PRESSED_LONG:
-      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG, eSetBits);
+    case CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_USR_LONG, eSetBits);
+      break;
+#if PL_CONFIG_SWITCH_7WAY
+    case CLOCK_NOTIFY_BUTTON_PRESSED_RST:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_RST, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_UP:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_UP, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_DOWN:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_DOWN, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_LEFT:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_LEFT, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_RIGHT:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_RIGHT, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_MID:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_MID, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_SET:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_SET, eSetBits);
+      break;
+#endif
+    default:
       break;
   }
 }
@@ -222,9 +390,11 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendStatusStr((unsigned char*)"  border", CLOCK_clockHasBorder?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 #endif
+#if PL_CONFIG_USE_FONT
   MFONT_FontToStr(CLOCK_font, buf, sizeof(buf));
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  font", buf, io->stdOut);
+#endif
 
 #if PL_CONFIG_USE_NVMC
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
@@ -384,6 +554,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     }
     return ERR_OK;
 #endif /* PL_CONFIG_USE_LED_DIMMING */
+#if PL_CONFIG_USE_FONT
   } else if (McuUtility_strncmp((char*)cmd, "clock font ", sizeof("clock font")-1)==0) {
     *handled = true;
     p = cmd + sizeof("clock font ")-1;
@@ -392,6 +563,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       CLOCK_font = MFONT_SIZE_2x3;
       return ERR_FAILED;
     }
+#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   } else if (McuUtility_strncmp((char*)cmd, "clock border ", sizeof("clock border ")-1)==0) {
     *handled = true;
@@ -556,18 +728,15 @@ static void ClockTask(void *pv) {
     /* check task notifications */
     res = xTaskNotifyWait(
        0, /* do not clear anything on enter */
-        CLOCK_TASK_NOTIFY_PARK_ON|CLOCK_TASK_NOTIFY_PARK_OFF|CLOCK_TASK_NOTIFY_PARK_TOGGLE
-       |CLOCK_TASK_NOTIFY_CLOCK_ON|CLOCK_TASK_NOTIFY_CLOCK_OFF|CLOCK_TASK_NOTIFY_CLOCK_TOGGLE
-       |CLOCK_TASK_NOTIFY_BUTTON_PRESSED|CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG,
-       /* clear on exit */
+       CLOCK_TASK_NOTIFY_ALL, /* clear all bits on exit */
        &ulNotificationValue,
        0);
     if (res==pdTRUE) { /* notification received */
-      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_PRESSED) {
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR) {
         McuLog_info("Notification: button pressed");
         SHELL_ParseCommand((unsigned char*)"clock toggle", McuShell_GetStdio(), true);
       }
-      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_PRESSED_LONG) {
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR_LONG) {
         McuLog_info("Notification: button pressed long");
         SHELL_ParseCommand((unsigned char*)"intermezzo toggle", McuShell_GetStdio(), true);
       }
@@ -620,7 +789,10 @@ static void ClockTask(void *pv) {
         MHAND_2ndHandEnableAll(false);
       #endif
         APP_RequestUpdateLEDs(); /* update LEDs */
+    #elif PL_MATRIX_CONFIG_IS_RGB
+        MATRIX_EnableDisableHandsAll(false);
     #endif
+        MATRIX_MoveAllto12(5000, NULL);
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
         McuLog_info("Clock toggle");
@@ -637,8 +809,14 @@ static void ClockTask(void *pv) {
           APP_RequestUpdateLEDs(); /* update LEDs */
         }
       #endif
+        if (!CLOCK_ClockIsOn) {
+          MATRIX_MoveAllto12(5000, NULL);
+        }
       }
-    }
+  #if PL_CONFIG_SWITCH_7WAY
+      CLOCK_ButtonMenu(ulNotificationValue);
+  #endif /* PL_CONFIG_SWITCH_7WAY */
+    } /* if notification received */
   #if PL_CONFIG_USE_RTC
     /* ----------------------------------------------------------------------------------*/
     /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
@@ -674,47 +852,9 @@ static void ClockTask(void *pv) {
       ShowSeconds(&time);
     #endif
       if (res==ERR_OK && (McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0) >= prevClockUpdateTimestampSec+60*CLOCK_UpdatePeriodMinutes)) {
-    #if PL_CONFIG_IS_MASTER
-        uint8_t buf[8];
-
-        McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time.Hour, time.Min, date.Day, date.Month, date.Year);
-        MATRIX_SetMoveDelayAll(5);
-        MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
-      #if PL_CONFIG_USE_NEO_PIXEL_HW
-        MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
-      #endif
-        buf[0] = '\0';
-        if (CLOCK_ClockIs24h) {
-          McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Hour, '0', 2);
-        } else {
-          int hour = time.Hour%12;
-          if (hour==0) {
-            hour = 12;
-          }
-          McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
-        }
-        McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time.Min, '0', 2);
-      #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
-      #else
-        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
-      #endif
-        if (res!=ERR_OK) {
-          McuLog_error("Failed showing time");
-        }
-    #endif /* PL_CONFIG_IS_MASTER */
-    #if PL_CONFIG_WORLD_CLOCK
-        uint8_t hour;
-
-        hour = AdjustHourForTimeZone(time.Hour, -1); /* local time is GMT+1 */
-        SetTime(STEPPER_CLOCK_0, AdjustHourForTimeZone(hour, 0), time.Min); /* London, GMT+0, top left */
-        SetTime(STEPPER_CLOCK_1, AdjustHourForTimeZone(hour, 8), time.Min); /* Beijing, GMT+8, top left */
-        SetTime(STEPPER_CLOCK_2, AdjustHourForTimeZone(hour, 1), time.Min); /* Lucerne, GMT+1, top left */
-        SetTime(STEPPER_CLOCK_3, AdjustHourForTimeZone(hour, -4), time.Min); /* New York,, GMT-4, top left */
-        STEPBOARD_MoveAndWait(board, 5);
-    #endif /* PL_CONFIG_WORLD_CLOCK */
+        CLOCK_ShowTimeDate(&time, &date);
         prevClockUpdateTimestampSec = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
-     #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
+      #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
         lastClockUpdateTickCount = xTaskGetTickCount();
         intermezzoShown = false;
       #endif

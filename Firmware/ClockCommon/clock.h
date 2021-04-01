@@ -18,8 +18,15 @@ typedef enum CLOCK_Mode_e {
 } CLOCK_Mode_e;
 
 typedef enum CLOCK_Notify_e { /* direct task notification bits */
-  CLOCK_NOTIFY_BUTTON_PRESSED      = (1<<0),
-  CLOCK_NOTIFY_BUTTON_PRESSED_LONG = (1<<1),
+  CLOCK_NOTIFY_BUTTON_PRESSED_USR       = (1<<0),
+  CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG  = (1<<1),
+  CLOCK_NOTIFY_BUTTON_PRESSED_RST       = (1<<2),
+  CLOCK_NOTIFY_BUTTON_PRESSED_UP        = (1<<3),
+  CLOCK_NOTIFY_BUTTON_PRESSED_DOWN      = (1<<4),
+  CLOCK_NOTIFY_BUTTON_PRESSED_LEFT      = (1<<5),
+  CLOCK_NOTIFY_BUTTON_PRESSED_RIGHT     = (1<<6),
+  CLOCK_NOTIFY_BUTTON_PRESSED_MID       = (1<<7),
+  CLOCK_NOTIFY_BUTTON_PRESSED_SET       = (1<<8),
 } CLOCK_Notify_e;
 
 void CLOCK_Notify(CLOCK_Notify_e msg);

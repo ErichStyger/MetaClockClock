@@ -30,10 +30,12 @@
 #elif 1 /* V4: 24 clock version with round PCBs */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
+  #define PL_MATRIX_CONFIG_IS_RGB         (0) /* color functionality */
+  #define PL_CONFIG_USE_LED_RING          (0) /* we do have LED rings */
   #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* using extended hand */
-  #define PL_CONFIG_USE_RTT               (0) /* need to disable RTT to fit into available RAM */
+  #define PL_CONFIG_USE_RTT               (1) /* need to disable RTT to fit into available RAM */
   #define PL_CONFIG_HAS_BUTTONS           (1) /* requires FreeRTOS timers enabled */
+  #define PL_CONFIG_SWITCH_7WAY           (1 && PL_CONFIG_HAS_BUTTONS) /* using 7-way switch with up/down/left/right/center/set/reset */
 #elif 0 /* Alexis clock: won't fit anymore into the available amount of RAM */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_RELATIVE_MOVES    (0) /* disable relative moves to fit into available RAM */
@@ -52,7 +54,8 @@
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
 
-#define PL_CONFIG_SWITCH_7WAY   (1) /* using 7-way switch with up/down/left/right/center/set/reset */
+#define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
+#define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
 
 #include "platform_common.h"
 

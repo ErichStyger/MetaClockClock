@@ -1401,6 +1401,19 @@ void MATRIX_RequestRgbUpdate(void) {
 }
 #endif
 
+#if PL_MATRIX_CONFIG_IS_RGB
+void MATRIX_EnableDisableHandsAll(bool enable) {
+  MHAND_HandEnableAll(enable); /* enable/disable hands */
+  #if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false); /* turn off 2nd hand */
+  #endif
+  #if PL_CONFIG_USE_LED_RING
+  MRING_EnableRingAll(false); /* turn off ring */
+  #endif
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+#endif
+
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"matrix", (unsigned char*)"Group of matrix commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
@@ -2108,14 +2121,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   #endif
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
   #if PL_MATRIX_CONFIG_IS_RGB
-    MHAND_HandEnableAll(false); /* disable hands */
-    #if PL_CONFIG_USE_EXTENDED_HANDS
-    MHAND_2ndHandEnableAll(false); /* disable 2nd hand */
-    #endif
-    #if PL_CONFIG_USE_LED_RING
-    MRING_EnableRingAll(false);
-    #endif
-    MATRIX_SendToRemoteQueueExecuteAndWait(true);
+    MATRIX_EnableDisableHandsAll(false);
   #endif
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
