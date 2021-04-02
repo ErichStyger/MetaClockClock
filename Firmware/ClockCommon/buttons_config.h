@@ -56,7 +56,7 @@
   #define BUTTONS_SET_PORT        0
   #define BUTTONS_SET_PIN         26
   #define BUTTONS_SET_IOCON       IOCON_INDEX_PIO0_26
-  #define BUTTONS_SET_PINTSEL     kSYSCON_GpioPort0Pin28ToPintsel
+  #define BUTTONS_SET_PINTSEL     kSYSCON_GpioPort0Pin26ToPintsel
 
   #define BUTTONS_RST_GPIO        GPIO
   #define BUTTONS_RST_PORT        0

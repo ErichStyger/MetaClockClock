@@ -143,7 +143,7 @@ static void GetTimeString(unsigned char *buf, size_t bufSize, TIMEREC *time, DAT
 }
 
 static void CLOCK_ButtonMenu(uint32_t notification) {
-  static uint8_t currDigit = 0;
+  static int8_t currDigit = -1;
   TIMEREC time;
   DATEREC date;
   uint8_t buf[24];
@@ -159,7 +159,7 @@ static void CLOCK_ButtonMenu(uint32_t notification) {
     currDigit = 3;
     GetTimeString(buf, sizeof(buf), &time, &date);
     McuLog_info("Start setting time: %s", buf);
-  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_UP) {
+  } else if (currDigit>=0 && notification&CLOCK_TASK_NOTIFY_BUTTON_UP) {
     switch(currDigit) {
       case 0: seconds += 10*60*60; break; /* 1x:xx (10x hour) */
       case 1: seconds += 60*60; break;    /* x1:xx (hour) */
@@ -171,7 +171,7 @@ static void CLOCK_ButtonMenu(uint32_t notification) {
     GetTimeString(buf, sizeof(buf), &time, &date);
     McuLog_info("Incremented: %s", buf);
     CLOCK_ShowTimeDate(&time, &date);
-  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_DOWN) {
+  } else if (currDigit>=0 && notification&CLOCK_TASK_NOTIFY_BUTTON_DOWN) {
     switch(currDigit) {
       case 0: seconds -= 10*60*60; break; /* 1x:xx (10x hour) */
       case 1: seconds -= 60*60; break;    /* x1:xx (hour) */
@@ -183,20 +183,21 @@ static void CLOCK_ButtonMenu(uint32_t notification) {
     GetTimeString(buf, sizeof(buf), &time, &date);
     McuLog_info("Decremented: %s", buf);
     CLOCK_ShowTimeDate(&time, &date);
-  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_LEFT) {
+  } else if (currDigit>=0 && notification&CLOCK_TASK_NOTIFY_BUTTON_LEFT) {
     currDigit--;
     currDigit %= 4;
     McuLog_info("Digit pos: %d", currDigit);
-  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_RIGHT) {
+  } else if (currDigit>=0 && notification&CLOCK_TASK_NOTIFY_BUTTON_RIGHT) {
     currDigit++;
     currDigit %= 4;
     McuLog_info("Digit pos: %d", currDigit);
-  } else if (notification&CLOCK_TASK_NOTIFY_BUTTON_SET) { /* store it */
+  } else if (currDigit>=0 && notification&CLOCK_TASK_NOTIFY_BUTTON_SET) { /* store it */
     McuTimeDate_UnixSecondsToTimeDate(seconds, 0, &time, &date);
     GetTimeString(buf, sizeof(buf), &time, &date);
     McuLog_info("Storing time: %s", buf);
     McuTimeDate_SetTimeDate(&time, &date);
     CLOCK_ClockIsOn = true; /* enable clock */
+    currDigit = -1;
   }
 }
 #endif /* #if PL_CONFIG_HAS_SWITCH_7WAY */
