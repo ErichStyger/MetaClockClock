@@ -36,33 +36,33 @@
 
   #define BUTTONS_LEFT_GPIO       GPIO
   #define BUTTONS_LEFT_PORT       0
-  #define BUTTONS_LEFT_PIN        31
-  #define BUTTONS_LEFT_IOCON      IOCON_INDEX_PIO0_26
-  #define BUTTONS_LEFT_PINTSEL    kSYSCON_GpioPort0Pin26ToPintsel
+  #define BUTTONS_LEFT_PIN        29
+  #define BUTTONS_LEFT_IOCON      IOCON_INDEX_PIO0_29
+  #define BUTTONS_LEFT_PINTSEL    kSYSCON_GpioPort0Pin29ToPintsel
 
   #define BUTTONS_RIGHT_GPIO      GPIO
   #define BUTTONS_RIGHT_PORT      0
-  #define BUTTONS_RIGHT_PIN       30
-  #define BUTTONS_RIGHT_IOCON     IOCON_INDEX_PIO0_23
-  #define BUTTONS_RIGHT_PINTSEL   kSYSCON_GpioPort0Pin23ToPintsel
+  #define BUTTONS_RIGHT_PIN       28
+  #define BUTTONS_RIGHT_IOCON     IOCON_INDEX_PIO0_28
+  #define BUTTONS_RIGHT_PINTSEL   kSYSCON_GpioPort0Pin28ToPintsel
 
   #define BUTTONS_MID_GPIO        GPIO
   #define BUTTONS_MID_PORT        0
-  #define BUTTONS_MID_PIN         29
-  #define BUTTONS_MID_IOCON       IOCON_INDEX_PIO0_29
-  #define BUTTONS_MID_PINTSEL     kSYSCON_GpioPort0Pin29ToPintsel
+  #define BUTTONS_MID_PIN         27
+  #define BUTTONS_MID_IOCON       IOCON_INDEX_PIO0_27
+  #define BUTTONS_MID_PINTSEL     kSYSCON_GpioPort0Pin27ToPintsel
 
   #define BUTTONS_SET_GPIO        GPIO
   #define BUTTONS_SET_PORT        0
-  #define BUTTONS_SET_PIN         28
-  #define BUTTONS_SET_IOCON       IOCON_INDEX_PIO0_28
+  #define BUTTONS_SET_PIN         26
+  #define BUTTONS_SET_IOCON       IOCON_INDEX_PIO0_26
   #define BUTTONS_SET_PINTSEL     kSYSCON_GpioPort0Pin28ToPintsel
 
   #define BUTTONS_RST_GPIO        GPIO
   #define BUTTONS_RST_PORT        0
-  #define BUTTONS_RST_PIN         27
-  #define BUTTONS_RST_IOCON       IOCON_INDEX_PIO0_27
-  #define BUTTONS_RST_PINTSEL     kSYSCON_GpioPort0Pin27ToPintsel
+  #define BUTTONS_RST_PIN         23
+  #define BUTTONS_RST_IOCON       IOCON_INDEX_PIO0_23
+  #define BUTTONS_RST_PINTSEL     kSYSCON_GpioPort0Pin23ToPintsel
 #endif
 
   #define BUTTONS_ENABLE_CLOCK() GPIO_PortInit(GPIO, 0) /* ungate the clocks for GPIO0 (Port 0): used for user button */
