@@ -35,7 +35,7 @@
   #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* using extended hand */
   #define PL_CONFIG_USE_RTT               (1) /* need to disable RTT to fit into available RAM */
   #define PL_CONFIG_HAS_BUTTONS           (1) /* requires FreeRTOS timers enabled */
-  #define PL_CONFIG_SWITCH_7WAY           (1 && PL_CONFIG_HAS_BUTTONS) /* using 7-way switch with up/down/left/right/center/set/reset */
+  #define PL_CONFIG_HAS_SWITCH_7WAY       (1 && PL_CONFIG_HAS_BUTTONS) /* using 7-way switch with up/down/left/right/center/set/reset */
 #elif 0 /* Alexis clock: won't fit anymore into the available amount of RAM */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_RELATIVE_MOVES    (0) /* disable relative moves to fit into available RAM */

@@ -74,7 +74,7 @@ static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
 #define CLOCK_TASK_NOTIFY_CLOCK_TOGGLE        (1<<5) /* request to toggle clock on/off */
 #define CLOCK_TASK_NOTIFY_BUTTON_USR          (1<<6) /* request to toggle clock on/off */
 #define CLOCK_TASK_NOTIFY_BUTTON_USR_LONG     (1<<7) /* request to toggle clock on/off */
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
 #define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<8) /* up button */
 #define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<9) /* down button */
 #define CLOCK_TASK_NOTIFY_BUTTON_LEFT         (1<<10) /* left button */
@@ -134,7 +134,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 #endif /* PL_CONFIG_WORLD_CLOCK */
 }
 
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
 static void GetTimeString(unsigned char *buf, size_t bufSize, TIMEREC *time, DATEREC *date) {
   buf[0] = '\0';
   McuTimeDate_AddDateString(buf, bufSize, date, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_DATE_FORMAT_STR);
@@ -199,7 +199,7 @@ static void CLOCK_ButtonMenu(uint32_t notification) {
     CLOCK_ClockIsOn = true; /* enable clock */
   }
 }
-#endif /* #if PL_CONFIG_SWITCH_7WAY */
+#endif /* #if PL_CONFIG_HAS_SWITCH_7WAY */
 
 #if PL_CONFIG_HAS_BUTTONS
 void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
@@ -220,7 +220,7 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
       if (buttons&BTN_BIT_USER) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_USR);
       }
-   #if PL_CONFIG_SWITCH_7WAY
+   #if PL_CONFIG_HAS_SWITCH_7WAY
       if (buttons&BTN_BIT_RST) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_RST);
       }
@@ -242,7 +242,7 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
       if (buttons&BTN_BIT_SET) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_SET);
       }
-   #endif /* PL_CONFIG_SWITCH_7WAY */
+   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
@@ -265,7 +265,7 @@ void CLOCK_Notify(CLOCK_Notify_e msg) {
     case CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_USR_LONG, eSetBits);
       break;
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
     case CLOCK_NOTIFY_BUTTON_PRESSED_RST:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_RST, eSetBits);
       break;
@@ -813,9 +813,9 @@ static void ClockTask(void *pv) {
           MATRIX_MoveAllto12(5000, NULL);
         }
       }
-  #if PL_CONFIG_SWITCH_7WAY
+  #if PL_CONFIG_HAS_SWITCH_7WAY
       CLOCK_ButtonMenu(ulNotificationValue);
-  #endif /* PL_CONFIG_SWITCH_7WAY */
+  #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
   #if PL_CONFIG_USE_RTC
     /* ----------------------------------------------------------------------------------*/

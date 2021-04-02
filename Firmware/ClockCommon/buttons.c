@@ -179,7 +179,7 @@ static void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status) {
 #endif
   switch(pintr) {
     case kPINT_PinInt0: StartDebounce(BTN_BIT_USER, true); break;
-  #if PL_CONFIG_SWITCH_7WAY
+  #if PL_CONFIG_HAS_SWITCH_7WAY
     case kPINT_PinInt1: StartDebounce(BTN_BIT_UP, true); break;
     case kPINT_PinInt2: StartDebounce(BTN_BIT_DOWN, true); break;
     case kPINT_PinInt3: StartDebounce(BTN_BIT_LEFT, true); break;
@@ -283,7 +283,7 @@ void BTN_Init(void) {
   BTN_Infos[BTN_USER].handle = McuBtn_InitButton(&btnConfig);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_USER_PINTSEL);
 
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
   btnConfig.hw.gpio = BUTTONS_UP_GPIO;
   btnConfig.hw.port = BUTTONS_UP_PORT;
   btnConfig.hw.pin = BUTTONS_UP_PIN;
@@ -347,7 +347,7 @@ void BTN_Init(void) {
   /* Enable callbacks for PINT0 by Index */
   PINT_EnableCallbackByIndex(PINT, kPINT_PinInt0);
 
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
   PINT_PinInterruptConfig(PINT, kPINT_PinInt1, kPINT_PinIntEnableFallEdge, pint_intr_callback);
   PINT_EnableCallbackByIndex(PINT, kPINT_PinInt1);
   PINT_PinInterruptConfig(PINT, kPINT_PinInt2, kPINT_PinIntEnableFallEdge, pint_intr_callback);

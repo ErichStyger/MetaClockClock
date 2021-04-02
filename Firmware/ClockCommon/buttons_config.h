@@ -21,7 +21,7 @@
   #define BUTTONS_USER_IOCON      IOCON_INDEX_PIO0_4
   #define BUTTONS_USER_PINTSEL    kSYSCON_GpioPort0Pin4ToPintsel
 
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
   #define BUTTONS_UP_GPIO         GPIO
   #define BUTTONS_UP_PORT         0
   #define BUTTONS_UP_PIN          8
@@ -70,7 +70,7 @@
 
 typedef enum {
   BTN_USER,
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
   BTN_UP,
   BTN_DOWN,
   BTN_LEFT,
@@ -84,7 +84,7 @@ typedef enum {
 
 /* bits of the buttons */
 #define BTN_BIT_USER          (1<<0)
-#if PL_CONFIG_SWITCH_7WAY
+#if PL_CONFIG_HAS_SWITCH_7WAY
   #define BTN_BIT_UP          (1<<1)
   #define BTN_BIT_DOWN        (1<<2)
   #define BTN_BIT_LEFT        (1<<3)
