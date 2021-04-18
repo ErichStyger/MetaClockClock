@@ -250,7 +250,6 @@ uint8_t RS485Uart_ParseCommand(const unsigned char *cmd, bool *handled, const Mc
   return ERR_OK;
 }
 
-
 void RS485Uart_Deinit(void) {
   vQueueDelete(RS485UartRxQueue);
   RS485UartRxQueue = NULL;
