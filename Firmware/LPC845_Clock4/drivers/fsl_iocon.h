@@ -47,9 +47,9 @@ typedef struct _iocon_group
  * @note See the User Manual for specific modes and functions supported by the various pins.
  */
 #if defined(IOCON_PIO_MODE_SHIFT)
-#define IOCON_MODE_INACT (0x0 << IOCON_PIO_MODE_SHIFT)    /*!< No addition pin function */
+#define IOCON_MODE_INACT    (0x0 << IOCON_PIO_MODE_SHIFT) /*!< No addition pin function */
 #define IOCON_MODE_PULLDOWN (0x1 << IOCON_PIO_MODE_SHIFT) /*!< Selects pull-down function */
-#define IOCON_MODE_PULLUP (0x2 << IOCON_PIO_MODE_SHIFT)   /*!< Selects pull-up function */
+#define IOCON_MODE_PULLUP   (0x2 << IOCON_PIO_MODE_SHIFT) /*!< Selects pull-up function */
 #define IOCON_MODE_REPEATER (0x3 << IOCON_PIO_MODE_SHIFT) /*!< Selects pin repeater function */
 #endif
 #if defined(IOCON_PIO_HYS_SHIFT)

@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2016, Freescale Semiconductor, Inc.
- * Copyright 2016-2018, NXP
+ * Copyright 2016-2018, 2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -14,29 +14,37 @@
  * Definitions
  ******************************************************************************/
 
+/*!
+ * @addtogroup power
+ * @{
+ */
+
 /*! @name Driver version */
 /*@{*/
-/*! @brief power driver version 2.0.2. */
-#define FSL_POWER_DRIVER_VERSION (MAKE_VERSION(2, 0, 2))
+/*! @brief power driver version 2.0.4. */
+#define FSL_POWER_DRIVER_VERSION (MAKE_VERSION(2, 0, 4))
 /*@}*/
 
 /*! @brief PMU PCON reserved mask, used to clear reserved field which should not write 1*/
-#define PMUC_PCON_RESERVED_MASK ((0xf << 4) | (0x6 << 8) | 0xfffff000)
+#define PMUC_PCON_RESERVED_MASK ((0xf << 4) | (0x6 << 8) | 0xfffff000u)
+
+#define POWER_EnbaleLPO                    POWER_EnableLPO
+#define POWER_EnbaleLPOInDeepPowerDownMode POWER_EnableLPOInDeepPowerDownMode
 
 /*! @brief power down configurations mask */
 typedef enum pd_bits
 {
     kPDRUNCFG_PD_FRO_OUT = SYSCON_PDRUNCFG_FROOUT_PD_MASK,
-    kPDRUNCFG_PD_FRO = SYSCON_PDRUNCFG_FRO_PD_MASK,
-    kPDRUNCFG_PD_FLASH = SYSCON_PDRUNCFG_FLASH_PD_MASK,
-    kPDRUNCFG_PD_BOD = SYSCON_PDRUNCFG_BOD_PD_MASK,
-    kPDRUNCFG_PD_ADC0 = SYSCON_PDRUNCFG_ADC_PD_MASK,
-    kPDRUNCFG_PD_SYSOSC = SYSCON_PDRUNCFG_SYSOSC_PD_MASK,
+    kPDRUNCFG_PD_FRO     = SYSCON_PDRUNCFG_FRO_PD_MASK,
+    kPDRUNCFG_PD_FLASH   = SYSCON_PDRUNCFG_FLASH_PD_MASK,
+    kPDRUNCFG_PD_BOD     = SYSCON_PDRUNCFG_BOD_PD_MASK,
+    kPDRUNCFG_PD_ADC0    = SYSCON_PDRUNCFG_ADC_PD_MASK,
+    kPDRUNCFG_PD_SYSOSC  = SYSCON_PDRUNCFG_SYSOSC_PD_MASK,
     kPDRUNCFG_PD_WDT_OSC = SYSCON_PDRUNCFG_WDTOSC_PD_MASK,
-    kPDRUNCFG_PD_SYSPLL = SYSCON_PDRUNCFG_SYSPLL_PD_MASK,
-    kPDRUNCFG_PD_DAC0 = SYSCON_PDRUNCFG_DAC0_MASK,
-    kPDRUNCFG_PD_DAC1 = SYSCON_PDRUNCFG_DAC1_MASK,
-    kPDRUNCFG_PD_ACMP = SYSCON_PDRUNCFG_ACMP_MASK,
+    kPDRUNCFG_PD_SYSPLL  = SYSCON_PDRUNCFG_SYSPLL_PD_MASK,
+    kPDRUNCFG_PD_DAC0    = SYSCON_PDRUNCFG_DAC0_MASK,
+    kPDRUNCFG_PD_DAC1    = SYSCON_PDRUNCFG_DAC1_MASK,
+    kPDRUNCFG_PD_ACMP    = SYSCON_PDRUNCFG_ACMP_MASK,
 
     /*
     This enum member has no practical meaning,it is used to avoid MISRA issue,
@@ -49,23 +57,23 @@ typedef enum pd_bits
 enum _power_wakeup
 {
     kPDAWAKECFG_Wakeup_FRO_OUT = SYSCON_PDAWAKECFG_FROOUT_PD_MASK,
-    kPDAWAKECFG_Wakeup_FRO = SYSCON_PDAWAKECFG_FRO_PD_MASK,
-    kPDAWAKECFG_Wakeup_FLASH = SYSCON_PDAWAKECFG_FLASH_PD_MASK,
-    kPDAWAKECFG_Wakeup_BOD = SYSCON_PDAWAKECFG_BOD_PD_MASK,
-    kPDAWAKECFG_Wakeup_ADC = SYSCON_PDAWAKECFG_ADC_PD_MASK,
-    kPDAWAKECFG_Wakeup_SYSOSC = SYSCON_PDAWAKECFG_SYSOSC_PD_MASK,
+    kPDAWAKECFG_Wakeup_FRO     = SYSCON_PDAWAKECFG_FRO_PD_MASK,
+    kPDAWAKECFG_Wakeup_FLASH   = SYSCON_PDAWAKECFG_FLASH_PD_MASK,
+    kPDAWAKECFG_Wakeup_BOD     = SYSCON_PDAWAKECFG_BOD_PD_MASK,
+    kPDAWAKECFG_Wakeup_ADC     = SYSCON_PDAWAKECFG_ADC_PD_MASK,
+    kPDAWAKECFG_Wakeup_SYSOSC  = SYSCON_PDAWAKECFG_SYSOSC_PD_MASK,
     kPDAWAKECFG_Wakeup_WDT_OSC = SYSCON_PDAWAKECFG_WDTOSC_PD_MASK,
-    kPDAWAKECFG_Wakeup_SYSPLL = SYSCON_PDAWAKECFG_SYSPLL_PD_MASK,
-    kPDAWAKECFG_Wakeup_VREFF2 = SYSCON_PDAWAKECFG_VREF2_PD_MASK,
-    kPDAWAKECFG_Wakeup_DAC0 = SYSCON_PDAWAKECFG_DAC0_MASK,
-    kPDAWAKECFG_Wakeup_DAC1 = SYSCON_PDAWAKECFG_DAC1_MASK,
-    kPDAWAKECFG_Wakeup_ACMP = SYSCON_PDAWAKECFG_ACMP_MASK,
+    kPDAWAKECFG_Wakeup_SYSPLL  = SYSCON_PDAWAKECFG_SYSPLL_PD_MASK,
+    kPDAWAKECFG_Wakeup_VREFF2  = SYSCON_PDAWAKECFG_VREF2_PD_MASK,
+    kPDAWAKECFG_Wakeup_DAC0    = SYSCON_PDAWAKECFG_DAC0_MASK,
+    kPDAWAKECFG_Wakeup_DAC1    = SYSCON_PDAWAKECFG_DAC1_MASK,
+    kPDAWAKECFG_Wakeup_ACMP    = SYSCON_PDAWAKECFG_ACMP_MASK,
 };
 
 /*! @brief Deep sleep/power down mode active part */
 enum _power_deep_sleep_active
 {
-    kPDSLEEPCFG_DeepSleepBODActive = SYSCON_PDSLEEPCFG_BOD_PD_MASK,
+    kPDSLEEPCFG_DeepSleepBODActive    = SYSCON_PDSLEEPCFG_BOD_PD_MASK,
     kPDSLEEPCFG_DeepSleepWDTOscActive = SYSCON_PDSLEEPCFG_WDTOSC_PD_MASK,
 };
 
@@ -82,9 +90,9 @@ typedef enum _power_gen_reg
 /* Power mode configuration API parameter */
 typedef enum _power_mode_config
 {
-    kPmu_Sleep = 0U,
-    kPmu_Deep_Sleep = 1U,
-    kPmu_PowerDown = 2U,
+    kPmu_Sleep          = 0U,
+    kPmu_Deep_Sleep     = 1U,
+    kPmu_PowerDown      = 2U,
     kPmu_Deep_PowerDown = 3U,
 } power_mode_cfg_t;
 
@@ -97,9 +105,9 @@ extern "C" {
 #endif
 
 /*!
-* @name SYSCON Power Configuration
-* @{
-*/
+ * @name SYSCON Power Configuration
+ * @{
+ */
 
 /*!
  * @brief API to enable PDRUNCFG bit in the Syscon. Note that enabling the bit powers down the peripheral
@@ -109,7 +117,7 @@ extern "C" {
  */
 static inline void POWER_EnablePD(pd_bit_t en)
 {
-    SYSCON->PDRUNCFG |= en;
+    SYSCON->PDRUNCFG |= (uint32_t)en;
 }
 
 /*!
@@ -120,14 +128,14 @@ static inline void POWER_EnablePD(pd_bit_t en)
  */
 static inline void POWER_DisablePD(pd_bit_t en)
 {
-    SYSCON->PDRUNCFG &= ~en;
+    SYSCON->PDRUNCFG &= ~(uint32_t)en;
 }
 
 /*!
  * @brief API to config wakeup configurations for deep sleep mode and power down mode.
  *
- * @param mask, wake up configurations for deep sleep mode and power down mode, reference _power_wakeup.
- * @param powerdown, true is power down the mask part, false is powered part.
+ * @param mask: wake up configurations for deep sleep mode and power down mode, reference _power_wakeup.
+ * @param powerDown: true is power down the mask part, false is powered part.
  */
 static inline void POWER_WakeUpConfig(uint32_t mask, bool powerDown)
 {
@@ -144,8 +152,8 @@ static inline void POWER_WakeUpConfig(uint32_t mask, bool powerDown)
 /*!
  * @brief API to config active part for deep sleep mode and power down mode.
  *
- * @param mask, active part configurations for deep sleep mode and power down mode, reference _power_deep_sleep_active.
- * @param powerdown, true is power down the mask part, false is powered part.
+ * @param mask: active part configurations for deep sleep mode and power down mode, reference _power_deep_sleep_active.
+ * @param powerDown: true is power down the mask part, false is powered part.
  */
 static inline void POWER_DeepSleepConfig(uint32_t mask, bool powerDown)
 {
@@ -162,14 +170,13 @@ static inline void POWER_DeepSleepConfig(uint32_t mask, bool powerDown)
 /* @} */
 
 /*!
-* @name ARM core Power Configuration
-* @{
-*/
+ * @name ARM core Power Configuration
+ * @{
+ */
 
 /*!
  * @brief API to enable deep sleep bit in the ARM Core.
  *
- * @param none
  * @return none
  */
 static inline void POWER_EnableDeepSleep(void)
@@ -180,7 +187,6 @@ static inline void POWER_EnableDeepSleep(void)
 /*!
  * @brief API to disable deep sleep bit in the ARM Core.
  *
- * @param none
  * @return none
  */
 static inline void POWER_DisableDeepSleep(void)
@@ -191,9 +197,9 @@ static inline void POWER_DisableDeepSleep(void)
 /* @} */
 
 /*!
-* @name PMU functionality
-* @{
-*/
+ * @name PMU functionality
+ * @{
+ */
 
 /*!
  * @brief API to enter sleep power mode.
@@ -205,7 +211,7 @@ void POWER_EnterSleep(void);
 /*!
  * @brief API to enter deep sleep power mode.
  *
- * @param activePart , should be a single or combine value of _power_deep_sleep_active .
+ * @param activePart: should be a single or combine value of _power_deep_sleep_active .
  * @return none
  */
 void POWER_EnterDeepSleep(uint32_t activePart);
@@ -213,7 +219,7 @@ void POWER_EnterDeepSleep(uint32_t activePart);
 /*!
  * @brief API to enter power down mode.
  *
- * @param activePart , should be a single or combine value of _power_deep_sleep_active .
+ * @param activePart: should be a single or combine value of _power_deep_sleep_active .
  * @return none
  */
 void POWER_EnterPowerDown(uint32_t activePart);
@@ -266,7 +272,7 @@ static inline void POWER_ClrDeepPowerDownModeFlag(void)
 /*!
  * @brief API to enable non deep power down mode.
  *
- * @param enable, true is enable non deep power down, otherwise disable.
+ * @param enable: true is enable non deep power down, otherwise disable.
  */
 static inline void POWER_EnableNonDpd(bool enable)
 {
@@ -283,9 +289,9 @@ static inline void POWER_EnableNonDpd(bool enable)
 /*!
  * @brief API to enable LPO.
  *
- * @param enable, true to enable LPO, false to disable LPO.
+ * @param enable: true to enable LPO, false to disable LPO.
  */
-static inline void POWER_EnbaleLPO(bool enable)
+static inline void POWER_EnableLPO(bool enable)
 {
     if (enable)
     {
@@ -300,9 +306,9 @@ static inline void POWER_EnbaleLPO(bool enable)
 /*!
  * @brief API to enable LPO in deep power down mode.
  *
- * @param enable, true to enable LPO, false to disable LPO.
+ * @param enable: true to enable LPO, false to disable LPO.
  */
-static inline void POWER_EnbaleLPOInDeepPowerDownMode(bool enable)
+static inline void POWER_EnableLPOInDeepPowerDownMode(bool enable)
 {
     if (enable)
     {
@@ -317,8 +323,8 @@ static inline void POWER_EnbaleLPOInDeepPowerDownMode(bool enable)
 /*!
  * @brief API to retore data to general purpose register which can be retain during deep power down mode.
  * Note the kPMU_GenReg4 can retore 3 byte data only, so the general purpose register can store 19bytes data.
- * @param index, general purpose data register index.
- * @param data, data to restore.
+ * @param index: general purpose data register index.
+ * @param data: data to restore.
  */
 static inline void POWER_SetRetainData(power_gen_reg_t index, uint32_t data)
 {
@@ -336,7 +342,7 @@ static inline void POWER_SetRetainData(power_gen_reg_t index, uint32_t data)
 /*!
  * @brief API to get data from general purpose register which retain during deep power down mode.
  * Note the kPMU_GenReg4 can retore 3 byte data only, so the general purpose register can store 19bytes data.
- * @param index, general purpose data register index.
+ * @param index: general purpose data register index.
  * @return data stored in the general purpose register.
  */
 static inline uint32_t POWER_GetRetainData(power_gen_reg_t index)
@@ -352,8 +358,8 @@ static inline uint32_t POWER_GetRetainData(power_gen_reg_t index)
 /*!
  * @brief API to enable external clock input for self wake up timer.
  *
- * @param enable, true is enable external clock input for self-wake-up timer, otherwise disable.
- * @param enHysteresis, true is enable Hysteresis for the pin, otherwise disable.
+ * @param enable: true is enable external clock input for self-wake-up timer, otherwise disable.
+ * @param enHysteresis: true is enable Hysteresis for the pin, otherwise disable.
  */
 static inline void POWER_EnableWktClkIn(bool enable, bool enHysteresis)
 {
@@ -364,8 +370,8 @@ static inline void POWER_EnableWktClkIn(bool enable, bool enHysteresis)
 /*!
  * @brief API to enable wake up pin for deep power down mode.
  *
- * @param enable, true is enable, otherwise disable.
- * @param enHysteresis, true is enable Hysteresis for the pin, otherwise disable.
+ * @param enable: true is enable, otherwise disable.
+ * @param enHysteresis: true is enable Hysteresis for the pin, otherwise disable.
  */
 static inline void POWER_EnableWakeupPinForDeepPowerDown(bool enable, bool enHysteresis)
 {
@@ -376,8 +382,8 @@ static inline void POWER_EnableWakeupPinForDeepPowerDown(bool enable, bool enHys
 /*!
  * @brief API to enable external clock input for self wake up timer.
  *
- * @param enable, true is enable , otherwise disable.
- * @param enHysteresis, true is enable Hysteresis for the pin, otherwise disable.
+ * @param enable: true is enable , otherwise disable.
+ * @param enHysteresis: true is enable Hysteresis for the pin, otherwise disable.
  */
 static inline void POWER_EnableResetPinForDeepPowerDown(bool enable, bool enHysteresis)
 {
@@ -390,5 +396,9 @@ static inline void POWER_EnableResetPinForDeepPowerDown(bool enable, bool enHyst
 #ifdef __cplusplus
 }
 #endif
+
+/*!
+ * @}
+ */
 
 #endif /* _FSL_POWER_H_ */

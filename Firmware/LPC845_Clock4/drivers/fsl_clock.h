@@ -1,5 +1,5 @@
 /*
- * Copyright 2017-2019 NXP
+ * Copyright 2017-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -21,8 +21,8 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief CLOCK driver version 2.1.0. */
-#define FSL_CLOCK_DRIVER_VERSION (MAKE_VERSION(2, 1, 0))
+/*! @brief CLOCK driver version 2.3.2. */
+#define FSL_CLOCK_DRIVER_VERSION (MAKE_VERSION(2, 3, 2))
 /*@}*/
 
 /* Definition for delay API in clock driver, users can redefine it to the real application. */
@@ -159,23 +159,23 @@ extern volatile uint32_t g_Ext_Clk_Freq;
     }
 
 /*! @brief Internal used Clock definition only. */
-#define CLK_GATE_DEFINE(reg, bit) ((((reg)&0xFFU) << 8U) | ((bit)&0xFFU))
-#define CLK_GATE_GET_REG(x) (((x) >> 8U) & 0xFFU)
+#define CLK_GATE_DEFINE(reg, bit)  ((((reg)&0xFFU) << 8U) | ((bit)&0xFFU))
+#define CLK_GATE_GET_REG(x)        (((uint32_t)(x) >> 8U) & 0xFFU)
 #define CLK_GATE_GET_BITS_SHIFT(x) ((uint32_t)(x)&0xFFU)
 /* clock mux register definition */
-#define CLK_MUX_DEFINE(reg, mux) (((((uint32_t)(&((SYSCON_Type *)0U)->reg)) & 0xFFU) << 8U) | ((mux)&0xFFU))
-#define CLK_MUX_GET_REG(x) ((volatile uint32_t *)(((uint32_t)(SYSCON)) + (((x) >> 8U) & 0xFFU)))
-#define CLK_MUX_GET_MUX(x) ((x)&0xFFU)
+#define CLK_MUX_DEFINE(reg, mux)             (((offsetof(SYSCON_Type, reg) & 0xFFU) << 8U) | ((mux)&0xFFU))
+#define CLK_MUX_GET_REG(x)                   ((volatile uint32_t *)(((uint32_t)(SYSCON)) + (((uint32_t)(x) >> 8U) & 0xFFU)))
+#define CLK_MUX_GET_MUX(x)                   (((uint32_t)(x)) & 0xFFU)
 #define CLK_MAIN_CLK_MUX_DEFINE(preMux, mux) ((preMux) << 8U | (mux))
-#define CLK_MAIN_CLK_MUX_GET_PRE_MUX(x) (((uint32_t)(x) >> 8U) & 0xFFU)
-#define CLK_MAIN_CLK_MUX_GET_MUX(x) ((uint32_t)(x)&0xFFU)
+#define CLK_MAIN_CLK_MUX_GET_PRE_MUX(x)      (((uint32_t)(x) >> 8U) & 0xFFU)
+#define CLK_MAIN_CLK_MUX_GET_MUX(x)          ((uint32_t)(x)&0xFFU)
 /* clock divider register definition */
-#define CLK_DIV_DEFINE(reg) (((uint32_t)(&((SYSCON_Type *)0U)->reg)) & 0xFFFU)
-#define CLK_DIV_GET_REG(x) *((volatile uint32_t *)(((uint32_t)(SYSCON)) + ((uint32_t)(x)&0xFFFU)))
+#define CLK_DIV_DEFINE(reg) (((uint32_t)offsetof(SYSCON_Type, reg)) & 0xFFFU)
+#define CLK_DIV_GET_REG(x)  *((volatile uint32_t *)(((uint32_t)(SYSCON)) + ((uint32_t)(x)&0xFFFU)))
 /* watch dog oscillator definition */
 #define CLK_WDT_OSC_DEFINE(freq, regValue) (((freq)&0xFFFFFFU) | (((regValue)&0xFFU) << 24U))
-#define CLK_WDT_OSC_GET_FREQ(x) ((uint32_t)(x)&0xFFFFFFU)
-#define CLK_WDT_OSC_GET_REG(x) (((x) >> 24U) & 0xFFU)
+#define CLK_WDT_OSC_GET_FREQ(x)            ((uint32_t)(x)&0xFFFFFFU)
+#define CLK_WDT_OSC_GET_REG(x)             (((x) >> 24U) & 0xFFU)
 /* Fractional clock register map */
 #define CLK_FRG_DIV_REG_MAP(base) (*(base))
 #define CLK_FRG_MUL_REG_MAP(base) (*((uint32_t *)((uint32_t)(base) + 4U)))
@@ -403,7 +403,7 @@ typedef enum _clock_sys_pll_src
     kCLOCK_SysPllSrcFroDiv = 3U, /*!< system pll source from FRO divided clock */
 } clock_sys_pll_src;
 
-/*!< Main clock source definition */
+/*! @brief Main clock source definition */
 typedef enum _clock_main_clk_src
 {
     kCLOCK_MainClkSrcFro    = CLK_MAIN_CLK_MUX_DEFINE(0U, 0U), /*!< main clock source from FRO */
@@ -441,7 +441,7 @@ extern "C" {
 static inline void CLOCK_EnableClock(clock_ip_name_t clk)
 {
     *(volatile uint32_t *)(((uint32_t)(&SYSCON->SYSAHBCLKCTRL0)) + CLK_GATE_GET_REG(clk)) |=
-        1U << CLK_GATE_GET_BITS_SHIFT(clk);
+        1UL << CLK_GATE_GET_BITS_SHIFT(clk);
 }
 
 /*
@@ -452,7 +452,7 @@ static inline void CLOCK_EnableClock(clock_ip_name_t clk)
 static inline void CLOCK_DisableClock(clock_ip_name_t clk)
 {
     *(volatile uint32_t *)(((uint32_t)(&SYSCON->SYSAHBCLKCTRL0)) + CLK_GATE_GET_REG(clk)) &=
-        ~(1U << CLK_GATE_GET_BITS_SHIFT(clk));
+        ~(1UL << CLK_GATE_GET_BITS_SHIFT(clk));
 }
 
 /*
@@ -500,12 +500,12 @@ static inline void CLOCK_SetCoreSysClkDiv(uint32_t value)
 }
 
 /*! @brief  Set main clock reference source.
- * @param src, reference clock_main_clk_src_t to set the main clock source.
+ * @param src Refer to clock_main_clk_src_t to set the main clock source.
  */
 void CLOCK_SetMainClkSrc(clock_main_clk_src_t src);
 
 /*! @brief Set FRO clock source
- * @param src, please reference _clock_fro_src definition.
+ * @param src Please refer to _clock_fro_src definition.
  *
  */
 void CLOCK_SetFroOutClkSrc(clock_fro_src_t src);
@@ -560,6 +560,31 @@ static inline uint32_t CLOCK_GetCoreSysClkFreq(void)
  *  @return Frequency of ClockOut
  */
 uint32_t CLOCK_GetClockOutClkFreq(void);
+
+/*! @brief  Get UART0 frequency
+ * @retval UART0 frequency value.
+ */
+uint32_t CLOCK_GetUart0ClkFreq(void);
+
+/*! @brief  Get UART1 frequency
+ * @retval UART1 frequency value.
+ */
+uint32_t CLOCK_GetUart1ClkFreq(void);
+
+/*! @brief  Get UART2 frequency
+ * @retval UART2 frequency value.
+ */
+uint32_t CLOCK_GetUart2ClkFreq(void);
+
+/*! @brief  Get UART3 frequency
+ * @retval UART3 frequency value.
+ */
+uint32_t CLOCK_GetUart3ClkFreq(void);
+
+/*! @brief  Get UART4 frequency
+ * @retval UART4 frequency value.
+ */
+uint32_t CLOCK_GetUart4ClkFreq(void);
 
 /*! @brief	Return Frequency of selected clock
  *  @return	Frequency of selected clock
@@ -621,14 +646,14 @@ static inline void CLOCK_DenitSystemPll(void)
  */
 
 /*! @brief Set FRG0 output frequency.
- * @param freq, target output frequency,freq < input and (input / freq) < 2 should be satisfy.
+ * @param freq Target output frequency, freq < input and (input / freq) < 2 should be satisfy.
  * @retval true - successfully, false - input argument is invalid.
  *
  */
 bool CLOCK_SetFRG0ClkFreq(uint32_t freq);
 
 /*! @brief Set FRG1 output frequency.
- * @param freq, target output frequency,freq < input and (input / freq) < 2 should be satisfy.
+ * @param freq Target output frequency, freq < input and (input / freq) < 2 should be satisfy.
  * @retval true - successfully, false - input argument is invalid.
  *
  */
@@ -659,7 +684,6 @@ void CLOCK_InitSysOsc(uint32_t oscFreq);
 void CLOCK_InitXtalin(uint32_t xtalInFreq);
 
 /*! @brief  Deinit SYS OSC
- * @param config oscillator configuration.
  */
 static inline void CLOCK_DeinitSysOsc(void)
 {
@@ -681,7 +705,6 @@ static inline void CLOCK_DeinitSysOsc(void)
 void CLOCK_InitWdtOsc(clock_wdt_analog_freq_t wdtOscFreq, uint32_t wdtOscDiv);
 
 /*! @brief  Deinit watch dog OSC
- * @param config oscillator configuration.
  */
 static inline void CLOCK_DeinitWdtOsc(void)
 {
@@ -690,23 +713,13 @@ static inline void CLOCK_DeinitWdtOsc(void)
 
 /*! @brief Set FRO oscillator output frequency.
  *  Initialize the FRO clock to given frequency (18, 24 or 30 MHz).
- * @param freq, please reference clock_fro_osc_freq_t definition, frequency must be one of 18000, 24000 or 30000 KHz.
+ * @param freq Please refer to clock_fro_osc_freq_t definition, frequency must be one of 18000, 24000 or 30000 KHz.
  *
  */
 static inline void CLOCK_SetFroOscFreq(clock_fro_osc_freq_t freq)
 {
     (*((void (*)(uint32_t freq))(CLOCK_FRO_SETTING_API_ROM_ADDRESS)))(freq);
 }
-
-/*!
- * @brief Delay at least for several microseconds.
- *  Please note that, this API will calculate the microsecond period with the maximum
- *  supported CPU frequency, so this API will only delay for at least the given microseconds, if precise
- *  delay count was needed, please implement a new timer count to achieve this function.
- *
- * @param delay_us  Delay time in unit of microsecond.
- */
-void SDK_DelayAtLeastUs(uint32_t delay_us);
 
 /* @} */
 

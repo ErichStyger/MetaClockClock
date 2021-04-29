@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015-2016, Freescale Semiconductor, Inc.
- * Copyright 2016-2018 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -15,8 +15,17 @@
 #include <string.h>
 #include <stdlib.h>
 
-#if defined(__ICCARM__)
+#if defined(__ICCARM__) || (defined(__CC_ARM) || defined(__ARMCC_VERSION)) || defined(__GNUC__)
 #include <stddef.h>
+#endif
+
+/*
+ * For CMSIS pack RTE.
+ * CMSIS pack RTE generates "RTC_Components.h" which contains the statements
+ * of the related <RTE_Components_h> element for all selected software components.
+ */
+#ifdef _RTE_
+#include "RTE_Components.h"
 #endif
 
 #include "fsl_device_registers.h"
@@ -38,8 +47,8 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief common driver version 2.0.1. */
-#define FSL_COMMON_DRIVER_VERSION (MAKE_VERSION(2, 1, 0))
+/*! @brief common driver version. */
+#define FSL_COMMON_DRIVER_VERSION (MAKE_VERSION(2, 2, 9))
 /*@}*/
 
 /* Debug console type definition. */
@@ -130,6 +139,10 @@ enum _status_groups
     kStatusGroup_SEMC = 100,                  /*!< Group number for SEMC status codes. */
     kStatusGroup_ApplicationRangeStart = 101, /*!< Starting number for application groups. */
     kStatusGroup_IAP = 102,                   /*!< Group number for IAP status codes */
+    kStatusGroup_SFA = 103,                   /*!< Group number for SFA status codes*/
+    kStatusGroup_SPC = 104,                   /*!< Group number for SPC status codes. */
+    kStatusGroup_PUF = 105,                   /*!< Group number for PUF status codes. */
+    kStatusGroup_TOUCH_PANEL = 106,           /*!< Group number for touch panel status codes */
 
     kStatusGroup_HAL_GPIO = 121,              /*!< Group number for HAL GPIO status codes. */
     kStatusGroup_HAL_UART = 122,              /*!< Group number for HAL UART status codes. */
@@ -153,18 +166,26 @@ enum _status_groups
     kStatusGroup_SDK_OCOTP = 146,             /*!< Group number for OCOTP status codes. */
     kStatusGroup_SDK_FLEXSPINOR = 147,        /*!< Group number for FLEXSPINOR status codes.*/
     kStatusGroup_CODEC = 148,                 /*!< Group number for codec status codes. */
+    kStatusGroup_ASRC = 149,                  /*!< Group number for codec status ASRC. */
+    kStatusGroup_OTFAD = 150,                 /*!< Group number for codec status codes. */
+    kStatusGroup_SDIOSLV = 151,               /*!< Group number for SDIOSLV status codes. */
+    kStatusGroup_MECC = 152,                  /*!< Group number for MECC status codes. */
+    kStatusGroup_ENET_QOS = 153,              /*!< Group number for ENET_QOS status codes. */
+    kStatusGroup_LOG = 154,                   /*!< Group number for LOG status codes. */
 };
 
-/*! @brief Generic status return codes. */
-enum _generic_status
+/*! \public
+ * @brief Generic status return codes.
+ */
+enum
 {
-    kStatus_Success = MAKE_STATUS(kStatusGroup_Generic, 0),
-    kStatus_Fail = MAKE_STATUS(kStatusGroup_Generic, 1),
-    kStatus_ReadOnly = MAKE_STATUS(kStatusGroup_Generic, 2),
-    kStatus_OutOfRange = MAKE_STATUS(kStatusGroup_Generic, 3),
-    kStatus_InvalidArgument = MAKE_STATUS(kStatusGroup_Generic, 4),
-    kStatus_Timeout = MAKE_STATUS(kStatusGroup_Generic, 5),
-    kStatus_NoTransferInProgress = MAKE_STATUS(kStatusGroup_Generic, 6),
+    kStatus_Success = MAKE_STATUS(kStatusGroup_Generic, 0),  /*!< Generic status for Success. */
+    kStatus_Fail = MAKE_STATUS(kStatusGroup_Generic, 1),      /*!< Generic status for Fail. */
+    kStatus_ReadOnly = MAKE_STATUS(kStatusGroup_Generic, 2),    /*!< Generic status for read only failure. */
+    kStatus_OutOfRange = MAKE_STATUS(kStatusGroup_Generic, 3),   /*!< Generic status for out of range access. */
+    kStatus_InvalidArgument = MAKE_STATUS(kStatusGroup_Generic, 4),   /*!< Generic status for invalid argument check. */
+    kStatus_Timeout = MAKE_STATUS(kStatusGroup_Generic, 5),   /*!< Generic status for timeout. */
+    kStatus_NoTransferInProgress = MAKE_STATUS(kStatusGroup_Generic, 6),   /*!< Generic status for no transfer in progress. */
 };
 
 /*! @brief Type used for all status and error return values. */
@@ -207,14 +228,31 @@ typedef int32_t status_t;
 /*! @name Timer utilities */
 /* @{ */
 /*! Macro to convert a microsecond period to raw count value */
-#define USEC_TO_COUNT(us, clockFreqInHz) (uint64_t)((uint64_t)us * clockFreqInHz / 1000000U)
+#define USEC_TO_COUNT(us, clockFreqInHz) (uint64_t)(((uint64_t)(us) * (clockFreqInHz)) / 1000000U)
 /*! Macro to convert a raw count value to microsecond */
-#define COUNT_TO_USEC(count, clockFreqInHz) (uint64_t)((uint64_t)count * 1000000U / clockFreqInHz)
+#define COUNT_TO_USEC(count, clockFreqInHz) (uint64_t)((uint64_t)(count) * 1000000U / (clockFreqInHz))
 
 /*! Macro to convert a millisecond period to raw count value */
-#define MSEC_TO_COUNT(ms, clockFreqInHz) (uint64_t)((uint64_t)ms * clockFreqInHz / 1000U)
+#define MSEC_TO_COUNT(ms, clockFreqInHz) (uint64_t)((uint64_t)(ms) * (clockFreqInHz) / 1000U)
 /*! Macro to convert a raw count value to millisecond */
-#define COUNT_TO_MSEC(count, clockFreqInHz) (uint64_t)((uint64_t)count * 1000U / clockFreqInHz)
+#define COUNT_TO_MSEC(count, clockFreqInHz) (uint64_t)((uint64_t)(count) * 1000U / (clockFreqInHz))
+/* @} */
+
+/*! @name ISR exit barrier
+ * @{
+ *
+ * ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate overlapping
+ * exception return operation might vector to incorrect interrupt.
+ * For Cortex-M7, if core speed much faster than peripheral register write speed,
+ * the peripheral interrupt flags may be still set after exiting ISR, this results to
+ * the same error similar with errata 83869.
+ */
+#if (defined __CORTEX_M) && ((__CORTEX_M == 4U) || (__CORTEX_M == 7U))
+#define SDK_ISR_EXIT_BARRIER __DSB()
+#else
+#define SDK_ISR_EXIT_BARRIER
+#endif
+
 /* @} */
 
 /*! @name Alignment variable definition macros */
@@ -222,7 +260,7 @@ typedef int32_t status_t;
 #if (defined(__ICCARM__))
 /**
  * Workaround to disable MISRA C message suppress warnings for IAR compiler.
- * http://supp.iar.com/Support/?note=24725
+ * http:/ /supp.iar.com/Support/?note=24725
  */
 _Pragma("diag_suppress=Pm120")
 #define SDK_PRAGMA(x) _Pragma(#x)
@@ -272,7 +310,7 @@ _Pragma("diag_suppress=Pm120")
 
 /*! Macro to change a value to a given size aligned value */
 #define SDK_SIZEALIGN(var, alignbytes) \
-    ((unsigned int)((var) + ((alignbytes)-1)) & (unsigned int)(~(unsigned int)((alignbytes)-1)))
+    ((unsigned int)((var) + ((alignbytes)-1U)) & (unsigned int)(~(unsigned int)((alignbytes)-1U)))
 /* @} */
 
 /*! @name Non-cacheable region definition macros */
@@ -296,18 +334,31 @@ _Pragma("diag_suppress=Pm120")
 #endif
 #elif(defined(__CC_ARM) || defined(__ARMCC_VERSION))
 #if ((!(defined(FSL_FEATURE_HAS_NO_NONCACHEABLE_SECTION) && FSL_FEATURE_HAS_NO_NONCACHEABLE_SECTION)) && defined(FSL_FEATURE_L1ICACHE_LINESIZE_BYTE))
-#define AT_NONCACHEABLE_SECTION(var) __attribute__((section("NonCacheable"), zero_init)) var
-#define AT_NONCACHEABLE_SECTION_ALIGN(var, alignbytes) \
-    __attribute__((section("NonCacheable"), zero_init)) __attribute__((aligned(alignbytes))) var
 #define AT_NONCACHEABLE_SECTION_INIT(var) __attribute__((section("NonCacheable.init"))) var
 #define AT_NONCACHEABLE_SECTION_ALIGN_INIT(var, alignbytes) \
     __attribute__((section("NonCacheable.init"))) __attribute__((aligned(alignbytes))) var
+#if(defined(__CC_ARM))
+#define AT_NONCACHEABLE_SECTION(var) __attribute__((section("NonCacheable"), zero_init)) var
+#define AT_NONCACHEABLE_SECTION_ALIGN(var, alignbytes) \
+    __attribute__((section("NonCacheable"), zero_init)) __attribute__((aligned(alignbytes))) var
+#else
+#define AT_NONCACHEABLE_SECTION(var) __attribute__((section(".bss.NonCacheable"))) var
+#define AT_NONCACHEABLE_SECTION_ALIGN(var, alignbytes) \
+    __attribute__((section(".bss.NonCacheable"))) __attribute__((aligned(alignbytes))) var
+#endif
 #else
 #define AT_NONCACHEABLE_SECTION(var) var
 #define AT_NONCACHEABLE_SECTION_ALIGN(var, alignbytes) __attribute__((aligned(alignbytes))) var
 #define AT_NONCACHEABLE_SECTION_INIT(var) var
 #define AT_NONCACHEABLE_SECTION_ALIGN_INIT(var, alignbytes) __attribute__((aligned(alignbytes))) var
 #endif
+#elif(defined(__XCC__))
+#define AT_NONCACHEABLE_SECTION_INIT(var) __attribute__((section("NonCacheable.init"))) var
+#define AT_NONCACHEABLE_SECTION_ALIGN_INIT(var, alignbytes) \
+    __attribute__((section("NonCacheable.init"))) var __attribute__((aligned(alignbytes)))
+#define AT_NONCACHEABLE_SECTION(var) __attribute__((section("NonCacheable"))) var
+#define AT_NONCACHEABLE_SECTION_ALIGN(var, alignbytes) \
+    __attribute__((section("NonCacheable"))) var __attribute__((aligned(alignbytes)))
 #elif(defined(__GNUC__))
 /* For GCC, when the non-cacheable section is required, please define "__STARTUP_INITIALIZE_NONCACHEDATA"
  * in your projects to make sure the non-cacheable section variables will be initialized in system startup.
@@ -341,10 +392,10 @@ _Pragma("diag_suppress=Pm120")
 #define AT_QUICKACCESS_SECTION_CODE(func) func @"CodeQuickAccess"
 #define AT_QUICKACCESS_SECTION_DATA(func) func @"DataQuickAccess"
 #elif(defined(__CC_ARM) || defined(__ARMCC_VERSION))
-#define AT_QUICKACCESS_SECTION_CODE(func) __attribute__((section("CodeQuickAccess"))) func
+#define AT_QUICKACCESS_SECTION_CODE(func) __attribute__((section("CodeQuickAccess"), __noinline__)) func
 #define AT_QUICKACCESS_SECTION_DATA(func) __attribute__((section("DataQuickAccess"))) func
 #elif(defined(__GNUC__))
-#define AT_QUICKACCESS_SECTION_CODE(func) __attribute__((section("CodeQuickAccess"))) func
+#define AT_QUICKACCESS_SECTION_CODE(func) __attribute__((section("CodeQuickAccess"), __noinline__)) func
 #define AT_QUICKACCESS_SECTION_DATA(func) __attribute__((section("DataQuickAccess"))) func
 #else
 #error Toolchain not supported.
@@ -377,6 +428,283 @@ _Pragma("diag_suppress=Pm120")
 #endif /* defined(__ICCARM__) */
 /* @} */
 
+/*! @name Suppress fallthrough warning macro */
+/* For switch case code block, if case section ends without "break;" statement, there wil be
+ fallthrough warning with compiler flag -Wextra or -Wimplicit-fallthrough=n when using armgcc.
+ To suppress this warning, "SUPPRESS_FALL_THROUGH_WARNING();" need to be added at the end of each
+ case section which misses "break;"statement.
+ */
+/* @{ */
+#if defined(__GNUC__) && !defined(__ARMCC_VERSION)
+#define SUPPRESS_FALL_THROUGH_WARNING() __attribute__ ((fallthrough))
+#else
+#define SUPPRESS_FALL_THROUGH_WARNING()
+#endif
+/* @} */
+
+/*! @name Atomic modification
+ *
+ * These macros are used for atomic access, such as read-modify-write
+ * to the peripheral registers.
+ *
+ * - SDK_ATOMIC_LOCAL_ADD
+ * - SDK_ATOMIC_LOCAL_SET
+ * - SDK_ATOMIC_LOCAL_CLEAR
+ * - SDK_ATOMIC_LOCAL_TOGGLE
+ * - SDK_ATOMIC_LOCAL_CLEAR_AND_SET
+ *
+ * Take SDK_ATOMIC_LOCAL_CLEAR_AND_SET as an example: the parameter @c addr
+ * means the address of the peripheral register or variable you want to modify
+ * atomically, the parameter @c clearBits is the bits to clear, the parameter
+ * @c setBits it the bits to set.
+ * For example, to set a 32-bit register bit1:bit0 to 0b10, use like this:
+ *
+ * @code
+   volatile uint32_t * reg = (volatile uint32_t *)REG_ADDR;
+
+   SDK_ATOMIC_LOCAL_CLEAR_AND_SET(reg, 0x03, 0x02);
+   @endcode
+ *
+ * In this example, the register bit1:bit0 are cleared and bit1 is set, as a result,
+ * register bit1:bit0 = 0b10.
+ *
+ * @note For the platforms don't support exclusive load and store, these macros
+ * disable the global interrupt to pretect the modification.
+ *
+ * @note These macros only guarantee the local processor atomic operations. For
+ * the multi-processor devices, use hardware semaphore such as SEMA42 to
+ * guarantee exclusive access if necessary.
+ *
+ * @{
+ */
+
+/* clang-format off */
+#if ((defined(__ARM_ARCH_7M__     ) && (__ARM_ARCH_7M__      == 1)) || \
+     (defined(__ARM_ARCH_7EM__    ) && (__ARM_ARCH_7EM__     == 1)) || \
+     (defined(__ARM_ARCH_8M_MAIN__) && (__ARM_ARCH_8M_MAIN__ == 1)) || \
+     (defined(__ARM_ARCH_8M_BASE__) && (__ARM_ARCH_8M_BASE__ == 1)))
+/* clang-format on */
+
+/* If the LDREX and STREX are supported, use them. */
+#define _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, val, ops) \
+    do                                              \
+    {                                               \
+        (val) = __LDREXB(addr);                     \
+        (ops);                                      \
+    } while (0UL != __STREXB((val), (addr)))
+
+#define _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, val, ops) \
+    do                                              \
+    {                                               \
+        (val) = __LDREXH(addr);                     \
+        (ops);                                      \
+    } while (0UL != __STREXH((val), (addr)))
+
+#define _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, val, ops) \
+    do                                              \
+    {                                               \
+        (val) = __LDREXW(addr);                     \
+        (ops);                                      \
+    } while (0UL != __STREXW((val), (addr)))
+
+static inline void _SDK_AtomicLocalAdd1Byte(volatile uint8_t *addr, uint8_t val)
+{
+    uint8_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val += val);
+}
+
+static inline void _SDK_AtomicLocalAdd2Byte(volatile uint16_t *addr, uint16_t val)
+{
+    uint16_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val += val);
+}
+
+static inline void _SDK_AtomicLocalAdd4Byte(volatile uint32_t *addr, uint32_t val)
+{
+    uint32_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val += val);
+}
+
+static inline void _SDK_AtomicLocalSub1Byte(volatile uint8_t *addr, uint8_t val)
+{
+    uint8_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val -= val);
+}
+
+static inline void _SDK_AtomicLocalSub2Byte(volatile uint16_t *addr, uint16_t val)
+{
+    uint16_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val -= val);
+}
+
+static inline void _SDK_AtomicLocalSub4Byte(volatile uint32_t *addr, uint32_t val)
+{
+    uint32_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val -= val);
+}
+
+static inline void _SDK_AtomicLocalSet1Byte(volatile uint8_t *addr, uint8_t bits)
+{
+    uint8_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val |= bits);
+}
+
+static inline void _SDK_AtomicLocalSet2Byte(volatile uint16_t *addr, uint16_t bits)
+{
+    uint16_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val |= bits);
+}
+
+static inline void _SDK_AtomicLocalSet4Byte(volatile uint32_t *addr, uint32_t bits)
+{
+    uint32_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val |= bits);
+}
+
+static inline void _SDK_AtomicLocalClear1Byte(volatile uint8_t *addr, uint8_t bits)
+{
+    uint8_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val &= ~bits);
+}
+
+static inline void _SDK_AtomicLocalClear2Byte(volatile uint16_t *addr, uint16_t bits)
+{
+    uint16_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val &= ~bits);
+}
+
+static inline void _SDK_AtomicLocalClear4Byte(volatile uint32_t *addr, uint32_t bits)
+{
+    uint32_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val &= ~bits);
+}
+
+static inline void _SDK_AtomicLocalToggle1Byte(volatile uint8_t *addr, uint8_t bits)
+{
+    uint8_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val ^= bits);
+}
+
+static inline void _SDK_AtomicLocalToggle2Byte(volatile uint16_t *addr, uint16_t bits)
+{
+    uint16_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val ^= bits);
+}
+
+static inline void _SDK_AtomicLocalToggle4Byte(volatile uint32_t *addr, uint32_t bits)
+{
+    uint32_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val ^= bits);
+}
+
+static inline void _SDK_AtomicLocalClearAndSet1Byte(volatile uint8_t *addr, uint8_t clearBits, uint8_t setBits)
+{
+    uint8_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_1BYTE(addr, s_val, s_val = (s_val & ~clearBits) | setBits);
+}
+
+static inline void _SDK_AtomicLocalClearAndSet2Byte(volatile uint16_t *addr, uint16_t clearBits, uint16_t setBits)
+{
+    uint16_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_2BYTE(addr, s_val, s_val = (s_val & ~clearBits) | setBits);
+}
+
+static inline void _SDK_AtomicLocalClearAndSet4Byte(volatile uint32_t *addr, uint32_t clearBits, uint32_t setBits)
+{
+    uint32_t s_val;
+
+    _SDK_ATOMIC_LOCAL_OPS_4BYTE(addr, s_val, s_val = (s_val & ~clearBits) | setBits);
+}
+
+#define SDK_ATOMIC_LOCAL_ADD(addr, val) \
+        ((1UL == sizeof(*(addr))) ? _SDK_AtomicLocalAdd1Byte((volatile void*)(addr), (val)) : \
+        ((2UL == sizeof(*(addr))) ? _SDK_AtomicLocalAdd2Byte((volatile void*)(addr), (val)) : \
+        _SDK_AtomicLocalAdd4Byte((volatile void*)(addr), (val))))
+
+#define SDK_ATOMIC_LOCAL_SET(addr, bits) \
+        ((1UL == sizeof(*(addr))) ? _SDK_AtomicLocalSet1Byte((volatile void*)(addr), (bits)) : \
+        ((2UL == sizeof(*(addr))) ? _SDK_AtomicLocalSet2Byte((volatile void*)(addr), (bits)) : \
+        _SDK_AtomicLocalSet4Byte((volatile void*)(addr), (bits))))
+
+#define SDK_ATOMIC_LOCAL_CLEAR(addr, bits) \
+        ((1UL == sizeof(*(addr))) ? _SDK_AtomicLocalClear1Byte((volatile void*)(addr), (bits)) : \
+        ((2UL == sizeof(*(addr))) ? _SDK_AtomicLocalClear2Byte((volatile void*)(addr), (bits)) : \
+        _SDK_AtomicLocalClear4Byte((volatile void*)(addr), (bits))))
+
+#define SDK_ATOMIC_LOCAL_TOGGLE(addr, bits) \
+        ((1UL == sizeof(*(addr))) ? _SDK_AtomicLocalToggle1Byte((volatile void*)(addr), (bits)) : \
+        ((2UL == sizeof(*(addr))) ? _SDK_AtomicLocalToggle2Byte((volatile void*)(addr), (bits)) : \
+        _SDK_AtomicLocalToggle4Byte((volatile void*)(addr), (bits))))
+
+#define SDK_ATOMIC_LOCAL_CLEAR_AND_SET(addr, clearBits, setBits) \
+        ((1UL == sizeof(*(addr))) ? _SDK_AtomicLocalClearAndSet1Byte((volatile void*)(addr), (clearBits), (setBits)) : \
+        ((2UL == sizeof(*(addr))) ? _SDK_AtomicLocalClearAndSet2Byte((volatile void*)(addr), (clearBits), (setBits)) : \
+        _SDK_AtomicLocalClearAndSet4Byte((volatile void*)(addr), (clearBits), (setBits))))
+#else
+
+#define SDK_ATOMIC_LOCAL_ADD(addr, val)       \
+    do {                                      \
+        uint32_t s_atomicOldInt;              \
+        s_atomicOldInt = DisableGlobalIRQ();  \
+        *(addr) += (val);                     \
+        EnableGlobalIRQ(s_atomicOldInt);      \
+    } while (0)
+
+#define SDK_ATOMIC_LOCAL_SET(addr, bits)      \
+    do {                                      \
+        uint32_t s_atomicOldInt;              \
+        s_atomicOldInt = DisableGlobalIRQ();  \
+        *(addr) |= (bits);                    \
+        EnableGlobalIRQ(s_atomicOldInt);      \
+    } while (0)
+
+#define SDK_ATOMIC_LOCAL_CLEAR(addr, bits)    \
+    do {                                      \
+        uint32_t s_atomicOldInt;              \
+        s_atomicOldInt = DisableGlobalIRQ();  \
+        *(addr) &= ~(bits);                   \
+        EnableGlobalIRQ(s_atomicOldInt);      \
+    } while (0)
+
+#define SDK_ATOMIC_LOCAL_TOGGLE(addr, bits)   \
+    do {                                      \
+        uint32_t s_atomicOldInt;              \
+        s_atomicOldInt = DisableGlobalIRQ();  \
+        *(addr) ^= (bits);                    \
+        EnableGlobalIRQ(s_atomicOldInt);      \
+    } while (0)
+
+#define SDK_ATOMIC_LOCAL_CLEAR_AND_SET(addr, clearBits, setBits) \
+    do {                                                         \
+        uint32_t s_atomicOldInt;                                 \
+        s_atomicOldInt = DisableGlobalIRQ();                     \
+        *(addr) = (*(addr) & ~(clearBits)) | (setBits);          \
+        EnableGlobalIRQ(s_atomicOldInt);                         \
+    } while (0)
+
+#endif
+/* @} */
+
+#if defined ( __ARMCC_VERSION ) && ( __ARMCC_VERSION >= 6010050 )
+void DefaultISR(void);
+#endif
 /*
  * The fsl_clock.h is included here because it needs MAKE_VERSION/MAKE_STATUS/status_t
  * defined in previous of this file.
@@ -418,24 +746,30 @@ _Pragma("diag_suppress=Pm120")
      */
     static inline status_t EnableIRQ(IRQn_Type interrupt)
     {
+        status_t status = kStatus_Success;
+
         if (NotAvail_IRQn == interrupt)
         {
-            return kStatus_Fail;
+            status = kStatus_Fail;
         }
 
 #if defined(FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS) && (FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS > 0)
-        if (interrupt >= FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS)
+        else if ((int32_t)interrupt >= (int32_t)FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS)
         {
-            return kStatus_Fail;
+            status = kStatus_Fail;
         }
 #endif
 
+        else
+        {
 #if defined(__GIC_PRIO_BITS)
-        GIC_EnableIRQ(interrupt);
+            GIC_EnableIRQ(interrupt);
 #else
-        NVIC_EnableIRQ(interrupt);
+            NVIC_EnableIRQ(interrupt);
 #endif
-        return kStatus_Success;
+        }
+
+        return status;
     }
 
     /*!
@@ -456,24 +790,30 @@ _Pragma("diag_suppress=Pm120")
      */
     static inline status_t DisableIRQ(IRQn_Type interrupt)
     {
+        status_t status = kStatus_Success;
+
         if (NotAvail_IRQn == interrupt)
         {
-            return kStatus_Fail;
+            status = kStatus_Fail;
         }
 
 #if defined(FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS) && (FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS > 0)
-        if (interrupt >= FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS)
+        else if ((int32_t)interrupt >= (int32_t)FSL_FEATURE_NUMBER_OF_LEVEL1_INT_VECTORS)
         {
-            return kStatus_Fail;
+            status = kStatus_Fail;
         }
 #endif
 
+        else
+        {
 #if defined(__GIC_PRIO_BITS)
-        GIC_DisableIRQ(interrupt);
+            GIC_DisableIRQ(interrupt);
 #else
-    NVIC_DisableIRQ(interrupt);
+            NVIC_DisableIRQ(interrupt);
 #endif
-        return kStatus_Success;
+        }
+
+        return status;
     }
 
     /*!
@@ -539,6 +879,12 @@ _Pragma("diag_suppress=Pm120")
 #endif /* ENABLE_RAM_VECTOR_TABLE. */
 
 #if (defined(FSL_FEATURE_SOC_SYSCON_COUNT) && (FSL_FEATURE_SOC_SYSCON_COUNT > 0))
+
+    /*
+     * When FSL_FEATURE_POWERLIB_EXTEND is defined to non-zero value,
+     * powerlib should be used instead of these functions.
+     */
+#if !(defined(FSL_FEATURE_POWERLIB_EXTEND) && (FSL_FEATURE_POWERLIB_EXTEND != 0))
     /*!
      * @brief Enable specific interrupt for wake-up from deep-sleep mode.
      *
@@ -568,6 +914,7 @@ _Pragma("diag_suppress=Pm120")
      * @param interrupt The IRQ number.
      */
     void DisableDeepSleepIRQ(IRQn_Type interrupt);
+#endif /* FSL_FEATURE_POWERLIB_EXTEND */
 #endif /* FSL_FEATURE_SOC_SYSCON_COUNT */
 
     /*!
@@ -587,6 +934,16 @@ _Pragma("diag_suppress=Pm120")
      * @param ptr The memory to be release.
      */
     void SDK_Free(void *ptr);
+
+    /*!
+    * @brief Delay at least for some time.
+    *  Please note that, this API uses while loop for delay, different run-time environments make the time not precise,
+    *  if precise delay count was needed, please implement a new delay function with hardware timer.
+    *
+    * @param delayTime_us  Delay time in unit of microsecond.
+    * @param coreClock_Hz  Core clock frequency with Hz.
+    */
+    void SDK_DelayAtLeastUs(uint32_t delayTime_us, uint32_t coreClock_Hz);
 
 #if defined(__cplusplus)
 }

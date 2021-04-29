@@ -14,7 +14,7 @@ product: Clocks v7.0
 processor: LPC845
 package_id: LPC845M301JBD48
 mcu_data: ksdk2_0
-processor_version: 7.0.1
+processor_version: 9.0.0
 board: LPC845BREAKOUT
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 

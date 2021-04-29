@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 NXP
+ * Copyright 2018-2020 NXP
  * All rights reserved.
  *
  *
@@ -9,6 +9,7 @@
 #ifndef __HAL_UART_ADAPTER_H__
 #define __HAL_UART_ADAPTER_H__
 
+#include "fsl_common.h"
 #if defined(FSL_RTOS_FREE_RTOS)
 #include "FreeRTOS.h"
 #endif
@@ -34,28 +35,64 @@
 #endif
 
 #if defined(__GIC_PRIO_BITS)
+#ifndef HAL_UART_ISR_PRIORITY
 #define HAL_UART_ISR_PRIORITY (25U)
+#endif
 #else
 #if defined(configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY)
+#ifndef HAL_UART_ISR_PRIORITY
 #define HAL_UART_ISR_PRIORITY (configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY)
+#endif
 #else
 /* The default value 3 is used to support different ARM Core, such as CM0P, CM4, CM7, and CM33, etc.
  * The minimum number of priority bits implemented in the NVIC is 2 on these SOCs. The value of mininum
  * priority is 3 (2^2 - 1). So, the default value is 3.
  */
+#ifndef HAL_UART_ISR_PRIORITY
 #define HAL_UART_ISR_PRIORITY (3U)
 #endif
 #endif
-
-#if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
-#define HAL_UART_HANDLE_SIZE (90U)
-#else
-#define HAL_UART_HANDLE_SIZE (4U)
 #endif
 
-/*! @brief Whether enable transactional function of the UART. (0 - disable, 1 - enable) */
-#define HAL_UART_TRANSFER_MODE (0U)
+#ifndef HAL_UART_ADAPTER_LOWPOWER
+#define HAL_UART_ADAPTER_LOWPOWER (0U)
+#endif /* HAL_UART_ADAPTER_LOWPOWER */
 
+#ifndef HAL_UART_ADAPTER_FIFO
+#define HAL_UART_ADAPTER_FIFO (0U)
+#endif /* HAL_UART_ADAPTER_FIFO */
+
+/*! @brief Definition of uart adapter handle size. */
+#if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
+#define HAL_UART_HANDLE_SIZE       (92U + HAL_UART_ADAPTER_LOWPOWER * 16U)
+#define HAL_UART_BLOCK_HANDLE_SIZE (8U + HAL_UART_ADAPTER_LOWPOWER * 16U)
+#else
+#define HAL_UART_HANDLE_SIZE (8U + HAL_UART_ADAPTER_LOWPOWER * 16U)
+#endif
+
+/*!
+ * @brief Defines the uart handle
+ *
+ * This macro is used to define a 4 byte aligned uart handle.
+ * Then use "(hal_uart_handle_t)name" to get the uart handle.
+ *
+ * The macro should be global and could be optional. You could also define uart handle by yourself.
+ *
+ * This is an example,
+ * @code
+ * UART_HANDLE_DEFINE(uartHandle);
+ * @endcode
+ *
+ * @param name The name string of the uart handle.
+ */
+#define UART_HANDLE_DEFINE(name) uint32_t name[((HAL_UART_HANDLE_SIZE + sizeof(uint32_t) - 1U) / sizeof(uint32_t))]
+
+/*! @brief Whether enable transactional function of the UART. (0 - disable, 1 - enable) */
+#ifndef HAL_UART_TRANSFER_MODE
+#define HAL_UART_TRANSFER_MODE (0U)
+#endif
+
+/*! @brief The handle of uart adapter. */
 typedef void *hal_uart_handle_t;
 
 /*! @brief UART status */
@@ -79,9 +116,18 @@ typedef enum _hal_uart_status
 typedef enum _hal_uart_parity_mode
 {
     kHAL_UartParityDisabled = 0x0U, /*!< Parity disabled */
-    kHAL_UartParityEven     = 0x1U, /*!< Parity even enabled */
-    kHAL_UartParityOdd      = 0x2U, /*!< Parity odd enabled */
+    kHAL_UartParityEven     = 0x2U, /*!< Parity even enabled */
+    kHAL_UartParityOdd      = 0x3U, /*!< Parity odd enabled */
 } hal_uart_parity_mode_t;
+
+#if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
+/*! @brief UART Block Mode. */
+typedef enum _hal_uart_block_mode
+{
+    kHAL_UartNonBlockMode = 0x0U, /*!< Uart NonBlock Mode */
+    kHAL_UartBlockMode    = 0x1U, /*!< Uart Block Mode */
+} hal_uart_block_mode_t;
+#endif /* UART_ADAPTER_NON_BLOCKING_MODE */
 
 /*! @brief UART stop bit count. */
 typedef enum _hal_uart_stop_bit_count
@@ -99,9 +145,18 @@ typedef struct _hal_uart_config
     hal_uart_stop_bit_count_t stopBitCount; /*!< Number of stop bits, 1 stop bit (default) or 2 stop bits  */
     uint8_t enableRx;                       /*!< Enable RX */
     uint8_t enableTx;                       /*!< Enable TX */
+    uint8_t enableRxRTS;                    /*!< Enable RX RTS */
+    uint8_t enableTxCTS;                    /*!< Enable TX CTS */
     uint8_t instance; /*!< Instance (0 - UART0, 1 - UART1, ...), detail information please refer to the
                            SOC corresponding RM.
                            Invalid instance value will cause initialization failure. */
+#if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
+    hal_uart_block_mode_t mode; /*!< Uart  block mode */
+#endif                          /* UART_ADAPTER_NON_BLOCKING_MODE */
+#if (defined(HAL_UART_ADAPTER_FIFO) && (HAL_UART_ADAPTER_FIFO > 0u))
+    uint8_t txFifoWatermark;
+    uint8_t rxFifoWatermark;
+#endif
 } hal_uart_config_t;
 
 /*! @brief UART transfer callback function. */
@@ -134,8 +189,7 @@ extern "C" {
  * structure. The parameter handle is a pointer to point to a memory space of size #HAL_UART_HANDLE_SIZE allocated by
  * the caller. Example below shows how to use this API to configure the UART.
  *  @code
- *   uint8_t g_UartHandleBuffer[HAL_UART_HANDLE_SIZE];
- *   hal_uart_handle_t g_UartHandle = &g_UartHandleBuffer[0];
+ *   UART_HANDLE_DEFINE(g_UartHandle);
  *   hal_uart_config_t config;
  *   config.srcClock_Hz = 48000000;
  *   config.baudRate_Bps = 115200U;
@@ -143,16 +197,23 @@ extern "C" {
  *   config.stopBitCount = kHAL_UartOneStopBit;
  *   config.enableRx = 1;
  *   config.enableTx = 1;
+ *   config.enableRxRTS = 0;
+ *   config.enableTxCTS = 0;
  *   config.instance = 0;
- *   HAL_UartInit(g_UartHandle, &config);
+ *   HAL_UartInit((hal_uart_handle_t)g_UartHandle, &config);
  *  @endcode
  *
  * @param handle Pointer to point to a memory space of size #HAL_UART_HANDLE_SIZE allocated by the caller.
+ * The handle should be 4 byte aligned, because unaligned access doesn't be supported on some devices.
+ * You can define the handle in the following two ways:
+ * #UART_HANDLE_DEFINE(handle);
+ * or
+ * uint32_t handle[((HAL_UART_HANDLE_SIZE + sizeof(uint32_t) - 1U) / sizeof(uint32_t))];
  * @param config Pointer to user-defined configuration structure.
  * @retval kStatus_HAL_UartBaudrateNotSupport Baudrate is not support in current clock source.
  * @retval kStatus_HAL_UartSuccess UART initialization succeed
  */
-hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, hal_uart_config_t *config);
+hal_uart_status_t HAL_UartInit(hal_uart_handle_t handle, const hal_uart_config_t *config);
 
 /*!
  * @brief Deinitializes a UART instance.
@@ -177,9 +238,9 @@ hal_uart_status_t HAL_UartDeinit(hal_uart_handle_t handle);
  * This function polls the RX register, waits for the RX register to be full or for RX FIFO to
  * have data, and reads data from the RX register.
  *
- * @note The function #HAL_UartReceiveBlocking and the function #HAL_UartTransferReceiveNonBlocking
+ * @note The function #HAL_UartReceiveBlocking and the function HAL_UartTransferReceiveNonBlocking
  * cannot be used at the same time.
- * And, the function #HAL_UartTransferAbortReceive cannot be used to abort the transmission of this function.
+ * And, the function HAL_UartTransferAbortReceive cannot be used to abort the transmission of this function.
  *
  * @param handle UART handle pointer.
  * @param data Start address of the buffer to store the received data.
@@ -196,9 +257,9 @@ hal_uart_status_t HAL_UartReceiveBlocking(hal_uart_handle_t handle, uint8_t *dat
  * This function polls the TX register, waits for the TX register to be empty or for the TX FIFO
  * to have room and writes data to the TX buffer.
  *
- * @note The function #HAL_UartSendBlocking and the function #HAL_UartTransferSendNonBlocking
+ * @note The function #HAL_UartSendBlocking and the function HAL_UartTransferSendNonBlocking
  * cannot be used at the same time.
- * And, the function #HAL_UartTransferAbortSend cannot be used to abort the transmission of this function.
+ * And, the function HAL_UartTransferAbortSend cannot be used to abort the transmission of this function.
  *
  * @param handle UART handle pointer.
  * @param data Start address of the data to write.
@@ -456,6 +517,28 @@ hal_uart_status_t HAL_UartAbortSend(hal_uart_handle_t handle);
 
 #endif
 #endif
+
+/*!
+ * @brief Prepares to enter low power consumption.
+ *
+ * This function is used to prepare to enter low power consumption.
+ *
+ * @param handle UART handle pointer.
+ * @retval kStatus_HAL_UartSuccess Successful operation.
+ * @retval kStatus_HAL_UartError An error occurred.
+ */
+hal_uart_status_t HAL_UartEnterLowpower(hal_uart_handle_t handle);
+
+/*!
+ * @brief Restores from low power consumption.
+ *
+ * This function is used to restore from low power consumption.
+ *
+ * @param handle UART handle pointer.
+ * @retval kStatus_HAL_UartSuccess Successful operation.
+ * @retval kStatus_HAL_UartError An error occurred.
+ */
+hal_uart_status_t HAL_UartExitLowpower(hal_uart_handle_t handle);
 
 #if (defined(UART_ADAPTER_NON_BLOCKING_MODE) && (UART_ADAPTER_NON_BLOCKING_MODE > 0U))
 /*!

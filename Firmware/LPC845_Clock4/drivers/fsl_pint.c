@@ -736,6 +736,7 @@ void PINT_Deinit(PINT_Type *base)
 }
 #if (defined(FSL_FEATURE_SECPINT_NUMBER_OF_CONNECTED_OUTPUTS) && FSL_FEATURE_SECPINT_NUMBER_OF_CONNECTED_OUTPUTS)
 /* IRQ handler functions overloading weak symbols in the startup */
+void SEC_GPIO_INT0_IRQ0_DriverIRQHandler(void);
 void SEC_GPIO_INT0_IRQ0_DriverIRQHandler(void)
 {
     uint32_t pmstatus = 0;
@@ -757,6 +758,7 @@ void SEC_GPIO_INT0_IRQ0_DriverIRQHandler(void)
 
 #if (FSL_FEATURE_SECPINT_NUMBER_OF_CONNECTED_OUTPUTS > 1U)
 /* IRQ handler functions overloading weak symbols in the startup */
+void SEC_GPIO_INT0_IRQ1_DriverIRQHandler(void);
 void SEC_GPIO_INT0_IRQ1_DriverIRQHandler(void)
 {
     uint32_t pmstatus;
@@ -779,6 +781,7 @@ void SEC_GPIO_INT0_IRQ1_DriverIRQHandler(void)
 #endif /* FSL_FEATURE_SECPINT_NUMBER_OF_CONNECTED_OUTPUTS */
 
 /* IRQ handler functions overloading weak symbols in the startup */
+void PIN_INT0_DriverIRQHandler(void);
 void PIN_INT0_DriverIRQHandler(void)
 {
     uint32_t pmstatus;
@@ -795,9 +798,11 @@ void PIN_INT0_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt0);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 
 #if (FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS > 1U)
+void PIN_INT1_DriverIRQHandler(void);
 void PIN_INT1_DriverIRQHandler(void)
 {
     uint32_t pmstatus;
@@ -814,10 +819,12 @@ void PIN_INT1_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt1);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif
 
 #if (FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS > 2U)
+void PIN_INT2_DriverIRQHandler(void);
 void PIN_INT2_DriverIRQHandler(void)
 {
     uint32_t pmstatus;
@@ -834,10 +841,12 @@ void PIN_INT2_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt2);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif
 
 #if (FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS > 3U)
+void PIN_INT3_DriverIRQHandler(void);
 void PIN_INT3_DriverIRQHandler(void)
 {
     uint32_t pmstatus;
@@ -854,10 +863,12 @@ void PIN_INT3_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt3);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif
 
 #if (FSL_FEATURE_PINT_NUMBER_OF_CONNECTED_OUTPUTS > 4U)
+void PIN_INT4_DriverIRQHandler(void);
 void PIN_INT4_DriverIRQHandler(void)
 {
     uint32_t pmstatus;
@@ -874,6 +885,7 @@ void PIN_INT4_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt4);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif
 
@@ -881,6 +893,7 @@ void PIN_INT4_DriverIRQHandler(void)
 #if defined(FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER) && FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER
 void PIN_INT5_DAC1_IRQHandler(void)
 #else
+void PIN_INT5_DriverIRQHandler(void);
 void PIN_INT5_DriverIRQHandler(void)
 #endif /* FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER */
 {
@@ -898,6 +911,7 @@ void PIN_INT5_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt5);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif
 
@@ -905,6 +919,7 @@ void PIN_INT5_DriverIRQHandler(void)
 #if defined(FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER) && FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER
 void PIN_INT6_USART3_IRQHandler(void)
 #else
+void PIN_INT6_DriverIRQHandler(void);
 void PIN_INT6_DriverIRQHandler(void)
 #endif /* FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER */
 {
@@ -922,6 +937,7 @@ void PIN_INT6_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt6);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif
 
@@ -929,6 +945,7 @@ void PIN_INT6_DriverIRQHandler(void)
 #if defined(FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER) && FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER
 void PIN_INT7_USART4_IRQHandler(void)
 #else
+void PIN_INT7_DriverIRQHandler(void);
 void PIN_INT7_DriverIRQHandler(void)
 #endif /* FSL_FEATURE_NVIC_HAS_SHARED_INTERTTUPT_NUMBER */
 {
@@ -946,5 +963,6 @@ void PIN_INT7_DriverIRQHandler(void)
         /* Edge sensitive: clear Pin interrupt after callback */
         PINT_PinInterruptClrStatus(PINT, kPINT_PinInt7);
     }
+    SDK_ISR_EXIT_BARRIER;
 }
 #endif

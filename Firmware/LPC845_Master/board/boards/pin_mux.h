@@ -40,21 +40,24 @@ void BOARD_InitSWD_DEBUGPins(void); /* Function assigned for the Cortex-M0P */
 
 /*! @name PIO0_16 (number 15), RS485_RTS
   @{ */
-#define BOARD_INITRS485_RS485_RTS_PORT 0U /*!<@brief PORT device index: 0 */
-#define BOARD_INITRS485_RS485_RTS_PIN 16U /*!<@brief PIO0 GPIO pin index: 16 */
-                                          /* @} */
+#define BOARD_INITRS485_RS485_RTS_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITRS485_RS485_RTS_PIN 16U                   /*!<@brief PORT pin number */
+#define BOARD_INITRS485_RS485_RTS_PIN_MASK (1U << 16U)      /*!<@brief PORT pin mask */
+                                                            /* @} */
 
 /*! @name PIO0_17 (number 48), RS485-TX
   @{ */
-#define BOARD_INITRS485_RS485_TX_PORT 0U /*!<@brief PORT device index: 0 */
-#define BOARD_INITRS485_RS485_TX_PIN 17U /*!<@brief PIO0 GPIO pin index: 17 */
-                                         /* @} */
+#define BOARD_INITRS485_RS485_TX_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITRS485_RS485_TX_PIN 17U                   /*!<@brief PORT pin number */
+#define BOARD_INITRS485_RS485_TX_PIN_MASK (1U << 17U)      /*!<@brief PORT pin mask */
+                                                           /* @} */
 
 /*! @name PIO0_18 (number 47), RS485_RX
   @{ */
-#define BOARD_INITRS485_RS485_RX_PORT 0U /*!<@brief PORT device index: 0 */
-#define BOARD_INITRS485_RS485_RX_PIN 18U /*!<@brief PIO0 GPIO pin index: 18 */
-                                         /* @} */
+#define BOARD_INITRS485_RS485_RX_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITRS485_RS485_RX_PIN 18U                   /*!<@brief PORT pin number */
+#define BOARD_INITRS485_RS485_RX_PIN_MASK (1U << 18U)      /*!<@brief PORT pin mask */
+                                                           /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
@@ -64,15 +67,17 @@ void BOARD_InitRS485(void); /* Function assigned for the Cortex-M0P */
 
 /*! @name PIO0_25 (number 19), CN1[11]/PIO0_25
   @{ */
-#define BOARD_INITCDC_DEBUG_UART_TX_PORT 0U /*!<@brief PORT device index: 0 */
-#define BOARD_INITCDC_DEBUG_UART_TX_PIN 25U /*!<@brief PIO0 GPIO pin index: 25 */
-                                            /* @} */
+#define BOARD_INITCDC_DEBUG_UART_TX_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITCDC_DEBUG_UART_TX_PIN 25U                   /*!<@brief PORT pin number */
+#define BOARD_INITCDC_DEBUG_UART_TX_PIN_MASK (1U << 25U)      /*!<@brief PORT pin mask */
+                                                              /* @} */
 
 /*! @name PIO0_24 (number 20), CN1[10]/PIO0_24
   @{ */
-#define BOARD_INITCDC_DEBUG_UART_RX_PORT 0U /*!<@brief PORT device index: 0 */
-#define BOARD_INITCDC_DEBUG_UART_RX_PIN 24U /*!<@brief PIO0 GPIO pin index: 24 */
-                                            /* @} */
+#define BOARD_INITCDC_DEBUG_UART_RX_PORT 0U                   /*!<@brief PORT device index: 0 */
+#define BOARD_INITCDC_DEBUG_UART_RX_PIN 24U                   /*!<@brief PORT pin number */
+#define BOARD_INITCDC_DEBUG_UART_RX_PIN_MASK (1U << 24U)      /*!<@brief PORT pin mask */
+                                                              /* @} */
 
 /*!
  * @brief Configures pin routing and optionally pin electrical features.
