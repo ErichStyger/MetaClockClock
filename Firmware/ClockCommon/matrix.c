@@ -1401,7 +1401,7 @@ void MATRIX_RequestRgbUpdate(void) {
 }
 #endif
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
 void MATRIX_EnableDisableHandsAll(bool enable) {
   MHAND_HandEnableAll(enable); /* enable/disable hands */
   #if PL_CONFIG_USE_EXTENDED_HANDS
