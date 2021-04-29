@@ -31,6 +31,7 @@
 #endif
 #include "StepperBoard.h"
 #include "McuCriticalSection.h"
+#include "McuLog.h"
 
 #define STEPPER_CMD_QUEUE_LENGTH    (8) /* maximum number of items in stepper command queue */
 
@@ -281,8 +282,9 @@ static void Timer_Init(void) {
   SCTIMER_GetDefaultConfig(&sctimerInfo);
   SCTIMER_Init(SCT0, &sctimerInfo);
   matchValue = USEC_TO_COUNT(STEPPER_TIME_STEP_US, CLOCK_GetFreq(kCLOCK_CoreSysClk));
-  status = SCTIMER_CreateAndScheduleEvent(SCT0, kSCTIMER_MatchEventOnly, matchValue, 0 /* dummy I/O */, kSCTIMER_Counter_L /* dummy */, &eventNumberOutput);
+  status = SCTIMER_CreateAndScheduleEvent(SCT0, kSCTIMER_MatchEventOnly, matchValue, 0 /* dummy I/O, ignored */, kSCTIMER_Counter_U, &eventNumberOutput);
   if (status==kStatus_Fail || eventNumberOutput!=0) {
+    McuLog_fatal("failed configuring timer!");
     for(;;) {} /* should not happen! */
   }
   SCTIMER_SetupCounterLimitAction(SCT0, kSCTIMER_Counter_L, eventNumberOutput);
