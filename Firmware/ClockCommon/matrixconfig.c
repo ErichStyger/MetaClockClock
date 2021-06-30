@@ -591,6 +591,35 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
       {.addr=BOARD_ADDR_10, .cmdSent=false},
       {.addr=BOARD_ADDR_11, .cmdSent=false},
   };
+#elif PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+  const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
+  {
+    /* center clock */
+    [0][0][0]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=0},  [0][0][1]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=1},
+    /* hour clocks */
+    [1][0][0]={.addr=BOARD_ADDR_01, .board.x=0, .board.y=0, .board.z=0},  [1][0][1]={.addr=BOARD_ADDR_01, .board.x=0, .board.y=0, .board.z=1},
+    [2][0][0]={.addr=BOARD_ADDR_01, .board.x=1, .board.y=0, .board.z=0},  [2][0][1]={.addr=BOARD_ADDR_01, .board.x=1, .board.y=0, .board.z=1},
+    [3][0][0]={.addr=BOARD_ADDR_02, .board.x=0, .board.y=0, .board.z=0},  [3][0][1]={.addr=BOARD_ADDR_02, .board.x=0, .board.y=0, .board.z=1},
+    [4][0][0]={.addr=BOARD_ADDR_02, .board.x=1, .board.y=0, .board.z=0},  [4][0][1]={.addr=BOARD_ADDR_02, .board.x=1, .board.y=0, .board.z=1},
+    [5][0][0]={.addr=BOARD_ADDR_03, .board.x=0, .board.y=0, .board.z=0},  [5][0][1]={.addr=BOARD_ADDR_03, .board.x=0, .board.y=0, .board.z=1},
+    [6][0][0]={.addr=BOARD_ADDR_03, .board.x=1, .board.y=0, .board.z=0},  [6][0][1]={.addr=BOARD_ADDR_03, .board.x=1, .board.y=0, .board.z=1},
+    [7][0][0]={.addr=BOARD_ADDR_04, .board.x=0, .board.y=0, .board.z=0},  [7][0][1]={.addr=BOARD_ADDR_04, .board.x=0, .board.y=0, .board.z=1},
+    [8][0][0]={.addr=BOARD_ADDR_04, .board.x=1, .board.y=0, .board.z=0},  [8][0][1]={.addr=BOARD_ADDR_04, .board.x=1, .board.y=0, .board.z=1},
+    [9][0][0]={.addr=BOARD_ADDR_05, .board.x=0, .board.y=0, .board.z=0},  [9][0][1]={.addr=BOARD_ADDR_05, .board.x=0, .board.y=0, .board.z=1},
+    [10][0][0]={.addr=BOARD_ADDR_05, .board.x=1, .board.y=0, .board.z=0},  [10][0][1]={.addr=BOARD_ADDR_05, .board.x=1, .board.y=0, .board.z=1},
+    [11][0][0]={.addr=BOARD_ADDR_06, .board.x=0, .board.y=0, .board.z=0},  [11][0][1]={.addr=BOARD_ADDR_06, .board.x=0, .board.y=0, .board.z=1},
+    [12][0][0]={.addr=BOARD_ADDR_06, .board.x=1, .board.y=0, .board.z=0},  [12][0][1]={.addr=BOARD_ADDR_06, .board.x=1, .board.y=0, .board.z=1},
+  };
+
+  MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
+      {.addr=BOARD_ADDR_00, .cmdSent=false},
+      {.addr=BOARD_ADDR_01, .cmdSent=false},
+      {.addr=BOARD_ADDR_02, .cmdSent=false},
+
+      {.addr=BOARD_ADDR_03, .cmdSent=false},
+      {.addr=BOARD_ADDR_04, .cmdSent=false},
+      {.addr=BOARD_ADDR_05, .cmdSent=false},
+  };
 #else
   #error "unknown matrix"
 #endif

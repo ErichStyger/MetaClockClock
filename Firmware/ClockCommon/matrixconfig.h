@@ -43,6 +43,11 @@
   #define MATRIX_NOF_STEPPERS_X       (8)   /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (3)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
+#elif PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+  #define MATRIX_NOF_BOARDS           (7)   /* total number of boards in matrix: one in the center and 2x6 for the hours */
+  #define MATRIX_NOF_STEPPERS_X       (13)   /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_STEPPERS_Y       (1)   /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #else
   #error "unknown configuration"
 #endif
@@ -180,6 +185,14 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_09=0x79,
   BOARD_ADDR_10=0x7A,
   BOARD_ADDR_11=0x7B,
+#elif PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+  BOARD_ADDR_00=0x80, /* center clock */
+  BOARD_ADDR_01=0x81,
+  BOARD_ADDR_02=0x82,
+  BOARD_ADDR_03=0x83,
+  BOARD_ADDR_04=0x84,
+  BOARD_ADDR_05=0x85,
+  BOARD_ADDR_06=0x86,
 #else
   #error "unknown matrix"
 #endif

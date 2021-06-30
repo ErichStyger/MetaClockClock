@@ -60,6 +60,10 @@
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix is with color functionality */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix is with color functionality */
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+  #ifndef PL_MATRIX_CONFIG_IS_RGB /* ability to disable color functionality */
+  #define PL_MATRIX_CONFIG_IS_RGB    (1 && PL_CONFIG_IS_MASTER) /* if matrix is with color functionality */
+  #endif
 #endif
 
 /* hardware versions for boards with LPC845:
@@ -215,6 +219,10 @@
 
 #ifndef PL_CONFIG_HAS_SWITCH_7WAY
   #define PL_CONFIG_HAS_SWITCH_7WAY   (0)  /* using 7-way switch with up/down/left/right/center/set/reset */
+#endif
+
+#ifndef PL_CONFIG_HAS_CIRCLE_CLOCK
+  #define PL_CONFIG_HAS_CIRCLE_CLOCK   (0)  /* if having circular clock design */
 #endif
 
 /* NYI or not applicable */
