@@ -43,6 +43,9 @@
 #if PL_CONFIG_USE_RTC
   #include "McuExtRTC.h"
 #endif
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+  #include "circleClock.h"
+#endif
 #include "StepperBoard.h"
 #include "application.h"
 #include "matrixposition.h"
@@ -126,6 +129,9 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     McuLog_error("Failed showing time");
   }
 #endif /* PL_CONFIG_USE_FONT */
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+  CC_ShowTime(time->Hour, time->Min);
+#endif
 #if PL_CONFIG_WORLD_CLOCK
   uint8_t hour;
 
@@ -463,7 +469,9 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   McuShell_SendHelpStr((unsigned char*)"  border on|off", (unsigned char*)"Show clock with border\r\n", io->stdOut);
 #endif
+#if PL_CONFIG_USE_FONT
   McuShell_SendHelpStr((unsigned char*)"  font <f>", (unsigned char*)"Set clock font, e.g. 2x3\r\n", io->stdOut);
+#endif
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  time <c> <time>", (unsigned char*)"Show time on clock (0..3)\r\n", io->stdOut);
 #endif
