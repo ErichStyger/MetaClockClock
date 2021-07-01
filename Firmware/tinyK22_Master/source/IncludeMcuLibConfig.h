@@ -66,11 +66,12 @@ Instructions:
 #define McuPercepio_CONFIG_START_TRACE_IN_STARTUP_MODE  TRC_START
 /* -------------------------------------------------*/
 /* Shell */
-#define McuShell_CONFIG_PROJECT_NAME_STRING           "tinyK22 Master"
-#define McuShell_CONFIG_MULTI_CMD_ENABLED             (1)
-#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256)
-#define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
-#define McuShellUart_CONFIG_UART                      McuShellUart_CONFIG_UART_K22FN512_LPUART0
+#define McuShell_CONFIG_PROJECT_NAME_STRING             "tinyK22 Master"
+#define McuShell_CONFIG_MULTI_CMD_ENABLED               (1)
+#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE       (256)
+#define McuShell_CONFIG_MULTI_CMD_SIZE                  (200) /* max size of each command */
+#define McuShellUart_CONFIG_UART                        McuShellUart_CONFIG_UART_K22FN512_LPUART0
+#define McuShellUart_CONFIG_UART_GET_CLOCK_FREQ_SELECT  kCLOCK_PllFllSelClk
 /* -------------------------------------------------*/
 /* RTT */
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (150)
@@ -91,7 +92,6 @@ Instructions:
 #define McuGenericI2C_CONFIG_USE_ON_REQUEST_BUS_EVENT (0)
 #define McuGenericI2C_CONFIG_USE_MUTEX                (0 && McuLib_CONFIG_SDK_USE_FREERTOS)
 #define I2C_RETRY_TIMES   (5000) /* set retry count for SDK */
-
 
 #if CONFIG_USE_HW_I2C /* implementation in i2clib.c */
   #define McuGenericI2C_CONFIG_INTERFACE_HEADER_FILE            "i2clib.h"
