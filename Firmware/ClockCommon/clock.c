@@ -54,7 +54,9 @@
 static bool CLOCK_ClockIsOn = false;
 static bool CLOCK_ClockIs24h = true; /* if showing time in 24h format (17:35) or 12h format (5:35) */
 static bool CLOCK_ClockIsParked = false;
+#if PL_CONFIG_USE_FONT
 static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
+#endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
 #endif
@@ -95,6 +97,7 @@ bool CLOCK_GetClockIsOn(void) {
 }
 
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
+#if PL_CONFIG_USE_FONT
   uint8_t buf[8], res;
 
   McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
@@ -122,6 +125,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   if (res!=ERR_OK) {
     McuLog_error("Failed showing time");
   }
+#endif /* PL_CONFIG_USE_FONT */
 #if PL_CONFIG_WORLD_CLOCK
   uint8_t hour;
 
