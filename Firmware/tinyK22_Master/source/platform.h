@@ -51,9 +51,10 @@
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR      (0) /* not check for cmd errors to improve speed */
   /* below things are not supported yet for this clock */
-  #define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
-  #define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
-  #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
+  #define PL_CONFIG_USE_DEMOS             (0)
+  #define PL_CONFIG_USE_INTERMEZZO        (0)
+  #define PL_CONFIG_USE_FONT              (0)
+  #define PL_CONFIG_USE_BLE               (0)
 #else
   #error
 #endif
