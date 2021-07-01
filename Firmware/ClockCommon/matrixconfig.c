@@ -615,10 +615,10 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
       {.addr=BOARD_ADDR_00, .cmdSent=false},
       {.addr=BOARD_ADDR_01, .cmdSent=false},
       {.addr=BOARD_ADDR_02, .cmdSent=false},
-
       {.addr=BOARD_ADDR_03, .cmdSent=false},
       {.addr=BOARD_ADDR_04, .cmdSent=false},
       {.addr=BOARD_ADDR_05, .cmdSent=false},
+      {.addr=BOARD_ADDR_06, .cmdSent=false},
   };
 #else
   #error "unknown matrix"
