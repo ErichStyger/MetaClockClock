@@ -51,8 +51,7 @@
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR      (0) /* not check for cmd errors to improve speed */
   /* below things are not supported yet for this clock */
-  #define PL_CONFIG_USE_DEMOS             (0)
-  #define PL_CONFIG_USE_INTERMEZZO        (0)
+  #define PL_CONFIG_USE_INTERMEZZO        (1)
   #define PL_CONFIG_USE_FONT              (0)
   #define PL_CONFIG_USE_BLE               (0)
 #else

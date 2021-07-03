@@ -58,7 +58,7 @@ static void DEMO_LedDemo0(void) {
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
 typedef struct weather_ring_t {
   bool enabled;
   uint8_t r, g, b;
@@ -360,7 +360,7 @@ static void DEMO_LedDemo1(void) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
 /* ------------------ PONG Game ------------------------------- */
 typedef struct {
   uint8_t r, g, b;
@@ -581,7 +581,7 @@ static void DEMO_LedPong(void) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB && !PL_CONFIG_HAS_CIRCLE_CLOCK
 static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y], bool *changed) {
   /* see https://rosettacode.org/wiki/Conway%27s_Game_of_Life#C */
   unsigned newar[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y];
@@ -893,6 +893,7 @@ static uint8_t DEMO_Demo1(const McuShell_StdIOType *io) {
   return res;
 }
 
+#if PL_CONFIG_USE_FONT
 static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   uint8_t res;
   uint8_t buf[8];
@@ -914,8 +915,9 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
   }
   return MATRIX_MoveAllto12(10000, io);
 }
+#endif
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
 static void DEMO_Nxp(void) {
   MATRIX_SetMoveDelayZ0Z1All(3, 3);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
@@ -977,9 +979,12 @@ static void DEMO_Nxp(void) {
 
 static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
+#if PL_CONFIG_USE_FONT
   TIMEREC time;
   uint8_t buf[16];
+#endif
 
+#if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
   buf[0] = '\0';
@@ -990,6 +995,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 #else
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, true);
 #endif
+#endif
 
   (void)DemoRandomHandsPos();
   MATRIX_Delay(2000);
@@ -998,6 +1004,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   (void)DemoRandomHandsPos();
   MATRIX_Delay(2000);
 
+#if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   res = MFONT_ShowFramedText(0, 0, (unsigned char*)"2034", MFONT_SIZE_2x3, false, true);
   if (res!=ERR_OK) {
@@ -1007,7 +1014,9 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
+#endif
 
+#if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
   buf[0] = '\0';
@@ -1015,7 +1024,9 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, true);
   MATRIX_Delay(3000);
+#endif
 
+#if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   res = MFONT_ShowFramedText(0, 0, (unsigned char*)"22" MFONT_STR_DEGREE "C", MFONT_SIZE_2x3, true, true);
   MATRIX_Delay(3000);
@@ -1025,12 +1036,14 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(true);
 #endif
+#endif
 
   res = DEMO_Demo1(io);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
 
+#if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   McuTimeDate_GetTime(&time);
   buf[0] = '\0';
@@ -1038,6 +1051,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
   MATRIX_Delay(3000);
+#endif
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_HandEnableAll(true);
@@ -1273,9 +1287,11 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  propeller", (unsigned char*)"Rotating propeller\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  demo combined", (unsigned char*)"Combined demo\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  1", (unsigned char*)"Demo with changing angles\r\n", io->stdOut);
+#if PL_CONFIG_USE_FONT
   McuShell_SendHelpStr((unsigned char*)"  2", (unsigned char*)"Demo fast clock\r\n", io->stdOut);
+#endif
   McuShell_SendHelpStr((unsigned char*)"  delay <delay>", (unsigned char*)"Set default delay\r\n", io->stdOut);
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
   McuShell_SendHelpStr((unsigned char*)"  nxp", (unsigned char*)"NXP demo\r\n", io->stdOut);
   #endif
   McuShell_SendHelpStr((unsigned char*)"  middle", (unsigned char*)"middle demo\r\n", io->stdOut);
@@ -1284,7 +1300,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  led 0", (unsigned char*)"LED color demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  led 1", (unsigned char*)"LED rainbow demo\r\n", io->stdOut);
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  pong", (unsigned char*)"pong demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  weather <weather>", (unsigned char*)"Show weather: sunny, cloudy, rainy, icy\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  game of life", (unsigned char*)"Conway's Game of Life\r\n", io->stdOut);
@@ -1374,20 +1390,22 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if (McuUtility_strcmp((char*)cmd, "demo 1")==0) {
     *handled = true;
     return DEMO_Demo1(io);
+#if PL_CONFIG_USE_FONT
   } else if (McuUtility_strcmp((char*)cmd, "demo 2")==0) {
     *handled = true;
     return DEMO_Demo2(io);
+#endif
   } else if (McuUtility_strcmp((char*)cmd, "demo middle")==0) {
     *handled = TRUE;
     return DemoMiddle();
-  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
   } else if (McuUtility_strcmp((char*)cmd, "demo nxp")==0) {
     *handled = TRUE;
     DEMO_Nxp();
     return ERR_OK;
   #endif
 #endif /* PL_CONFIG_IS_MASTER */
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
   } else if (McuUtility_strcmp((char*)cmd, "demo weather sunny")==0) {
     *handled = TRUE;
     DEMO_ShowWeather(weather_sunny);
