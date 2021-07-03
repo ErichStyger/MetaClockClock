@@ -18,6 +18,9 @@
 #include "NeoPixel.h"
 #include "mfont.h"
 #include <math.h>
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+  #include "circleClock.h"
+#endif
 
 static bool IntermezzoOn = false; /* if intermezzos are on by default or not */
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
@@ -812,6 +815,21 @@ static void IntermezzoRectangles3(void) {
   DrawNestedRectangles(2*MATRIX_NOF_STEPPERS_X/3, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
 }
 
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+static void IntermezzoCircleCircle(void) {
+  CC_DrawCircle();
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+#endif /* PL_CONFIG_HAS_CIRCLE_CLOCK */
+
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+static void IntermezzoCircleRays(void) {
+  CC_DrawRays();
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+#endif /* PL_CONFIG_HAS_CIRCLE_CLOCK */
+
+
 typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
 static const Intermezzofp intermezzos[] = /* list of intermezzos */
 {
@@ -846,6 +864,10 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     IntermezzoRectangles,
     IntermezzoRectangles2,
     IntermezzoRectangles3,
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+    IntermezzoCircleCircle,
+    IntermezzoCircleRays,
+#endif
 };
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
 
