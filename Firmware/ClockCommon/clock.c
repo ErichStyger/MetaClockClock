@@ -54,7 +54,12 @@
 #include "McuLog.h"
 #include "mfont.h"
 
-static bool CLOCK_ClockIsOn = false;
+static bool CLOCK_ClockIsOn =
+#if PL_CONFIG_CLOCK_ON_BY_DEFAULT
+    true;
+#else
+    false;
+#endif
 static bool CLOCK_ClockIs24h = true; /* if showing time in 24h format (17:35) or 12h format (5:35) */
 static bool CLOCK_ClockIsParked = false;
 #if PL_CONFIG_USE_FONT

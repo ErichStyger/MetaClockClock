@@ -225,6 +225,13 @@
   #define PL_CONFIG_HAS_CIRCLE_CLOCK   (0)  /* if having circular clock design */
 #endif
 
+#ifndef PL_CONFIG_CLOCK_ON_BY_DEFAULT
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT  (0) /* if clock is on by default */
+#endif
+#ifndef PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT  (0) /* if intermezzos are on by default */
+#endif
+
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)

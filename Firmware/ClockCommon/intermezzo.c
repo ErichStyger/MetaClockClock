@@ -22,7 +22,12 @@
   #include "circleClock.h"
 #endif
 
-static bool IntermezzoOn = false; /* if intermezzos are on by default or not */
+static bool IntermezzoOn = /* if intermezzos are on by default or not */
+#if PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT
+    true;
+#else
+    false;
+#endif
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 
 static void Intermezzo0(void) {
