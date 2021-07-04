@@ -128,7 +128,7 @@ void CC_ShowTime(uint8_t hour, uint8_t minute) {
   MPOS_SetAngle(CIRCLE_CLOCK_MIDDLE_X_POS, CIRCLE_CLOCK_MIDDLE_Y_POS, CIRCLE_CLOCK_HOUR_Z_POS, angleHour); /* hour */
   MPOS_SetAngle(CIRCLE_CLOCK_MIDDLE_X_POS, CIRCLE_CLOCK_MIDDLE_Y_POS, CIRCLE_CLOCK_MINUTE_Z_POS, angleMinute); /* minute */
 
-  if (whichOutside==0) {
+ if (whichOutside==0) {
     CC_DrawAngles(circleHourAngles);
   } else if (whichOutside==1) {
     CC_DrawAngles(raysHourAngles);
@@ -143,7 +143,6 @@ void CC_ShowTime(uint8_t hour, uint8_t minute) {
   if (whichOutside==5) {
     whichOutside = 0; /* reset */
   }
-
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
