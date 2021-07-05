@@ -126,9 +126,13 @@ static void NeoTask(void *pv) {
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 #if configUSE_HEAP_SCHEME==5
+#if PL_CONFIG_IS_K02 /* K02 has two 8K memory banks */
   static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[8*1024]; /* placed in in no_init section inside SRAM_LOWER */
   static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[3*1024]; /* placed in in no_init section inside SRAM_UPPER */
-
+#elif PL_CONFIG_IS_TINYK22 /* K22FN512 has two 64K memory banks */
+  static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[64*1024]; /* placed in in no_init section inside SRAM_LOWER */
+  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[16*1024]; /* placed in in no_init section inside SRAM_UPPER */
+#endif
   static const HeapRegion_t xHeapRegions[] =
   {
    { &heap_sram_lower[0], sizeof(heap_sram_lower)},
