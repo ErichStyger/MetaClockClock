@@ -33,7 +33,14 @@
   #define FTM_CH1_TICKS 0x1A /* data bit, go low for 0 after 0.35us, stay high for 1 */
   #define FTM_CH2_TICKS 0x33 /* end of 1 bit, go low after 0.9us */
   #define FTM_OVL_TICKS 0x3C /* end of 1.25 us cycle for a 0 or 1 bit */
-#elif PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
+#elif 0 && PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
+  /* values for a 48 MHz FTM0 clock and a 96 core clock! */
+  /* NOTE: need to verify numbers below, not tested yet! */
+  #define FTM_CH0_TICKS 0x10 /* go high, start bit */
+  #define FTM_CH1_TICKS 0x30 /* data bit, go low for 0 after 0.35us, stay high for 1 */
+  #define FTM_CH2_TICKS 0x50 /* end of 1 bit, go low after 0.9us */
+  #define FTM_OVL_TICKS 0x70 /* end of 1.25 us cycle for a 0 or 1 bit */
+#elif 1 && PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
   /* values for a 60 MHz FTM0 clock and a 120 core clock! */
   #define FTM_CH0_TICKS 0x10 /* go high, start bit */
   #define FTM_CH1_TICKS 0x25 /* data bit, go low for 0 after 0.35us, stay high for 1 */

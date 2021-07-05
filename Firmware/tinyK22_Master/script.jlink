@@ -1,0 +1,7 @@
+ExitOnError 1
+r
+h
+loadfile "C:\Users\erich\Downloads\tinyK22_Master.hex"
+qc
+
+qc

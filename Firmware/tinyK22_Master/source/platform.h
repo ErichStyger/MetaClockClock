@@ -16,7 +16,7 @@
 /* assign matrix configuration used, only needed for master: */
 #if 0   /* V1: original meta clock with 24 clocks */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3
-#elif 0 /* V2: 60 billion lights */
+#elif 1 /* V2: 60 billion lights */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_60B
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* we drive the NeoPixels directly by hardware */
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
