@@ -12,6 +12,7 @@
 
 #include "circleClock_config.h"
 #include <stdint.h>
+#include <stdbool.h>
 
 #define CIRCLE_CLOCK_MIDDLE_X_POS           (0)  /* X position of middle clock */
 #define CIRCLE_CLOCK_MIDDLE_Y_POS           (0)  /* Y position of middle clock */
@@ -30,6 +31,9 @@ void CC_DrawRays(void);
 
 /* show time */
 void CC_ShowTime(uint8_t hour, uint8_t minute);
+
+/* disable/enable center clock during intermezzos */
+void CC_EnableCenterClock(bool enable);
 
 void CC_Deinit(void);
 void CC_Init(void);

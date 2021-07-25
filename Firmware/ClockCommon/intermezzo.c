@@ -885,7 +885,15 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
     if (tickCount-lastClockUpdateTickCount > pdMS_TO_TICKS(IntermezzoDelaySec*1000)) { /* after a delay: start intermezzo */
       intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
       McuLog_info("Intermezzo: starting %d", intermezzo);
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+      /* exclude center clock from Intermezzos */
+      CC_EnableCenterClock(false);
+#endif
       intermezzos[intermezzo]();
+#if PL_CONFIG_HAS_CIRCLE_CLOCK
+      /* exclude center clock from Intermezzos */
+      CC_EnableCenterClock(true);
+#endif
       McuLog_info("Intermezzo: %d done", intermezzo);
       *intermezzoShown = true;
     }

@@ -16,7 +16,7 @@
 /* assign matrix configuration used, only needed for master: */
 #if 0   /* V1: original meta clock with 24 clocks */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3
-#elif 1 /* V2: 60 billion lights */
+#elif 0 /* V2: 60 billion lights */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x5_60B
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* we drive the NeoPixels directly by hardware */
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
@@ -52,7 +52,7 @@
   #define PL_CONFIG_CHECK_LAST_ERROR      (0) /* not check for cmd errors to improve speed */
   #define PL_CONFIG_USE_BLE               (0) /* Adafruit module not mounted on board */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT   (1) /* clock on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (1) /* intermzzos on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (1) /* intermezzos on by default */
   /* below things are not supported yet for this clock */
   #define PL_CONFIG_USE_FONT              (0)
 #else

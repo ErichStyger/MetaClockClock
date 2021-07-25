@@ -146,6 +146,18 @@ void CC_ShowTime(uint8_t hour, uint8_t minute) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
+static bool IgnoreCallback(int32_t x, int32_t y, int32_t z) {
+  return (x==0 && y==0); /* ignore center clock which is at (0,0,z) */
+}
+
+void CC_EnableCenterClock(bool enable) {
+  if (!enable) {
+    MATRIX_SetIgnoreCallback(IgnoreCallback);
+  } else {
+    MATRIX_SetIgnoreCallback(NULL);
+  }
+}
+
 void CC_Deinit(void) {
 }
 

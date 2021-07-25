@@ -59,6 +59,12 @@
   static MATRIX_Matrix_t prevMatrix; /* map of previous matrix, used to reduce communication traffic */
 #endif /* PL_CONFIG_IS_MASTER */
 
+static MATRIX_IgnoreCallbackFct MATRIX_IgnoredCallback = NULL; /* optional callback to ignore a coordinate */
+
+void MATRIX_SetIgnoreCallback(MATRIX_IgnoreCallbackFct fct) {
+  MATRIX_IgnoredCallback = fct;
+}
+
 #if PL_CONFIG_USE_X12_STEPPER
 typedef struct X12_Stepper_t {
   McuX12_017_Motor_e x12motor; /* which motor */
@@ -449,113 +455,114 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board */
+        if (MATRIX_IgnoredCallback==NULL || !MATRIX_IgnoredCallback(x,y,z)) { /* callback exists and not ignored coordinate */
+          if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board */
+            #if PL_MATRIX_CONFIG_IS_RGB
+            /* *************** hand enable command *********************** */
+            if (matrix.enabledHandMap[x][y][z]!=prevMatrix.enabledHandMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he ");
+              McuUtility_strcat(buf, sizeof(buf), matrix.enabledHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
+              nof++;
+            }
+            #endif
 
-          #if PL_MATRIX_CONFIG_IS_RGB
-          /* *************** hand enable command *********************** */
-          if (matrix.enabledHandMap[x][y][z]!=prevMatrix.enabledHandMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+            #if PL_CONFIG_USE_EXTENDED_HANDS
+            /* *************** 2nd hand enable command *********************** */
+            if (matrix.enabled2ndHandMap[x][y][z]!=prevMatrix.enabled2ndHandMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he2 ");
+              McuUtility_strcat(buf, sizeof(buf), matrix.enabled2ndHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
+              nof++;
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he ");
-            McuUtility_strcat(buf, sizeof(buf), matrix.enabledHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
-            nof++;
-          }
-          #endif
+            #endif
 
-          #if PL_CONFIG_USE_EXTENDED_HANDS
-          /* *************** 2nd hand enable command *********************** */
-          if (matrix.enabled2ndHandMap[x][y][z]!=prevMatrix.enabled2ndHandMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+            #if PL_CONFIG_USE_LED_RING
+            /* *************** ring enable command *********************** */
+            if (matrix.enabledRingMap[x][y][z]!=prevMatrix.enabledRingMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" re ");
+              McuUtility_strcat(buf, sizeof(buf), matrix.enabledRingMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
+              nof++;
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" he2 ");
-            McuUtility_strcat(buf, sizeof(buf), matrix.enabled2ndHandMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
-            nof++;
-          }
-          #endif
+            #endif
 
-          #if PL_CONFIG_USE_LED_RING
-          /* *************** ring enable command *********************** */
-          if (matrix.enabledRingMap[x][y][z]!=prevMatrix.enabledRingMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)",");
+            /* *************** move command *********************** */
+  #if PL_CONFIG_USE_RELATIVE_MOVES
+            isRelative = matrix.relAngleMap[x][y][z]!=0;
+  #else
+            isRelative = false;
+  #endif
+            if (isRelative || matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_chcat(buf, sizeof(buf), ',');
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              if (isRelative) {
+  #if PL_CONFIG_USE_RELATIVE_MOVES
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" r ");
+                McuUtility_strcatNum16s(buf, sizeof(buf), matrix.relAngleMap[x][y][z]); /* <a> */
+                matrix.angleMap[x][y][z] += matrix.relAngleMap[x][y][z]; /* update to expected position */
+                matrix.relAngleMap[x][y][z] = 0; /* set back to zero as it gets executed */
+  #endif
+              } else {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" a ");
+                McuUtility_strcatNum16s(buf, sizeof(buf), matrix.angleMap[x][y][z]); /* <a> */
+              }
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum16u(buf, sizeof(buf), matrix.delayMap[x][y][z]); /* <d> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcat(buf, sizeof(buf), GetModeString(matrix.moveMap[x][y][z], true, true));
+            #if PL_CONFIG_USE_NEO_PIXEL_HW
+              /* build a command for the LED rings (virtual steppers for it):  */
+              if (nof>0) {
+                McuUtility_chcat(ledbuf, sizeof(ledbuf), ',');
+              }
+              McuUtility_strcatNum8u(ledbuf, sizeof(ledbuf), x); /* <x> */
+              McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
+              McuUtility_strcatNum8u(ledbuf, sizeof(ledbuf), y); /* <y> */
+              McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
+              McuUtility_strcatNum8u(ledbuf, sizeof(ledbuf), z); /* <z> */
+              McuUtility_strcat(ledbuf, sizeof(ledbuf), isRelative?(unsigned char*)" r ":(unsigned char*)" a ");
+              McuUtility_strcatNum16s(ledbuf, sizeof(ledbuf), matrix.angleMap[x][y][z]); /* <a> */
+              McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
+              McuUtility_strcatNum16u(ledbuf, sizeof(ledbuf), matrix.delayMap[x][y][z]); /* <d> */
+              McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
+              McuUtility_strcat(ledbuf, sizeof(ledbuf), GetModeString(matrix.moveMap[x][y][z], true, true));
+            #endif
+              nof++;
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" re ");
-            McuUtility_strcat(buf, sizeof(buf), matrix.enabledRingMap[x][y][z]?(unsigned char*)"on":(unsigned char*)"off");
-            nof++;
-          }
-          #endif
-
-          /* *************** move command *********************** */
-#if PL_CONFIG_USE_RELATIVE_MOVES
-          isRelative = matrix.relAngleMap[x][y][z]!=0;
-#else
-          isRelative = false;
-#endif
-          if (isRelative || matrix.angleMap[x][y][z]!=prevMatrix.angleMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_chcat(buf, sizeof(buf), ',');
-            }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            if (isRelative) {
-#if PL_CONFIG_USE_RELATIVE_MOVES
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" r ");
-              McuUtility_strcatNum16s(buf, sizeof(buf), matrix.relAngleMap[x][y][z]); /* <a> */
-              matrix.angleMap[x][y][z] += matrix.relAngleMap[x][y][z]; /* update to expected position */
-              matrix.relAngleMap[x][y][z] = 0; /* set back to zero as it gets executed */
-#endif
-            } else {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" a ");
-              McuUtility_strcatNum16s(buf, sizeof(buf), matrix.angleMap[x][y][z]); /* <a> */
-            }
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum16u(buf, sizeof(buf), matrix.delayMap[x][y][z]); /* <d> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcat(buf, sizeof(buf), GetModeString(matrix.moveMap[x][y][z], true, true));
-          #if PL_CONFIG_USE_NEO_PIXEL_HW
-            /* build a command for the LED rings (virtual steppers for it):  */
-            if (nof>0) {
-              McuUtility_chcat(ledbuf, sizeof(ledbuf), ',');
-            }
-            McuUtility_strcatNum8u(ledbuf, sizeof(ledbuf), x); /* <x> */
-            McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
-            McuUtility_strcatNum8u(ledbuf, sizeof(ledbuf), y); /* <y> */
-            McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
-            McuUtility_strcatNum8u(ledbuf, sizeof(ledbuf), z); /* <z> */
-            McuUtility_strcat(ledbuf, sizeof(ledbuf), isRelative?(unsigned char*)" r ":(unsigned char*)" a ");
-            McuUtility_strcatNum16s(ledbuf, sizeof(ledbuf), matrix.angleMap[x][y][z]); /* <a> */
-            McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
-            McuUtility_strcatNum16u(ledbuf, sizeof(ledbuf), matrix.delayMap[x][y][z]); /* <d> */
-            McuUtility_chcat(ledbuf, sizeof(ledbuf), ' ');
-            McuUtility_strcat(ledbuf, sizeof(ledbuf), GetModeString(matrix.moveMap[x][y][z], true, true));
-          #endif
-            nof++;
-          }
-          /* *************** commands *********************** */
-        }
-      }
-    }
-  }
+            /* *************** commands *********************** */
+          } /* addr */
+        } /* not ignored */
+      } /* z */
+    } /* x */
+  } /* y */
   if (nof>0) {
     *cmdSent = true;
     McuLog_trace("Queue enable & move (0x%02x)", addr);
@@ -586,39 +593,41 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board and clock is enabled */
-          if (matrix.colorHandMap[x][y][z]!=prevMatrix.colorHandMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+        if (MATRIX_IgnoredCallback==NULL || !MATRIX_IgnoredCallback(x,y,z)) { /* callback exists and not ignored coordinate */
+          if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board and clock is enabled */
+            if (matrix.colorHandMap[x][y][z]!=prevMatrix.colorHandMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hc 0x");
+              McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorHandMap[x][y][z]); /* color */
+              nof++;
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hc 0x");
-            McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorHandMap[x][y][z]); /* color */
-            nof++;
-          }
-#if PL_CONFIG_USE_EXTENDED_HANDS
-          if (matrix.color2ndHandMap[x][y][z]!=prevMatrix.color2ndHandMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+        #if PL_CONFIG_USE_EXTENDED_HANDS
+            if (matrix.color2ndHandMap[x][y][z]!=prevMatrix.color2ndHandMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hc2 0x");
+              McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.color2ndHandMap[x][y][z]); /* color */
+              nof++;
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" hc2 0x");
-            McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.color2ndHandMap[x][y][z]); /* color */
-            nof++;
-          }
-#endif
-        }
-      }
-    }
-  }
+        #endif
+          } /* if */
+        } /* not ignored */
+      }  /* z */
+    } /* x */
+  } /* y */
   if (nof>0) {
     *cmdSent = true;
     McuLog_trace("Queue hand color (0x%02x)", addr);
@@ -642,24 +651,26 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) { /* every clock row */
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) { /* every clock in column */
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board and clock is enabled */
-          if (matrix.colorRingMap[x][y][z]!=prevMatrix.colorRingMap[x][y][z]) { /* only send changes */
-            if (nof>0) {
-              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+        if (MATRIX_IgnoredCallback==NULL || !MATRIX_IgnoredCallback(x,y,z)) { /* callback exists and not ignored coordinate */
+          if (clockMatrix[x][y][z].addr==addr) { /* check if is a matching board and clock is enabled */
+            if (matrix.colorRingMap[x][y][z]!=prevMatrix.colorRingMap[x][y][z]) { /* only send changes */
+              if (nof>0) {
+                McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ,");
+              }
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
+              McuUtility_chcat(buf, sizeof(buf), ' ');
+              McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
+              McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" rc 0x");
+              McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorRingMap[x][y][z]); /* color */
+              nof++;
             }
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.x); /* <x> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), clockMatrix[x][y][z].board.y); /* <y> */
-            McuUtility_chcat(buf, sizeof(buf), ' ');
-            McuUtility_strcatNum8u(buf, sizeof(buf), z); /* <z> */
-            McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" rc 0x");
-            McuUtility_strcatNum24Hex(buf, sizeof(buf), matrix.colorRingMap[x][y][z]); /* color */
-            nof++;
-          }
-        }
-      }
-    }
-  }
+          } /* if addr */
+        } /* if not ignored */
+      } /* z */
+    } /* x */
+  } /* y */
   if (nof>0) {
     *cmdSent = true;
     McuLog_trace("Queue ring color (0x%02x)", addr);

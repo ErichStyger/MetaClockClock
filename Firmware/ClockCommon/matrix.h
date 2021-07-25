@@ -92,6 +92,11 @@ STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z);
 
 void MATRIX_TimerCallback(void);
 
+/* optional callback to ignore a given coordinate/motor */
+typedef bool(*MATRIX_IgnoreCallbackFct)(int32_t, int32_t, int32_t);
+
+void MATRIX_SetIgnoreCallback(MATRIX_IgnoreCallbackFct fct);
+
 void MATRIX_EnableStepper(void *dev);
 void MATRIX_DisableStepper(void *dev);
 
