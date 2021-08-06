@@ -41,8 +41,6 @@ uint8_t NVMC_GetRS485Addr(void);
 
 uint8_t NVMC_GetNofActiveMotors(void);
 
-uint8_t NVMC_GetNofActiveMotors(void);
-
 uint32_t NVMC_GetFlags(void);
 
 bool NVMC_IsErased(void);
