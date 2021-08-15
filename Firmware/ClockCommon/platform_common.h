@@ -18,6 +18,8 @@
   #define PL_CONFIG_BOARD_MCU     PL_CONFIG_BOARD_ID_MCU_K02FN64
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128  || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   #define PL_CONFIG_BOARD_MCU     PL_CONFIG_BOARD_ID_MCU_K02FN128
+#else
+  #error "unknow board ID"
 #endif
 /* CPU/Board selection: only one can be active! \todo remove? */
 #define PL_CONFIG_IS_LPC845        (PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_LPC845)     /* LPC845 */
@@ -230,6 +232,10 @@
 #endif
 #ifndef PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT  (0) /* if intermezzos are on by default */
+#endif
+
+#ifndef PL_CONFIG_CLOCK_DEFAULT_FONT
+  #define PL_CONFIG_CLOCK_DEFAULT_FONT    MFONT_SIZE_2x3  /* default clock font */
 #endif
 
 /* NYI or not applicable */

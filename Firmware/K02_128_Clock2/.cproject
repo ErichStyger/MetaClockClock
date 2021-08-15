@@ -311,11 +311,21 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.676606573.1559991041" name="/" resourcePath="board">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.96484698" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.858647980" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.1858873346"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.346408581" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1165494237"/>
+							<tool id="com.crt.advproject.gas.exe.debug.571888163" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.968385871"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1789112043" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1889140720"/>
+							<tool id="com.crt.advproject.link.exe.debug.1019156793" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.897759742"/>
+							<tool id="com.crt.advproject.tool.debug.debug.1480326147" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.2000081240"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ClockCommon"/>
 						<entry excluding="FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33|minIni|TraceRecorder|fonts|LittlevGL|HD44780|FatFS" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
-						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="source"/>

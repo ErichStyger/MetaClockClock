@@ -18,19 +18,23 @@
   #define LED_BLUE_GPIO       GPIO
   #define LED_BLUE_PORT       0U
   #define LED_BLUE_PIN        19U
+  #define LED_BLUE_IOCON      IOCON_INDEX_PIO0_19
 #elif PL_CONFIG_IS_MASTER
   /* LEDs on LPC845-BRK */
   #define LED_GREEN_GPIO      GPIO
   #define LED_GREEN_PORT      1U
   #define LED_GREEN_PIN       0U
+  #define LED_GREEN_IOCON     IOCON_INDEX_PIO1_0
 
   #define LED_BLUE_GPIO       GPIO
   #define LED_BLUE_PORT       1U
   #define LED_BLUE_PIN        1U
+  #define LED_BLUE_IOCON      IOCON_INDEX_PIO1_1
 
   #define LED_RED_GPIO        GPIO
   #define LED_RED_PORT        1U
   #define LED_RED_PIN         2U
+  #define LED_RED_IOCON       IOCON_INDEX_PIO1_2
 #endif
 #endif
 
@@ -48,5 +52,8 @@ void LEDS_Init(void) {
   config.hw.gpio = LED_BLUE_GPIO;
   config.hw.port = LED_BLUE_PORT;
   config.hw.pin = LED_BLUE_PIN;
+#if McuLib_CONFIG_CPU_IS_LPC
+  config.hw.iocon = LED_BLUE_IOCON;
+#endif
   LEDS_Led = McuLED_InitLed(&config);
 }

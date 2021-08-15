@@ -63,7 +63,7 @@ static bool CLOCK_ClockIsOn =
 static bool CLOCK_ClockIs24h = true; /* if showing time in 24h format (17:35) or 12h format (5:35) */
 static bool CLOCK_ClockIsParked = false;
 #if PL_CONFIG_USE_FONT
-static MFONT_Size_e CLOCK_font = MFONT_SIZE_2x3; /* default font */
+static MFONT_Size_e CLOCK_font = PL_CONFIG_CLOCK_DEFAULT_FONT; /* default font */
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */

@@ -7,11 +7,11 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v9.0
+product: Pins v10.0
 processor: MK02FN64xxx10
 package_id: MK02FN64VFM10
 mcu_data: ksdk2_0
-processor_version: 9.0.0
+processor_version: 10.0.0
 pin_labels:
 - {pin_num: '20', pin_signal: ADC0_SE8/PTB0/LLWU_P5/I2C0_SCL/FTM1_CH0/FTM1_QD_PHA, label: M3_STEP, identifier: Lane0;M3_STEP}
 - {pin_num: '23', pin_signal: ADC0_SE4b/CMP1_IN0/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1, label: LED}

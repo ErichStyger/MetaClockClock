@@ -407,7 +407,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
     McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"addr: 0x");
     McuUtility_strcatNum8Hex(buf, sizeof(buf), data->addrRS485);
     McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-    McuShell_SendStatusStr((unsigned char*)"  RS-458", buf, io->stdOut);
+    McuShell_SendStatusStr((unsigned char*)"  RS-485", buf, io->stdOut);
 
     uint32_t flags;
 

@@ -33,11 +33,11 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Clocks v7.0
+product: Clocks v8.0
 processor: MK02FN128xxx10
 package_id: MK02FN128VFM10
 mcu_data: ksdk2_0
-processor_version: 8.0.1
+processor_version: 10.0.0
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -170,7 +170,7 @@ void BOARD_BootClockRUN(void)
     /* Set the system clock dividers in SIM to safe value. */
     CLOCK_SetSimSafeDivs();
     /* Set MCG to FEI mode. */
-#if FSL_CLOCK_DRIVER_VERSION >= MAKE_VERSION(2, 2, 0)
+#if FSL_CLOCK_DRIVER_VERSION >= MAKE_VERSION(2, 0, 0)
     CLOCK_BootToFeiMode(mcgConfig_BOARD_BootClockRUN.dmx32,
                         mcgConfig_BOARD_BootClockRUN.drs,
                         CLOCK_CONFIG_FllStableDelay);
