@@ -87,6 +87,9 @@ static void USB_CdcStdIOReadChar(uint8_t *c) {
 static void USB_CdcStdIOSendChar(uint8_t ch) {
   int timeoutMs = 50;
 
+  if (!USB_CdcIsConnected()) { /* USB not attached? */
+    return; /* do not fill up the queue */
+  }
   while (McuRB_Put(usb_txBuf, &ch)!=ERR_OK) {
     McuWait_WaitOSms(1);
     if(timeoutMs<=0) {
