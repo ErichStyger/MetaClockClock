@@ -18,4 +18,3 @@ int main(void) {
   APP_Run();
   return 0;
 }
-

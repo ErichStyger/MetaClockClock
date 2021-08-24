@@ -126,6 +126,7 @@
                   </pin>
                   <pin peripheral="LPUART0" signal="TX" pin_num="49" pin_signal="PTC4/LLWU_P8/SPI0_PCS0/UART1_TX/FTM0_CH3/FB_AD11/CMP1_OUT/LPUART0_TX">
                      <pin_features>
+                        <pin_feature name="direction" value="OUTPUT"/>
                         <pin_feature name="pull_select" value="up"/>
                         <pin_feature name="pull_enable" value="enable"/>
                      </pin_features>
