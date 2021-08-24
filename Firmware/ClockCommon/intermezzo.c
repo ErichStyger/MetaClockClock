@@ -585,6 +585,7 @@ static void Intermezzo16(void) {
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
+  MATRIX_WaitForIdle(10000); /* wait until it is finished */
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
@@ -597,6 +598,7 @@ static void Intermezzo17(void) {
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
+  MATRIX_WaitForIdle(10000); /* wait until it is finished */
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
@@ -609,6 +611,7 @@ static void Intermezzo18(void) {
     MATRIX_SendToRemoteQueueExecuteAndWait(false);
     vTaskDelay(pdMS_TO_TICKS(1000));
   }
+  MATRIX_WaitForIdle(10000); /* wait until it is finished */
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 

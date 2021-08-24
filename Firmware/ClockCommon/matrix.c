@@ -42,8 +42,8 @@
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
-  static uint32_t MATRIX_LedHandColor = 0x0000ff;
-  static uint8_t MATRIX_LedHandBrightness = 0x10; /* led brightness, 0-255 */
+  static uint32_t MATRIX_LedHandColor = PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR;
+  static uint8_t MATRIX_LedHandBrightness = PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS; /* led brightness, 0-255 */
 #endif
 
 #if PL_CONFIG_USE_STEPPER
@@ -315,7 +315,7 @@ static bool MATRIX_CommandHasBeenSentToBoard(unsigned int i) {
 #endif
 
 #if PL_CONFIG_IS_MASTER
-static uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
+uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
   bool boardIsIdle[MATRIX_NOF_BOARDS];
   uint8_t res;
   uint8_t addr;
@@ -3119,13 +3119,16 @@ void MATRIX_Init(void) {
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   MATRIX_SetMoveDelayAll(2);
 #if PL_MATRIX_CONFIG_IS_RGB
-  MHAND_SetHandColorAll(0x000010);
-  MATRIX_DrawAllRingColor(0x000000);
-  MHAND_HandEnableAll(true);
+  MHAND_SetHandColorAll(0); /* set to zero, will be set below after the matrix copy operation */
+  MATRIX_DrawAllRingColor(0x000000); /* ring color off */
+  MHAND_HandEnableAll(true); /* will be set below */
 #endif
   MATRIX_CopyMatrix(&prevMatrix, &matrix); /* make backup */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x08, 0x08, 0x08));
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
 #endif
 #endif
 }

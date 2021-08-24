@@ -85,6 +85,7 @@ void MATRIX_SetMoveDelayAll(uint8_t delay);
 uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);
 uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait);
+uint8_t MATRIX_WaitForIdle(int32_t timeoutMs);
 
 #if PL_CONFIG_USE_STEPPER
 STEPPER_Handle_t MATRIX_GetStepper(int32_t x, int32_t y, int32_t z);
