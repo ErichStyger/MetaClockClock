@@ -68,9 +68,19 @@ static MFONT_Size_e CLOCK_font = PL_CONFIG_CLOCK_DEFAULT_FONT; /* default font *
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
 #endif
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   static uint32_t CLOCK_HandColor = 0x000030;
+  static bool CLOCK_doRandomHandColor =
+  #if PL_CONFIG_CLOCK_RANDOM_COLOR_ON
+      true;
+  #else
+      false;
+  #endif
+#endif
+#if PL_CONFIG_USE_LED_DIMMING
   static uint8_t CLOCK_HandBrightness = 0xff; /* max */
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   static bool CLOCK_ShowSeconds = false;
   static uint32_t CLOCK_SecondColor = 0x050000;
 #endif
@@ -111,7 +121,16 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
   MATRIX_SetMoveDelayAll(5);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
+  if (CLOCK_doRandomHandColor) {
+    int32_t r, g, b;
+    do {
+      r = McuUtility_random(0, 128); /* limit range to avoid excessive current */
+      g = McuUtility_random(0, 128);
+      b = McuUtility_random(0, 128);
+      CLOCK_HandColor = NEO_COMBINE_RGB(r, g, b);
+    } while (CLOCK_HandColor<20 || (r+g+b)>200); /* just making sure it is not too dimm or too bright */
+  }
   MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
 #endif
   buf[0] = '\0';
@@ -390,13 +409,18 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 
   McuShell_SendStatusStr((unsigned char*)"  24h", CLOCK_ClockIs24h?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"color: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), CLOCK_HandColor);
+#if PL_CONFIG_USE_LED_DIMMING
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", brightness 0x");
   McuUtility_strcatNum8Hex(buf, sizeof(buf), CLOCK_HandBrightness);
+#endif
+  McuUtility_strcat(buf, sizeof(buf), CLOCK_doRandomHandColor?(unsigned char*)", random on":(unsigned char*)", random off");
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  hand", buf, io->stdOut);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   McuShell_SendStatusStr((unsigned char*)"  seconds", CLOCK_ShowSeconds?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"color: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), CLOCK_SecondColor);
@@ -464,8 +488,11 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  24h on|off", (unsigned char*)"Show time in 24h (17:35) or 12h (5:35) format\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  park on|off|toggle", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  period <minute>", (unsigned char*)"Clock update period in minutes (>0)\r\n", io->stdOut);
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
+  McuShell_SendHelpStr((unsigned char*)"  hand rgb random on|off", (unsigned char*)"Set hand random color mode\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  hand rgb <rgb>", (unsigned char*)"Set hand color\r\n", io->stdOut);
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   McuShell_SendHelpStr((unsigned char*)"  seconds on|off", (unsigned char*)"Show seconds\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_LED_DIMMING
@@ -534,17 +561,29 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       return ERR_FAILED;
     }
     return ERR_OK;
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
+  } else if (McuUtility_strcmp((char*)cmd, "clock hand rgb random on")==0) {
+    *handled = true;
+    CLOCK_doRandomHandColor = true;
+  } else if (McuUtility_strcmp((char*)cmd, "clock hand rgb random off")==0) {
+    *handled = true;
+    CLOCK_doRandomHandColor= false;
+#endif
+#if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strncmp((char*)cmd, "clock hand rgb ", sizeof("clock hand rgb ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("clock hand rgb ")-1;
     if (McuUtility_ScanRGB32(&p, &CLOCK_HandColor)==ERR_OK) {
       MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
+#if PL_CONFIG_USE_NEO_PIXEL_HW
       APP_RequestUpdateLEDs();
+#endif
       return ERR_OK;
     } else {
       return ERR_FAILED;
     }
+#endif
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   } else if (McuUtility_strncmp((char*)cmd, "clock second rgb ", sizeof("clock second rgb ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("clock second rgb ")-1;
@@ -713,14 +752,16 @@ static void ClockTask(void *pv) {
   }
 #endif
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   /* turn on the hand LEDs */
   MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
 #if PL_CONFIG_USE_LED_DIMMING
   MATRIX_SetHandBrightnessAll(CLOCK_HandBrightness);
 #endif
   MHAND_HandEnableAll(true);
+#if PL_CONFIG_USE_NEO_PIXEL_HW
   APP_RequestUpdateLEDs(); /* update LEDs */
+#endif
 #endif
 #if PL_CONFIG_USE_RTC
   /* set new random seed based temperature */
@@ -794,6 +835,11 @@ static void ClockTask(void *pv) {
         McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
         prevClockUpdateTimestampSec = 0; /* to make sure it will update */
+      #if PL_MATRIX_CONFIG_IS_RGB
+        MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
+        MATRIX_DrawAllRingColor(0x000000); /* ring color off */
+        MHAND_HandEnableAll(true);
+      #endif
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_OFF) {
         McuLog_info("Clock off");
