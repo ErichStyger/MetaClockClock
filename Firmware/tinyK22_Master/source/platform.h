@@ -28,7 +28,7 @@
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* if intermezzo is on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
   #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
