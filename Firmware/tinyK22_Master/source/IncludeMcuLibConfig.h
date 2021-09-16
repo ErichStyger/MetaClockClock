@@ -90,7 +90,7 @@ Instructions:
 #define CONFIG_USE_HW_I2C                             (1) /* if using HW I2C, otherwise use software bit banging */
 #define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)
 #define McuGenericI2C_CONFIG_USE_ON_REQUEST_BUS_EVENT (0)
-#define McuGenericI2C_CONFIG_USE_MUTEX                (0 && McuLib_CONFIG_SDK_USE_FREERTOS)
+#define McuGenericI2C_CONFIG_USE_MUTEX                (1 && McuLib_CONFIG_SDK_USE_FREERTOS)
 #define I2C_RETRY_TIMES   (5000) /* set retry count for SDK */
 
 #if CONFIG_USE_HW_I2C /* implementation in i2clib.c */
