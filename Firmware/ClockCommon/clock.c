@@ -700,7 +700,7 @@ static void ShowSeconds(const TIMEREC *time) {
 
 static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_RTC
-  int32_t prevClockUpdateTimestampSec = 0; /* time of previous clock update time stamp, seconds since 1972 */
+  int32_t prevClockUpdateTimestampSec = 0; /* time of previous clock update time stamp (start time), seconds since 1972 */
   TIMEREC time;
   DATEREC date;
   uint8_t res;
@@ -916,8 +916,8 @@ static void ClockTask(void *pv) {
       ShowSeconds(&time);
     #endif
       if (res==ERR_OK && (McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0) >= prevClockUpdateTimestampSec+60*CLOCK_UpdatePeriodMinutes)) {
-        CLOCK_ShowTimeDate(&time, &date);
         prevClockUpdateTimestampSec = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
+        CLOCK_ShowTimeDate(&time, &date);
       #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
         lastClockUpdateTickCount = xTaskGetTickCount();
         intermezzoShown = false;
