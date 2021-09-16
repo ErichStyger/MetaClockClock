@@ -911,6 +911,15 @@ static void ClockTask(void *pv) {
     /* Clock */
     /* ----------------------------------------------------------------------------------*/
     if (CLOCK_ClockIsOn) { /* show time */
+      if (prevClockUpdateTimestampSec==0) { /* sync on start of the minute */
+        do {
+          res = McuTimeDate_GetTimeDate(&time, NULL);
+          if (time.Sec==0) {
+            break; /* leave loop */
+          }
+          vTaskDelay(pdMS_TO_TICKS(200));
+        } while(res==ERR_OK);
+      }
       res = McuTimeDate_GetTimeDate(&time, &date);
     #if PL_CONFIG_USE_NEO_PIXEL_HW
       ShowSeconds(&time);
