@@ -14,13 +14,14 @@
 
 /* button pins are defined in IncludeMcuLibConfig.h */
 #if McuLib_CONFIG_CPU_IS_LPC
+#if PL_CONFIG_HAS_SWITCH_USER
    /* user button on LPC845-BRK board: PIO0_4 */
   #define BUTTONS_USER_GPIO       GPIO
   #define BUTTONS_USER_PORT       0
   #define BUTTONS_USER_PIN        4
   #define BUTTONS_USER_IOCON      IOCON_INDEX_PIO0_4
   #define BUTTONS_USER_PINTSEL    kSYSCON_GpioPort0Pin4ToPintsel
-
+#endif
 #if PL_CONFIG_HAS_SWITCH_7WAY
   #define BUTTONS_UP_GPIO         GPIO
   #define BUTTONS_UP_PORT         0
@@ -66,10 +67,24 @@
 #endif
 
   #define BUTTONS_ENABLE_CLOCK() GPIO_PortInit(GPIO, 0) /* ungate the clocks for GPIO0 (Port 0): used for user button */
+#elif McuLib_CONFIG_CPU_IS_KINETIS
+#if PL_CONFIG_HAS_SWITCH_2WAY
+  /* using ESP32 UART pins */
+  #define BUTTONS_UP_GPIO        GPIOE
+  #define BUTTONS_UP_PORT        PORTE
+  #define BUTTONS_UP_PIN         0
+
+  #define BUTTONS_DOWN_GPIO      GPIOE
+  #define BUTTONS_DOWN_PORT      PORTE
+  #define BUTTONS_DOWN_PIN       1
+#endif
+  #define BUTTONS_ENABLE_CLOCK()   CLOCK_EnableClock(kCLOCK_PortE);
 #endif
 
 typedef enum {
+#if PL_CONFIG_HAS_SWITCH_USER
   BTN_USER,
+#endif
 #if PL_CONFIG_HAS_SWITCH_7WAY
   BTN_UP,
   BTN_DOWN,
@@ -78,18 +93,26 @@ typedef enum {
   BTN_MID,
   BTN_SET,
   BTN_RST,
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+  BTN_SET,
+  BTN_RST,
 #endif
   BTN_NOF_BUTTONS  /* sentinel, must be last in list! */
 } BTN_Buttons_e;
 
 /* bits of the buttons */
-#define BTN_BIT_USER          (1<<0)
+#if PL_CONFIG_HAS_SWITCH_USER
+  #define BTN_BIT_USER          (1<<0)
+#endif
 #if PL_CONFIG_HAS_SWITCH_7WAY
   #define BTN_BIT_UP          (1<<1)
   #define BTN_BIT_DOWN        (1<<2)
   #define BTN_BIT_LEFT        (1<<3)
   #define BTN_BIT_RIGHT       (1<<4)
   #define BTN_BIT_MID         (1<<5)
+  #define BTN_BIT_SET         (1<<6)
+  #define BTN_BIT_RST         (1<<7)
+#elif PL_CONFIG_HAS_SWITCH_2WAY
   #define BTN_BIT_SET         (1<<6)
   #define BTN_BIT_RST         (1<<7)
 #endif

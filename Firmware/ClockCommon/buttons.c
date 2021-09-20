@@ -21,7 +21,9 @@
   #include "McuSystemView.h"
 #endif
 #include "McuDebounce.h"
-#include "clock.h"
+#if PL_CONFIG_USE_CLOCK
+  #include "clock.h"
+#endif
 
 typedef struct BTN_Desc_t {
   McuBtn_Handle_t handle; /* handle of pin */
@@ -37,9 +39,41 @@ bool BTN_IsPressed(BTN_Buttons_e btn) {
 static uint32_t GetButtons(void) {
   uint32_t val = 0;
 
+#if PL_CONFIG_HAS_SWITCH_USER
   if (BTN_IsPressed(BTN_USER)) {
     val |= BTN_BIT_USER;
   }
+#endif
+#if PL_CONFIG_HAS_SWITCH_7WAY
+  if (BTN_IsPressed(BTN_UP)) {
+    val |= BTN_BIT_UP;
+  }
+  if (BTN_IsPressed(BTN_DOWN)) {
+    val |= BTN_BIT_DOWN;
+  }
+  if (BTN_IsPressed(BTN_LEFT)) {
+    val |= BTN_BIT_LEFT;
+  }
+  if (BTN_IsPressed(BTN_RIGHT)) {
+    val |= BTN_BIT_RIGHT;
+  }
+  if (BTN_IsPressed(BTN_MID)) {
+    val |= BTN_BIT_MID;
+  }
+  if (BTN_IsPressed(BTN_SET)) {
+    val |= BTN_BIT_SET;
+  }
+  if (BTN_IsPressed(BTN_RST)) {
+    val |= BTN_BIT_RST;
+  }
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+  if (BTN_IsPressed(BTN_SET)) {
+    val |= BTN_BIT_SET;
+  }
+  if (BTN_IsPressed(BTN_RST)) {
+    val |= BTN_BIT_RST;
+  }
+#endif
   return val;
 }
 
@@ -73,11 +107,15 @@ static void OnDebounceEvent(McuDbnc_EventKinds event, uint32_t buttons) {
       break;
 
     case MCUDBNC_EVENT_RELEASED:
+#if PL_CONFIG_USE_CLOCK
       CLOCK_ButtonHandler(event, buttons);
+#endif
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
+#if PL_CONFIG_USE_CLOCK
       CLOCK_ButtonHandler(event, buttons);
+#endif
       break;
 
     default:
@@ -110,56 +148,20 @@ static void StartDebounce(uint32_t buttons, bool fromISR) {
   }
 }
 
-#if McuLib_CONFIG_CPU_IS_KINETIS
-#if TINYK22_HAT_VERSION>3
-  /* all buttons are on PTB */
-void PORTA_IRQHandler(void) {
+#if 0 && McuLib_CONFIG_CPU_IS_KINETIS
+void PORTE_IRQHandler(void) {
   uint32_t flags;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-  flags = GPIO_PortGetInterruptFlags(GPIOA);
-  if (flags&(1U<<BUTTONS_PINS_HATNAVLEFT_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVLEFT_GPIO, 1U<<BUTTONS_PINS_HATNAVLEFT_PIN);
-    StartDebounce(BTN_BIT_NAV_LEFT, true);
+#if PL_CONFIG_HAS_SWITCH_2WAY
+  flags = GPIO_PortGetInterruptFlags(GPIOE);
+  if (flags&(1U<<BUTTONS_DOWN_PIN)) {
+    GPIO_PortClearInterruptFlags(BUTTONS_DOWN_GPIO, 1U<<BUTTONS_DOWN_PIN);
+    StartDebounce(BTN_BIT_DOWN, true);
   }
-  if (flags&(1U<<BUTTONS_PINS_HATNAVRIGHT_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVRIGHT_GPIO, 1U<<BUTTONS_PINS_HATNAVRIGHT_PIN);
-    StartDebounce(BTN_BIT_NAV_RIGHT, true);
-  }
-  if (xHigherPriorityTaskWoken) {
-    taskYIELD();
-  }
-  __DSB();
-}
-#endif
-#endif
-
-#if McuLib_CONFIG_CPU_IS_KINETIS
-void PORTB_IRQHandler(void) {
-  uint32_t flags;
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
-
-  flags = GPIO_PortGetInterruptFlags(GPIOB);
-  if (flags&(1U<<BUTTONS_PINS_HATNAVCENTER_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVCENTER_GPIO, 1U<<BUTTONS_PINS_HATNAVCENTER_PIN);
-    StartDebounce(BTN_BIT_NAV_CENTER, true);
-  }
-  if (flags&(1U<<BUTTONS_PINS_HATNAVDOWN_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVDOWN_GPIO, 1U<<BUTTONS_PINS_HATNAVDOWN_PIN);
-    StartDebounce(BTN_BIT_NAV_DOWN, true);
-  }
-  if (flags&(1U<<BUTTONS_PINS_HATNAVUP_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVUP_GPIO, 1U<<BUTTONS_PINS_HATNAVUP_PIN);
-    StartDebounce(BTN_BIT_NAV_UP, true);
-  }
-#if TINYK22_HAT_VERSION==3 /* all buttons are on PTB */
-  if (flags&(1U<<BUTTONS_PINS_HATNAVLEFT_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVLEFT_GPIO, 1U<<BUTTONS_PINS_HATNAVLEFT_PIN);
-    StartDebounce(BTN_BIT_NAV_LEFT, true);
-  }
-  if (flags&(1U<<BUTTONS_PINS_HATNAVRIGHT_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_PINS_HATNAVRIGHT_GPIO, 1U<<BUTTONS_PINS_HATNAVRIGHT_PIN);
-    StartDebounce(BTN_BIT_NAV_RIGHT, true);
+  if (flags&(1U<<BUTTONS_UP_PIN)) {
+    GPIO_PortClearInterruptFlags(BUTTONS_UP_GPIO, 1U<<BUTTONS_UP_PIN);
+    StartDebounce(BTN_BIT_UP, true);
   }
 #endif
   if (xHigherPriorityTaskWoken) {
@@ -200,13 +202,7 @@ static void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status) {
 
 void BTN_Deinit(void) {
 #if McuLib_CONFIG_CPU_IS_KINETIS
-#if TINYK22_HAT_VERSION==3
-  /* all buttons are on PTB */
-  DisableIRQ(PORTB_IRQn);
-#else
-  DisableIRQ(PORTA_IRQn);
-  DisableIRQ(PORTB_IRQn);
-#endif
+  DisableIRQ(PORTE_IRQn);
 #endif
   for(int i=0; i<BTN_NOF_BUTTONS; i++) {
     BTN_Infos[i].handle = McuBtn_DeinitButton(BTN_Infos[i].handle);
@@ -221,52 +217,20 @@ void BTN_Init(void) {
   McuBtn_GetDefaultConfig(&btnConfig);
   btnConfig.isLowActive = true;
 
-  btnConfig.hw.gpio = BUTTONS_PINS_HATNAVCENTER_GPIO;
-  btnConfig.hw.port = BUTTONS_PINS_HATNAVCENTER_PORT;
-  btnConfig.hw.pin = BUTTONS_PINS_HATNAVCENTER_PIN;
-  BTN_Infos[BTN_NAV_CENTER].handle = McuBtn_InitButton(&btnConfig);
+#if PL_CONFIG_HAS_SWITCH_2WAY
+  btnConfig.hw.gpio = BUTTONS_UP_GPIO;
+  btnConfig.hw.port = BUTTONS_UP_PORT;
+  btnConfig.hw.pin = BUTTONS_UP_PIN;
+  BTN_Infos[BTN_SET].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_SET].handle);
 
-  btnConfig.hw.gpio = BUTTONS_PINS_HATNAVLEFT_GPIO;
-  btnConfig.hw.port = BUTTONS_PINS_HATNAVLEFT_PORT;
-  btnConfig.hw.pin = BUTTONS_PINS_HATNAVLEFT_PIN;
-  BTN_Infos[BTN_NAV_LEFT].handle = McuBtn_InitButton(&btnConfig);
-
-  btnConfig.hw.gpio = BUTTONS_PINS_HATNAVRIGHT_GPIO;
-  btnConfig.hw.port = BUTTONS_PINS_HATNAVRIGHT_PORT;
-  btnConfig.hw.pin = BUTTONS_PINS_HATNAVRIGHT_PIN;
-  BTN_Infos[BTN_NAV_RIGHT].handle = McuBtn_InitButton(&btnConfig);
-
-  btnConfig.hw.gpio = BUTTONS_PINS_HATNAVUP_GPIO;
-  btnConfig.hw.port = BUTTONS_PINS_HATNAVUP_PORT;
-  btnConfig.hw.pin = BUTTONS_PINS_HATNAVUP_PIN;
-  BTN_Infos[BTN_NAV_UP].handle = McuBtn_InitButton(&btnConfig);
-
-  btnConfig.hw.gpio = BUTTONS_PINS_HATNAVDOWN_GPIO;
-  btnConfig.hw.port = BUTTONS_PINS_HATNAVDOWN_PORT;
-  btnConfig.hw.pin = BUTTONS_PINS_HATNAVDOWN_PIN;
-  BTN_Infos[BTN_NAV_DOWN].handle = McuBtn_InitButton(&btnConfig);
-
-#if TINYK22_HAT_VERSION==3
-  /* all buttons are on PTB */
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVLEFT_PORT,  BUTTONS_PINS_HATNAVLEFT_PIN,  kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVRIGHT_PORT, BUTTONS_PINS_HATNAVRIGHT_PIN, kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVDOWN_PORT, BUTTONS_PINS_HATNAVDOWN_PIN, kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVUP_PORT,   BUTTONS_PINS_HATNAVUP_PIN,   kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVCENTER_PORT, BUTTONS_PINS_HATNAVCENTER_PIN, kPORT_InterruptFallingEdge);
-  NVIC_SetPriority(PORTB_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
-  EnableIRQ(PORTB_IRQn);
-#else
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVLEFT_PORT,  BUTTONS_PINS_HATNAVLEFT_PIN,  kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVRIGHT_PORT, BUTTONS_PINS_HATNAVRIGHT_PIN, kPORT_InterruptFallingEdge);
-  NVIC_SetPriority(PORTA_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
-  EnableIRQ(PORTA_IRQn);
-
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVDOWN_PORT, BUTTONS_PINS_HATNAVDOWN_PIN, kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVUP_PORT,   BUTTONS_PINS_HATNAVUP_PIN,   kPORT_InterruptFallingEdge);
-  PORT_SetPinInterruptConfig(BUTTONS_PINS_HATNAVCENTER_PORT, BUTTONS_PINS_HATNAVCENTER_PIN, kPORT_InterruptFallingEdge);
-  NVIC_SetPriority(PORTB_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
-  EnableIRQ(PORTB_IRQn);
+  btnConfig.hw.gpio = BUTTONS_DOWN_GPIO;
+  btnConfig.hw.port = BUTTONS_DOWN_PORT;
+  btnConfig.hw.pin = BUTTONS_DOWN_PIN;
+  BTN_Infos[BTN_RST].handle = McuBtn_InitButton(&btnConfig);
+  McuBtn_EnablePullResistor(BTN_Infos[BTN_RST].handle);
 #endif
+
 #elif McuLib_CONFIG_CPU_IS_LPC
   /* user button on LPC845-BRK board: PIO0_4 */
 
