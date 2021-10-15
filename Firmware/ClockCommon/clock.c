@@ -252,9 +252,11 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
       break;
 
     case MCUDBNC_EVENT_RELEASED:
+   #if PL_CONFIG_HAS_SWITCH_USER
       if (buttons&BTN_BIT_USER) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_USR);
       }
+   #endif
    #if PL_CONFIG_HAS_SWITCH_7WAY
       if (buttons&BTN_BIT_RST) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_RST);
@@ -281,9 +283,11 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
+#if PL_CONFIG_HAS_SWITCH_USER
       if (buttons&BTN_BIT_USER) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG);
       }
+#endif
       break;
 
     default:

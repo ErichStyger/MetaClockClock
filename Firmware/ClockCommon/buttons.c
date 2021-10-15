@@ -180,7 +180,9 @@ static void pint_intr_callback(pint_pin_int_t pintr, uint32_t pmatch_status) {
   McuSystemView_OnUserStart(MCU_SYSTEM_VIEW_USER_ID_BUTTON_INTERRUPT);
 #endif
   switch(pintr) {
+  #if PL_CONFIG_HAS_SWITCH_USER
     case kPINT_PinInt0: StartDebounce(BTN_BIT_USER, true); break;
+  #endif
   #if PL_CONFIG_HAS_SWITCH_7WAY
     case kPINT_PinInt1: StartDebounce(BTN_BIT_UP, true); break;
     case kPINT_PinInt2: StartDebounce(BTN_BIT_DOWN, true); break;
@@ -240,12 +242,14 @@ void BTN_Init(void) {
   McuBtn_GetDefaultConfig(&btnConfig);
   btnConfig.isLowActive = true;
 
+#if PL_CONFIG_HAS_SWITCH_USER
   btnConfig.hw.gpio = BUTTONS_USER_GPIO;
   btnConfig.hw.port = BUTTONS_USER_PORT;
   btnConfig.hw.pin = BUTTONS_USER_PIN;
   btnConfig.hw.iocon = BUTTONS_USER_IOCON;
   BTN_Infos[BTN_USER].handle = McuBtn_InitButton(&btnConfig);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt0, BUTTONS_USER_PINTSEL);
+#endif
 
 #if PL_CONFIG_HAS_SWITCH_7WAY
   btnConfig.hw.gpio = BUTTONS_UP_GPIO;
