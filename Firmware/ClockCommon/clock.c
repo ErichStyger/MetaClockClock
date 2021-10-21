@@ -727,7 +727,7 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_WDT
   WDT_SetTaskHandle(WDT_REPORT_ID_TASK_CLOCK, xTaskGetCurrentTaskHandle());
 #endif
-  vTaskDelay(pdMS_TO_TICKS(2000)); /* give external RTC and hardware time to power up */
+  vTaskDelay(pdMS_TO_TICKS(1000)); /* give external RTC and hardware time to power up */
 #if PL_CONFIG_USE_WDT
   WDT_Report(WDT_REPORT_ID_TASK_CLOCK, 2000);
 #endif
@@ -762,7 +762,9 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_LED_DIMMING
   MATRIX_SetHandBrightnessAll(CLOCK_HandBrightness);
 #endif
-  MHAND_HandEnableAll(true);
+  /* toggle hands: it could be that only the master has reset, make sure all clocks get the update */
+  (void)SHELL_ParseCommand((const unsigned char *)"matrix he all off", NULL, true);
+  (void)SHELL_ParseCommand((const unsigned char *)"matrix he all on", NULL, true);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   APP_RequestUpdateLEDs(); /* update LEDs */
 #endif
