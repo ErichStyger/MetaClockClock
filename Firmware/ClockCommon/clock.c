@@ -706,7 +706,9 @@ static void ShowSeconds(const TIMEREC *time) {
 
 static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_RTC
-  int32_t prevClockUpdateTimestampSec = 0; /* time of previous clock update time stamp (start time), seconds since 1972 */
+  #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
+  #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
+  int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE; /* time of previous clock update time stamp (start time), seconds since 1972. */
   TIMEREC time;
   DATEREC date;
   uint8_t res;
@@ -842,7 +844,7 @@ static void ClockTask(void *pv) {
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
         McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
-        prevClockUpdateTimestampSec = 0; /* to make sure it will update */
+        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
       #if PL_MATRIX_CONFIG_IS_RGB
         MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
         MATRIX_DrawAllRingColor(0x000000); /* ring color off */
@@ -852,7 +854,7 @@ static void ClockTask(void *pv) {
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_OFF) {
         McuLog_info("Clock off");
         CLOCK_ClockIsOn = false; /* disable clock */
-        prevClockUpdateTimestampSec = 0;
+        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE;
     #if PL_CONFIG_USE_NEO_PIXEL_HW
         /* turn off LEDs */
         MRING_SetRingColorAll(0, 0, 0);
@@ -869,7 +871,7 @@ static void ClockTask(void *pv) {
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
         McuLog_info("Clock toggle");
         CLOCK_ClockIsOn = !CLOCK_ClockIsOn; /* toggle clock */
-        prevClockUpdateTimestampSec = 0; /* to make sure it will update */
+        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         if (!CLOCK_ClockIsOn) {
           /* turn off LEDs */
@@ -910,7 +912,7 @@ static void ClockTask(void *pv) {
       if (!intermezzoShown) { /* not shown intermezzo? */
         INTERMEZZO_Play(lastClockUpdateTickCount, &intermezzoShown);
         if (intermezzoShown) {
-          prevClockUpdateTimestampSec = 0; /* if there is time after the intermezzo: trigger showing clock again */
+          prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE; /* if there is time after the intermezzo: trigger showing clock again */
         }
       }
       #endif
@@ -919,7 +921,7 @@ static void ClockTask(void *pv) {
     /* Clock */
     /* ----------------------------------------------------------------------------------*/
     if (CLOCK_ClockIsOn) { /* show time */
-      if (prevClockUpdateTimestampSec==0) { /* sync on start of the minute */
+      if (prevClockUpdateTimestampSec==PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE) { /* sync on start of the minute */
         do {
           res = McuTimeDate_GetTimeDate(&time, NULL);
           if (time.Sec==0) {
