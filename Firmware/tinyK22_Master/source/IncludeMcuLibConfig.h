@@ -138,6 +138,7 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuLog */
 #define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_DEFAULT_LEVEL                   (McuLog_DEBUG)
 #define McuLog_CONFIG_USE_COLOR                       (0)
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER              (3) /* RTT, UART and USB CDC */
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)

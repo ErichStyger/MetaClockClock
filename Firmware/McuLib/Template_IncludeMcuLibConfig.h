@@ -27,6 +27,29 @@ Instructions:
 ../McuLib/FatFS/source
  */
 
+/* For ESP32 targets:
+  - place the IncludeMcuLibConfig.h into the project 'config' folder
+  - copy the template file McuLib\ESP32_CMakeLists.txt and rename it to McuLib\CMakeLists.text
+  - add the following to your main CMakeLists.txt, between cmake_minimum_required() and the include():
+list(APPEND EXTRA_COMPONENT_DIRS "../McuLib")
+  - add the following after the include():
+add_compile_options(-I../config)
+add_compile_options(-include "../config/IncludeMcuLibConfig.h")
+
+  - It should look similar to this:
+    cmake_minimum_required(VERSION 3.5)
+
+    list(APPEND EXTRA_COMPONENT_DIRS "../McuLib")
+
+    include($ENV{IDF_PATH}/tools/cmake/project.cmake)
+
+    add_compile_options(-I../config)
+    add_compile_options(-include "../config/IncludeMcuLibConfig.h")
+
+    project(idf-eclipse)
+
+ */
+
 #ifndef INCLUDEMCULIBCONFIG_H_
 #define INCLUDEMCULIBCONFIG_H_
 
@@ -48,6 +71,10 @@ Instructions:
 #elif 0 /* example configuration for i.MX RT */
   #define McuLib_CONFIG_CPU_IS_IMXRT      (1)  /* i.MX RT family */
   #define McuLib_CONFIG_CORTEX_M          (7)  /*!< 0: Cortex-M0, 3: M3, 4: M4, 7: M7, 33: M33, -1 otherwise */
+#elif 0 /* ESP32 */
+  #define McuLib_CONFIG_CPU_IS_ARM_CORTEX_M   (0)  /* ESP32 is detected automatically */
+  #define configHEAP_SCHEME_IDENTIFICATION    (0)  /* ESP-IDF RTOS used */
+  #define McuCriticalSection_CONFIG_USE_RTOS_CRITICAL_SECTION  (1) /* no native Extensa implementation yet */
 #endif
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (0)

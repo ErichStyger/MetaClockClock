@@ -708,7 +708,7 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_RTC
   #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
   #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
-  int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE; /* time of previous clock update time stamp (start time), seconds since 1972. */
+  int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* time of previous clock update time stamp (start time), seconds since 1972. */
   TIMEREC time;
   DATEREC date;
   uint8_t res;

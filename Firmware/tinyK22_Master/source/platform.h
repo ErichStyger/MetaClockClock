@@ -22,7 +22,7 @@
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
   #define PL_CONFIG_USE_VIRTUAL_STEPPER   (1) /* LED rings are driven by virtual stepper motors */
   #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* using extended hand */
-#elif 0 /* V3: modular round clock version on canvas */
+#elif 1 /* V3: modular round clock version on canvas */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_MOD
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
@@ -33,7 +33,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 1 /* V4: 24 clock version with round PCBs */
+#elif 0 /* V4: 24 clock version with round PCBs */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING          (1) /* we do have LED rings */
