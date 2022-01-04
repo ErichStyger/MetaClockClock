@@ -16,3 +16,5 @@ Power:
 
 Links:
 - https://github.com/ErichStyger/MetaClockClock
+- https://mcuoneclipse.com/2020/05/24/60-billion-lights-2400-rgb-leds-and-120-stepper-motors-hiding-behind-canvas-art/
+- https://mcuoneclipse.com/2020/06/07/behind-the-canvas-making-of-60-billion-lights/
