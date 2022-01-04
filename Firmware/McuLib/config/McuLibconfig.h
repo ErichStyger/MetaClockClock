@@ -13,8 +13,14 @@
 /* identification of CPU/core used. __CORTEX_M is defined in CMSIS-Core.
    Otherwise CPU Family is set automatically by Processor Expert: detected: Kinetis (supported: "Kinetis", "S32K", "HCS08")
 */
+#if defined(__CORTEX_M)
+  #define McuLib_CPU_IS_ARM_CORTEX_M  (1)
+#else
+  #define McuLib_CPU_IS_ARM_CORTEX_M  (0)
+#endif
+
 #ifndef McuLib_CONFIG_CPU_IS_ARM_CORTEX_M
-  #define McuLib_CONFIG_CPU_IS_ARM_CORTEX_M             (1 || defined(__CORTEX_M))
+  #define McuLib_CONFIG_CPU_IS_ARM_CORTEX_M             (1 || McuLib_CPU_IS_ARM_CORTEX_M)
     /*!< 1: ARM Cortex-M family, 0 otherwise */
 #endif
 #ifndef McuLib_CONFIG_CPU_IS_S32K
@@ -76,12 +82,14 @@
 
 /* define to identify the CPU variant better */
 #define McuLib_CONFIG_CPU_VARIANT_DEFAULT               (0)
-#define McuLib_CONFIG_CPU_VARIANT_NXP_K22FN             (1)
-#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC804            (2)
-#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC845            (3)
-#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC54608          (4)
-#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC55S16          (5)
-#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC55S69          (6)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_K02FN             (1)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_K22FN             (2)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_K22FX             (3)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC804            (4)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC845            (5)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC54608          (6)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC55S16          (7)
+#define McuLib_CONFIG_CPU_VARIANT_NXP_LPC55S69          (8)
 
 #ifndef McuLib_CONFIG_CPU_VARIANT
   #define McuLib_CONFIG_CPU_VARIANT  McuLib_CONFIG_CPU_VARIANT_DEFAULT

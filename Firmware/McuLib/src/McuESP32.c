@@ -27,7 +27,7 @@ static QueueHandle_t uartTxQueue;  /* Tx to ESP32 module */
 #define McuESP32_UART_TX_QUEUE_LENGTH                 (4096)
 
 #if McuESP32_CONFIG_USE_USB_CDC
-  typedef enum {
+  typedef enum McuESP32_USB_PrgMode_e {
     McuESP32_USB_PRG_MODE_AUTO,
     McuESP32_USB_PRG_MODE_ON,
     McuESP32_USB_PRG_MODE_OFF,
@@ -193,10 +193,13 @@ static bool Dummy_CharPresent(void) {
 
 /* for sending data to the ESP32 (tx only) */
 static const McuShell_ConstStdIOType McuESP32_Tx_stdio = {
-    (McuShell_StdIO_In_FctType)Dummy_ReadChar,      /* stdin */
-    (McuShell_StdIO_OutErr_FctType)QueueTxChar,  /* stdout */
-    (McuShell_StdIO_OutErr_FctType)QueueTxChar,  /* stderr */
-    Dummy_CharPresent /* if input is not empty */
+    .stdIn = (McuShell_StdIO_In_FctType)Dummy_ReadChar,
+    .stdOut = (McuShell_StdIO_OutErr_FctType)QueueTxChar,
+    .stdErr = (McuShell_StdIO_OutErr_FctType)QueueTxChar,
+    .keyPressed = Dummy_CharPresent, /* if input is not empty */
+ #if McuShell_CONFIG_ECHO_ENABLED
+    .echoEnabled = false,
+  #endif
   };
 
 McuShell_ConstStdIOTypePtr McuESP32_GetTxToESPStdio(void) {
@@ -347,8 +350,19 @@ uint8_t McuESP32_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
     return ERR_OK;
 #endif
   } else if (McuUtility_strncmp((char*)cmd, (char*)"esp32 send ", sizeof("esp32 send ")-1)==0) {
+    const unsigned char *p;
+    unsigned char buffer[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
+
     *handled = true;
-    McuShell_SendStr(cmd+sizeof("esp32 send ")-1, McuESP32_GetTxToESPStdio()->stdOut);
+    p = cmd+sizeof("esp32 send ")-1;
+    if (*p=='"') { /* double-quoted command: it can contain multiple commands */
+      if (McuUtility_ScanDoubleQuotedString(&p, buffer, sizeof(buffer))!=ERR_OK) {
+        return ERR_FAILED;
+      }
+      p = buffer;
+    }
+    /* send command string */
+    McuShell_SendStr(p, McuESP32_GetTxToESPStdio()->stdOut);
     McuShell_SendStr((unsigned char*)"\r\n", McuESP32_GetTxToESPStdio()->stdOut);
     return ERR_OK;
   }
@@ -360,6 +374,7 @@ static void UartRxTask(void *pv) { /* task handling characters sent by the ESP32
   BaseType_t res;
   McuShell_ConstStdIOType *io;
 
+  (void)pv; /* not used */
   for(;;) {
     res = xQueueReceive(uartRxQueue, &ch, portMAX_DELAY);
     if (res==pdPASS) {
@@ -376,7 +391,7 @@ static void UartRxTask(void *pv) { /* task handling characters sent by the ESP32
       { /* only write to shell if not in programming mode. Programming mode might crash RTT */
         io = McuESP32_GetRxFromESPStdio();
         if (io!=NULL) {
-          McuShell_SendCh(ch, io->stdOut); /* write to console */
+          McuShell_SendCh(ch, io->stdOut); /* forward character */
         }
       }
     } else {
@@ -390,6 +405,7 @@ static void UartTxTask(void *pv) { /* task handling sending data to the ESP32 mo
   BaseType_t res;
   bool workToDo;
 
+  (void)pv; /* not used */
   for(;;) {
 #if McuESP32_CONFIG_USE_USB_CDC
     if (McuESP32_ScheduleReset) {

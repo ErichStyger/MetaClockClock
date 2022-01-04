@@ -6,7 +6,7 @@
 **     Component   : KinetisTools
 **     Version     : Component 01.043, Driver 01.00, CPU db: 3.00.000
 **     Compiler    : GNU C Compiler
-**     Date/Time   : 2021-07-20, 09:02, # CodeGen: 745
+**     Date/Time   : 2021-12-13, 20:30, # CodeGen: 757
 **     Abstract    :
 **
 **     Settings    :
@@ -136,7 +136,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io)
   McuArmTools_UID uid;
 #endif
 
-  McuShell_SendStatusStr((unsigned char*)"McuArmTools", (unsigned char*)"\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"McuArmTools", (unsigned char*)"Hardware status\r\n", io->stdOut);
 #if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
   res = McuArmTools_UIDGet(&uid);
   if (res==ERR_OK) {
