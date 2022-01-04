@@ -15,7 +15,7 @@ typedef enum {
   MFONT_SIZE_2x3,
   MFONT_SIZE_3x5,
   MFONT_SIZE_4x5,
-  MFONT_SIZE_ERROR, /* sentinal, used for errors */
+  MFONT_SIZE_ERROR, /* sentinel, used for errors */
 } MFONT_Size_e;
 
 #define MFONT_SIZE_X_2x3   2  /* number of columns needed */
