@@ -365,7 +365,7 @@ void CLOCK_On(CLOCK_Mode_e mode) {
 }
 
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-static void SetTime(STEPPER_Clock_e clock, uint8_t hour, uint8_t minute) {
+static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
   #define CLOCK_DEFAULT_DELAY  (5)
   STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
   int32_t angleHour, angleMinute;
@@ -374,16 +374,16 @@ static void SetTime(STEPPER_Clock_e clock, uint8_t hour, uint8_t minute) {
   hour %= 12; /* make it 0..11 */
   angleMinute = (360/60)*minute;
   angleHour = (360/12)*hour + ((360/12)*minute)/60;
-  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, clock, STEPPER_HAND_HH), angleHour, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
-  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, clock, STEPPER_HAND_MM), angleMinute, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
+  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_HH), angleHour, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
+  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_MM), angleMinute, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
 }
 #endif /* PL_CONFIG_USE_STEPPER */
 
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-static void ShowTime(STEPPER_Clock_e clock, uint8_t hour, uint8_t minute) {
+static void ShowTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
   STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
 
-  SetTime(clock, hour, minute);
+  SetTime(x, y, hour, minute);
   STEPBOARD_MoveAndWait(board, 5);
 }
 #endif /* PL_CONFIG_USE_STEPPER */
@@ -441,47 +441,6 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  font", buf, io->stdOut);
 #endif
-
-#if PL_CONFIG_USE_NVMC
-#if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
-  uint32_t val;
-  uint32_t id[4];
-
-  res = IAP_ReadPartID(&val);
-  if (res == kStatus_IAP_Success) {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"0x");
-    McuUtility_strcatNum32Hex(buf, sizeof(buf), val);
-    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  } else {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"ERROR\r\n");
-  }
-  McuShell_SendStatusStr((unsigned char*)"  PartID", buf, io->stdOut);
-
-  res = IAP_ReadUniqueID(&id[0]);  /* \todo in McuArmTools now, could be removed */
-  if (res == kStatus_IAP_Success) {
-    buf[0] = '\0';
-    for(int i=0; i<sizeof(id)/sizeof(id[0]); i++) {
-      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"0x");
-      McuUtility_strcatNum32Hex(buf, sizeof(buf), id[i]);
-      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" ");
-    }
-    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  } else {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"ERROR\r\n");
-  }
-  McuShell_SendStatusStr((unsigned char*)"  UID", buf, io->stdOut);
-
-  res = IAP_ReadBootCodeVersion(&val);
-  if (res == kStatus_IAP_Success) {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"Version 0x");
-    McuUtility_strcatNum32Hex(buf, sizeof(buf), val);
-    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  } else {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"ERROR\r\n");
-  }
-  McuShell_SendStatusStr((unsigned char*)"  BootCode", buf, io->stdOut);
-  #endif
-#endif
   return res;
 }
 #endif
@@ -511,7 +470,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  font <f>", (unsigned char*)"Set clock font, e.g. 2x3\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-  McuShell_SendHelpStr((unsigned char*)"  time <c> <time>", (unsigned char*)"Show time on clock (0..3)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  time <x> <y> <time>", (unsigned char*)"Show time on clock at coordinate (x,y)\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_WORLD_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  clocks", (unsigned char*)"[0] London    [3] New York\r\n", io->stdOut);
@@ -643,16 +602,17 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
   } else if (McuUtility_strncmp((char*)cmd, "clock time ", sizeof("clock time ")-1)==0) {
     uint8_t hour, minute, second, hsec;
-    int32_t val;
+    int32_t x, y;
 
     *handled = TRUE;
     p = cmd + sizeof("clock time ")-1;
     if (
-           McuUtility_xatoi(&p, &val)==ERR_OK && val>=0 && val<=3
+           McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
         && McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK
        )
     {
-      ShowTime(val, hour, minute);
+      ShowTime(x, y, hour, minute);
     } else {
       return ERR_FAILED;
     }
@@ -705,29 +665,33 @@ static void ShowSeconds(const TIMEREC *time) {
 #endif
 
 static void ClockTask(void *pv) {
-#if PL_CONFIG_USE_RTC
-  #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
-  #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
-  int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* time of previous clock update time stamp (start time), seconds since 1972. */
   TIMEREC time;
   DATEREC date;
-  uint8_t res;
+#if PL_CONFIG_USE_RTC
   TickType_t lastUpdateFromRTCtickCount; /* time stamp when last time the SW RTC has been update from HW RTC: it gets updated every hour */
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
   bool intermezzoShown = false;
 #endif
+  #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
+  #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
+  int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* time of previous clock update time stamp (start time), seconds since 1972. */
   uint32_t ulNotificationValue;
+  uint8_t res;
 
+  McuLog_trace("Starting Clock Task");
   res = McuTimeDate_Init();
   if(res==ERR_OK) { /* initialize time from external RTC if configured with McuTimeDate_INIT_SOFTWARE_RTC_FROM_EXTERNAL_RTC */
+  #if PL_CONFIG_USE_RTC
     lastUpdateFromRTCtickCount = xTaskGetTickCount(); /* remember last time we updated the RTC */
+  #endif
   } else{
-    McuLog_error("Failed initializing time from RTC!");
+    McuLog_error("Failed initializing time!");
+  #if PL_CONFIG_USE_RTC
     lastUpdateFromRTCtickCount = 0; /* set it to zero: will retry in the main loop below */
+  #endif
   }
-  McuLog_trace("Starting Clock Task");
 #if PL_CONFIG_USE_WDT
   WDT_SetTaskHandle(WDT_REPORT_ID_TASK_CLOCK, xTaskGetCurrentTaskHandle());
 #endif
@@ -904,6 +868,7 @@ static void ClockTask(void *pv) {
       }
       lastUpdateFromRTCtickCount = tickCount;
     }
+  #endif
     /* ----------------------------------------------------------------------------------*/
     /* Intermezzo */
     /* ----------------------------------------------------------------------------------*/
@@ -944,7 +909,6 @@ static void ClockTask(void *pv) {
         McuLog_info("finished showing clock");
       } /* if */
     } /* if clock is on */
-  #endif /* PL_CONFIG_USE_RTC */
   } /* for */
 }
 

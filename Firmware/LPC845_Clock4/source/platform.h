@@ -17,10 +17,12 @@
   #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4)
 #else /* 'world stepper clock */
   #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2)
+  #define PL_CONFIG_USE_CLOCK           (1) /* implements world clock with 4 clocks */
 #endif
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
 #define PL_CONFIG_USE_MAG_SENSOR        (1) /* if using magnets */
+#define PL_CONFIG_USE_FONT              (0) /* makes no sense using fonts */
 
 #include "platform_common.h"
 
