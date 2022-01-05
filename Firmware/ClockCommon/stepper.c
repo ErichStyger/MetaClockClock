@@ -32,6 +32,7 @@
 #include "StepperBoard.h"
 #include "McuCriticalSection.h"
 #include "McuLog.h"
+#include "nvmc.h"
 
 #define STEPPER_CMD_QUEUE_LENGTH    (8) /* maximum number of items in stepper command queue */
 
@@ -506,6 +507,26 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #endif
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  steps", buf, io->stdOut);
+
+#if PL_CONFIG_USE_MAG_SENSOR
+  unsigned char statusBuf[16];
+
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        McuUtility_Num16sToStr(buf, sizeof(buf), NVMC_GetStepperZeroOffset(x, y, z));
+        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" offset\r\n");
+        McuUtility_strcpy(statusBuf, sizeof(statusBuf), (unsigned char*)"  m ");
+        McuUtility_strcatNum16u(statusBuf, sizeof(statusBuf), x);
+        McuUtility_strcat(statusBuf, sizeof(statusBuf), (unsigned char*)" ");
+        McuUtility_strcatNum16u(statusBuf, sizeof(statusBuf), y);
+        McuUtility_strcat(statusBuf, sizeof(statusBuf), (unsigned char*)" ");
+        McuUtility_strcatNum16u(statusBuf, sizeof(statusBuf), z);
+        McuShell_SendStatusStr(statusBuf, buf, io->stdOut);
+      }
+    }
+  }
+#endif
   return ERR_OK;
 }
 

@@ -34,6 +34,7 @@ Instructions:
 #define McuLib_CONFIG_CPU_IS_LPC         (0)  /* LPC845 */
 #define McuLib_CONFIG_CORTEX_M           (4)  /* K22 is a Cortex-M4 */
 #define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K02 is a Kinetis */
+#define McuLib_CONFIG_CPU_VARIANT        McuLib_CONFIG_CPU_VARIANT_NXP_K02FN
 
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
@@ -99,6 +100,14 @@ Instructions:
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
+/* ---------------------------------------------------------------------------------------*/
+/* MinINI */
+#define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
+#define McuMinINI_CONFIG_FLASH_NVM_ADDR_START       ((0+128*1024)-McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE)
+#define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x800)
+#define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (256) /* must be 64, 128, 256, ... */
+#define McuMinINI_CONFIG_READ_ONLY                  (0)
+#define McuMinINI_CONFIG_USE_REAL                   (0)
 /* -------------------------------------------------*/
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

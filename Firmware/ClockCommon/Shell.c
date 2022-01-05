@@ -41,6 +41,7 @@
 #endif
 #if PL_CONFIG_USE_NVMC
   #include "nvmc.h"
+  #include "McuMinINI.h"
 #endif
 #if PL_CONFIG_USE_CLOCK
   #include "clock.h"
@@ -121,6 +122,8 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #endif
 #if PL_CONFIG_USE_NVMC
   NVMC_ParseCommand,
+  McuMinINI_ParseCommand,
+  ini_ParseCommand,
 #endif
 #if PL_CONFIG_USE_RS485
   RS485_ParseCommand,

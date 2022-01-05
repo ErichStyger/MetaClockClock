@@ -105,7 +105,7 @@
 									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/config"/>
 									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/include"/>
 									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/streamports/Jlink_RTT/include"/>
-									<listOptionValue builtIn="false" value="../../McuLib/HD44780"/>
+									<listOptionValue builtIn="false" value="../../McuLib/minIni"/>
 									<listOptionValue builtIn="false" value="../../McuLib/FatFS/source"/>
 									<listOptionValue builtIn="false" value="../../ClockCommon"/>
 								</option>
@@ -291,10 +291,20 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
+					<folderInfo id="com.crt.advproject.config.exe.debug.1834824750.440281314" name="/" resourcePath="McuLib/minIni">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.1844862567" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1285283695" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.622091220"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1375408568" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.489972124"/>
+							<tool id="com.crt.advproject.gas.exe.debug.1570557368" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.1328812309"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.1893669995" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1368244844"/>
+							<tool id="com.crt.advproject.link.exe.debug.129568628" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.187737908"/>
+							<tool id="com.crt.advproject.tool.debug.debug.615013191" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1335062086"/>
+						</toolChain>
+					</folderInfo>
 					<sourceEntries>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ClockCommon"/>
-						<entry excluding="SEGGER_Sysview|FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33|minIni|HD44780|fonts|FatFS|LittlevGL|TraceRecorder" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
+						<entry excluding="SEGGER_Sysview|FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33|HD44780|fonts|FatFS|LittlevGL|TraceRecorder" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>

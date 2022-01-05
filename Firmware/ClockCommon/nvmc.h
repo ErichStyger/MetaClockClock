@@ -12,44 +12,62 @@
 #include <stdbool.h>
 #include "McuShell.h"
 
-#define NVMC_VERSION_1_0  (10) /* initial version */
-#define NVMC_VERSION_1_1  (11) /* added nofActiveMotors */
-
-#define NVMC_CURRENT_VERSION    NVMC_VERSION_1_1 /* active and current version */
-
 #define NVMC_FLAGS_MAGNET_ENABLED   (1<<0)  /* if magnets are present on hands or not */
-typedef struct {
-  uint32_t version; /* NVMC_CURRENT_VERSION, must be 32bit type to have struct 4 byte aligned! */
-  uint8_t addrRS485; /* device address on the RS-485 bus */
-  uint8_t nofActiveMotors; /* used for the modular clock boards to define the number of active clocks */
-  uint32_t flags;          /* various flags */
-  int16_t zeroOffsets[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z]; /* two offsets for each motor, offset from the magnet sensor to the zero position */
-  /* fill up to 64 bytes, needed for flash programming! */
-  uint8_t filler[64-4-1-1-4-4-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X*PL_CONFIG_NOF_STEPPER_ON_BOARD_Y*PL_CONFIG_NOF_STEPPER_ON_BOARD_Z*2)];
-} NVMC_Data_t;
 
 /*!
- * \brief Returns a pointer to the data or NULL if the data is not present (erased)
+ * \brief Provide the offset from the magnet position for a stepper motor
+ * \param x Motor x position
+ * \param y Motor y position
+ * \param z Motor z position
+ * \return Stored offset
  */
-const NVMC_Data_t *NVMC_GetDataPtr(void);
-
-uint8_t NVMC_WriteConfig(NVMC_Data_t *data);
-
 int16_t NVMC_GetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z);
 
-uint8_t NVMC_GetRS485Addr(void);
+/*!
+ * \brief Store the offset from the magnet position for a stepper motor
+ * \param x Motor x position
+ * \param y Motor y position
+ * \param z Motor z position
+ * \param offset Offset to store
+ * \return Error code, ERR_OK for everything ok
+ */
+uint8_t NVMC_SetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z, int16_t offset);
 
-uint8_t NVMC_GetNofActiveMotors(void);
+/*!
+ * \brief Getter to get the RS-485 address
+ * \param addr Where to store the address
+ * \return Error code, ERR_OK for everything ok
+ */
+uint8_t NVMC_GetRS485Addr(uint8_t *addr);
 
-uint32_t NVMC_GetFlags(void);
+/*!
+ * \brief Setter to set the RS-485 address.
+ * \param addr Address to store
+ * \return Error code, ERR_OK for everything ok
+ */
+uint8_t NVMC_SetRS485Addr(uint8_t addr);
 
-bool NVMC_IsErased(void);
+/*!
+ * \brief Getter to get the flags stored
+ * \flags Where to store the flags
+ * \return Error code, ERR_OK for everything ok
+ */
+uint8_t NVMC_GetFlags(uint32_t *flags);
 
+/*!
+ * \brief Setter to set the flags in the configuration
+ * \param flags The flags to be set
+ * \return Error code, ERR_OK for everything ok
+ */
+uint8_t NVMC_SetFlags(uint32_t flags);
+
+/*! \brief Command line shell parser interface */
 uint8_t NVMC_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
-bool NVMC_HasValidConfig(void);
-
+/*! \brief Module de-initialization */
 void NVMC_Deinit(void);
+
+/*! \brief Module initialization */
 void NVMC_Init(void);
 
 #endif /* NVMC_H_ */

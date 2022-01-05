@@ -1020,8 +1020,14 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   int16_t offsets[MATRIX_NOF_STEPPERS];
   STEPPER_Handle_t stepper;
   int i;
+  uint32_t flags;
 
-  if (!(NVMC_GetFlags()&NVMC_FLAGS_MAGNET_ENABLED)) {
+  res = NVMC_GetFlags(&flags);
+  if (res!=ERR_OK) {
+    McuLog_info("failed getting flags");
+    return ERR_OK;
+  }
+  if (!(flags&NVMC_FLAGS_MAGNET_ENABLED)) {
     McuLog_info("No magnets, ignoring command");
     return ERR_OK;
   }
@@ -1065,21 +1071,13 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
 #if PL_CONFIG_USE_NVMC
   McuLog_trace("Store offsets in NVMC");
   /* store new offsets */
-  NVMC_Data_t data;
-
-  data = *NVMC_GetDataPtr(); /* struct copy */
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         stepper = MATRIX_GetStepper(x, y, z);
-        data.zeroOffsets[x][y][z] = -STEPPER_GetPos(stepper);
+        NVMC_SetStepperZeroOffset(x, y, z, -STEPPER_GetPos(stepper));
       }
     }
-  }
-  res = NVMC_WriteConfig(&data);
-  if (res!=ERR_OK) {
-    McuLog_error("Failed storing in NVMC");
-    return res;
   }
 #endif
 

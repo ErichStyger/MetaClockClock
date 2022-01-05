@@ -34,7 +34,7 @@ Instructions:
 #define McuLib_CONFIG_CPU_IS_LPC         (0)  /* LPC845 */
 #define McuLib_CONFIG_CORTEX_M           (4)  /* K22 is a Cortex-M4 */
 #define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K22 is a Kinetis */
-
+#define McuLib_CONFIG_CPU_VARIANT        McuLib_CONFIG_CPU_VARIANT_NXP_K22FN
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
 #define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
@@ -154,5 +154,14 @@ Instructions:
 #define McuEE24_CONFIG_HAS_WP_PIN               (0)   /* no WP Pin */
 #define McuEE24_CONFIG_DO_ACKNOWLEDGE_POLLING   (0)   /* no acknowledge polling */
 #define McuEE24_CONFIG_USE_TIMEOUT              (0)   /* no timeout */
+/* ---------------------------------------------------------------------------------------*/
+/* MinINI */
+#define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
+#define McuMinINI_CONFIG_FLASH_NVM_ADDR_START       ((0+512*1024)-McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE)
+#define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x800)
+#define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (256) /* must be 64, 128, 256, ... */
+#define McuMinINI_CONFIG_READ_ONLY                  (0)
+#define McuMinINI_CONFIG_USE_REAL                   (0)
+/* ---------------------------------------------------------------------------------------*/
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

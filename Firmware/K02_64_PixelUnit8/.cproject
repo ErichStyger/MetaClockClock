@@ -104,7 +104,7 @@
 									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/config"/>
 									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/include"/>
 									<listOptionValue builtIn="false" value="../../McuLib/TraceRecorder/streamports/Jlink_RTT/include"/>
-									<listOptionValue builtIn="false" value="../../McuLib/HD44780"/>
+									<listOptionValue builtIn="false" value="../../McuLib/minIni"/>
 									<listOptionValue builtIn="false" value="../../McuLib/FatFS/source"/>
 									<listOptionValue builtIn="false" value="../../ClockCommon"/>
 								</option>
@@ -308,7 +308,7 @@
 					<sourceEntries>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ClockCommon"/>
-						<entry excluding="fonts|FatFS|LittlevGL|TraceRecorder|SEGGER_Sysview|minIni|HD44780|FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
+						<entry excluding="fonts|FatFS|LittlevGL|TraceRecorder|SEGGER_Sysview|HD44780|FreeRTOS/FreeRTOShooks.c|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>

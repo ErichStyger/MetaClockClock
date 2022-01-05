@@ -96,6 +96,12 @@ Instructions:
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
+/* ---------------------------------------------------------------------------------------*/
+/* MinINI */
+#define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
+#define McuMinINI_CONFIG_FLASH_NVM_ADDR_START       (0xFC00) /* LPC845 has 64k FLASH (0x10000), last 1k page is used for NVM */
+#define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x400)   /* sector size is 1k */
+#define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (256) /* must be 64, 128, 256, ... */
 /* -------------------------------------------------*/
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

@@ -32,7 +32,13 @@ typedef enum RS485_Response_e {
 static bool RS485_DoLogging = false; /* if traffic on the bus shall be reported on the shell */
 
 uint8_t RS485_GetAddress(void) {
-  return NVMC_GetRS485Addr();
+  uint8_t addr, res;
+
+  res = NVMC_GetRS485Addr(&addr);
+  if (res==ERR_OK) {
+    return addr;
+  }
+  return 0x1; /* default */
 }
 
 static void RS485_SendChar(unsigned char ch) {
@@ -355,17 +361,10 @@ uint8_t RS485_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     return ERR_FAILED;
 #if PL_CONFIG_USE_NVMC
   } else if (McuUtility_strncmp((char*)cmd, "rs addr ", sizeof("rs addr ")-1)==0) {
-    NVMC_Data_t data;
     *handled = true;
-    if (NVMC_IsErased()) {
-      McuShell_SendStr((unsigned char*)"FLASH is erased, initialize it first!\r\n", io->stdErr);
-      return ERR_FAILED;
-    }
     p = cmd + sizeof("rs addr ")-1;
     if (McuUtility_xatoi(&p, &val)==ERR_OK && val>=0 && val<=0xff) {
-      data = *NVMC_GetDataPtr(); /* struct copy */
-      data.addrRS485 = val;
-      if (NVMC_WriteConfig(&data)!=ERR_OK) {
+      if (NVMC_SetRS485Addr(val)!=ERR_OK) {
         McuShell_SendStr((unsigned char*)"Failed writing configuration!\r\n", io->stdErr);
         return ERR_FAILED;
       }

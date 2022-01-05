@@ -27,6 +27,10 @@
 #define PL_CONFIG_IS_K02           (PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128) /* Kinetis K02FN64 or K02FN128 */
 /* ********************************************************************************************************** */
 
+#ifndef PL_CONFIG_USE_MININI
+  #define PL_CONFIG_USE_MININI   (1)
+#endif
+
 #ifndef PL_CONFIG_IS_ANALOG_CLOCK
   #define PL_CONFIG_IS_ANALOG_CLOCK  (1) /* if it is an analog clock */
 #endif
@@ -125,9 +129,9 @@
 #ifndef PL_CONFIG_USE_RTC
   #define PL_CONFIG_USE_RTC             (1 && (PL_CONFIG_IS_MASTER)) /* 1: enable external RTC; 0: disable it */
 #endif
-#define PL_CONFIG_USE_RS485           (1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
+#define PL_CONFIG_USE_RS485             (1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
 #ifndef PL_CONFIG_USE_NVMC
-  #define PL_CONFIG_USE_NVMC            (1 && PL_CONFIG_IS_CLIENT) /* using non-volatile configuration memory */
+  #define PL_CONFIG_USE_NVMC            (1) /* using non-volatile configuration memory */
 #endif
 #ifndef PL_CONFIG_USE_WDT
   #define PL_CONFIG_USE_WDT             (0) /* if using watchdog timer, disable for easier debugging */
