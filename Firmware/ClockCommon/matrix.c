@@ -1344,43 +1344,43 @@ static uint8_t ParseMatrixCommand(const unsigned char **cmd, int32_t *xp, int32_
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CW;
       *speedUpp = *slowDownp = true;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"Cw", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"Cw", sizeof("Cw")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CW;
       *speedUpp = false; *slowDownp = true;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"cW", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"cW", sizeof("cW")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CW;
       *speedUpp = true; *slowDownp = false;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"CW", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"CW", sizeof("CW")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CW;
       *speedUpp = *slowDownp = false;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"cc", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"cc", sizeof("cc")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CCW;
       *speedUpp = *slowDownp = true;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"Cc", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"Cc", sizeof("Cc")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CCW;
       *speedUpp = false; *slowDownp = true;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"cC", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"cC", sizeof("cC")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CCW;
       *speedUpp = true; *slowDownp = false;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"CC", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"CC", sizeof("CC")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_CCW;
       *speedUpp = *slowDownp = false;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"sh", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"sh", sizeof("sh")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_SHORT;
       *speedUpp = *slowDownp = true;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"Sh", sizeof("cw")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"Sh", sizeof("Sh")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_SHORT;
       *speedUpp = false; *slowDownp = true;
-    } else if (McuUtility_strncmp((char*)*cmd, (char*)"sH", sizeof("SH")-1)==0) {
+    } else if (McuUtility_strncmp((char*)*cmd, (char*)"sH", sizeof("sH")-1)==0) {
       *cmd += 2;
       *modep = STEPPER_MOVE_MODE_SHORT;
       *speedUpp = true; *slowDownp = false;
