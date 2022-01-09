@@ -486,9 +486,8 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  time <x> <y> <time>", (unsigned char*)"Show time on clock at coordinate (x,y)\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_WORLD_CLOCK
-  McuShell_SendHelpStr((unsigned char*)"  clocks", (unsigned char*)"[0] London    [3] New York\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"",         (unsigned char*)"[1] Beijing   [2] Lucerne\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  hands",  (unsigned char*)"[0] MM,inner  [1] HH,outer\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  clocks", (unsigned char*)"[0,0] London    [1,0] New York\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"",         (unsigned char*)"[0,1] Beijing   [1,1] Lucerne\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
@@ -667,7 +666,7 @@ static void ShowSeconds(const TIMEREC *time) {
 static void ClockTask(void *pv) {
   TIMEREC time;
   DATEREC date;
-#if PL_CONFIG_USE_RTC
+#if PL_CONFIG_USE_EXT_I2C_RTC
   TickType_t lastUpdateFromRTCtickCount; /* time stamp when last time the SW RTC has been update from HW RTC: it gets updated every hour */
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
@@ -683,12 +682,12 @@ static void ClockTask(void *pv) {
   McuLog_trace("Starting Clock Task");
   res = McuTimeDate_Init();
   if(res==ERR_OK) { /* initialize time from external RTC if configured with McuTimeDate_INIT_SOFTWARE_RTC_FROM_EXTERNAL_RTC */
-  #if PL_CONFIG_USE_RTC
+  #if PL_CONFIG_USE_EXT_I2C_RTC
     lastUpdateFromRTCtickCount = xTaskGetTickCount(); /* remember last time we updated the RTC */
   #endif
   } else{
     McuLog_error("Failed initializing time!");
-  #if PL_CONFIG_USE_RTC
+  #if PL_CONFIG_USE_EXT_I2C_RTC
     lastUpdateFromRTCtickCount = 0; /* set it to zero: will retry in the main loop below */
   #endif
   }
