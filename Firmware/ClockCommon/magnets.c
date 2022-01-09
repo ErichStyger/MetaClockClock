@@ -9,6 +9,10 @@
 #include "magnets.h"
 #include "McuGPIO.h"
 #include "McuUtility.h"
+#include "McuLog.h"
+#if PL_CONFIG_USE_NVMC
+  #include "nvmc.h"
+#endif
 
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   #define MAG0_GPIO       GPIOA
@@ -94,6 +98,23 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   unsigned char status[16];
 
   McuShell_SendStatusStr((unsigned char*)"mag", (unsigned char*)"Magnetic hall sensor settings\r\n", io->stdOut);
+
+#if PL_CONFIG_USE_NVMC
+  uint32_t flags;
+  uint8_t res;
+
+  res = NVMC_GetFlags(&flags);
+  if (res!=ERR_OK) {
+    McuLog_info("failed getting flags");
+    return ERR_OK;
+  }
+  if (flags&NVMC_FLAGS_MAGNET_ENABLED) {
+    McuShell_SendStatusStr((unsigned char*)"  mag", (unsigned char*)"enabled\r\n", io->stdOut);
+  } else {
+    McuShell_SendStatusStr((unsigned char*)"  mag", (unsigned char*)"disabled\r\n", io->stdOut);
+  }
+#endif
+
   for(int i=MAG_MAG0; i<MAG_NOF_MAG; i++) {
     McuGPIO_GetPinStatusString(MAG_MagSensor[i], buf, sizeof(buf));
     McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
@@ -108,16 +129,42 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mag", (unsigned char*)"Group of magnet/hall sensor commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+#if PL_CONFIG_USE_NVMC
+  McuShell_SendHelpStr((unsigned char*)"  mag enable|disable", (unsigned char*)"Enable magnets in NVMC settings\r\n", io->stdOut);
+#endif
   return ERR_OK;
 }
 
 uint8_t MAG_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
+#if PL_CONFIG_USE_NVMC
+  uint32_t flags;
+  uint8_t res;
+#endif
+
   if (McuUtility_strcmp((char*)cmd, McuShell_CMD_HELP)==0 || McuUtility_strcmp((char*)cmd, "mag help")==0) {
     *handled = TRUE;
     return PrintHelp(io);
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "mag status")==0)) {
     *handled = TRUE;
     return PrintStatus(io);
+#if PL_CONFIG_USE_NVMC
+  } else if (McuUtility_strcmp((char*)cmd, "mag enable")==0) {
+    *handled = TRUE;
+    res = NVMC_GetFlags(&flags);
+    if (res!=ERR_OK) {
+      return res;
+    }
+    flags |= NVMC_FLAGS_MAGNET_ENABLED;
+    return NVMC_SetFlags(flags);
+  } else if (McuUtility_strcmp((char*)cmd, "mag disable")==0) {
+    *handled = TRUE;
+    res = NVMC_GetFlags(&flags);
+    if (res!=ERR_OK) {
+      return res;
+    }
+    flags &= ~NVMC_FLAGS_MAGNET_ENABLED;
+    return NVMC_SetFlags(flags);
+#endif
   }
   return ERR_OK;
 }
@@ -133,7 +180,6 @@ void MAG_Init(void) {
   McuGPIO_Config_t gpioConfig;
 
   McuGPIO_GetDefaultConfig(&gpioConfig);
-  /* internal pull-ups are enabled in Pins Tool! (or use HW pull-ups!) */
 
   gpioConfig.hw.gpio = MAG0_GPIO;
   gpioConfig.hw.port = MAG0_PORT;

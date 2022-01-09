@@ -301,16 +301,6 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="com.crt.advproject.config.exe.debug.1652255002.177110201" name="/" resourcePath="McuLib/minIni">
-						<toolChain id="com.crt.advproject.toolchain.exe.debug.356234991" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
-							<tool id="com.crt.advproject.cpp.exe.debug.1647907863" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.2132798231"/>
-							<tool id="com.crt.advproject.gcc.exe.debug.1440884509" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1505299104"/>
-							<tool id="com.crt.advproject.gas.exe.debug.384128360" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.625261844"/>
-							<tool id="com.crt.advproject.link.cpp.exe.debug.1598686366" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1649601390"/>
-							<tool id="com.crt.advproject.link.exe.debug.226682093" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1999308306"/>
-							<tool id="com.crt.advproject.tool.debug.debug.125635325" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1585692387"/>
-						</toolChain>
-					</folderInfo>
 					<sourceEntries>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ClockCommon"/>

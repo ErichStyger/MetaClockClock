@@ -920,7 +920,9 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
   uint8_t res = ERR_OK;
   bool done;
   X12_Stepper_t *s;
+  TickType_t start, curr;
 
+  start = xTaskGetTickCount();
   /* move hand over sensor */
   for(;;) { /* breaks */
     done = true;
@@ -931,7 +933,7 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
         break;
       }
     }
-    if (done || timeoutms<0) { /* all hands on sensor */
+    if (done) { /* all hands on sensor */
       break;
     }
     for(int i=0; i<nofMotors; i++) {
@@ -941,11 +943,12 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
       }
     } /* for */
     STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), waitms);
-    timeoutms -= ((abs(stepSize)*delay*STEPPER_TIME_STEP_US)/1000)+1; /* estimate time needed to perform the number of steps */
-  }
-  if (timeoutms<0) {
-    McuLog_error("timeout moving hand on sensor");
-    res = ERR_UNDERFLOW;
+    curr = xTaskGetTickCount();
+    if (pdMS_TO_TICKS(curr-start)>timeoutms) {
+      McuLog_error("timeout moving hand on sensor");
+      res = ERR_UNDERFLOW;
+      break;
+    }
   }
   return res;
 }
@@ -964,17 +967,17 @@ static uint8_t MATRIX_ZeroHand(STEPPER_Handle_t *motors[], int16_t offsets[], si
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
 
   /* move forward ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 2000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 20000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 500, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 3000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step forward ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 500, 2, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 3000, 2, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
@@ -3002,16 +3005,16 @@ static void InitSteppers(void) {
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2
   #if MATRIX_NOF_STEPPERS>=1
-  stepBoardConfig.stepper[0][0][0] = stepper[6];
+  stepBoardConfig.stepper[0][0][0] = stepper[0];
   #endif
   #if MATRIX_NOF_STEPPERS>=2
-  stepBoardConfig.stepper[0][0][1] = stepper[7];
+  stepBoardConfig.stepper[0][0][1] = stepper[1];
   #endif
   #if MATRIX_NOF_STEPPERS>=3
-  stepBoardConfig.stepper[1][0][0] = stepper[4];
+  stepBoardConfig.stepper[1][0][0] = stepper[6];
   #endif
   #if MATRIX_NOF_STEPPERS>=4
-  stepBoardConfig.stepper[1][0][1] = stepper[5];
+  stepBoardConfig.stepper[1][0][1] = stepper[7];
   #endif
   #if MATRIX_NOF_STEPPERS>=5
   stepBoardConfig.stepper[0][1][0] = stepper[2];
@@ -3020,10 +3023,10 @@ static void InitSteppers(void) {
   stepBoardConfig.stepper[0][1][1] = stepper[3];
   #endif
   #if MATRIX_NOF_STEPPERS>=7
-  stepBoardConfig.stepper[1][1][0] = stepper[0];
+  stepBoardConfig.stepper[1][1][0] = stepper[4];
   #endif
   #if MATRIX_NOF_STEPPERS>=8
-  stepBoardConfig.stepper[1][1][1] = stepper[1];
+  stepBoardConfig.stepper[1][1][1] = stepper[5];
   #endif
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   #if MATRIX_NOF_STEPPERS>=1

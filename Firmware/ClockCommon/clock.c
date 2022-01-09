@@ -116,6 +116,34 @@ bool CLOCK_GetClockIsOn(void) {
   return CLOCK_ClockIsOn;
 }
 
+#if PL_CONFIG_WORLD_CLOCK
+static uint8_t AdjustHourForTimeZone(uint8_t hour, int8_t gmtDelta) {
+  int h;
+
+  h = (int)hour+gmtDelta;
+  if (h<0) {
+    h = 24+h;
+  }
+  h %= 24;
+  return h;
+}
+#endif
+
+#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
+static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
+  #define CLOCK_DEFAULT_DELAY  (5)
+  STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
+  int32_t angleHour, angleMinute;
+
+  minute %= 60; /* make it 0..59 */
+  hour %= 12; /* make it 0..11 */
+  angleMinute = (360/60)*minute;
+  angleHour = (360/12)*hour + ((360/12)*minute)/60;
+  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_HH), angleHour, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
+  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_MM), angleMinute, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
+}
+#endif /* PL_CONFIG_USE_STEPPER */
+
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 #if PL_CONFIG_USE_FONT
   uint8_t buf[8], res;
@@ -162,11 +190,11 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   uint8_t hour;
 
   hour = AdjustHourForTimeZone(time->Hour, -1); /* local time is GMT+1 */
-  SetTime(STEPPER_CLOCK_0, AdjustHourForTimeZone(hour, 0), time->Min); /* London, GMT+0, top left */
-  SetTime(STEPPER_CLOCK_1, AdjustHourForTimeZone(hour, 8), time->Min); /* Beijing, GMT+8, top left */
-  SetTime(STEPPER_CLOCK_2, AdjustHourForTimeZone(hour, 1), time->Min); /* Lucerne, GMT+1, top left */
-  SetTime(STEPPER_CLOCK_3, AdjustHourForTimeZone(hour, -4), time->Min); /* New York,, GMT-4, top left */
-  STEPBOARD_MoveAndWait(board, 5);
+  SetTime(0, 0, AdjustHourForTimeZone(hour, 0), time->Min); /* London, GMT+0, top left */
+  SetTime(1, 0, AdjustHourForTimeZone(hour, -4), time->Min); /* New York,, GMT-4, top right */
+  SetTime(0, 1, AdjustHourForTimeZone(hour, 8), time->Min); /* Beijing, GMT+8, bottom left */
+  SetTime(1, 1, AdjustHourForTimeZone(hour, 1), time->Min); /* Lucerne, GMT+1, bottom right */
+  STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 5);
 #endif /* PL_CONFIG_WORLD_CLOCK */
 }
 
@@ -363,21 +391,6 @@ void CLOCK_On(CLOCK_Mode_e mode) {
     default: break;
   }
 }
-
-#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
-  #define CLOCK_DEFAULT_DELAY  (5)
-  STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
-  int32_t angleHour, angleMinute;
-
-  minute %= 60; /* make it 0..59 */
-  hour %= 12; /* make it 0..11 */
-  angleMinute = (360/60)*minute;
-  angleHour = (360/12)*hour + ((360/12)*minute)/60;
-  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_HH), angleHour, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
-  STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_MM), angleMinute, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
-}
-#endif /* PL_CONFIG_USE_STEPPER */
 
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
 static void ShowTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
@@ -623,19 +636,6 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 }
 #endif /* #if PL_CONFIG_USE_SHELL */
 
-#if PL_CONFIG_WORLD_CLOCK
-static uint8_t AdjustHourForTimeZone(uint8_t hour, int8_t gmtDelta) {
-  int h;
-
-  h = (int)hour+gmtDelta;
-  if (h<0) {
-    h = 24+h;
-  }
-  h %= 24;
-  return h;
-}
-#endif
-
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 static void ShowSeconds(const TIMEREC *time) {
   static uint8_t lastSecondShown = -1;
@@ -737,7 +737,7 @@ static void ClockTask(void *pv) {
   APP_RequestUpdateLEDs(); /* update LEDs */
 #endif
 #endif
-#if PL_CONFIG_USE_RTC
+#if PL_CONFIG_USE_EXT_I2C_RTC
   /* set new random seed based temperature */
   float temperature;
 
@@ -855,7 +855,7 @@ static void ClockTask(void *pv) {
       CLOCK_ButtonMenu(ulNotificationValue);
   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
-  #if PL_CONFIG_USE_RTC
+  #if PL_CONFIG_USE_EXT_I2C_RTC
     /* ----------------------------------------------------------------------------------*/
     /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
     TickType_t tickCount = xTaskGetTickCount();
@@ -869,19 +869,19 @@ static void ClockTask(void *pv) {
       lastUpdateFromRTCtickCount = tickCount;
     }
   #endif
+  #if PL_CONFIG_USE_INTERMEZZO
     /* ----------------------------------------------------------------------------------*/
     /* Intermezzo */
     /* ----------------------------------------------------------------------------------*/
     if (CLOCK_ClockIsOn) {
-      #if PL_CONFIG_USE_INTERMEZZO
       if (!intermezzoShown) { /* not shown intermezzo? */
         INTERMEZZO_Play(lastClockUpdateTickCount, &intermezzoShown);
         if (intermezzoShown) {
           prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE; /* if there is time after the intermezzo: trigger showing clock again */
         }
       }
-      #endif
     } /* if clock is on */
+  #endif /* PL_CONFIG_USE_INTERMEZZO */
     /* ----------------------------------------------------------------------------------*/
     /* Clock */
     /* ----------------------------------------------------------------------------------*/

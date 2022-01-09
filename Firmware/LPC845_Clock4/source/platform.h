@@ -15,10 +15,11 @@
 /* select the board used: */
 #if 0 /* 60 billion time */
   #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4)
-#else /* 'world stepper clock */
+#else /* 'world stepper clock with 4 clocks */
   #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2)
   #define PL_CONFIG_USE_RTC             (1) /* RTC (at least software), for hardware add PL_CONFIG_USE_EXT_I2C_RTC */
   #define PL_CONFIG_USE_CLOCK           (1) /* implements world clock with 4 clocks */
+  #define PL_CONFIG_WORLD_CLOCK         (1) /* showing four time zones */
 #endif
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
