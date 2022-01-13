@@ -412,13 +412,14 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #else
   McuShell_SendStatusStr((unsigned char*)"  mode", (unsigned char*)"client\r\n", io->stdOut);
 #endif
+#if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"V");
   McuUtility_strcatNum8u(buf, sizeof(buf), PL_CONFIG_BOARD_VERSION/10);
   McuUtility_chcat(buf, sizeof(buf), '.');
   McuUtility_strcatNum8u(buf, sizeof(buf), PL_CONFIG_BOARD_VERSION%10);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  board", buf, io->stdOut);
-
+#endif
   McuShell_SendStatusStr((unsigned char*)"  clock", CLOCK_GetClockIsOn()?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"every ");
