@@ -901,22 +901,18 @@ uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io) {
 #endif
 
 #if PL_CONFIG_USE_MAG_SENSOR  && PL_CONFIG_IS_CLIENT
-static void MATRIX_MoveByOffset(STEPPER_Handle_t *motors[], int16_t offsets[], size_t nofMotors, uint16_t delay) {
-  /* here all hands are on the sensor: adjust with offset */
-   for(int i=0; i<nofMotors; i++) {
-     STEPPER_MoveMotorStepsRel(motors[i], offsets[i], delay);
-   } /* for */
-   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
+static void MATRIX_MoveByOffset(STEPPER_Handle_t motor, int16_t offset, uint16_t delay) {
+  /* here the hand is on the sensor: adjust with offset */
+  STEPPER_MoveMotorStepsRel(motor, offset, delay);
+  STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
 }
 
-static void MATRIX_SetZeroPosition(STEPPER_Handle_t *motors[], size_t nofMotors) {
+static void MATRIX_SetZeroPosition(STEPPER_Handle_t motor) {
   /* set zero position */
-  for(int i=0; i<nofMotors; i++) {
-    STEPPER_SetPos(motors[i], 0);
-  }
+  STEPPER_SetPos(motor, 0);
 }
 
-static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMotors, bool onSensor, int32_t stepSize, int32_t timeoutms, uint32_t waitms, uint16_t delay) {
+static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t motor, bool onSensor, int32_t stepSize, int32_t timeoutms, uint32_t waitms, uint16_t delay) {
   uint8_t res = ERR_OK;
   bool done;
   X12_Stepper_t *s;
@@ -926,22 +922,18 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
   /* move hand over sensor */
   for(;;) { /* breaks */
     done = true;
-    for(int i=0; i<nofMotors; i++) { /* check if all motors are on sensor */
-      s = STEPPER_GetDevice(motors[i]);
-      if (MAG_IsTriggered(s->mag)!=onSensor) {
-        done = false; /* not yet */
-        break;
-      }
+    /* check if all motors are on sensor */
+    s = STEPPER_GetDevice(motor);
+    if (MAG_IsTriggered(s->mag)!=onSensor) {
+      done = false; /* not yet */
     }
     if (done) { /* all hands on sensor */
       break;
     }
-    for(int i=0; i<nofMotors; i++) {
-      s = STEPPER_GetDevice(motors[i]);
-      if (MAG_IsTriggered(s->mag)!=onSensor) {
-        STEPPER_MoveMotorStepsRel(motors[i], stepSize, delay); /* make by 1 degree */
-      }
-    } /* for */
+    s = STEPPER_GetDevice(motor);
+    if (MAG_IsTriggered(s->mag)!=onSensor) {
+      STEPPER_MoveMotorStepsRel(motor, stepSize, delay); /* make by 1 degree */
+    }
     STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), waitms);
     curr = xTaskGetTickCount();
     if (pdMS_TO_TICKS(curr-start)>timeoutms) {
@@ -949,86 +941,76 @@ static uint8_t MATRIX_MoveHandOnSensor(STEPPER_Handle_t *motors[], size_t nofMot
       res = ERR_UNDERFLOW;
       break;
     }
-  }
+  } /* for */
   return res;
 }
 
-static uint8_t MATRIX_ZeroHand(STEPPER_Handle_t *motors[], int16_t offsets[], size_t nofMotors, uint16_t delay) {
+static uint8_t MATRIX_ZeroHand(STEPPER_Handle_t motor, int16_t offset, uint16_t delay) {
   uint8_t res = ERR_OK;
   X12_Stepper_t *s;
 
   /* if hand is on sensor: move hand out of the sensor area */
-  for(int i=0; i<nofMotors; i++) {
-    s = STEPPER_GetDevice(motors[i]);
-    if (MAG_IsTriggered(s->mag)) { /* hand on sensor? */
-      STEPPER_MoveMotorDegreeRel(motors[i], 90, delay); /* move away from sensor */
-    }
-  } /* for */
+  s = STEPPER_GetDevice(motor);
+  if (MAG_IsTriggered(s->mag)) { /* hand on sensor? */
+    STEPPER_MoveMotorDegreeRel(motor, 90, delay); /* move away from sensor */
+  }
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
 
   /* move forward ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -10, 20000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motor, true, -10, 20000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, false, 1, 3000, 10, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motor, false, 1, 3000, 10, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* step forward ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, nofMotors, true, -1, 3000, 2, delay)!=ERR_OK) {
+  if (MATRIX_MoveHandOnSensor(motor, true, -1, 3000, 2, delay)!=ERR_OK) {
     res = ERR_FAILED;
   }
 
   /* here all hands are on the sensor: adjust with offset */
-  MATRIX_MoveByOffset(motors, offsets, nofMotors, delay);
+  MATRIX_MoveByOffset(motor, offset, delay);
+
   /* set zero position */
-  MATRIX_SetZeroPosition(motors, nofMotors);
+  MATRIX_SetZeroPosition(motor);
   return res;
 }
 
 static uint8_t MATRIX_ZeroAllHands(void) {
-  uint8_t res = ERR_OK;
-  STEPPER_Handle_t *motors[MATRIX_NOF_STEPPERS];
-  int16_t offsets[MATRIX_NOF_STEPPERS];
-  int i;
+  STEPPER_Handle_t motor;
+  int16_t offset;
 
-  /* fill in motor array information */
-  i = 0;
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        motors[i] = MATRIX_GetStepper(x, y, z);
+        motor = MATRIX_GetStepper(x, y, z);
     #if PL_CONFIG_USE_NVMC
-        offsets[i] = NVMC_GetStepperZeroOffset(x, y, z);
+        offset = NVMC_GetStepperZeroOffset(x, y, z);
     #else
-        offsets[i] = 0;
+        offset = 0;
     #endif
-        i++;
+        if (MATRIX_ZeroHand(motor, offset, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+          return ERR_FAILED;
+        }
       }
     }
   }
-  /* zero all of them */
-  if (MATRIX_ZeroHand(motors, offsets, MATRIX_NOF_STEPPERS, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
-    res = ERR_FAILED;
-  }
-  return res;
+  return ERR_OK;
 }
 
 static uint8_t MATRIX_SetOffsetFrom12(void) {
   /* all hands shall be at 12-o-clock position */
   uint8_t res = ERR_OK;
-  STEPPER_Handle_t *motors[MATRIX_NOF_STEPPERS];
-  int16_t offsets[MATRIX_NOF_STEPPERS];
-  STEPPER_Handle_t stepper;
-  int i;
+  STEPPER_Handle_t motor;
   uint32_t flags;
 
   res = NVMC_GetFlags(&flags);
   if (res!=ERR_OK) {
     McuLog_info("failed getting flags");
-    return ERR_OK;
+    return ERR_FAILED;
   }
   if (!(flags&NVMC_FLAGS_MAGNET_ENABLED)) {
     McuLog_info("No magnets, ignoring command");
@@ -1040,67 +1022,45 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
   }
 #endif
-  /* first zero position at current position and set delay */
-  i = 0;
+  /* first zero position at current position */
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        stepper = MATRIX_GetStepper(x, y, z);
-        STEPPER_SetPos(stepper, 0);
-        motors[i] = stepper;
-        i++;
+        if (NVMC_GetIsEnabled(x, y, z)) {
+          motor = MATRIX_GetStepper(x, y, z);
+          STEPPER_SetPos(motor, 0);
+
+          McuLog_trace("Move hands CCW to find sensor");
+          /* move ccw in larger steps to find sensor */
+          if (MATRIX_MoveHandOnSensor(motor, true, -10, 10000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+            return ERR_FAILED;
+          }
+
+          McuLog_trace("Move hands CW back got get off sensor");
+          /* step back cw in micro-steps just to leave the sensor */
+          if (MATRIX_MoveHandOnSensor(motor, false, 1, 1000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+            return ERR_FAILED;
+          }
+
+          McuLog_trace("Move hands CW over sensor again");
+          /* step ccw in micro-steps just to enter the sensor again */
+          if (MATRIX_MoveHandOnSensor(motor, true, -1, 1000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
+            return ERR_FAILED;
+          }
+
+        #if PL_CONFIG_USE_NVMC
+          McuLog_trace("Store offset in NVMC");
+          /* store new offsets */
+          NVMC_SetStepperZeroOffset(x, y, z, -STEPPER_GetPos(motor));
+        #endif
+
+          McuLog_trace("Move hands back CCW to zero position");
+          MATRIX_MoveByOffset(motor, NVMC_GetStepperZeroOffset(x, y, z), STEPPER_HAND_ZERO_DELAY);
+        }
       }
     }
   }
-  McuLog_trace("Move hands CCW to find sensor");
-  /* move ccw in larger steps to find sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -10, 10000, 5, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
-    res = ERR_FAILED;
-  }
-
-  McuLog_trace("Move hands CW back got get off sensor");
-  /* step back cw in micro-steps just to leave the sensor */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), false, 1, 1000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
-    res = ERR_FAILED;
-  }
-
-  McuLog_trace("Move hands CW over sensor again");
-  /* step ccw in micro-steps just to enter the sensor again */
-  if (MATRIX_MoveHandOnSensor(motors, sizeof(motors)/sizeof(motors[0]), true, -1, 1000, 2, STEPPER_HAND_ZERO_DELAY)!=ERR_OK) {
-    res = ERR_FAILED;
-    return res;
-  }
-
-#if PL_CONFIG_USE_NVMC
-  McuLog_trace("Store offsets in NVMC");
-  /* store new offsets */
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        stepper = MATRIX_GetStepper(x, y, z);
-        NVMC_SetStepperZeroOffset(x, y, z, -STEPPER_GetPos(stepper));
-      }
-    }
-  }
-#endif
-
-  /* fill in motor array information */
-  int m = 0;
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-      #if PL_CONFIG_USE_NVMC
-        offsets[m] = NVMC_GetStepperZeroOffset(x, y, z);
-      #else
-        offsets[m] = 0;
-      #endif
-        m++;
-      }
-    }
-  }
-  McuLog_trace("Move hands back CCW to zero position");
-  MATRIX_MoveByOffset(motors, offsets, sizeof(motors)/sizeof(motors[0]), STEPPER_HAND_ZERO_DELAY);
-  return res;
+  return ERR_OK;
 }
 #endif /* PL_CONFIG_USE_MAG_SENSOR */
 
@@ -2037,16 +1997,16 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
        )
     {
   #if PL_CONFIG_IS_CLIENT
-      STEPPER_Handle_t *motors[1];
+      STEPPER_Handle_t *motor;
       int16_t offset;
 
-      motors[0] = MATRIX_GetStepper(x, y, z);
+      motor = MATRIX_GetStepper(x, y, z);
     #if PL_CONFIG_USE_NVMC
       offset = NVMC_GetStepperZeroOffset(x, y, z);
     #else
       offset = 0;
     #endif
-      res = MATRIX_ZeroHand(motors, &offset, 1, STEPPER_HAND_ZERO_DELAY);
+      res = MATRIX_ZeroHand(motor, offset, STEPPER_HAND_ZERO_DELAY);
       if (res!=ERR_OK) {
         McuShell_SendStr((unsigned char*)"failed to find magnet/zero position\r\n", io->stdErr);
       }

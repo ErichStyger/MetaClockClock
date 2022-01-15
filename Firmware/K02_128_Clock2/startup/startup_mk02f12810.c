@@ -229,9 +229,9 @@ void SWI_DriverIRQHandler(void) ALIAS(IntDefaultHandler);
 //*****************************************************************************
 #if defined (__REDLIB__)
 extern void __main(void);
-#endif
+#else
 extern int main(void);
-
+#endif
 //*****************************************************************************
 // External declaration for the pointer to the stack top from the Linker Script
 //*****************************************************************************

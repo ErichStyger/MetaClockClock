@@ -24,7 +24,6 @@
 /* ********************************************************************* */
 /* override settings in platform_common.h: */
 #define PL_CONFIG_USE_MAG_SENSOR        (1) /* if using magnets */
-#define PL_CONFIG_USE_FONT              (0) /* makes no sense using fonts */
 
 #include "platform_common.h"
 

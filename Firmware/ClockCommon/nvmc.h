@@ -15,6 +15,24 @@
 #define NVMC_FLAGS_MAGNET_ENABLED   (1<<0)  /* if magnets are present on hands or not */
 
 /*!
+ * \brief Getter for the 'enabled' setting of a motor
+ * \param x Motor x position
+ * \param y Motor y position
+ * \param z Motor z position
+ * \return If motor is enabled
+ */
+bool NVMC_GetIsEnabled(uint8_t x, uint8_t y, uint8_t z);
+
+/*!
+ * \brief Setter for the 'enabled' setting of a motor
+ * \param x Motor x position
+ * \param y Motor y position
+ * \param z Motor z position
+ * \return Error code, ERR_OK for everything ok
+ */
+uint8_t NVMC_SetIsEnabled(uint8_t x, uint8_t y, uint8_t z, bool isEnabled);
+
+/*!
  * \brief Provide the offset from the magnet position for a stepper motor
  * \param x Motor x position
  * \param y Motor y position

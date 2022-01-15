@@ -49,6 +49,9 @@
 #if PL_CONFIG_USE_ESP32_UART
   #include "ESP32_Uart.h"
 #endif
+#if PL_CONFIG_USE_MININI
+  #include "McuMinINI.h"
+#endif
 #include "McuLog.h"
 #include "McuButton.h"
 
@@ -61,6 +64,7 @@
 #endif
 #if PL_CONFIG_USE_NVMC
   #include "nvmc.h"
+  #include "McuFlash.h"
 #endif
 #include "matrix.h"
 #include "leds.h"
@@ -213,9 +217,6 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_RS485
   RS485_Init();
 #endif
-#if PL_CONFIG_USE_NVMC
-  NVMC_Init();
-#endif
   MATRIX_Init();
 #if PL_CONFIG_USE_WDT
   WDT_Init();
@@ -247,5 +248,13 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_LOW_POWER
   LP_Init();
+#endif
+#if PL_CONFIG_USE_MININI
+  McuMinINI_Init();
+#endif
+#if PL_CONFIG_USE_NVMC
+  NVMC_Init();
+  McuFlash_Init();
+  McuFlash_RegisterMemory((const void*)McuMinINI_CONFIG_FLASH_NVM_ADDR_START, 1*McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE);
 #endif
 }

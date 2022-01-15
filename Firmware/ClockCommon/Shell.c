@@ -42,6 +42,8 @@
 #if PL_CONFIG_USE_NVMC
   #include "nvmc.h"
   #include "McuMinINI.h"
+  #include "minGlue-Flash.h"
+  #include "McuFlash.h"
 #endif
 #if PL_CONFIG_USE_CLOCK
   #include "clock.h"
@@ -124,6 +126,7 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
   NVMC_ParseCommand,
   McuMinINI_ParseCommand,
   ini_ParseCommand,
+  McuFlash_ParseCommand,
 #endif
 #if PL_CONFIG_USE_RS485
   RS485_ParseCommand,
@@ -300,7 +303,7 @@ void SHELL_Init(void) {
   if (xTaskCreate(
       ShellTask,  /* pointer to the task */
       "Shell", /* task name for kernel awareness debugging */
-      2300/sizeof(StackType_t), /* task stack size */
+      2500/sizeof(StackType_t), /* task stack size */
       (void*)NULL, /* optional task startup argument */
       tskIDLE_PRIORITY+2,  /* initial priority */
       (TaskHandle_t*)NULL /* optional task handle to create */

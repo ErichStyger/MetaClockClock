@@ -29,6 +29,16 @@
 /* motor settings */
 #define NVMC_MININI_SECTION_MOTOR     "motor" /* motor<x><y><z> */
 #define NVMC_MININI_KEY_MOTOR_OFFSET  "offs"  /* long value: stepper motor offset */
+#define NVMC_MININI_KEY_MOTOR_ENABLED "enabled" /* long value: stepper motor offset */
+
+#if PL_CONFIG_USE_MININI
+static void GetMotorSectionName(unsigned char *name, size_t nameSize, uint8_t x, uint8_t y, uint8_t z) {
+  McuUtility_strcpy(name, nameSize, (unsigned char*)NVMC_MININI_SECTION_MOTOR);
+  McuUtility_strcatNum8u(name, nameSize, x);
+  McuUtility_strcatNum8u(name, nameSize, y);
+  McuUtility_strcatNum8u(name, nameSize, z);
+}
+#endif
 
 uint8_t NVMC_GetRS485Addr(uint8_t *addr) {
 #if PL_CONFIG_USE_MININI
@@ -72,14 +82,32 @@ uint8_t NVMC_SetFlags(uint32_t flags) {
 #endif
 }
 
+bool NVMC_GetIsEnabled(uint8_t x, uint8_t y, uint8_t z) {
+  unsigned char sectionName[16];
+
+  GetMotorSectionName(sectionName, sizeof(sectionName), x, y, z);
+  return McuMinINI_ini_getbool((char*)sectionName, NVMC_MININI_KEY_MOTOR_ENABLED, true, NVMC_MININI_FILE_NAME);
+}
+
+uint8_t NVMC_SetIsEnabled(uint8_t x, uint8_t y, uint8_t z, bool isEnabled) {
+#if PL_CONFIG_USE_MININI && McuMinINI_CONFIG_READ_ONLY
+  return ERR_FAILED;
+#elif PL_CONFIG_USE_MININI
+  unsigned char sectionName[16];
+
+  GetMotorSectionName(sectionName, sizeof(sectionName), x, y, z);
+  McuMinINI_ini_putl((char*)sectionName, NVMC_MININI_KEY_MOTOR_ENABLED, isEnabled?1:0, NVMC_MININI_FILE_NAME);
+  return ERR_OK;
+#else
+  return ERR_FAILED;
+#endif
+}
+
 int16_t NVMC_GetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z) {
 #if PL_CONFIG_USE_MININI
   unsigned char sectionName[16];
 
-  McuUtility_strcpy(sectionName, sizeof(sectionName), (unsigned char*)NVMC_MININI_SECTION_MOTOR);
-  McuUtility_strcatNum8u(sectionName, sizeof(sectionName), x);
-  McuUtility_strcatNum8u(sectionName, sizeof(sectionName), y);
-  McuUtility_strcatNum8u(sectionName, sizeof(sectionName), z);
+  GetMotorSectionName(sectionName, sizeof(sectionName), x, y, z);
   return McuMinINI_ini_getl((char*)sectionName, NVMC_MININI_KEY_MOTOR_OFFSET, 0, NVMC_MININI_FILE_NAME);
 #else
   return 0;
@@ -92,10 +120,7 @@ uint8_t NVMC_SetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z, int16_t offse
 #elif PL_CONFIG_USE_MININI
   unsigned char sectionName[16];
 
-  McuUtility_strcpy(sectionName, sizeof(sectionName), (unsigned char*)NVMC_MININI_SECTION_MOTOR);
-  McuUtility_strcatNum8u(sectionName, sizeof(sectionName), x);
-  McuUtility_strcatNum8u(sectionName, sizeof(sectionName), y);
-  McuUtility_strcatNum8u(sectionName, sizeof(sectionName), z);
+  GetMotorSectionName(sectionName, sizeof(sectionName), x, y, z);
   McuMinINI_ini_putl((char*)sectionName, NVMC_MININI_KEY_MOTOR_OFFSET, offset, NVMC_MININI_FILE_NAME);
   return ERR_OK;
 #else

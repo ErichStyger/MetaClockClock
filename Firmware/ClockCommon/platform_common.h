@@ -40,7 +40,7 @@
 #endif
 
 #ifndef PL_CONFIG_USE_FONT
-  #define PL_CONFIG_USE_FONT  (1) /* using font */
+  #define PL_CONFIG_USE_FONT  (1 && PL_CONFIG_IS_MASTER) /* using font, only makes sense for the master having enough drawing space */
 #endif
 
 /* selection if master or client */

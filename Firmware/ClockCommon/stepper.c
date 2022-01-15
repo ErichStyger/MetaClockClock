@@ -514,8 +514,11 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        McuUtility_Num16sToStr(buf, sizeof(buf), NVMC_GetStepperZeroOffset(x, y, z));
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" offset\r\n");
+        McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"offset: ");
+        McuUtility_strcatNum16s(buf, sizeof(buf), NVMC_GetStepperZeroOffset(x, y, z));
+        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", enabled: ");
+        McuUtility_strcat(buf, sizeof(buf), NVMC_GetIsEnabled(x, y, z)?(unsigned char*)"y":(unsigned char*)"n");
+        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
         McuUtility_strcpy(statusBuf, sizeof(statusBuf), (unsigned char*)"  m ");
         McuUtility_strcatNum16u(statusBuf, sizeof(statusBuf), x);
         McuUtility_strcat(statusBuf, sizeof(statusBuf), (unsigned char*)" ");
@@ -533,6 +536,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"stepper", (unsigned char*)"Group of stepper commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  enable <xyz> y|n", (unsigned char*)"Enable or disable a stepper\r\n", io->stdOut);
   return ERR_OK;
 }
 
@@ -545,6 +549,29 @@ uint8_t STEPPER_ParseCommand(const unsigned char *cmd, bool *handled, const McuS
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "stepper status")==0)) {
     *handled = TRUE;
     return PrintStatus(io);
+  } else if (McuUtility_strncmp((char*)cmd, "stepper enable ", sizeof("stepper enable ")-1)==0) {
+    int32_t x, y, z;
+    const unsigned char *p;
+
+    *handled = TRUE;
+    p = cmd+sizeof("stepper enable ")-1;
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
+       )
+    {
+      McuUtility_SkipSpaces(&p); /* skip space(s) between coordinate and on/off */
+      if (McuUtility_strcmp((char*)p, (char*)"y")==0) {
+        NVMC_SetIsEnabled(x, y, z, true);
+        res = ERR_OK;
+      } else if (McuUtility_strcmp((char*)p, (char*)"n")==0) {
+        NVMC_SetIsEnabled(x, y, z, false);
+        res = ERR_OK;
+      } else {
+        res = ERR_FAILED;
+      }
+    }
+    return res;
   }
   return res;
 }
