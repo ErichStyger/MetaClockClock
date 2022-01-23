@@ -7,7 +7,7 @@
     <mapAttribute key="com.crt.ctrlcenter.symbolsGroupSettings"/>
     <intAttribute key="com.nxp.mcuxpresso.core.debug.support.segger.launches.JLinkLaunchConfigHandler.version" value="2"/>
     <booleanAttribute key="com.nxp.mcuxpresso.flash.clear.console" value="true"/>
-    <booleanAttribute key="com.nxp.mcuxpresso.flash.confirm" value="false"/>
+    <booleanAttribute key="com.nxp.mcuxpresso.flash.confirm" value="true"/>
     <stringAttribute key="com.nxp.mcuxpresso.ide.probe.manufacturer" value="SEGGER"/>
     <stringAttribute key="com.nxp.mcuxpresso.ide.probe.name" value="J-Link EDU Mini"/>
     <stringAttribute key="com.nxp.mcuxpresso.ide.probe.nickname" value=""/>
