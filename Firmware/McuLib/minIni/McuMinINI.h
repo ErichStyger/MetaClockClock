@@ -8,7 +8,7 @@
 **     Compiler    : GNU C Compiler
 **     Date/Time   : 2022-01-22, 12:01, # CodeGen: 775
 **     Abstract    :
-**         minIni is a programmer’s library to read and write ini files in embedded systems.
+**         minIni is a programmerï¿½s library to read and write ini files in embedded systems.
 **     Settings    :
 **          Component name                                 : McuMinINI
 **          minIni Version                                 : 1.4
@@ -46,7 +46,7 @@
 ** @file McuMinINI.h
 ** @version 01.00
 ** @brief
-**         minIni is a programmer’s library to read and write ini files in embedded systems.
+**         minIni is a programmerï¿½s library to read and write ini files in embedded systems.
 */         
 /*!
 **  @addtogroup McuMinINI_module McuMinINI module documentation

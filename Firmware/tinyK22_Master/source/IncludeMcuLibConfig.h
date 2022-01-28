@@ -162,6 +162,8 @@ Instructions:
 #define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (256) /* must be 64, 128, 256, ... */
 #define McuMinINI_CONFIG_READ_ONLY                  (0)
 #define McuMinINI_CONFIG_USE_REAL                   (0)
-/* ---------------------------------------------------------------------------------------*/
+/* -------------------------------------------------*/
+/* McuUart485 */
+#define McuUart485_CONFIG_USE_RS_485      (1)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

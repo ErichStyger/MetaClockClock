@@ -8,7 +8,7 @@
 #if PL_CONFIG_USE_RS485
 #include "rs485.h"
 #include "McuGPIO.h"
-#include "rs485Uart.h"
+#include "McuUart485.h"
 #include "McuShell.h"
 #include "McuRTOS.h"
 #include "McuUtility.h"
@@ -42,7 +42,7 @@ uint8_t RS485_GetAddress(void) {
 }
 
 static void RS485_SendChar(unsigned char ch) {
-  RS485Uart_stdio.stdOut(ch);
+  McuUart485_stdio.stdOut(ch);
 }
 
 static void RS485_NullSend(unsigned char ch) {
@@ -231,7 +231,7 @@ static RS485_Response_e WaitForResponse(int32_t timeoutMs, uint8_t fromAddr) {
   CMD_ParserState_e state = CMD_PARSER_INIT;
 
   for(;;) { /* returns */
-    ch = RS458Uart_GetResponseQueueChar();
+    ch = McuUart485_GetResponseQueueChar();
     if (ch!='\0') {
       resp = Scan(&state, ch, buf, sizeof(buf), fromAddr);
       if (resp==RS485_RESPONSE_OK || resp==RS485_RESPONSE_NOK) {
@@ -282,7 +282,7 @@ uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t tim
   buf[sizeof("@dd ss c")-1] = (char)(hex + ((hex <= 9) ? '0' : ('A'-10)));
 
   for(;;) { /* breaks */
-    RS458Uart_ClearResponseQueue(); /* clear up if there is something pending */
+    McuUart485_ClearResponseQueue(); /* clear up if there is something pending */
     if (RS485_DoLogging) {
       McuLog_trace("Tx: %s", buf);
     }
@@ -458,7 +458,7 @@ static void RS485Task(void *pv) {
 #endif
   cmdBuf[0] = '\0';
   for(;;) {
-    if (McuShell_ReadCommandLine(cmdBuf, sizeof(cmdBuf), &RS485Uart_stdio)==ERR_OK) {
+    if (McuShell_ReadCommandLine(cmdBuf, sizeof(cmdBuf), &McuUart485_stdio)==ERR_OK) {
       reply = false;
       srcAddr = RS485_ILLEGAL_ADDRESS;
       dstAddr = RS485_ILLEGAL_ADDRESS;
@@ -529,7 +529,7 @@ static void RS485Task(void *pv) {
         RS485_SendStr(buf);
       }
     }
-    if (!RS485Uart_stdio.keyPressed()) { /* if nothing in input queue, give back some CPU time */
+    if (!McuUart485_stdio.keyPressed()) { /* if nothing in input queue, give back some CPU time */
       vTaskDelay(pdMS_TO_TICKS(10));
     #if PL_CONFIG_USE_WDT
       WDT_Report(WDT_REPORT_ID_TASK_RS485, 10);
@@ -539,11 +539,11 @@ static void RS485Task(void *pv) {
 }
 
 void RS485_Deinit(void) {
-  RS485Uart_Deinit();
+  McuUart485_Deinit();
 }
 
 void RS485_Init(void) {
-  RS485Uart_Init();
+  McuUart485_Init();
   if (xTaskCreate(
       RS485Task,  /* pointer to the task */
       "RS-485", /* task name for kernel awareness debugging */

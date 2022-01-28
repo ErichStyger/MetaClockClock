@@ -27,7 +27,7 @@
 #endif
 #if PL_CONFIG_USE_RS485
   #include "rs485.h"
-  #include "rs485Uart.h"
+  #include "McuUart485.h"
 #endif
 #if PL_CONFIG_USE_STEPPER
   #include "Stepper.h"
@@ -130,7 +130,7 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #endif
 #if PL_CONFIG_USE_RS485
   RS485_ParseCommand,
-  RS485Uart_ParseCommand,
+  McuUart485_ParseCommand,
 #endif
   MATRIX_ParseCommand,
 #if PL_CONFIG_USE_CLOCK

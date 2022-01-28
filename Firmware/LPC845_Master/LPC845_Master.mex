@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="LPC845" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_10 http://mcuxpresso.nxp.com/XSD/mex_configuration_10.xsd" uuid="6e8357a3-fb9c-4e71-9373-f7aba8f84626" version="10" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_10" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="LPC845" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_11 http://mcuxpresso.nxp.com/XSD/mex_configuration_11.xsd" uuid="6e8357a3-fb9c-4e71-9373-f7aba8f84626" version="11" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>LPC845</processor>
       <package>LPC845M301JBD48</package>
@@ -15,15 +15,16 @@
       <generate_extended_information>false</generate_extended_information>
       <generate_code_modified_registers_only>false</generate_code_modified_registers_only>
       <update_include_paths>true</update_include_paths>
+      <generate_registers_defines>false</generate_registers_defines>
    </preferences>
    <tools>
-      <pins name="Pins" version="10.0" enabled="true" update_project_code="true">
+      <pins name="Pins" version="11.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/boards/pin_mux.c" update_enabled="true"/>
             <file path="board/boards/pin_mux.h" update_enabled="true"/>
          </generated_project_files>
          <pins_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>11.0.1</processor_version>
             <pin_labels>
                <pin_label pin_num="11" pin_signal="PIO1_0/CAPT_X1" label=""/>
                <pin_label pin_num="14" pin_signal="PIO1_1/CAPT_X2" label=""/>
@@ -222,16 +223,16 @@
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="8.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="9.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/boards/clock_config.c" update_enabled="true"/>
             <file path="board/boards/clock_config.h" update_enabled="true"/>
          </generated_project_files>
          <clocks_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>11.0.1</processor_version>
          </clocks_profile>
          <clock_configurations>
-            <clock_configuration name="BOARD_BootClockFRO18M">
+            <clock_configuration name="BOARD_BootClockFRO18M" id_prefix="" prefix_user_defined="false">
                <description></description>
                <options/>
                <dependencies>
@@ -271,7 +272,7 @@
                </clock_settings>
                <called_from_default_init>true</called_from_default_init>
             </clock_configuration>
-            <clock_configuration name="BOARD_BootClockFRO24M">
+            <clock_configuration name="BOARD_BootClockFRO24M" id_prefix="" prefix_user_defined="false">
                <description></description>
                <options/>
                <dependencies>
@@ -311,7 +312,7 @@
                </clock_settings>
                <called_from_default_init>false</called_from_default_init>
             </clock_configuration>
-            <clock_configuration name="BOARD_BootClockFRO30M">
+            <clock_configuration name="BOARD_BootClockFRO30M" id_prefix="" prefix_user_defined="false">
                <description></description>
                <options/>
                <dependencies>
@@ -349,7 +350,7 @@
                </clock_settings>
                <called_from_default_init>false</called_from_default_init>
             </clock_configuration>
-            <clock_configuration name="BOARD_BootClockPll24M">
+            <clock_configuration name="BOARD_BootClockPll24M" id_prefix="" prefix_user_defined="false">
                <description></description>
                <options/>
                <dependencies>
@@ -399,13 +400,13 @@
          </dcdx_profile>
          <dcdx_configurations/>
       </dcdx>
-      <periphs name="Peripherals" version="10.0" enabled="true" update_project_code="true">
+      <periphs name="Peripherals" version="11.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/boards/peripherals.c" update_enabled="true"/>
             <file path="board/boards/peripherals.h" update_enabled="true"/>
          </generated_project_files>
          <peripherals_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>11.0.1</processor_version>
          </peripherals_profile>
          <functional_groups>
             <functional_group name="BOARD_InitPeripherals" uuid="51f71830-e1e0-435f-8867-a1437732eb04" called_from_default_init="true" id_prefix="" core="core0">

@@ -108,5 +108,7 @@ Instructions:
 #define McuMinINI_CONFIG_READ_ONLY                  (0)
 #define McuMinINI_CONFIG_USE_REAL                   (0)
 /* -------------------------------------------------*/
+/* McuUart485 */
+#define McuUart485_CONFIG_USE_RS_485      (1)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */
