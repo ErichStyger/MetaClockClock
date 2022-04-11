@@ -55,7 +55,7 @@ Instructions:
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
-#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (1)
+#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
 #define SYSVIEW_APP_NAME                     "tinyK22 Master"
 #define SYSVIEW_DEVICE_NAME                  "NXP K22FN512"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
@@ -75,10 +75,10 @@ Instructions:
 /* -------------------------------------------------*/
 /* RTT */
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (150)
-#define McuRTT_CONFIG_BLOCKING_SEND                   (1)
+#define McuRTT_CONFIG_BLOCKING_SEND                   (0)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (1024)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (256)
 #if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
   #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (2)
   #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (2)
@@ -137,7 +137,7 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER    (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_IS_ENABLED                      (0)
 #define McuLog_CONFIG_DEFAULT_LEVEL                   (McuLog_DEBUG)
 #define McuLog_CONFIG_USE_COLOR                       (0)
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER              (3) /* RTT, UART and USB CDC */
@@ -146,7 +146,7 @@ Instructions:
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
 /* -------------------------------------------------*/
 /* RTC */
-#define McuExtRTC_CONFIG_DEVICE                 3232  /* RTC device used */
+#define McuExtRTC_CONFIG_DEVICE                       3232  /* RTC device used */
 /* -------------------------------------------------*/
 /* EEPROM */
 #define McuEE24_CONFIG_DEVICE_ID                32    /* AT24C32 */
@@ -154,6 +154,9 @@ Instructions:
 #define McuEE24_CONFIG_HAS_WP_PIN               (0)   /* no WP Pin */
 #define McuEE24_CONFIG_DO_ACKNOWLEDGE_POLLING   (0)   /* no acknowledge polling */
 #define McuEE24_CONFIG_USE_TIMEOUT              (0)   /* no timeout */
+/* ---------------------------------------------------------------------------------------*/
+/* McuFlash for MinIni */
+#define McuFlash_CONFIG_IS_ENABLED              (1)
 /* ---------------------------------------------------------------------------------------*/
 /* MinINI */
 #define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
@@ -165,5 +168,8 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485      (1)
+
+
+#define McuWait_CONFIG_USE_CYCLE_COUNTER  (0)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

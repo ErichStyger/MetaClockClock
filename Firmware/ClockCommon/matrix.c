@@ -790,8 +790,8 @@ uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait) {
 }
 #endif
 
-#if PL_CONFIG_USE_RS485
 uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait) {
+#if PL_CONFIG_USE_RS485
   uint8_t resSend, resExecute;
 
   resSend = MATRIX_SendToRemoteQueue();
@@ -799,14 +799,15 @@ uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait) {
   if (resSend!=ERR_OK || resExecute!=ERR_OK) {
     return ERR_FAILED;
   }
+#endif /* PL_CONFIG_USE_RS485 */
   return ERR_OK;
 }
-#endif /* PL_CONFIG_USE_RS485 */
 
 #endif /* PL_CONFIG_IS_MASTER */
 
 #if PL_CONFIG_IS_MASTER
 static uint8_t MATRIX_SendMatrixCmdToAllBoards(const unsigned char *cmd) {
+#if PL_CONFIG_USE_RS485
   uint8_t res;
   uint8_t addr;
   bool hasError = false;
@@ -823,6 +824,7 @@ static uint8_t MATRIX_SendMatrixCmdToAllBoards(const unsigned char *cmd) {
   if (hasError) {
     return ERR_FAILED;
   }
+#endif
   return ERR_OK;
 }
 #endif /* PL_CONFIG_IS_MASTER */
@@ -1367,7 +1369,7 @@ void MATRIX_RequestRgbUpdate(void) {
   /* request LED update either locally or remote */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   APP_RequestUpdateLEDs();
-#else /* send over RS-485 */
+#elif PL_CONFIG_USE_RS485 /* send over RS-485 */
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no not need to wait */
 #endif
 }
@@ -1382,7 +1384,9 @@ void MATRIX_EnableDisableHandsAll(bool enable) {
   #if PL_CONFIG_USE_LED_RING
   MRING_EnableRingAll(false); /* turn off ring */
   #endif
+  #if PL_CONFIG_USE_RS485
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  #endif
 }
 #endif
 

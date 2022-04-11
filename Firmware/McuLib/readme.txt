@@ -44,6 +44,7 @@ Components of the McuOnEclipse (in alphabetical order) inside the 'src' Folder:
 - McuGFont: Graphical font library driver. Several fonts are available in the 'fonts' subfolder
 - McuGPIO: Generic GPIO pin driver
 - McuHardfault: ARM Cortex-M hardfault handler
+- McuI2cLib: Generic and portable I2C library using hardware I2C
 - McuI2CSpy: I2C sniffing utility
 - McuLC709203F: Driver for the LC709203F battery/charing monitor device
 - McuLED: generic LED driver for multiple LEDs
@@ -61,8 +62,10 @@ Components of the McuOnEclipse (in alphabetical order) inside the 'src' Folder:
 - McuShell: Driver for a command line shell
 - McuShellUart: UART driver for the McuShell
 - McuSHT31: Driver for the Sensirion SHT31 temperature/humidity sensor
+- McuSHT40: Driver for the Sensirion SHT40 temperature/humidity sensor
 - McuSSD1306: display driver for SSD1306 and SH1106
 - McuSTM32HALI2C: low level I2C driver using STM32 CubeMX HAL
+- McuSWO: SWO (ARM Single Wire Output) library and command line support
 - McuTimeDate: Realtime clock implementation for software, hardware and external I2C RTC
 - McuTimeout: generic driver for timeout handling
 - McuTrigger: generic interrupt callback handling

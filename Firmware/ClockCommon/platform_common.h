@@ -129,7 +129,9 @@
 #ifndef PL_CONFIG_USE_RTC
   #define PL_CONFIG_USE_RTC             (1 && (PL_CONFIG_IS_MASTER)) /* 1: enable external RTC; 0: disable it */
 #endif
-#define PL_CONFIG_USE_RS485             (1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
+#ifndef PL_CONFIG_USE_RS485
+  #define PL_CONFIG_USE_RS485             (1 && PL_CONFIG_USE_SHELL) /* RS-485 connection, 1: enabled, 0: disabled: it requires the shell to parse the commands */
+#endif
 #ifndef PL_CONFIG_USE_NVMC
   #define PL_CONFIG_USE_NVMC            (1) /* using non-volatile configuration memory */
 #endif
@@ -204,8 +206,10 @@
 #endif
 #define PL_CONFIG_USE_I2C           (1 && PL_CONFIG_IS_MASTER) /* use I2C bus */
 #define PL_CONFIG_USE_HW_I2C        (CONFIG_USE_HW_I2C) /* this is set in IncludMcuLibConfig.h! */
-#define PL_CONFIG_USE_EXT_I2C_RTC   (1 && PL_CONFIG_USE_RTC && PL_CONFIG_USE_I2C) /* DS3231 with AT24C32 */
-#define PL_CONFIG_USE_EXT_EEPROM    (1 && PL_CONFIG_USE_I2C) /* AT24C32 */
+#define PL_CONFIG_USE_EXT_I2C_RTC   (1 && PL_CONFIG_USE_RTC && PL_CONFIG_USE_I2C) /* DS3231 with extra AT24C32, or DS3232M with internal memory */
+#ifndef PL_CONFIG_USE_EXT_EEPROM
+  #define PL_CONFIG_USE_EXT_EEPROM    (0 && PL_CONFIG_USE_I2C) /* AT24C32 */
+#endif
 
 #ifndef PL_CONFIG_USE_CLOCK
   #define PL_CONFIG_USE_CLOCK         (1 && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RTC)  /* 1: application implements a clock */
@@ -254,11 +258,13 @@
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON  (0) /* if clock hand random color is enabled by default */
 #endif
 
+#ifndef PL_CONFIG_USE_USB_CDC
+  #define PL_CONFIG_USE_USB_CDC       (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* not supported on LPC845 */
+#endif
 
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)
-#define PL_CONFIG_USE_USB_CDC       (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* not supported on LPC845 */
 #define PL_CONFIG_USE_I2C_SPY       (0 && PL_CONFIG_USE_I2C) /* using shell component to scan I2C bus */
 #define PL_CONFIG_USE_ULN2003       (0 && PL_CONFIG_USE_STEPPER) /* using ULN2003 stepper motors */
 
