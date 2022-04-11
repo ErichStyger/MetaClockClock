@@ -62,7 +62,7 @@
 #define I2C_BAUDRATE            400000U
 
 #define I2C_ADD_DELAY     (1)  /* needed for FXOS sensor? As well for RTC: otherwise the address is not on the bus? */
-#define I2C_ADD_DELAY_US  (10)
+#define I2C_ADD_DELAY_US  (100) /* setting this to 10 with RTT enabled but no RTT client connected let the application hang???? Having SHT31 on the bus with ext. RTC */
 
 
 #endif /* I2CLIBCONFIG_H_ */
