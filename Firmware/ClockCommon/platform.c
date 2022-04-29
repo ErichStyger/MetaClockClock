@@ -91,7 +91,7 @@
   #include "watchdog.h"
 #endif
 #if PL_CONFIG_USE_CLOCK
-  #include "Clock.h"
+  #include "clock.h"
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   #include "intermezzo.h"

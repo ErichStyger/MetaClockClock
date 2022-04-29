@@ -11,7 +11,7 @@
 #include "matrix.h"
 #include "rs485.h"
 #include "McuUtility.h"
-#include "Stepper.h"
+#include "stepper.h"
 #include "Shell.h"
 #include "McuLog.h"
 #include "McuRTOS.h"

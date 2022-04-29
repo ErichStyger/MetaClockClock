@@ -7,7 +7,7 @@
 #ifndef PLATFORM_H_
 #define PLATFORM_H_
 
-#include "McuLibConfig.h"
+#include "McuLibconfig.h"
 #include "platform_id.h"
 
 /* select the board used: */
