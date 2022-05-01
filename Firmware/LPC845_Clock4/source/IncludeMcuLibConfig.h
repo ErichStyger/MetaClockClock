@@ -103,6 +103,9 @@ Instructions:
 #define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x400)   /* sector size is 1k */
 #define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (256) /* must be 64, 128, 256, ... */
 /* -------------------------------------------------*/
+/* McuFlash */
+#define McuFlash_CONFIG_IS_ENABLED                  (1)
+/* -------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485      (1)
 
