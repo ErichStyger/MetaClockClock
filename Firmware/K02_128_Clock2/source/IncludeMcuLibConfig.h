@@ -101,6 +101,7 @@ Instructions:
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
 /* ---------------------------------------------------------------------------------------*/
 /* MinINI */
+#define McuFlash_CONFIG_IS_ENABLED					(1)
 #define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
 #define McuMinINI_CONFIG_FLASH_NVM_ADDR_START       ((0+128*1024)-McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE)
 #define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x800)

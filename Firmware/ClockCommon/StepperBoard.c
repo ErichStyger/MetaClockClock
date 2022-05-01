@@ -19,7 +19,7 @@
 #if PL_CONFIG_USE_WDT
   #include "watchdog.h"
 #endif
-#include "Matrix.h"
+#include "matrix.h"
 
 typedef struct STEPBOARD_Device_t {
   uint8_t addr;

@@ -30,7 +30,7 @@
   #include "McuUart485.h"
 #endif
 #if PL_CONFIG_USE_STEPPER
-  #include "Stepper.h"
+  #include "stepper.h"
 #endif
 #if PL_CONFIG_USE_MAG_SENSOR
   #include "magnets.h"
