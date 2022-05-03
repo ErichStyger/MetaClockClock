@@ -591,7 +591,7 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
       {.addr=BOARD_ADDR_10, .cmdSent=false},
       {.addr=BOARD_ADDR_11, .cmdSent=false},
   };
-#elif PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
   const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
   {
     /* center clock */
@@ -620,6 +620,103 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
       {.addr=BOARD_ADDR_05, .cmdSent=false},
       {.addr=BOARD_ADDR_06, .cmdSent=false},
   };
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
+  const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
+  {
+        /* 1st (top) row */
+        [0][0][0]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=0},
+        [1][0][0]={.addr=BOARD_ADDR_00, .board.x=1, .board.y=0, .board.z=0},
+        [2][0][0]={.addr=BOARD_ADDR_00, .board.x=2, .board.y=0, .board.z=0},
+        [3][0][0]={.addr=BOARD_ADDR_00, .board.x=3, .board.y=0, .board.z=0},
+        [4][0][0]={.addr=BOARD_ADDR_00, .board.x=4, .board.y=0, .board.z=0},
+        [5][0][0]={.addr=BOARD_ADDR_00, .board.x=5, .board.y=0, .board.z=0},
+        [6][0][0]={.addr=BOARD_ADDR_00, .board.x=6, .board.y=0, .board.z=0},
+        [7][0][0]={.addr=BOARD_ADDR_00, .board.x=7, .board.y=0, .board.z=0},
+        [8][0][0]={.addr=BOARD_ADDR_00, .board.x=8, .board.y=0, .board.z=0},
+        [9][0][0]={.addr=BOARD_ADDR_00, .board.x=9, .board.y=0, .board.z=0},
+        [10][0][0]={.addr=BOARD_ADDR_00, .board.x=10, .board.y=0, .board.z=0},
+        [11][0][0]={.addr=BOARD_ADDR_00, .board.x=11, .board.y=0, .board.z=0},
+        [12][0][0]={.addr=BOARD_ADDR_00, .board.x=12, .board.y=0, .board.z=0},
+        [13][0][0]={.addr=BOARD_ADDR_00, .board.x=13, .board.y=0, .board.z=0},
+        [14][0][0]={.addr=BOARD_ADDR_00, .board.x=14, .board.y=0, .board.z=0},
+        [15][0][0]={.addr=BOARD_ADDR_00, .board.x=15, .board.y=0, .board.z=0},
+
+        /* 2nd row */
+        [0][1][0]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=0},
+        [1][1][0]={.addr=BOARD_ADDR_00, .board.x=1, .board.y=0, .board.z=0},
+        [2][1][0]={.addr=BOARD_ADDR_00, .board.x=2, .board.y=0, .board.z=0},
+        [3][1][0]={.addr=BOARD_ADDR_00, .board.x=3, .board.y=0, .board.z=0},
+        [4][1][0]={.addr=BOARD_ADDR_00, .board.x=4, .board.y=0, .board.z=0},
+        [5][1][0]={.addr=BOARD_ADDR_00, .board.x=5, .board.y=0, .board.z=0},
+        [6][1][0]={.addr=BOARD_ADDR_00, .board.x=6, .board.y=0, .board.z=0},
+        [7][1][0]={.addr=BOARD_ADDR_00, .board.x=7, .board.y=0, .board.z=0},
+        [8][1][0]={.addr=BOARD_ADDR_00, .board.x=8, .board.y=0, .board.z=0},
+        [9][1][0]={.addr=BOARD_ADDR_00, .board.x=9, .board.y=0, .board.z=0},
+        [10][1][0]={.addr=BOARD_ADDR_00, .board.x=10, .board.y=0, .board.z=0},
+        [11][1][0]={.addr=BOARD_ADDR_00, .board.x=11, .board.y=0, .board.z=0},
+        [12][1][0]={.addr=BOARD_ADDR_00, .board.x=12, .board.y=0, .board.z=0},
+        [13][1][0]={.addr=BOARD_ADDR_00, .board.x=13, .board.y=0, .board.z=0},
+        [14][1][0]={.addr=BOARD_ADDR_00, .board.x=14, .board.y=0, .board.z=0},
+        [15][1][0]={.addr=BOARD_ADDR_00, .board.x=15, .board.y=0, .board.z=0},
+
+        /* 3rd row */
+        [0][2][0]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=0},
+        [1][2][0]={.addr=BOARD_ADDR_00, .board.x=1, .board.y=0, .board.z=0},
+        [2][2][0]={.addr=BOARD_ADDR_00, .board.x=2, .board.y=0, .board.z=0},
+        [3][2][0]={.addr=BOARD_ADDR_00, .board.x=3, .board.y=0, .board.z=0},
+        [4][2][0]={.addr=BOARD_ADDR_00, .board.x=4, .board.y=0, .board.z=0},
+        [5][2][0]={.addr=BOARD_ADDR_00, .board.x=5, .board.y=0, .board.z=0},
+        [6][2][0]={.addr=BOARD_ADDR_00, .board.x=6, .board.y=0, .board.z=0},
+        [7][2][0]={.addr=BOARD_ADDR_00, .board.x=7, .board.y=0, .board.z=0},
+        [8][2][0]={.addr=BOARD_ADDR_00, .board.x=8, .board.y=0, .board.z=0},
+        [9][2][0]={.addr=BOARD_ADDR_00, .board.x=9, .board.y=0, .board.z=0},
+        [10][2][0]={.addr=BOARD_ADDR_00, .board.x=10, .board.y=0, .board.z=0},
+        [11][2][0]={.addr=BOARD_ADDR_00, .board.x=11, .board.y=0, .board.z=0},
+        [12][2][0]={.addr=BOARD_ADDR_00, .board.x=12, .board.y=0, .board.z=0},
+        [13][2][0]={.addr=BOARD_ADDR_00, .board.x=13, .board.y=0, .board.z=0},
+        [14][2][0]={.addr=BOARD_ADDR_00, .board.x=14, .board.y=0, .board.z=0},
+        [15][2][0]={.addr=BOARD_ADDR_00, .board.x=15, .board.y=0, .board.z=0},
+
+        /* 4th row */
+        [0][3][0]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=0},
+        [1][3][0]={.addr=BOARD_ADDR_00, .board.x=1, .board.y=0, .board.z=0},
+        [2][3][0]={.addr=BOARD_ADDR_00, .board.x=2, .board.y=0, .board.z=0},
+        [3][3][0]={.addr=BOARD_ADDR_00, .board.x=3, .board.y=0, .board.z=0},
+        [4][3][0]={.addr=BOARD_ADDR_00, .board.x=4, .board.y=0, .board.z=0},
+        [5][3][0]={.addr=BOARD_ADDR_00, .board.x=5, .board.y=0, .board.z=0},
+        [6][3][0]={.addr=BOARD_ADDR_00, .board.x=6, .board.y=0, .board.z=0},
+        [7][3][0]={.addr=BOARD_ADDR_00, .board.x=7, .board.y=0, .board.z=0},
+        [8][3][0]={.addr=BOARD_ADDR_00, .board.x=8, .board.y=0, .board.z=0},
+        [9][3][0]={.addr=BOARD_ADDR_00, .board.x=9, .board.y=0, .board.z=0},
+        [10][3][0]={.addr=BOARD_ADDR_00, .board.x=10, .board.y=0, .board.z=0},
+        [11][3][0]={.addr=BOARD_ADDR_00, .board.x=11, .board.y=0, .board.z=0},
+        [12][3][0]={.addr=BOARD_ADDR_00, .board.x=12, .board.y=0, .board.z=0},
+        [13][3][0]={.addr=BOARD_ADDR_00, .board.x=13, .board.y=0, .board.z=0},
+        [14][3][0]={.addr=BOARD_ADDR_00, .board.x=14, .board.y=0, .board.z=0},
+        [15][3][0]={.addr=BOARD_ADDR_00, .board.x=15, .board.y=0, .board.z=0},
+
+        /* 5th row */
+        [0][4][0]={.addr=BOARD_ADDR_00, .board.x=0, .board.y=0, .board.z=0},
+        [1][4][0]={.addr=BOARD_ADDR_00, .board.x=1, .board.y=0, .board.z=0},
+        [2][4][0]={.addr=BOARD_ADDR_00, .board.x=2, .board.y=0, .board.z=0},
+        [3][4][0]={.addr=BOARD_ADDR_00, .board.x=3, .board.y=0, .board.z=0},
+        [4][4][0]={.addr=BOARD_ADDR_00, .board.x=4, .board.y=0, .board.z=0},
+        [5][4][0]={.addr=BOARD_ADDR_00, .board.x=5, .board.y=0, .board.z=0},
+        [6][4][0]={.addr=BOARD_ADDR_00, .board.x=6, .board.y=0, .board.z=0},
+        [7][4][0]={.addr=BOARD_ADDR_00, .board.x=7, .board.y=0, .board.z=0},
+        [8][4][0]={.addr=BOARD_ADDR_00, .board.x=8, .board.y=0, .board.z=0},
+        [9][4][0]={.addr=BOARD_ADDR_00, .board.x=9, .board.y=0, .board.z=0},
+        [10][4][0]={.addr=BOARD_ADDR_00, .board.x=10, .board.y=0, .board.z=0},
+        [11][4][0]={.addr=BOARD_ADDR_00, .board.x=11, .board.y=0, .board.z=0},
+        [12][4][0]={.addr=BOARD_ADDR_00, .board.x=12, .board.y=0, .board.z=0},
+        [13][4][0]={.addr=BOARD_ADDR_00, .board.x=13, .board.y=0, .board.z=0},
+        [14][4][0]={.addr=BOARD_ADDR_00, .board.x=14, .board.y=0, .board.z=0},
+        [15][4][0]={.addr=BOARD_ADDR_00, .board.x=15, .board.y=0, .board.z=0},
+    };
+
+    MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
+      {.addr=BOARD_ADDR_00, .cmdSent=false},
+    };
 #else
   #error "unknown matrix"
 #endif
