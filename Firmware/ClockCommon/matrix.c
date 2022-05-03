@@ -1105,7 +1105,7 @@ void MATRIX_DrawHLine(int x, int y, int w) {
   for(int xb=x; xb<x+w; xb++) {
     MPOS_SetAngleZ0Z1(xb, y, 270, 90);
     /* upper left corner */
-  #if PL_MATRIX_CONFIG_IS_RGB
+  #if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
     MHAND_HandEnable(xb, y, 0, true);
     MHAND_HandEnable(xb, y, 1, true);
   #endif
@@ -1118,7 +1118,7 @@ void MATRIX_DrawVLine(int x, int y, int h) {
   for(int yb=y; yb<y+h; yb++) {
     MPOS_SetAngleZ0Z1(x, yb, 0, 180);
     /* upper left corner */
-  #if PL_MATRIX_CONFIG_IS_RGB
+  #if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
     MHAND_HandEnable(x, yb, 0, true);
     MHAND_HandEnable(x, yb, 1, true);
   #endif
@@ -1130,25 +1130,25 @@ void MATRIX_DrawVLine(int x, int y, int h) {
 void MATRIX_DrawRectangle(int x, int y, int w, int h) {
   MPOS_SetAngleZ0Z1(x, y, 180, 90);
   /* upper left corner */
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnable(x, y, 0, true);
   MHAND_HandEnable(x, y, 1, true);
 #endif
   /* upper right corner */
   MPOS_SetAngleZ0Z1(x+w-1, y, 270, 180);
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnable(x+w-1, y, 0, true);
   MHAND_HandEnable(x+w-1, y, 1, true);
 #endif
   /* lower right corner */
   MPOS_SetAngleZ0Z1(x+w-1, y+h-1,  270, 0);
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnable(x+w-1, y+h-1, 0, true);
   MHAND_HandEnable(x+w-1, y+h-1, 1, true);
 #endif
   /* lower left corner */
   MPOS_SetAngleZ0Z1(x, y+h-1,  0, 90);
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnable(x, y+h-1, 0, true);
   MHAND_HandEnable(x, y+h-1, 1, true);
 #endif
@@ -3108,16 +3108,16 @@ void MATRIX_Init(void) {
 #endif
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
   MATRIX_SetMoveDelayAll(2);
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(0); /* set to zero, will be set below after the matrix copy operation */
   MATRIX_DrawAllRingColor(0x000000); /* ring color off */
   MHAND_HandEnableAll(true); /* will be set below */
 #endif
   MATRIX_CopyMatrix(&prevMatrix, &matrix); /* make backup */
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_CONFIG_USE_NEO_PIXEL_HW
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x08, 0x08, 0x08));
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
 #endif
 #endif

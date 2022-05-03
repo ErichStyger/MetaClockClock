@@ -20,9 +20,15 @@
   #define NEOC_LANE_END          (5) /* this is the last GPIO pin used */
   #define NEOC_NOF_LEDS_IN_LANE  (2*8) /* number of LEDs in a lane */
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512
+  #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
+    #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
+    #define NEOC_LANE_END          (0) /* this is the last GPIO pin used */
+    #define NEOC_NOF_LEDS_IN_LANE  (5*16) /* number of LEDs in each lane */
+  #else
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (4) /* this is the last GPIO pin used */
     #define NEOC_NOF_LEDS_IN_LANE  (12*40) /* number of LEDs in each lane */
+  #endif
 #else
   #error "unknown"
 #endif

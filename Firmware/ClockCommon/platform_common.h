@@ -107,10 +107,14 @@
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (1)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (2)
   #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (0)
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
+  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_X   (16)
+  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (5)
+  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (1)
+  #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (0) /* using shift register */
 #else /* master: have only dummy entries */
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_X   (0)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Y   (0)
-  #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (0)
   #define PL_CONFIG_NOF_STEPPER_ON_BOARD_Z   (0)
   #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (0)
 #endif
@@ -169,7 +173,9 @@
 #ifndef PL_CONFIG_USE_VIRTUAL_STEPPER
   #define PL_CONFIG_USE_VIRTUAL_STEPPER (0)
 #endif
-#define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
+#ifndef PL_CONFIG_USE_STEPPER
+  #define PL_CONFIG_USE_STEPPER         (1 && (PL_CONFIG_IS_CLIENT || PL_CONFIG_USE_VIRTUAL_STEPPER)) /* enable stepper function, both motors and virtual (LED) stepper */
+#endif
 #ifndef PL_CONFIG_USE_LED_RING
   #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available for the board. This is used for showing the hands, etc */
 #endif
