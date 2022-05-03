@@ -268,6 +268,10 @@
   #define PL_CONFIG_USE_USB_CDC       (1 && PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* not supported on LPC845 */
 #endif
 
+#ifndef PL_CONFIG_USE_SHIFT_REGISTER
+  #define PL_CONFIG_USE_SHIFT_REGISTER  (1 && PL_CONFIG_BOARD_ID==PL_MATRIX_ID_SMARTWALL_16x5) /* not supported on LPC845 */
+#endif
+
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)
