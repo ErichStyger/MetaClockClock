@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-2016 Freescale Semiconductor, Inc.
- * Copyright 2016-2019 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -21,14 +21,6 @@
  ******************************************************************************/
 
 /*!
- * @name FTFx cache version
- * @{
- */
-/*! @brief Flexnvm driver version for SDK*/
-#define FSL_FTFX_CACHE_DRIVER_VERSION (MAKE_VERSION(3, 0, 0)) /*!< Version 1.0.0. */
-/*@}*/
-
-/*!
  * @brief FTFx prefetch speculation status.
  */
 typedef struct _flash_prefetch_speculation_status
@@ -47,12 +39,9 @@ enum _ftfx_cache_ram_func_constants
 
 typedef union
 {
-    uint32_t commadAddr;     
-    void (*callFlashCommand)(FTFx_REG32_ACCESS_TYPE base,
-                            uint32_t bitMask,
-                            uint32_t bitShift,
-                            uint32_t bitValue);
-}function_bit_operation_ptr_t;
+    uint32_t commadAddr;
+    void (*callFlashCommand)(FTFx_REG32_ACCESS_TYPE base, uint32_t bitMask, uint32_t bitShift, uint32_t bitValue);
+} function_bit_operation_ptr_t;
 
 /*! @brief FTFx cache driver state information.
  *
@@ -91,7 +80,7 @@ status_t FTFx_CACHE_Init(ftfx_cache_config_t *config);
  * @brief Process the cache/prefetch/speculation to the flash.
  *
  * @param config A pointer to the storage for the driver runtime state.
- * @param process The possible option used to control flash cache/prefetch/speculation
+ * @param isPreProcess The possible option used to control flash cache/prefetch/speculation
  * @retval #kStatus_FTFx_Success API was executed successfully.
  * @retval #kStatus_FTFx_InvalidArgument Invalid argument is provided.
  * @retval #kStatus_FTFx_ExecuteInRamFunctionNotReady Execute-in-RAM function is not available.

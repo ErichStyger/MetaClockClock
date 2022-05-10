@@ -2186,14 +2186,11 @@ static void DSPI_CommonIRQHandler(SPI_Type *base, void *param)
     {
         s_dspiSlaveIsr(base, (dspi_slave_handle_t *)param);
     }
-/* Add for ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate overlapping
-  exception return operation might vector to incorrect interrupt */
-#if defined __CORTEX_M && (__CORTEX_M == 4U)
-    __DSB();
-#endif
+    SDK_ISR_EXIT_BARRIER;
 }
 
 #if defined(SPI0)
+void SPI0_DriverIRQHandler(void);
 void SPI0_DriverIRQHandler(void)
 {
     assert(NULL != g_dspiHandle[0]);
@@ -2202,6 +2199,7 @@ void SPI0_DriverIRQHandler(void)
 #endif
 
 #if defined(SPI1)
+void SPI1_DriverIRQHandler(void);
 void SPI1_DriverIRQHandler(void)
 {
     assert(NULL != g_dspiHandle[1]);
@@ -2210,6 +2208,7 @@ void SPI1_DriverIRQHandler(void)
 #endif
 
 #if defined(SPI2)
+void SPI2_DriverIRQHandler(void);
 void SPI2_DriverIRQHandler(void)
 {
     assert(NULL != g_dspiHandle[2]);
@@ -2218,6 +2217,7 @@ void SPI2_DriverIRQHandler(void)
 #endif
 
 #if defined(SPI3)
+void SPI3_DriverIRQHandler(void);
 void SPI3_DriverIRQHandler(void)
 {
     assert(NULL != g_dspiHandle[3]);
@@ -2226,6 +2226,7 @@ void SPI3_DriverIRQHandler(void)
 #endif
 
 #if defined(SPI4)
+void SPI4_DriverIRQHandler(void);
 void SPI4_DriverIRQHandler(void)
 {
     assert(NULL != g_dspiHandle[4]);
@@ -2234,6 +2235,7 @@ void SPI4_DriverIRQHandler(void)
 #endif
 
 #if defined(SPI5)
+void SPI5_DriverIRQHandler(void);
 void SPI5_DriverIRQHandler(void)
 {
     assert(NULL != g_dspiHandle[5]);

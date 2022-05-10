@@ -27,13 +27,13 @@
 
 /*! @name Unlock sequence */
 /*@{*/
-#define WDOG_FIRST_WORD_OF_UNLOCK (0xC520U)  /*!< First word of unlock sequence */
+#define WDOG_FIRST_WORD_OF_UNLOCK  (0xC520U) /*!< First word of unlock sequence */
 #define WDOG_SECOND_WORD_OF_UNLOCK (0xD928U) /*!< Second word of unlock sequence */
 /*@}*/
 
 /*! @name Refresh sequence */
 /*@{*/
-#define WDOG_FIRST_WORD_OF_REFRESH (0xA602U)  /*!< First word of refresh sequence */
+#define WDOG_FIRST_WORD_OF_REFRESH  (0xA602U) /*!< First word of refresh sequence */
 #define WDOG_SECOND_WORD_OF_REFRESH (0xB480U) /*!< Second word of refresh sequence */
 /*@}*/
 

@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-2016 Freescale Semiconductor, Inc.
- * Copyright 2016-2019 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -12,6 +12,11 @@
 /*******************************************************************************
  * Definitions
  ******************************************************************************/
+
+/* Component ID definition, used by tools. */
+#ifndef FSL_COMPONENT_ID
+#define FSL_COMPONENT_ID "platform.drivers.flash"
+#endif
 
 /*!
  * @name Flash cache and speculation control defines
@@ -288,7 +293,7 @@ status_t FTFx_CACHE_PflashSetPrefetchSpeculation(ftfx_prefetch_speculation_statu
 
 status_t FTFx_CACHE_PflashGetPrefetchSpeculation(ftfx_prefetch_speculation_status_t *speculationStatus)
 {
-    (void)memset(speculationStatus, 0U, sizeof(ftfx_prefetch_speculation_status_t));
+    (void)memset(speculationStatus, 0, sizeof(ftfx_prefetch_speculation_status_t));
 
     /* Assuming that all speculation options are enabled. */
     speculationStatus->instructionOff = false;
@@ -415,21 +420,19 @@ void mscm_flash_cache_clear(ftfx_cache_config_t *config)
 /* The OCMDR[0] is always used to cache main Pflash*/
 /* For device with FlexNVM support, the OCMDR[1] is used to cache Dflash.
  * For device with secondary flash support, the OCMDR[1] is used to cache secondary Pflash. */
-#if FTFx_DRIVER_IS_FLASH_RESIDENT 
+#if FTFx_DRIVER_IS_FLASH_RESIDENT
     switch (config->flashMemoryIndex)
     {
         case kFLASH_MemoryIndexSecondaryFlash:
             /* calling flash command sequence function to execute the command */
             ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&MSCM_OCMDR1_REG,
-                                                       MSCM_CACHE_CLEAR_MASK,
-                                                       MSCM_CACHE_CLEAR_SHIFT, setValue);
+                                                       MSCM_CACHE_CLEAR_MASK, MSCM_CACHE_CLEAR_SHIFT, setValue);
             break;
         case kFLASH_MemoryIndexPrimaryFlash:
         default:
             /* calling flash command sequence function to execute the command */
             ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&MSCM_OCMDR0_REG,
-                                                       MSCM_CACHE_CLEAR_MASK,
-                                                       MSCM_CACHE_CLEAR_SHIFT, setValue);
+                                                       MSCM_CACHE_CLEAR_MASK, MSCM_CACHE_CLEAR_SHIFT, setValue);
             break;
     }
 #else  /* !FTFx_DRIVER_IS_FLASH_RESIDENT */
@@ -460,8 +463,8 @@ void fmc_flash_cache_clear(ftfx_cache_config_t *config)
 {
 #if FTFx_DRIVER_IS_FLASH_RESIDENT
     /* calling flash command sequence function to execute the command */
-    ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&FMC_CACHE_REG, 
-                                               FMC_CACHE_CLEAR_MASK, FMC_CACHE_CLEAR_SHIFT, 0xFUL);
+    ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&FMC_CACHE_REG, FMC_CACHE_CLEAR_MASK,
+                                               FMC_CACHE_CLEAR_SHIFT, 0xFUL);
 #else  /* !FTFx_DRIVER_IS_FLASH_RESIDENT */
     FMC_CACHE_REG = (FMC_CACHE_REG & (~FMC_CACHE_CLEAR_MASK)) | FMC_CACHE_CLEAR(~0);
     /* Memory barriers for good measure.
@@ -496,15 +499,13 @@ void mscm_flash_prefetch_speculation_enable(ftfx_cache_config_t *config, bool en
         case 1:
             /* calling flash command sequence function to execute the command */
             ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&MSCM_OCMDR1_REG,
-                                                       MSCM_SPECULATION_SET_MASK,
-                                                       MSCM_SPECULATION_SET_SHIFT, setValue);
+                                                       MSCM_SPECULATION_SET_MASK, MSCM_SPECULATION_SET_SHIFT, setValue);
             break;
         case 0:
         default:
             /* calling flash command sequence function to execute the command */
             ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&MSCM_OCMDR0_REG,
-                                                       MSCM_SPECULATION_SET_MASK,
-                                                       MSCM_SPECULATION_SET_SHIFT, setValue);
+                                                       MSCM_SPECULATION_SET_MASK, MSCM_SPECULATION_SET_SHIFT, setValue);
             break;
     }
 #else  /* !FTFx_DRIVER_IS_FLASH_RESIDENT */
@@ -536,8 +537,7 @@ void fmc_flash_prefetch_speculation_clear(ftfx_cache_config_t *config)
 #if FTFx_DRIVER_IS_FLASH_RESIDENT
     /* calling flash command sequence function to execute the command */
     ftfx_common_bit_operation_command_sequence(config, (FTFx_REG32_ACCESS_TYPE)&FMC_SPECULATION_INVALIDATE_REG,
-                                               FMC_SPECULATION_INVALIDATE_MASK,
-                                               FMC_SPECULATION_INVALIDATE_SHIFT, 1UL);
+                                               FMC_SPECULATION_INVALIDATE_MASK, FMC_SPECULATION_INVALIDATE_SHIFT, 1UL);
 #else  /* !FTFx_DRIVER_IS_FLASH_RESIDENT */
     FMC_SPECULATION_INVALIDATE_REG |= FMC_SPECULATION_INVALIDATE_MASK;
     /* Memory barriers for good measure.

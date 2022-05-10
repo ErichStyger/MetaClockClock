@@ -86,6 +86,16 @@ static struct {
   const char *cmd; /* command string to execute */
   uint32_t delayMs; /* delay after command */
 } SHELL_DemoList[] = {
+#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
+    /* reduced/different demo modes */
+    {"neo set all 0x1", 1000},
+    {"neo set all 0x100", 1000},
+    {"neo set all 0x10000", 1000},
+    {"neo set all 0x10101", 1000},
+    {"neo set all 0x10100", 1000},
+    {"neo set all 0x10001", 1000},
+    {"neo set all 0x00101", 1000},
+#else
     {"matrix test", 1000},
     {"demo led 0", 1000},
     {"demo led 1", 1000},
@@ -94,6 +104,7 @@ static struct {
     {"demo hands random pos", 1000},
     {"demo ring random color", 1000},
     {"demo clap", 1000},
+#endif
 };
 #endif
 

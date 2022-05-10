@@ -1,6 +1,6 @@
 /*
  * Copyright (c) 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2019 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -21,8 +21,8 @@
 
 /*! @name Driver version */
 /*@{*/
-/*! @brief I2C driver version 2.0.8. */
-#define FSL_I2C_DRIVER_VERSION (MAKE_VERSION(2, 0, 8))
+/*! @brief I2C driver version. */
+#define FSL_I2C_DRIVER_VERSION (MAKE_VERSION(2, 0, 9))
 /*@}*/
 
 /*! @brief Retry times for waiting flag. */
@@ -55,31 +55,25 @@ enum
 /*!
  * @brief I2C peripheral flags
  *
- * The following status register flags can be cleared:
- * - #kI2C_ArbitrationLostFlag
- * - #kI2C_IntPendingFlag
- * - #kI2C_StartDetectFlag
- * - #kI2C_StopDetectFlag
- *
  * @note These enumerations are meant to be OR'd together to form a bit mask.
  *
  */
 enum _i2c_flags
 {
     kI2C_ReceiveNakFlag        = I2C_S_RXAK_MASK,  /*!< I2C receive NAK flag. */
-    kI2C_IntPendingFlag        = I2C_S_IICIF_MASK, /*!< I2C interrupt pending flag. */
+    kI2C_IntPendingFlag        = I2C_S_IICIF_MASK, /*!< I2C interrupt pending flag. This flag can be cleared. */
     kI2C_TransferDirectionFlag = I2C_S_SRW_MASK,   /*!< I2C transfer direction flag. */
     kI2C_RangeAddressMatchFlag = I2C_S_RAM_MASK,   /*!< I2C range address match flag. */
-    kI2C_ArbitrationLostFlag   = I2C_S_ARBL_MASK,  /*!< I2C arbitration lost flag. */
+    kI2C_ArbitrationLostFlag   = I2C_S_ARBL_MASK,  /*!< I2C arbitration lost flag. This flag can be cleared. */
     kI2C_BusBusyFlag           = I2C_S_BUSY_MASK,  /*!< I2C bus busy flag. */
     kI2C_AddressMatchFlag      = I2C_S_IAAS_MASK,  /*!< I2C address match flag. */
     kI2C_TransferCompleteFlag  = I2C_S_TCF_MASK,   /*!< I2C transfer complete flag. */
 #ifdef I2C_HAS_STOP_DETECT
-    kI2C_StopDetectFlag = I2C_FLT_STOPF_MASK << 8, /*!< I2C stop detect flag. */
+    kI2C_StopDetectFlag = I2C_FLT_STOPF_MASK << 8, /*!< I2C stop detect flag. This flag can be cleared. */
 #endif /* FSL_FEATURE_I2C_HAS_START_STOP_DETECT / FSL_FEATURE_I2C_HAS_STOP_DETECT */
 
 #if defined(FSL_FEATURE_I2C_HAS_START_STOP_DETECT) && FSL_FEATURE_I2C_HAS_START_STOP_DETECT
-    kI2C_StartDetectFlag = I2C_FLT_STARTF_MASK << 8, /*!< I2C start detect flag. */
+    kI2C_StartDetectFlag = I2C_FLT_STARTF_MASK << 8, /*!< I2C start detect flag. This flag can be cleared. */
 #endif                                               /* FSL_FEATURE_I2C_HAS_START_STOP_DETECT */
 };
 
@@ -757,19 +751,19 @@ void I2C_SlaveTransferCreateHandle(I2C_Type *base,
  *
  * The set of events received by the callback is customizable. To do so, set the @a eventMask parameter to
  * the OR'd combination of #i2c_slave_transfer_event_t enumerators for the events you wish to receive.
- * The #kI2C_SlaveTransmitEvent and #kLPI2C_SlaveReceiveEvent events are always enabled and do not need
+ * The kI2C_SlaveTransmitEvent and kLPI2C_SlaveReceiveEvent events are always enabled and do not need
  * to be included in the mask. Alternatively, pass 0 to get a default set of only the transmit and
  * receive events that are always enabled. In addition, the #kI2C_SlaveAllEvents constant is provided as
  * a convenient way to enable all events.
  *
  * @param base The I2C peripheral base address.
- * @param handle Pointer to #i2c_slave_handle_t structure which stores the transfer state.
+ * @param handle Pointer to i2c_slave_handle_t structure which stores the transfer state.
  * @param eventMask Bit mask formed by OR'ing together #i2c_slave_transfer_event_t enumerators to specify
  *      which events to send to the callback. Other accepted values are 0 to get a default set of
  *      only the transmit and receive events, and #kI2C_SlaveAllEvents to enable all events.
  *
- * @retval #kStatus_Success Slave transfers were successfully started.
- * @retval #kStatus_I2C_Busy Slave transfers have already been started on this handle.
+ * @retval kStatus_Success Slave transfers were successfully started.
+ * @retval kStatus_I2C_Busy Slave transfers have already been started on this handle.
  */
 status_t I2C_SlaveTransferNonBlocking(I2C_Type *base, i2c_slave_handle_t *handle, uint32_t eventMask);
 

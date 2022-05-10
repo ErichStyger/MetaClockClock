@@ -73,6 +73,8 @@
   #define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_CLOCK             (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
+  #define PL_CONFIG_USE_BLE               (0) /* no module installed */
+  #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE (1) /* used to test the LEDs */
 #elif 0 /* circular clock: 12 for each digit plus on in the center */
   #define PL_CONFIG_HAS_CIRCLE_CLOCK      (1)
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CIRCULAR_CLOCK_1x12

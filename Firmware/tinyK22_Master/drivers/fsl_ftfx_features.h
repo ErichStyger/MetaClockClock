@@ -85,4 +85,6 @@
 #define FTFx_FLASH1_IS_INDEPENDENT_BLOCK (0U)
 #endif
 
+/*! @}*/
+
 #endif /* FSL_FTFX_FEATURES_H */

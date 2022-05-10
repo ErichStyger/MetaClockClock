@@ -1,6 +1,6 @@
 /*
  * Copyright 2013-2016 Freescale Semiconductor, Inc.
- * Copyright 2016-2019 NXP
+ * Copyright 2016-2020 NXP
  * All rights reserved.
  *
  * SPDX-License-Identifier: BSD-3-Clause
@@ -21,24 +21,19 @@
  * Definitions
  ******************************************************************************/
 
-/* Component ID definition, used by tools. */
-#ifndef FSL_COMPONENT_ID
-#define FSL_COMPONENT_ID "platform.drivers.flash"
-#endif
-
 /*!
  * @name FTFx status
  * @{
  */
 /*! @brief FTFx driver status group. */
 #if defined(kStatusGroup_FlashDriver)
-#define kStatusGroupGeneric kStatusGroup_Generic
+#define kStatusGroupGeneric    kStatusGroup_Generic
 #define kStatusGroupFtfxDriver kStatusGroup_FlashDriver
 #elif defined(kStatusGroup_FLASH)
-#define kStatusGroupGeneric kStatusGroup_Generic
+#define kStatusGroupGeneric    kStatusGroup_Generic
 #define kStatusGroupFtfxDriver kStatusGroup_FLASH
 #else
-#define kStatusGroupGeneric 0
+#define kStatusGroupGeneric    0
 #define kStatusGroupFtfxDriver 1
 #endif
 
@@ -59,10 +54,9 @@ enum
         kStatusGroupFtfxDriver, 4), /*!< The program/erase operation is requested to execute on protected areas */
     kStatus_FTFx_CommandFailure =
         MAKE_STATUS(kStatusGroupFtfxDriver, 5), /*!< Run-time error during command execution. */
-    kStatus_FTFx_UnknownProperty = MAKE_STATUS(kStatusGroupFtfxDriver, 6), /*!< Unknown property.*/
-    kStatus_FTFx_EraseKeyError   = MAKE_STATUS(kStatusGroupFtfxDriver, 7), /*!< API erase key is invalid.*/
-    kStatus_FTFx_RegionExecuteOnly =
-        MAKE_STATUS(kStatusGroupFtfxDriver, 8), /*!< The current region is execute-only.*/
+    kStatus_FTFx_UnknownProperty   = MAKE_STATUS(kStatusGroupFtfxDriver, 6), /*!< Unknown property.*/
+    kStatus_FTFx_EraseKeyError     = MAKE_STATUS(kStatusGroupFtfxDriver, 7), /*!< API erase key is invalid.*/
+    kStatus_FTFx_RegionExecuteOnly = MAKE_STATUS(kStatusGroupFtfxDriver, 8), /*!< The current region is execute-only.*/
     kStatus_FTFx_ExecuteInRamFunctionNotReady =
         MAKE_STATUS(kStatusGroupFtfxDriver, 9), /*!< Execute-in-RAM function is not available.*/
     kStatus_FTFx_PartitionStatusUpdateFailure =
@@ -71,22 +65,21 @@ enum
         MAKE_STATUS(kStatusGroupFtfxDriver, 11), /*!< Failed to set FlexRAM as EEPROM.*/
     kStatus_FTFx_RecoverFlexramAsRamError =
         MAKE_STATUS(kStatusGroupFtfxDriver, 12), /*!< Failed to recover FlexRAM as RAM.*/
-    kStatus_FTFx_SetFlexramAsRamError =
-        MAKE_STATUS(kStatusGroupFtfxDriver, 13), /*!< Failed to set FlexRAM as RAM.*/
+    kStatus_FTFx_SetFlexramAsRamError = MAKE_STATUS(kStatusGroupFtfxDriver, 13), /*!< Failed to set FlexRAM as RAM.*/
     kStatus_FTFx_RecoverFlexramAsEepromError =
         MAKE_STATUS(kStatusGroupFtfxDriver, 14), /*!< Failed to recover FlexRAM as EEPROM.*/
-    kStatus_FTFx_CommandNotSupported =
-        MAKE_STATUS(kStatusGroupFtfxDriver, 15), /*!< Flash API is not supported.*/
+    kStatus_FTFx_CommandNotSupported = MAKE_STATUS(kStatusGroupFtfxDriver, 15), /*!< Flash API is not supported.*/
     kStatus_FTFx_SwapSystemNotInUninitialized =
         MAKE_STATUS(kStatusGroupFtfxDriver, 16), /*!< Swap system is not in an uninitialzed state.*/
     kStatus_FTFx_SwapIndicatorAddressError =
         MAKE_STATUS(kStatusGroupFtfxDriver, 17), /*!< The swap indicator address is invalid.*/
-    kStatus_FTFx_ReadOnlyProperty =
-        MAKE_STATUS(kStatusGroupFtfxDriver, 18), /*!< The flash property is read-only.*/
+    kStatus_FTFx_ReadOnlyProperty = MAKE_STATUS(kStatusGroupFtfxDriver, 18), /*!< The flash property is read-only.*/
     kStatus_FTFx_InvalidPropertyValue =
         MAKE_STATUS(kStatusGroupFtfxDriver, 19), /*!< The flash property value is out of range.*/
     kStatus_FTFx_InvalidSpeculationOption =
         MAKE_STATUS(kStatusGroupFtfxDriver, 20), /*!< The option of flash prefetch speculation is invalid.*/
+    kStatus_FTFx_CommandOperationInProgress =
+        MAKE_STATUS(kStatusGroupFtfxDriver, 21), /*!< The option of flash command is processing.*/
 };
 /*@}*/
 
@@ -157,6 +150,14 @@ typedef enum _ftfx_flexram_function_option
     kFTFx_FlexramFuncOptAvailableForEeprom = 0x00U  /*!< An option used to make FlexRAM available for EEPROM */
 } ftfx_flexram_func_opt_t;
 
+/*!
+ * @brief Enumeration for acceleration ram property.
+ */
+enum _flash_acceleration_ram_property
+{
+    kFLASH_AccelerationRamSize = 0x400U
+};
+
 #if defined(FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD) && FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD
 /*!
  * @brief Enumeration for the possible options of Swap control commands
@@ -186,7 +187,7 @@ typedef enum _ftfx_swap_state
 
 #if defined(FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD) && FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD
 /*!
- * @breif Enumeration for the possible flash Swap block status
+ * @brief Enumeration for the possible flash Swap block status
  */
 typedef enum _ftfx_swap_block_status
 {
@@ -251,9 +252,9 @@ typedef struct _ftfx_mem_descriptor
         uint32_t : 18;
         uint32_t ProtRegBits : 8;
     } feature;
-    uint32_t blockBase;  /*!< A base address of the flash block */
-#if defined (FSL_FEATURE_FLASH_HAS_FLEX_NVM_ALIAS) && FSL_FEATURE_FLASH_HAS_FLEX_NVM_ALIAS
-    uint32_t aliasBlockBase;  /*!< A base address of the alias flash block */
+    uint32_t blockBase; /*!< A base address of the flash block */
+#if defined(FSL_FEATURE_FLASH_HAS_FLEX_NVM_ALIAS) && FSL_FEATURE_FLASH_HAS_FLEX_NVM_ALIAS
+    uint32_t aliasBlockBase; /*!< A base address of the alias flash block */
 #endif
     uint32_t totalSize;  /*!< The size of the flash block. */
     uint32_t sectorSize; /*!< The size in bytes of a sector of flash. */
@@ -293,12 +294,12 @@ typedef struct _ftfx_ifr_descriptor
     } feature;
     struct
     {
-        uint8_t versionIdStart;
+        uint8_t versionIdStart; /*!< Version ID start address */
         uint8_t versionIdSize;
         uint16_t ifrMemSize;
-        uint32_t pflashIfrStart;
-        uint32_t dflashIfrStart;
-        uint32_t pflashSwapIfrStart;
+        uint32_t pflashIfrStart;     /*!< Program Flash 0 IFR start address */
+        uint32_t dflashIfrStart;     /*!< Data Flash 0 IFR start address */
+        uint32_t pflashSwapIfrStart; /*!< Program Flash Swap IFR start address*/
     } resRange;
     struct
     {
@@ -309,9 +310,9 @@ typedef struct _ftfx_ifr_descriptor
 
 typedef union
 {
-	uint32_t commadAddr;     
-	void (*callFlashCommand)(FTFx_REG8_ACCESS_TYPE FTMRx_fstat);
-}function_ptr_t;
+    uint32_t commadAddr;
+    void (*callFlashCommand)(FTFx_REG8_ACCESS_TYPE FTMRx_fstat);
+} function_ptr_t;
 
 /*! @brief Flash driver state information.
  *
@@ -350,13 +351,10 @@ extern "C" {
  *
  * @param config Pointer to the storage for the driver runtime state.
  *
- * @retval #kStatus_FTFx_Success API was executed successfully.
- * @retval #kStatus_FTFx_InvalidArgument An invalid argument is provided.
- * @retval #kStatus_FTFx_ExecuteInRamFunctionNotReady Execute-in-RAM function is not available.
  */
-status_t FTFx_API_Init(ftfx_config_t *config);
+void FTFx_API_Init(ftfx_config_t *config);
 
-#if FSL_FEATURE_FLASH_HAS_FLEX_NVM
+#if defined(FSL_FEATURE_FLASH_HAS_FLEX_NVM) && FSL_FEATURE_FLASH_HAS_FLEX_NVM
 /*!
  * @brief Updates FlexNVM memory partition status according to data flash 0 IFR.
  *
@@ -404,6 +402,25 @@ status_t FTFx_API_UpdateFlexnvmPartitionStatus(ftfx_config_t *config);
 status_t FTFx_CMD_Erase(ftfx_config_t *config, uint32_t start, uint32_t lengthInBytes, uint32_t key);
 
 /*!
+ * @brief Erases the flash sectors encompassed by parameters passed into function.
+ *
+ * This function erases one flash sector size based on the start address.
+ *
+ * @param config The pointer to the storage for the driver runtime state.
+ * @param start The start address of the desired flash memory to be erased.
+ *              The start address does not need to be sector-aligned but must be word-aligned.
+ * @param key The value used to validate all flash erase APIs.
+ *
+ * @retval #kStatus_FTFx_Success API was executed successfully.
+ * @retval #kStatus_FTFx_InvalidArgument An invalid argument is provided.
+ * @retval #kStatus_FTFx_AlignmentError The parameter is not aligned with the specified baseline.
+ * @retval #kStatus_FTFx_AddressError The address is out of range.
+ * @retval #kStatus_FTFx_EraseKeyError The API erase key is invalid.
+ * @retval #kStatus_FTFx_ExecuteInRamFunctionNotReady Execute-in-RAM function is not available.
+ */
+status_t FTFx_CMD_EraseSectorNonBlocking(ftfx_config_t *config, uint32_t start, uint32_t key);
+
+/*!
  * @brief Erases entire flash
  *
  * @param config Pointer to the storage for the driver runtime state.
@@ -420,6 +437,7 @@ status_t FTFx_CMD_Erase(ftfx_config_t *config, uint32_t start, uint32_t lengthIn
  */
 status_t FTFx_CMD_EraseAll(ftfx_config_t *config, uint32_t key);
 
+#if defined(FSL_FEATURE_FLASH_HAS_ERASE_ALL_BLOCKS_UNSECURE_CMD) && FSL_FEATURE_FLASH_HAS_ERASE_ALL_BLOCKS_UNSECURE_CMD
 /*!
  * @brief Erases the entire flash, including protected sectors.
  *
@@ -435,9 +453,8 @@ status_t FTFx_CMD_EraseAll(ftfx_config_t *config, uint32_t key);
  * @retval #kStatus_FTFx_CommandFailure Run-time error during command execution.
  * @retval #kStatus_FTFx_PartitionStatusUpdateFailure Failed to update the partition status.
  */
-#if defined(FSL_FEATURE_FLASH_HAS_ERASE_ALL_BLOCKS_UNSECURE_CMD) && FSL_FEATURE_FLASH_HAS_ERASE_ALL_BLOCKS_UNSECURE_CMD
 status_t FTFx_CMD_EraseAllUnsecure(ftfx_config_t *config, uint32_t key);
-#endif
+#endif /* FSL_FEATURE_FLASH_HAS_ERASE_ALL_BLOCKS_UNSECURE_CMD */
 
 /*!
  * @brief Erases all program flash execute-only segments defined by the FXACC registers.
@@ -509,6 +526,7 @@ status_t FTFx_CMD_Program(ftfx_config_t *config, uint32_t start, const uint8_t *
  */
 status_t FTFx_CMD_ProgramOnce(ftfx_config_t *config, uint32_t index, const uint8_t *src, uint32_t lengthInBytes);
 
+#if defined(FSL_FEATURE_FLASH_HAS_PROGRAM_SECTION_CMD) && FSL_FEATURE_FLASH_HAS_PROGRAM_SECTION_CMD
 /*!
  * @brief Programs flash with data at locations passed in through parameters via the Program Section command.
  *
@@ -534,10 +552,10 @@ status_t FTFx_CMD_ProgramOnce(ftfx_config_t *config, uint32_t index, const uint8
  * @retval #kStatus_FTFx_CommandFailure Run-time error during command execution.
  * @retval #kStatus_FTFx_RecoverFlexramAsEepromError Failed to recover FlexRAM as EEPROM.
  */
-#if defined(FSL_FEATURE_FLASH_HAS_PROGRAM_SECTION_CMD) && FSL_FEATURE_FLASH_HAS_PROGRAM_SECTION_CMD
 status_t FTFx_CMD_ProgramSection(ftfx_config_t *config, uint32_t start, const uint8_t *src, uint32_t lengthInBytes);
-#endif
+#endif /* FSL_FEATURE_FLASH_HAS_PROGRAM_SECTION_CMD */
 
+#if defined(FSL_FEATURE_FLASH_HAS_PROGRAM_PARTITION_CMD) && FSL_FEATURE_FLASH_HAS_PROGRAM_PARTITION_CMD
 /*!
  * @brief Prepares the FlexNVM block for use as data flash, EEPROM backup, or a combination of both and initializes the
  * FlexRAM.
@@ -555,12 +573,11 @@ status_t FTFx_CMD_ProgramSection(ftfx_config_t *config, uint32_t start, const ui
  * @retval #kStatus_FTFx_ProtectionViolation The program/erase operation is requested to execute on protected areas.
  * @retval #kStatus_FTFx_CommandFailure Run-time error during command execution.
  */
-#if defined(FSL_FEATURE_FLASH_HAS_PROGRAM_PARTITION_CMD) && FSL_FEATURE_FLASH_HAS_PROGRAM_PARTITION_CMD
 status_t FTFx_CMD_ProgramPartition(ftfx_config_t *config,
                                    ftfx_partition_flexram_load_opt_t option,
                                    uint32_t eepromDataSizeCode,
                                    uint32_t flexnvmPartitionCode);
-#endif
+#endif /* FSL_FEATURE_FLASH_HAS_PROGRAM_PARTITION_CMD */
 
 /*@}*/
 
@@ -590,6 +607,7 @@ status_t FTFx_CMD_ProgramPartition(ftfx_config_t *config,
  */
 status_t FTFx_CMD_ReadOnce(ftfx_config_t *config, uint32_t index, uint8_t *dst, uint32_t lengthInBytes);
 
+#if defined(FSL_FEATURE_FLASH_HAS_READ_RESOURCE_CMD) && FSL_FEATURE_FLASH_HAS_READ_RESOURCE_CMD
 /*!
  * @brief Reads the resource with data at locations passed in through parameters.
  *
@@ -613,10 +631,9 @@ status_t FTFx_CMD_ReadOnce(ftfx_config_t *config, uint32_t index, uint8_t *dst, 
  * @retval #kStatus_FTFx_ProtectionViolation The program/erase operation is requested to execute on protected areas.
  * @retval #kStatus_FTFx_CommandFailure Run-time error during the command execution.
  */
-#if defined(FSL_FEATURE_FLASH_HAS_READ_RESOURCE_CMD) && FSL_FEATURE_FLASH_HAS_READ_RESOURCE_CMD
 status_t FTFx_CMD_ReadResource(
     ftfx_config_t *config, uint32_t start, uint8_t *dst, uint32_t lengthInBytes, ftfx_read_resource_opt_t option);
-#endif
+#endif /* FSL_FEATURE_FLASH_HAS_READ_RESOURCE_CMD */
 
 /*@}*/
 
@@ -770,6 +787,7 @@ status_t FTFx_CMD_SecurityBypass(ftfx_config_t *config, const uint8_t *backdoorK
  * @{
  */
 
+#if defined(FSL_FEATURE_FLASH_HAS_SET_FLEXRAM_FUNCTION_CMD) && FSL_FEATURE_FLASH_HAS_SET_FLEXRAM_FUNCTION_CMD
 /*!
  * @brief Sets the FlexRAM function command.
  *
@@ -783,9 +801,8 @@ status_t FTFx_CMD_SecurityBypass(ftfx_config_t *config, const uint8_t *backdoorK
  * @retval #kStatus_FTFx_ProtectionViolation The program/erase operation is requested to execute on protected areas.
  * @retval #kStatus_FTFx_CommandFailure Run-time error during the command execution.
  */
-#if defined(FSL_FEATURE_FLASH_HAS_SET_FLEXRAM_FUNCTION_CMD) && FSL_FEATURE_FLASH_HAS_SET_FLEXRAM_FUNCTION_CMD
 status_t FTFx_CMD_SetFlexramFunction(ftfx_config_t *config, ftfx_flexram_func_opt_t option);
-#endif
+#endif /* FSL_FEATURE_FLASH_HAS_SET_FLEXRAM_FUNCTION_CMD */
 
 /*@}*/
 
@@ -794,6 +811,7 @@ status_t FTFx_CMD_SetFlexramFunction(ftfx_config_t *config, ftfx_flexram_func_op
  * @{
  */
 
+#if defined(FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD) && FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD
 /*!
  * @brief Configures the Swap function or checks the swap state of the Flash module.
  *
@@ -811,17 +829,18 @@ status_t FTFx_CMD_SetFlexramFunction(ftfx_config_t *config, ftfx_flexram_func_op
  * @retval #kStatus_FTFx_ProtectionViolation The program/erase operation is requested to execute on protected areas.
  * @retval #kStatus_FTFx_CommandFailure Run-time error during the command execution.
  */
-#if defined(FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD) && FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD
 status_t FTFx_CMD_SwapControl(ftfx_config_t *config,
                               uint32_t address,
                               ftfx_swap_control_opt_t option,
                               ftfx_swap_state_config_t *returnInfo);
-#endif
+#endif /* FSL_FEATURE_FLASH_HAS_SWAP_CONTROL_CMD */
 
 /*@}*/
 
 #if defined(__cplusplus)
 }
 #endif
+
+/*! @}*/
 
 #endif /* FSL_FTFX_CONTROLLER_H */
