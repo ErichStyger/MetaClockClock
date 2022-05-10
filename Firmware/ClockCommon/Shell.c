@@ -80,6 +80,9 @@
 #include "McuLog.h"
 #include "leds.h"
 #include "mfont.h"
+#if PL_CONFIG_USE_SHIFT_REGS
+  #include "shiftreg.h"
+#endif
 
 #if PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
 static struct {
@@ -171,6 +174,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #endif
 #if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
   PIXEL_ParseCommand,
+#endif
+#if PL_CONFIG_USE_SHIFT_REGS
+  ShiftReg_ParseCommand,
 #endif
   APP_ParseCommand,
   NULL /* Sentinel */

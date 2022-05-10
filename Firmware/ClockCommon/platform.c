@@ -54,7 +54,10 @@
 #endif
 #include "McuLog.h"
 #include "McuButton.h"
-
+#if PL_CONFIG_USE_SHIFT_REGS
+  #include "spireg.h"
+  #include "shiftreg.h"
+#endif
 /* SDK */
 #include "fsl_gpio.h"
 
@@ -257,4 +260,9 @@ void PL_Init(void) {
   McuFlash_Init();
   McuFlash_RegisterMemory((const void*)McuMinINI_CONFIG_FLASH_NVM_ADDR_START, 1*McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE);
 #endif
+#if PL_CONFIG_USE_SHIFT_REGS
+  ShiftReg_Init();
+  SpiReg_Init();
+#endif
+
 }

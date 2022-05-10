@@ -49,7 +49,7 @@ void ShiftReg_ReadSensorBits(uint8_t *data, size_t dataSize) {
 }
 #endif
 
-void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[McuULN2003_NOF_MOTOR_BITS]) {
+void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_BITS]) { /* \TODO change to use 3bits instead of 4 */
   uint8_t data, clrMask;
   size_t byteIdx;
 
@@ -129,7 +129,7 @@ uint8_t ShiftReg_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
     *handled = TRUE;
     p = cmd + sizeof("shiftreg set ")-1;
     if (McuUtility_xatoi(&p, &motorIdx)==ERR_OK && motorIdx<SHIFTREG_CONFIG_NOF_MOTORS) {
-      if (McuUtility_xatoi(&p, &val)==ERR_OK && val<=0xF) {
+      if (McuUtility_xatoi(&p, &val)==ERR_OK && val<=0x3) {
         bool w[SHIFTREG_NOF_MOTOR_BITS];
 
         w[0] = (val&(1<<0))!=0;

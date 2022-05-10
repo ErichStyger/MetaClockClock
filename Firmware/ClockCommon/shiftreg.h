@@ -51,7 +51,7 @@ void ShiftReg_WriteMotorBits(const uint8_t *data, size_t nofBytes);
  * \param index Motor index number, starting with 0
  * \param w Array of truth table for the motor pins
  */
-void ShiftReg_StoreMotorBits(uint32_t index, const bool w[McuULN2003_NOF_MOTOR_BITS]);
+void ShiftReg_StoreMotorBits(uint32_t index, const bool w[SHIFTREG_NOF_MOTOR_BITS]);
 
 /*!
  * \brief Send the stored bits which has been sent by ShiftReg_StoreMotorBits(). Note that this function uses a mutex to access the SPI bus.
