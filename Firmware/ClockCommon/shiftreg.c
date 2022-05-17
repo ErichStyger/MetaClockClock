@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Erich Styger
+ * Copyright (c) 2022-2023, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -49,33 +49,60 @@ void ShiftReg_ReadSensorBits(uint8_t *data, size_t dataSize) {
 }
 #endif
 
-void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_BITS]) { /* \TODO change to use 3bits instead of 4 */
-  uint8_t data, clrMask;
+void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_BITS]) {
+  /* w[0]: CLK
+   * w[1]: DIR
+   * w[3]: STDBY
+   */
   size_t byteIdx;
 
-  /* transform truth table for motor wires/connections into bit sequence */
-  if (motorIdx&1) { /* which nibble? */
-    data = (w[0]<<3) + (w[1]<<2) + (w[2]<<1) + w[3];
-    clrMask = 0xF0;
-  } else {
-    data = (w[0]<<7) + (w[1]<<6) + (w[2]<<5) + (w[3]<<4);
-    clrMask = 0x0F;
-  }
   /* One driver board:
-   * MotorBitsByteToSend: [3]  [2]  [1]  [0]
-   * MotorIdx             6,7  4,5  2,3  0,1
-   *
-   * Two driver board:
-   * MotorBitsByteToSend: [7]  [6]  [5]  [4]  -> [3]   [2]   [1]  [0]
-   * MotorIdx             6,7  4,5  2,3  0,1    14,15 12,13 10,11 8,9
-   *
-   * Three driver board:
-   * MotorBitsByteToSend: [11] [10] [9]  [8]  -> [7]   [6]   [5]  [4]  -> [3]   [2]   [1]   [0]
-   * MotorIdx             6,7  4,5  2,3  0,1    14,15 12,13 10,11 8,9    22,23 20,21 18,19 16,17
+   * Each motor has 3 bits
+   * MotorBitsByteToSend: [5]        [4]        [3]        [2]        [1]        [0]
+   * MotorIdx             fffe'eedd  dccc'bbba  aa99'9888  7776'6655  5444'3332  2211'1000  ==> shift (MSB first!)
    */
-  byteIdx = (SHIFTREG_NOF_MOTORBIT_BYTES-1) - ((motorIdx/8)*4) - ((7-(motorIdx%8))/2);
-  MotorBitsByteToSend[byteIdx] &= clrMask; /* clear bits */
-  MotorBitsByteToSend[byteIdx] |= data; /* store nibble */
+  /* transform truth table for motor wires/connections into bit sequence */
+  byteIdx = 3*(motorIdx/8);
+  switch(motorIdx%8) {
+    case 0:
+      MotorBitsByteToSend[byteIdx] &= ~0b11100000;
+      MotorBitsByteToSend[byteIdx] |= (w[0]<<7) + (w[1]<<6) + (w[2]<<5);
+      break;
+    case 1:
+      MotorBitsByteToSend[byteIdx] &= ~0b00011100;
+      MotorBitsByteToSend[byteIdx] |= (w[0]<<4) + (w[1]<<3) + (w[2]<<1);
+      break;
+    case 2:
+      MotorBitsByteToSend[byteIdx] &= ~0b00000011;
+      MotorBitsByteToSend[byteIdx] |= (w[0]<<1) + (w[1]<<0);
+      MotorBitsByteToSend[byteIdx+1] &= ~0b10000000;
+      MotorBitsByteToSend[byteIdx+1] |= w[2]<<7;
+      break;
+    case 3:
+      MotorBitsByteToSend[byteIdx+1] &= ~0b01110000;
+      MotorBitsByteToSend[byteIdx+1] |= (w[0]<<6) + (w[1]<<5) + (w[2]<<4);
+      break;
+    case 4:
+      MotorBitsByteToSend[byteIdx+1] &= ~0b00001110;
+      MotorBitsByteToSend[byteIdx+1] |= (w[0]<<3) + (w[1]<<2) + (w[2]<<1);
+      break;
+    case 5:
+      MotorBitsByteToSend[byteIdx+1] &= ~0b00000001;
+      MotorBitsByteToSend[byteIdx+1] |= (w[0]<<0);
+      MotorBitsByteToSend[byteIdx+2] &= ~0b11000000;
+      MotorBitsByteToSend[byteIdx+2] |= (w[1]<<7) + (w[2]<<6);
+      break;
+    case 6:
+      MotorBitsByteToSend[byteIdx+2] &= ~0b00111000;
+      MotorBitsByteToSend[byteIdx+2] |= (w[0]<<5) + (w[1]<<4) + (w[2]<<3);
+      break;
+    case 7:
+      MotorBitsByteToSend[byteIdx+2] &= ~0b00000111;
+      MotorBitsByteToSend[byteIdx+2] |= (w[0]<<2) + (w[1]<<1) + (w[2]<<0);
+      break;
+    default:
+      break;
+  }
 }
 
 void ShiftReg_SendStoredMotorBits(void) {
@@ -96,7 +123,12 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"shiftreg", (unsigned char*)"ShiftReg status\r\n", io->stdOut);
   McuGPIO_GetPinStatusString(MotorLatch, buf, sizeof(buf));
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  McuShell_SendStatusStr((unsigned char*)"  motor", buf, io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  latch", buf, io->stdOut);
+
+  McuUtility_Num32sToStr(buf, sizeof(buf), SHIFTREG_CONFIG_NOF_MOTORS);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  motors", buf, io->stdOut);
+
 #if 0 /* not used */
   McuGPIO_GetPinStatusString(SensorLatch, buf, sizeof(buf));
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
@@ -108,7 +140,8 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"shiftreg", (unsigned char*)"Group of ShiftReg commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  set <motor> <val>", (unsigned char*)"Set motor value\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  set <motor> <val>", (unsigned char*)"Set motor value (3bits: clk, dir, stdby)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  move <motor> <steps>", (unsigned char*)"Move motor with steps (forward/backward)\r\n", io->stdOut);
 #if 0 /* not used */
   McuShell_SendHelpStr((unsigned char*)"  readsensor", (unsigned char*)"Read sensor bits\r\n", io->stdOut);
 #endif
@@ -129,14 +162,56 @@ uint8_t ShiftReg_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
     *handled = TRUE;
     p = cmd + sizeof("shiftreg set ")-1;
     if (McuUtility_xatoi(&p, &motorIdx)==ERR_OK && motorIdx<SHIFTREG_CONFIG_NOF_MOTORS) {
-      if (McuUtility_xatoi(&p, &val)==ERR_OK && val<=0x3) {
+      if (McuUtility_xatoi(&p, &val)==ERR_OK && val<=0x7) {
         bool w[SHIFTREG_NOF_MOTOR_BITS];
 
-        w[0] = (val&(1<<0))!=0;
-        w[1] = (val&(1<<1))!=0;
-        w[2] = (val&(1<<2))!=0;
+        //bool testit = true;
+
+        w[0] = (val&(1<<0))!=0; /* clk */
+        w[1] = (val&(1<<1))!=0; /* dir */
+        w[2] = (val&(1<<2))!=0; /* stby */
         ShiftReg_StoreMotorBits(motorIdx, w);
         ShiftReg_SendStoredMotorBits();
+
+        /* for safety: set back to idle */
+        w[0] = false; /* clk */
+        w[1] = false; /* dir */
+        w[2] = false; /* stby (low active) */
+        ShiftReg_StoreMotorBits(motorIdx, w);
+        ShiftReg_SendStoredMotorBits();
+
+        return ERR_OK;
+      }
+    }
+    return ERR_FAILED;
+  } else if (McuUtility_strncmp((char*)cmd, "shiftreg move ", sizeof("shiftreg move ")-1)==0) {
+    *handled = TRUE;
+    p = cmd + sizeof("shiftreg set ")-1;
+    if (McuUtility_xatoi(&p, &motorIdx)==ERR_OK && motorIdx<SHIFTREG_CONFIG_NOF_MOTORS) {
+      if (McuUtility_xatoi(&p, &val)==ERR_OK) {
+        bool w[SHIFTREG_NOF_MOTOR_BITS];
+
+        w[0] = false; /* clk */
+        w[1] = val<0; /* dir */
+        w[2] = true; /* stby, low active */
+        if (val<0) {
+          val = -val;
+        }
+        for(int i=0; i<val; i++) {
+          ShiftReg_StoreMotorBits(motorIdx, w);
+          ShiftReg_SendStoredMotorBits();
+          w[0] = !w[0]; /* toggle step */
+          ShiftReg_StoreMotorBits(motorIdx, w);
+          ShiftReg_SendStoredMotorBits();
+          vTaskDelay(pdMS_TO_TICKS(2));
+        }
+        /* set back to idle */
+        w[0] = false; /* clk */
+        w[1] = false; /* dir */
+        w[2] = false; /* stby (low active) */
+        ShiftReg_StoreMotorBits(motorIdx, w);
+        ShiftReg_SendStoredMotorBits();
+
         return ERR_OK;
       }
     }

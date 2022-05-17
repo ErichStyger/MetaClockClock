@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2022, Erich Styger
+ * Copyright (c) 2022-2023, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -25,7 +25,7 @@ extern "C" {
 #endif
 
 #define SHIFTREG_NOF_MOTOR_BITS  (3)
-  /*!< Number of bits to be shifted for each motor: for each motor STBY, DIR, STCK */
+  /*!< Number of bits to be shifted for each motor: for each motor STBY (bit 0), DIR (bit 1), STCK (bit 2) */
 
 #define SHIFTREG_NOF_MOTORBIT_BYTES    ((((SHIFTREG_CONFIG_NOF_DRIVER_BOARDS*SHIFTREG_CONFIG_NOF_MOTORS_PER_DRIVER_BOARD*SHIFTREG_NOF_MOTOR_BITS)-1)/8)+1)
   /*!< number of bytes for the sensor bits */

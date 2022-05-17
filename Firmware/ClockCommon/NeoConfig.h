@@ -23,7 +23,7 @@
   #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (0) /* this is the last GPIO pin used */
-    #define NEOC_NOF_LEDS_IN_LANE  (5*16) /* number of LEDs in each lane */
+    #define NEOC_NOF_LEDS_IN_LANE  (PL_CONFIG_NOF_DRIVER_BOARDS*16) /* number of LEDs in each lane */
   #else
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (4) /* this is the last GPIO pin used */
