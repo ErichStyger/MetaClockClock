@@ -1,7 +1,7 @@
 ExitOnError 1
 r
 h
-loadfile "C:\Users\erich\Downloads\tinyK22_Master.hex"
+loadfile "C:\Users\erich\Data\GitRepos\MetaClockClock\Firmware\tinyK22_Master\Debug\tinyK22_Master.hex"
 qc
 
 qc
