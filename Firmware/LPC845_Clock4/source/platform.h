@@ -13,7 +13,7 @@
 #include "platform_id.h"
 
 /* select the board used: */
-#if 0 /* 60 billion time */
+#if 1 /* 60 billion time */
   #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_LPC845_1X4)
 #else /* 'world stepper clock with 4 clocks */
   #define PL_CONFIG_BOARD_ID            (PL_CONFIG_BOARD_ID_CLOCK_LPC845_2X2)

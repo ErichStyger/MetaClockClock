@@ -51,10 +51,10 @@ Instructions:
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
-#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
-#define SYSVIEW_APP_NAME                            "LPC845 Client"
-#define SYSVIEW_DEVICE_NAME                         "LPC845 Client"
-#define McuSystemView_CONFIG_RTT_BUFFER_SIZE        (512)
+#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (1)
+#define SYSVIEW_APP_NAME                            "LPC845 Clock4"
+#define SYSVIEW_DEVICE_NAME                         "LPC845"
+#define McuSystemView_CONFIG_RTT_BUFFER_SIZE        (128)
 #define McuSystemView_CONFIG_RTT_CHANNEL            (1)
 /* -------------------------------------------------*/
 /* Percepio Tracealyzer */
@@ -62,7 +62,7 @@ Instructions:
 #define McuPercepio_CONFIG_START_TRACE_IN_STARTUP_MODE  TRC_START
 /* -------------------------------------------------*/
 /* Shell */
-#define McuShell_CONFIG_PROJECT_NAME_STRING           "LPC845 Client"
+#define McuShell_CONFIG_PROJECT_NAME_STRING           "LPC845 Clock4"
 #define McuShell_CONFIG_MULTI_CMD_ENABLED             (1)
 #define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256)
 #define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
@@ -91,7 +91,7 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER                 (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_IS_ENABLED                      (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
@@ -107,6 +107,6 @@ Instructions:
 #define McuFlash_CONFIG_IS_ENABLED                  (1)
 /* -------------------------------------------------*/
 /* McuUart485 */
-#define McuUart485_CONFIG_USE_RS_485      (1)
+#define McuUart485_CONFIG_USE_RS_485                (1)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */
