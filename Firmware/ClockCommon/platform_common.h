@@ -119,6 +119,10 @@
   #define PL_CONFIG_BOARD_NOF_MOTOR_DRIVER   (0)
 #endif
 
+#ifndef PL_CONFIG_USE_LINEAR_STEPPER
+  #define PL_CONFIG_USE_LINEAR_STEPPER   (1 && PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5)
+#endif
+
 #ifndef PL_CONFIG_USE_RELATIVE_MOVES
   #define PL_CONFIG_USE_RELATIVE_MOVES    (1)  /* use relative moves, increases the need for RAM on the master */
 #endif

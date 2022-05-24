@@ -20,7 +20,11 @@
 #endif
 #include "StepperBoard.h"
 #if PL_CONFIG_USE_STEPPER
-  #include "McuX12_017.h"
+  #if PL_CONFIG_USE_LINEAR_STEPPER
+    #include "ShiftLinMotor.h"
+  #else
+    #include "McuX12_017.h"
+  #endif
 #endif
 #if PL_CONFIG_USE_MAG_SENSOR
   #include "magnets.h"
@@ -399,7 +403,7 @@ static const unsigned char*GetModeString(STEPPER_MoveMode_e mode, bool speedUp, 
   return str;
 }
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
 static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_MoveMode_e mode, bool speedUp, bool slowDown, bool absolute) {
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
 
@@ -3067,12 +3071,44 @@ static void InitSteppers(void) {
 }
 #endif /* PL_CONFIG_USE_X12_STEPPER */
 
+#if PL_CONFIG_USE_LINEAR_STEPPER
+static void InitLinearSteppers(void) {
+  STEPBOARD_Config_t stepBoardConfig;
+  STEPPER_Config_t stepperConfig;
+  ShiftLinMotor_Config_t shiftLinMotConfig;
+
+  STEPBOARD_GetDefaultConfig(&stepBoardConfig);
+  stepBoardConfig.addr = 0;
+  stepBoardConfig.enabled = true;
+
+  STEPPER_GetDefaultConfig(&stepperConfig);
+  ShiftLinMotor_GetDefaultConfig(&shiftLinMotConfig);
+  shiftLinMotConfig.shiftPos = 0; /* motors starting with zero */
+
+  for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+      for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+
+        stepperConfig.device = ShiftLinMotor_InitDevice(&shiftLinMotConfig);
+        stepperConfig.stepFn = NULL;
+        shiftLinMotConfig.shiftPos++; /* for next iteration */
+        stepBoardConfig.stepper[x][y][z] = STEPPER_InitDevice(&stepperConfig);
+      }
+    }
+  }
+  MATRIX_Boards[0] = STEPBOARD_InitDevice(&stepBoardConfig);
+
+}
+#endif
+
 #if PL_CONFIG_USE_STEPPER
 static void InitMatrixHardware(void) {
 #if PL_CONFIG_USE_VIRTUAL_STEPPER /* only using virtual LED stepper */
   InitLedRings();
 #elif PL_CONFIG_USE_X12_STEPPER /* stepper motors, with and without LEDs */
   InitSteppers();
+#elif PL_CONFIG_USE_LINEAR_STEPPER
+  InitLinearSteppers();
 #endif
 #if PL_CONFIG_USE_STEPPER
   STEPBOARD_SetBoard(MATRIX_Boards[0]); /* set default board */

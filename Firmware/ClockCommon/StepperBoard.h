@@ -42,7 +42,7 @@ void STEPBOARD_NormalizePosition(STEPBOARD_Handle_t board);
 
 STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int x, int y, int z);
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
 NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int x, int y, int z);
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 

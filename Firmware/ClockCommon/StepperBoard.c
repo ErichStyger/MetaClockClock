@@ -29,7 +29,7 @@ typedef struct STEPBOARD_Device_t {
   McuGPIO_Handle_t motorOnOff; /* LOW active for all motors */
 #endif
   STEPPER_Handle_t stepper[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
   NEOSR_Handle_t *ledRing[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z]; /* points to the LED ring device */
 #endif
 } STEPBOARD_Device_t;
@@ -89,13 +89,13 @@ bool STEPBOARD_IsEnabled(STEPBOARD_Handle_t board) {
   return handle->enabled;
 }
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_USE_LED_RING
 NEOSR_Handle_t STEPBOARD_GetStepperLedRing(STEPBOARD_Handle_t board, int x, int y, int z) {
   assert(x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X && y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y && z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z);
   STEPBOARD_Device_t *handle = (STEPBOARD_Device_t*)board;
   return handle->ledRing[x][y][z];
 }
-#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_USE_LED_RING */
 
 STEPPER_Handle_t STEPBOARD_GetStepper(STEPBOARD_Handle_t board, int x, int y, int z) {
   assert(x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X && y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y && z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z);

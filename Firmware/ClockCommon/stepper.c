@@ -54,7 +54,7 @@ static const STEPPER_Config_t defaultConfig =
   .stepFn = NULL, /* callback to increment or decrement steps */
 };
 
-/* device for a single LED ring */
+/* device for a single stepper motor */
 typedef struct STEPPER_Device_t {
   void *device; /* point to the actual motor device */
   void (*stepFn)(void *device, int step); /* function pointer to perform a single step forward (1) or backward (-1) */

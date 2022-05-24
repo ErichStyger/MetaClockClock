@@ -26,7 +26,6 @@
 
 #include "platform_common.h"
 
-
 void PL_InitFromTask(void);
 void PL_Init(void);
 

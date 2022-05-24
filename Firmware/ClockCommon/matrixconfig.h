@@ -199,7 +199,7 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_05=0x85,
   BOARD_ADDR_06=0x86,
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
-  BOARD_ADDR_00=0x10,
+  BOARD_ADDR_00=0x0, /* default value, not the usual RS-485 address, but the motor handle ID */
  #else
   #error "unknown matrix"
 #endif
