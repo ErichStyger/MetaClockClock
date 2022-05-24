@@ -102,7 +102,7 @@ static void NeoTask(void *pv) {
   MPIXEL_ClearAll();
   for(int y=0; y<MPIXEL_NOF_Y; y++) {
     for(int x=0; x<MPIXEL_NOF_X; x++) {
-      MPIXEL_SetColor(x, y, 0, x, y, (x+y)/2);
+      MPIXEL_SetColor(x, y, 0, x+2, y+2, (x+y)/2);
     }
   }
   APP_RequestUpdateLEDs();

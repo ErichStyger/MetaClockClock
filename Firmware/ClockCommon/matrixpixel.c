@@ -28,8 +28,8 @@ void MPIXEL_SetColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green
      */
     int32_t pos;
 
-    /* assumption: all boards stacked together */
-    pos = (MPIXEL_NOF_X*MPIXEL_NOF_Y)-MPIXEL_NOF_Y; /* zero point left top corner */
+    /* assumption: all boards stacked together in y direction */
+    pos = (MPIXEL_NOF_X*MPIXEL_NOF_Y)-MPIXEL_NOF_X; /* zero point left top corner */
     pos -= y*MPIXEL_NOF_X; /* add y row offset */
     pos += x%MPIXEL_NOF_X; /* add x column offset */
     NEO_SetPixelRGB(NEOC_LANE_START, pos, red, green, blue); /* pixel one */

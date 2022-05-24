@@ -13,6 +13,10 @@
 #include "McuTimeDate.h"
 #include "matrixpixel.h"
 
+#define LED_CLOCK_CONFIG_USE_5x3_FONT         (1)
+#define LED_CLOCK_CONFIG_USE_8x4_FONT         (0)
+#define LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT   (0)
+
 void LedDisp_Clear(void) {
   MPIXEL_ClearAll();
 }
@@ -29,13 +33,35 @@ static void LedDisp_PutPixel(NEO_PixelIdxT x, NEO_PixelIdxT y, NEO_PixelColor co
   MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(color));
 }
 
-#define LED_CLOCK_CONFIG_USE_SMALL_FONT   (1)
 
 static bool LedClock_doMirror = false;
-static NEO_PixelColor LedClock_colorDigits = 0x10;
-static NEO_PixelColor LedClock_colorDots = 0x1000;
+static NEO_PixelColor LedClock_colorDigits = 0x50;
+static NEO_PixelColor LedClock_colorDots = 0x5000;
 
-#if LED_CLOCK_CONFIG_USE_SMALL_FONT
+#if LED_CLOCK_CONFIG_USE_5x3_FONT
+static const uint16_t Numbers5x3[10] = { /* digits 0-9, data byte with two nibbles (rows) */
+    /* from MSB to LSB: 4bits for each row:
+     * 0   1   2     3   4   5   6   7   8   9
+     * 111 010 110 111 101 111 011 111 111 111
+     * 101 110 001 001 101 100 100 001 101 101
+     * 101 010 010 011 111 111 111 010 111 111
+     * 101 010 100 001 001 001 101 100 101 001
+     * 111 111 111 111 001 110 111 100 111 110
+     */
+  /* 0 */ 0b111101101101111,
+  /* 1 */ 0b010110010010111,
+  /* 2 */ 0b110001010100111,
+  /* 3 */ 0b111001011001111,
+  /* 4 */ 0b101101111001001,
+  /* 5 */ 0b111100111001110,
+  /* 6 */ 0b011100111101111,
+  /* 7 */ 0b111001010100100,
+  /* 8 */ 0b111101111101111,
+  /* 9 */ 0b111101111001110,
+};
+#endif
+
+#if LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT
 static const uint32_t Numbers8x4_Small[10] = { /* digits 0-9, data byte with two nibbles (rows) */
     /* from MSB to LSB: 4bits for each row:
      * 0     1     2     3     4     5     6     7     8     9
@@ -57,9 +83,9 @@ static const uint32_t Numbers8x4_Small[10] = { /* digits 0-9, data byte with two
   /* 6 */ 0b00000111010001000111010101110000,
   /* 7 */ 0b00000111000100010010001000100000,
   /* 8 */ 0b00000111010101010111010101110000,
-  /* 9 */ 0b00000111010101010111000101110000
+  /* 9 */ 0b00000111010101010111000101110000,
 };
-#else
+#elif LED_CLOCK_CONFIG_USE_8x4_FONT
 static const uint32_t Numbers8x4[10] = { /* digits 0-9, data byte with two nibbles (rows) */
     /* from MSB to LSB: 4bits for each row, e.g. for '1':
      *  0010
@@ -80,17 +106,46 @@ static const uint32_t Numbers8x4[10] = { /* digits 0-9, data byte with two nibbl
   /* 6 */ 0b01101001100010001111100110010110,
   /* 7 */ 0b11110001000100100010010001001000,
   /* 8 */ 0b01101001100101101001100110010110,
-  /* 9 */ 0b01101001100101110001000110010110
+  /* 9 */ 0b01101001100101110001000110010110,
 };
 #endif
 
+#if LED_CLOCK_CONFIG_USE_5x3_FONT
+static void LedClock_SetChar5x3Pixels(char ch, NEO_PixelIdxT x0, NEO_PixelIdxT y0, NEO_PixelColor color) {
+  uint16_t data;
+  int i;
+
+  /* x/y (0/0) is top left corner, with x increasing to the right and y increasing to the bottom */
+  if (ch>='0' && ch<='9') { /* check if valid digit */
+    data = Numbers5x3[(unsigned int)(ch-'0')];
+    for(i=0;i<15;i++) { /* 3x5=15bits for each digit */
+      if (LedClock_doMirror) {
+        if (data&(1<<14)) { /* MSB set? */
+          LedDisp_PutPixel(x0+(i%3), y0+4-(i/3), color);
+        } else {
+          LedDisp_PutPixel(x0+(i%3), y0+4-(i/3), 0);
+        }
+      } else {
+        if (data&(1<<14)) { /* MSB set? */
+          LedDisp_PutPixel(x0+(i%3), y0+(i/3), color);
+        } else {
+          LedDisp_PutPixel(x0+(i%3), y0+(i/3), 0);
+        }
+      }
+      data <<= 1; /* next bit */
+    } /* for */
+  } /* if number */
+}
+#endif
+
+#if LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT || LED_CLOCK_CONFIG_USE_8x4_FONT
 static void LedClock_SetChar8x4Pixels(char ch, NEO_PixelIdxT x0, NEO_PixelIdxT y0, NEO_PixelColor color) {
   uint32_t data;
   int i;
 
   /* x/y (0/0) is top left corner, with x increasing to the right and y increasing to the bottom */
   if (ch>='0' && ch<='9') { /* check if valid digit */
-#if LED_CLOCK_CONFIG_USE_SMALL_FONT
+#if LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT
     data = Numbers8x4_Small[(unsigned int)(ch-'0')];
 #else
     data = Numbers8x4[(unsigned int)(ch-'0')];
@@ -113,41 +168,44 @@ static void LedClock_SetChar8x4Pixels(char ch, NEO_PixelIdxT x0, NEO_PixelIdxT y
     } /* for */
   } /* if number */
 }
+#endif
 
 static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor colorDigits, NEO_PixelColor colorDots, bool showHH, bool showMM, bool showSS) {
   int pos;
+  void (*fp)(char, NEO_PixelIdxT, NEO_PixelIdxT, NEO_PixelColor);
 
+#if LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT || LED_CLOCK_CONFIG_USE_8x4_FONT
+  fp = LedClock_SetChar8x4Pixels;
+#elif LED_CLOCK_CONFIG_USE_5x3_FONT
+  fp = LedClock_SetChar5x3Pixels;
+#else
+  #error "???"
+#endif
   colorDigits = NEO_GammaCorrect24(colorDigits);
   colorDots = NEO_GammaCorrect24(colorDots);
-  LedDisp_Clear();
   if (LedDisp_GetWidth()==16) {
     /* write hhss */
     pos = 0;
-    if (!showHH) {
-      pos += 4;
-    }
-    if (!showMM) {
-      pos += 4;
-    }
-    if (!showSS) {
-      pos += 4;
-    }
     if (showHH) {
-      LedClock_SetChar8x4Pixels('0'+(time->Hour/10), pos, 0, colorDigits);
+      fp('0'+(time->Hour/10), pos, 0, colorDigits);
       pos+=4;
-      LedClock_SetChar8x4Pixels('0'+(time->Hour%10), pos, 0, colorDigits);
+      fp('0'+(time->Hour%10), pos, 0, colorDigits);
       pos+=4;
     }
     if (showMM) {
-      LedClock_SetChar8x4Pixels('0'+(time->Min/10),  pos, 0, colorDigits);
+      if (showHH) {
+        LedDisp_PutPixel(pos-1, 1, colorDots);
+        LedDisp_PutPixel(pos-1, 3, colorDots);
+      }
+      fp('0'+(time->Min/10),  pos, 0, colorDigits);
       pos+=4;
-      LedClock_SetChar8x4Pixels('0'+(time->Min%10), pos, 0, colorDigits);
+      fp('0'+(time->Min%10), pos, 0, colorDigits);
       pos+=4;
     }
     if (showSS) {
-      LedClock_SetChar8x4Pixels('0'+(time->Sec/10), pos, 0, colorDigits);
+      fp('0'+(time->Sec/10), pos, 0, colorDigits);
       pos+=4;
-      LedClock_SetChar8x4Pixels('0'+(time->Sec%10), pos, 0, colorDigits);
+      fp('0'+(time->Sec%10), pos, 0, colorDigits);
       pos+=4;
     }
   } else if (LedDisp_GetWidth()==24) {
@@ -163,29 +221,29 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
       pos += 4;
     }
     if (showHH) {
-      LedClock_SetChar8x4Pixels('0'+(time->Hour/10), pos, 0, colorDigits);
+      fp('0'+(time->Hour/10), pos, 0, colorDigits);
       pos+=4;
-      LedClock_SetChar8x4Pixels('0'+(time->Hour%10), pos, 0, colorDigits);
+      fp('0'+(time->Hour%10), pos, 0, colorDigits);
       pos+=4;
     }
     if (showMM) {
-      LedClock_SetChar8x4Pixels('0'+(time->Min/10),  pos, 0, colorDigits);
+      fp('0'+(time->Min/10),  pos, 0, colorDigits);
       if (showHH) {
         LedDisp_PutPixel(pos, 3, colorDots);
         LedDisp_PutPixel(pos, 5, colorDots);
       }
       pos+=4;
-      LedClock_SetChar8x4Pixels('0'+(time->Min%10), pos, 0, colorDigits);
+      fp('0'+(time->Min%10), pos, 0, colorDigits);
       pos+=4;
     }
     if (showSS) {
-      LedClock_SetChar8x4Pixels('0'+(time->Sec/10), pos, 0, colorDigits);
+      fp('0'+(time->Sec/10), pos, 0, colorDigits);
       if (showMM) {
         LedDisp_PutPixel(pos, 3, colorDots);
         LedDisp_PutPixel(pos, 5, colorDots);
       }
       pos+=4;
-      LedClock_SetChar8x4Pixels('0'+(time->Sec%10), pos, 0, colorDigits);
+      fp('0'+(time->Sec%10), pos, 0, colorDigits);
       pos+=4;
     }
   } else if (LedDisp_GetHeight()==24) { /* portrait mode */
@@ -200,13 +258,13 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
       pos += 4;
     }
     if (showHH) {
-      LedClock_SetChar8x4Pixels('0'+(time->Hour/10), 0, pos, colorDigits);
-      LedClock_SetChar8x4Pixels('0'+(time->Hour%10), 4, pos, colorDigits);
+      fp('0'+(time->Hour/10), 0, pos, colorDigits);
+      fp('0'+(time->Hour%10), 4, pos, colorDigits);
     }
     if (showMM) {
       pos += 8;
-      LedClock_SetChar8x4Pixels('0'+(time->Min/10), 0, pos, colorDigits);
-      LedClock_SetChar8x4Pixels('0'+(time->Min%10), 4, pos, colorDigits);
+      fp('0'+(time->Min/10), 0, pos, colorDigits);
+      fp('0'+(time->Min%10), 4, pos, colorDigits);
       if (showHH) {
         LedDisp_PutPixel(3, pos-1, colorDots);
         LedDisp_PutPixel(3, pos, colorDots);
@@ -216,8 +274,8 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
     }
     if (showSS) {
       pos += 8;
-      LedClock_SetChar8x4Pixels('0'+(time->Sec/10), 0, pos, colorDigits);
-      LedClock_SetChar8x4Pixels('0'+(time->Sec%10), 4, pos, colorDigits);
+      fp('0'+(time->Sec/10), 0, pos, colorDigits);
+      fp('0'+(time->Sec%10), 4, pos, colorDigits);
       if (showMM) {
         LedDisp_PutPixel(3, pos-1, colorDots);
         LedDisp_PutPixel(3, pos, colorDots);
@@ -229,7 +287,9 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
 }
 
 void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date) {
+  LedDisp_Clear();
   LedClock_PutClockPixels(time, date, LedClock_colorDigits, LedClock_colorDots, true, true, false);
+  NEO_TransferPixels();
 }
 
 void LedClock_Deinit(void) {

@@ -72,6 +72,7 @@
   #define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
   #define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_CLOCK             (1) /* only implemented for dual shaft motors and smart wall */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT   (1) /* clock on by default */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_BLE               (0) /* no module installed, SPI1 on PTD5, PTD6 and PDTD7 used for shift register access */
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE (0) /* used to test the LEDs */
