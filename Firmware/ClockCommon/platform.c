@@ -58,6 +58,9 @@
   #include "spireg.h"
   #include "shiftreg.h"
 #endif
+#if PL_CONFIG_USE_LED_CLOCK
+  #include "LedClock.h"
+#endif
 /* SDK */
 #include "fsl_gpio.h"
 
@@ -264,5 +267,7 @@ void PL_Init(void) {
   ShiftReg_Init();
   SpiReg_Init();
 #endif
-
+#if PL_CONFIG_USE_LED_CLOCK
+  LedClock_Init();
+#endif
 }

@@ -99,6 +99,7 @@ static void NeoTask(void *pv) {
   TestRing();
 #endif
 #if PL_CONFIG_USE_LED_PIXEL /* initial demo code */
+  MPIXEL_ClearAll();
   for(int y=0; y<MPIXEL_NOF_Y; y++) {
     for(int x=0; x<MPIXEL_NOF_X; x++) {
       MPIXEL_SetColor(x, y, 0, x, y, (x+y)/2);

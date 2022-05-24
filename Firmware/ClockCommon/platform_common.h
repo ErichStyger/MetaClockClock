@@ -180,7 +180,7 @@
   #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available for the board. This is used for showing the hands, etc */
 #endif
 #ifndef PL_CONFIG_USE_LED_PIXEL
-  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel are available: this is for the 'Pixel' not for the clock! */
+  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel are available: this is for the 'Moving Pixel' not for the clock! */
 #endif
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #ifndef PL_CONFIG_USE_X12_LED_STEPPER
@@ -270,6 +270,10 @@
 
 #ifndef PL_CONFIG_USE_SHIFT_REGS
   #define PL_CONFIG_USE_SHIFT_REGS  (1 && PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5) /* not supported on LPC845 */
+#endif
+
+#ifndef PL_CONFIG_USE_LED_CLOCK
+  #define PL_CONFIG_USE_LED_CLOCK   (1 && (PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5))
 #endif
 
 /* NYI or not applicable */

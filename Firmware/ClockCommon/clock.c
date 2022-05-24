@@ -55,13 +55,16 @@
 #if PL_CONFIG_USE_FONT
   #include "mfont.h"
 #endif
+#if PL_CONFIG_USE_LED_CLOCK
+  #include "LedClock.h"
+#endif
 
 static bool CLOCK_ClockIsOn =
-#if PL_CONFIG_CLOCK_ON_BY_DEFAULT
+  #if PL_CONFIG_CLOCK_ON_BY_DEFAULT
     true;
-#else
+  #else
     false;
-#endif
+  #endif
 static bool CLOCK_ClockIs24h = true; /* if showing time in 24h format (17:35) or 12h format (5:35) */
 static bool CLOCK_ClockIsParked = false;
 #if PL_CONFIG_USE_FONT
@@ -145,10 +148,16 @@ static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
 #endif /* PL_CONFIG_USE_STEPPER */
 
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
-#if PL_CONFIG_USE_FONT
+  McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
+
+#if PL_CONFIG_USE_LED_CLOCK
+  LedClock_ShowTimeDate(time, date);
+  return;
+#endif
+
+#if PL_CONFIG_IS_ANALOG_CLOCK && PL_CONFIG_USE_FONT
   uint8_t buf[8], res;
 
-  McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
   MATRIX_SetMoveDelayAll(5);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_LED_RING
@@ -183,9 +192,11 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     McuLog_error("Failed showing time");
   }
 #endif /* PL_CONFIG_USE_FONT */
+
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
   CC_ShowTime(time->Hour, time->Min);
 #endif
+
 #if PL_CONFIG_WORLD_CLOCK
   uint8_t hour;
 
@@ -638,11 +649,12 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
 static void ShowSeconds(const TIMEREC *time) {
-  static uint8_t lastSecondShown = -1;
-
   if (!CLOCK_ShowSeconds) {
     return; /* disabled */
   }
+#if PL_CONFIG_USE_LED_RING /* showing second with LED rings */
+  static uint8_t lastSecondShown = -1;
+
   if (time->Sec != lastSecondShown) {
     int x, y;
     uint8_t red, green, blue;
@@ -661,6 +673,7 @@ static void ShowSeconds(const TIMEREC *time) {
     MRING_SetRingColor(x, y, 0, red, green, blue);
     APP_RequestUpdateLEDs();
   }
+#endif
 }
 #endif
 
@@ -809,7 +822,7 @@ static void ClockTask(void *pv) {
         McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
         prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
-      #if PL_MATRIX_CONFIG_IS_RGB
+      #if PL_CONFIG_USE_LED_RING
         MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
         MATRIX_DrawAllRingColor(0x000000); /* ring color off */
         MHAND_HandEnableAll(true);
@@ -819,18 +832,20 @@ static void ClockTask(void *pv) {
         McuLog_info("Clock off");
         CLOCK_ClockIsOn = false; /* disable clock */
         prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE;
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-        /* turn off LEDs */
-        MRING_SetRingColorAll(0, 0, 0);
-        MHAND_HandEnableAll(false);
-      #if PL_CONFIG_USE_EXTENDED_HANDS
-        MHAND_2ndHandEnableAll(false);
+      #if PL_CONFIG_IS_ANALOG_CLOCK
+        #if PL_CONFIG_USE_LED_RING
+            /* turn off LEDs */
+            MRING_SetRingColorAll(0, 0, 0);
+            MHAND_HandEnableAll(false);
+          #if PL_CONFIG_USE_EXTENDED_HANDS
+            MHAND_2ndHandEnableAll(false);
+          #endif
+            APP_RequestUpdateLEDs(); /* update LEDs */
+        #elif PL_MATRIX_CONFIG_IS_RGB
+            MATRIX_EnableDisableHandsAll(false);
+        #endif
+            MATRIX_MoveAllto12(5000, NULL);
       #endif
-        APP_RequestUpdateLEDs(); /* update LEDs */
-    #elif PL_MATRIX_CONFIG_IS_RGB
-        MATRIX_EnableDisableHandsAll(false);
-    #endif
-        MATRIX_MoveAllto12(5000, NULL);
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
         McuLog_info("Clock toggle");
@@ -839,16 +854,22 @@ static void ClockTask(void *pv) {
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         if (!CLOCK_ClockIsOn) {
           /* turn off LEDs */
+        #if PL_CONFIG_IS_ANALOG_CLOCK
           MRING_SetRingColorAll(0, 0, 0);
           MHAND_HandEnableAll(false);
-        #if PL_CONFIG_USE_EXTENDED_HANDS
+          #if PL_CONFIG_USE_EXTENDED_HANDS
           MHAND_2ndHandEnableAll(false);
+          #endif
+        #else
+          NEO_ClearAllPixel(); /* clear all pixels */
         #endif
           APP_RequestUpdateLEDs(); /* update LEDs */
         }
       #endif
         if (!CLOCK_ClockIsOn) {
+          #if PL_CONFIG_IS_ANALOG_CLOCK
           MATRIX_MoveAllto12(5000, NULL);
+          #endif
         }
       }
   #if PL_CONFIG_HAS_SWITCH_7WAY

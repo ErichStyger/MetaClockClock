@@ -6,12 +6,16 @@
  */
 
 #include "platform.h"
+#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
 #include "matrixpixel.h"
 #include "matrix.h"
 #include "NeoPixel.h"
 #include "assert.h"
 
-#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
+void MPIXEL_ClearAll(void) {
+  NEO_ClearAllPixel();
+}
+
 void MPIXEL_SetColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue) {
   #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
     /* LEDS start from the left lower corner, left to right, bottom to top:
