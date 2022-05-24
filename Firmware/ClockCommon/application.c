@@ -99,14 +99,11 @@ static void NeoTask(void *pv) {
   TestRing();
 #endif
 #if PL_CONFIG_USE_LED_PIXEL /* initial demo code */
-  MPIXEL_SetColor(0, 0, 0, 0, 0, 0x10);
-  MPIXEL_SetColor(1, 0, 0, 0, 0x10, 0);
-  MPIXEL_SetColor(2, 0, 0, 0x10, 0, 0);
-  MPIXEL_SetColor(3, 0, 0, 0, 0x10, 0x10);
-  MPIXEL_SetColor(4, 0, 0, 0x10, 0, 0x10);
-  MPIXEL_SetColor(5, 0, 0, 0x5, 0x5, 0x10);
-  MPIXEL_SetColor(6, 0, 0, 0, 0x5, 0x5);
-  MPIXEL_SetColor(7, 0, 0, 0x5, 0, 0x10);
+  for(int y=0; y<MPIXEL_NOF_Y; y++) {
+    for(int x=0; x<MPIXEL_NOF_X; x++) {
+      MPIXEL_SetColor(x, y, 0, x, y, (x+y)/2);
+    }
+  }
   APP_RequestUpdateLEDs();
 #endif
   for(;;) {

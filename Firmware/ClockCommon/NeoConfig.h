@@ -23,11 +23,15 @@
   #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (0) /* this is the last GPIO pin used */
-    #define NEOC_NOF_LEDS_IN_LANE  (PL_CONFIG_NOF_DRIVER_BOARDS*16) /* number of LEDs in each lane */
-  #else
+    #define NEOC_NOF_LEDS_IN_COL   (PL_CONFIG_NOF_DRIVER_BOARDS) /* have 5 rows with 16 LEDs each */
+    #define NEOC_NOF_LEDS_IN_ROW   (16) /* each row/board has 16 LEDs */
+    #define NEOC_NOF_LEDS_IN_LANE  (NEOC_NOF_LEDS_IN_COL*NEOC_NOF_LEDS_IN_ROW) /* number of LEDs, all in one line */
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B /* 60 billion lights, with master behind the canvas driving the LEDs directly */
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (4) /* this is the last GPIO pin used */
     #define NEOC_NOF_LEDS_IN_LANE  (12*40) /* number of LEDs in each lane */
+  #else
+    #error "unknown konfiguration?"
   #endif
 #else
   #error "unknown"

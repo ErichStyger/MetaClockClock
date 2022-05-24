@@ -59,11 +59,11 @@
   #define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_CLOCK             (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
-  #define PL_CONFIG_USE_LED_PIXEL         (1) /* pixels */
+  #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
 #elif 1 /* second Sm(A)rtWall project */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_16x5
   #define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */
-  #define PL_CONFIG_USE_LED_PIXEL         (1) /* pixels */
+  #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* we drive the NeoPixels directly by hardware */
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (0) /* has motor on/off hardware */
   #define PL_CONFIG_USE_MOTOR_ON_OFF_AUTO (1) /* automatically turn on/off motors */
@@ -75,7 +75,7 @@
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_BLE               (0) /* no module installed, SPI1 on PTD5, PTD6 and PDTD7 used for shift register access */
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE (0) /* used to test the LEDs */
-  #define PL_CONFIG_NOF_DRIVER_BOARDS     (1) /* number of motor/LED boards (with each 16 motors+LEDs on it */
+  #define PL_CONFIG_NOF_DRIVER_BOARDS     (5) /* number of motor/LED boards (with each 16 motors+LEDs on it */
 #elif 0 /* circular clock: 12 for each digit plus on in the center */
   #define PL_CONFIG_HAS_CIRCLE_CLOCK      (1)
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
