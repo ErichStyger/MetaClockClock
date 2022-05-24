@@ -52,7 +52,7 @@ void ShiftReg_ReadSensorBits(uint8_t *data, size_t dataSize) {
 void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_BITS]) {
   /* w[0]: CLK
    * w[1]: DIR
-   * w[3]: STDBY
+   * w[2]: STDBY
    */
   size_t byteIdx;
 
