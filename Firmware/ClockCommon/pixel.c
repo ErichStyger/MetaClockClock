@@ -47,7 +47,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
-  McuShell_SendHelpStr((unsigned char*)"pixel", (unsigned char*)"Group of pixel commands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"pixel", (unsigned char*)"Group of moving pixel commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  zp all", (unsigned char*)"Move all to zero position\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  zp <xyz>", (unsigned char*)"Move a single pixel to zero position (comma separated)\r\n", io->stdOut);

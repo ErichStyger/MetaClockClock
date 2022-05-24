@@ -83,6 +83,9 @@
 #if PL_CONFIG_USE_SHIFT_REGS
   #include "shiftreg.h"
 #endif
+#if PL_CONFIG_USE_LED_CLOCK
+  #include "LedClock.h"
+#endif
 
 #if PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
 static struct {
@@ -149,6 +152,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
   MATRIX_ParseCommand,
 #if PL_CONFIG_USE_CLOCK
   CLOCK_ParseCommand,
+#endif
+#if PL_CONFIG_USE_LED_CLOCK
+  LedClock_ParseCommand,
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   INTERMEZZO_ParseCommand,

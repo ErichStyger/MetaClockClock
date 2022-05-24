@@ -11,11 +11,17 @@
 #include "LedClock.h"
 #include "NeoPixel.h"
 #include "McuTimeDate.h"
+#include "McuUtility.h"
 #include "matrixpixel.h"
 
 #define LED_CLOCK_CONFIG_USE_5x3_FONT         (1)
 #define LED_CLOCK_CONFIG_USE_8x4_FONT         (0)
 #define LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT   (0)
+
+static bool LedClock_doMirror = false;
+static NEO_PixelColor LedClock_colorDigits = 0x50;
+static NEO_PixelColor LedClock_colorDots = 0x5000;
+
 
 void LedDisp_Clear(void) {
   MPIXEL_ClearAll();
@@ -32,11 +38,6 @@ int LedDisp_GetHeight(void) {
 static void LedDisp_PutPixel(NEO_PixelIdxT x, NEO_PixelIdxT y, NEO_PixelColor color) {
   MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(color));
 }
-
-
-static bool LedClock_doMirror = false;
-static NEO_PixelColor LedClock_colorDigits = 0x50;
-static NEO_PixelColor LedClock_colorDots = 0x5000;
 
 #if LED_CLOCK_CONFIG_USE_5x3_FONT
 static const uint16_t Numbers5x3[10] = { /* digits 0-9, data byte with two nibbles (rows) */
@@ -290,6 +291,57 @@ void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   LedDisp_Clear();
   LedClock_PutClockPixels(time, date, LedClock_colorDigits, LedClock_colorDots, true, true, false);
   NEO_TransferPixels();
+}
+
+static uint8_t PrintStatus(const McuShell_StdIOType *io) {
+  unsigned char buf[64];
+
+  McuShell_SendStatusStr((unsigned char*)"ledclock", (unsigned char*)"LedClock settings\r\n", io->stdOut);
+  McuUtility_strcpy(buf, sizeof(buf), "digit: 0x");
+  McuUtility_strcatNum24Hex(buf, sizeof(buf), LedClock_colorDigits);
+  McuUtility_strcat(buf, sizeof(buf), ", dot: 0x");
+  McuUtility_strcatNum24Hex(buf, sizeof(buf), LedClock_colorDots);
+  McuUtility_strcat(buf, sizeof(buf), "\r\n");
+  McuShell_SendStatusStr("color", buf, io->stdOut);
+  return ERR_OK;
+}
+
+static uint8_t PrintHelp(const McuShell_StdIOType *io) {
+  McuShell_SendHelpStr((unsigned char*)"ledclock", (unsigned char*)"Group of magnet/hall sensor commands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  color digit <color>", (unsigned char*)"Set digit color\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  color dot <color>", (unsigned char*)"Set dot color\r\n", io->stdOut);
+  return ERR_OK;
+}
+
+uint8_t LedClock_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
+  uint8_t r, g, b;
+  const unsigned char *p;
+
+  if (McuUtility_strcmp((char*)cmd, McuShell_CMD_HELP)==0 || McuUtility_strcmp((char*)cmd, "ledclock help")==0) {
+    *handled = TRUE;
+    return PrintHelp(io);
+  } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "ledclock status")==0)) {
+    *handled = TRUE;
+    return PrintStatus(io);
+  } else if (McuUtility_strncmp((char*)cmd, "ledclock color digit ", sizeof("ledclock color digit ")-1)==0) {
+    *handled = TRUE;
+    p = cmd + sizeof("ledclock color digit ")-1;
+    if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
+      LedClock_colorDigits = NEO_COMBINE_RGB(r, g, b);
+      return ERR_OK;
+    }
+    return ERR_FAILED;
+  } else if (McuUtility_strncmp((char*)cmd, "ledclock color dot ", sizeof("ledclock color dot ")-1)==0) {
+    *handled = TRUE;
+    p = cmd + sizeof("ledclock color dot ")-1;
+    if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
+      LedClock_colorDots = NEO_COMBINE_RGB(r, g, b);
+      return ERR_OK;
+    }
+    return ERR_FAILED;
+  }
+  return ERR_OK;
 }
 
 void LedClock_Deinit(void) {
