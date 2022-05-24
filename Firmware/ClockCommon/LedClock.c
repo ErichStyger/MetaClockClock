@@ -297,12 +297,12 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   unsigned char buf[64];
 
   McuShell_SendStatusStr((unsigned char*)"ledclock", (unsigned char*)"LedClock settings\r\n", io->stdOut);
-  McuUtility_strcpy(buf, sizeof(buf), "digit: 0x");
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"digit: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), LedClock_colorDigits);
-  McuUtility_strcat(buf, sizeof(buf), ", dot: 0x");
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", dot: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), LedClock_colorDots);
-  McuUtility_strcat(buf, sizeof(buf), "\r\n");
-  McuShell_SendStatusStr("color", buf, io->stdOut);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  McuShell_SendStatusStr((unsigned char*)"color", buf, io->stdOut);
   return ERR_OK;
 }
 
