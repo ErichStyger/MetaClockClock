@@ -70,7 +70,7 @@ void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_
       break;
     case 1:
       MotorBitsByteToSend[byteIdx] &= ~0b00011100;
-      MotorBitsByteToSend[byteIdx] |= (w[0]<<4) + (w[1]<<3) + (w[2]<<1);
+      MotorBitsByteToSend[byteIdx] |= (w[0]<<4) + (w[1]<<3) + (w[2]<<2);
       break;
     case 2:
       MotorBitsByteToSend[byteIdx] &= ~0b00000011;
