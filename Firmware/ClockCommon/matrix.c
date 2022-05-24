@@ -1441,7 +1441,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<d>: delay, 0 is no delay\r\n", io->stdOut);
 #endif
-#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  R <xyz> <a> <d> <md>", (unsigned char*)"Relative angle move for LED and motor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  A <xyz> <a> <d> <md>", (unsigned char*)"Absolute angle move for LED and motor\r\n", io->stdOut);
 #endif
@@ -1531,7 +1531,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
 #endif /* PL_CONFIG_IS_MASTER */
 #if PL_CONFIG_USE_STEPPER
-  #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW
+  #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
   } else if (McuUtility_strncmp((char*)cmd, "matrix A ", sizeof("matrix A ")-1)==0   /* "matrix A <x> <y> <z> <a> <d> <md>" */
           || McuUtility_strncmp((char*)cmd, "matrix R ", sizeof("matrix R ")-1)==0   /* "matrix R <x> <y> <z> <a> <d> <md>" */
             )
@@ -1551,7 +1551,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     } else {
       return ERR_FAILED;
     }
-  #endif /* PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW */
+  #endif /* PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW  && PL_CONFIG_IS_ANALOG_CLOCK*/
 
   } else if (McuUtility_strncmp((char*)cmd, "matrix r ", sizeof("matrix r ")-1)==0) { /* relative move, "matrix r <x> <y> <z> <v> <d> <md>" */
     int32_t x, y, z;
