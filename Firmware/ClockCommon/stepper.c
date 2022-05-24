@@ -490,8 +490,10 @@ void STEPPER_StrCatStatus(STEPPER_Handle_t stepper, unsigned char *buf, size_t b
 #endif
   McuUtility_strcat(buf, bufSize, (unsigned char*)", delay:");
   McuUtility_strcatNum16sFormatted(buf, bufSize, device->delay, ' ', 2);
-  McuUtility_strcat(buf, bufSize, (unsigned char*)", #qItem:");
-  McuUtility_strcatNum16sFormatted(buf, bufSize, uxQueueMessagesWaiting(device->queue), ' ', 2);
+  if (device->queue!=NULL) {
+    McuUtility_strcat(buf, bufSize, (unsigned char*)", #qItem:");
+    McuUtility_strcatNum16sFormatted(buf, bufSize, uxQueueMessagesWaiting(device->queue), ' ', 2);
+  }
 }
 
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
