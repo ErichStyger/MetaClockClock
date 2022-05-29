@@ -36,7 +36,7 @@ Instructions:
 
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
-#define configTOTAL_HEAP_SIZE                (11*1024)
+#define configTOTAL_HEAP_SIZE                (12*1024 + 256)
 //#define configUSE_HEAP_SECTION_NAME        (1)
 //#define configHEAP_SECTION_NAME_STRING     ".bss.$SRAM_LOWER.FreeRTOS"
 #define configQUEUE_REGISTRY_SIZE            (16)
@@ -45,13 +45,16 @@ Instructions:
 #define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
 
+#define configUSE_TRACE_FACILITY              (0)
+#define configGENERATE_RUN_TIME_STATS         (0)
+
 /* performance counter: */
-#define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
+#define configGENERATE_RUN_TIME_STATS_USE_TICKS     (0)
 #define configGET_RUNTIMER_COUNTER_VALUE_FROM_ISR   AppGetRuntimeCounterValueFromISR
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
-#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (1)
+#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
 #define SYSVIEW_APP_NAME                            "LPC845 Clock4"
 #define SYSVIEW_DEVICE_NAME                         "LPC845"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE        (128)

@@ -9,7 +9,6 @@
 #ifndef _MINGLUE_FLASH_H__
 #define _MINGLUE_FLASH_H__
 
-#include "McuFlash.h"
 #include "McuMinINIconfig.h" /* MinIni config file */
 #include <stddef.h>
 #include <stdbool.h>

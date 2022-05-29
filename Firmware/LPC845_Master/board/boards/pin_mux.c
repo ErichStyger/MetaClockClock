@@ -176,9 +176,7 @@ void BOARD_InitRS485(void)
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 BOARD_InitCDC:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
-- pin_list:
-  - {pin_num: '19', peripheral: USART0, signal: TXD, pin_signal: PIO0_25}
-  - {pin_num: '20', peripheral: USART0, signal: RXD, pin_signal: PIO0_24}
+- pin_list: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********
  */
 /* clang-format on */
@@ -192,14 +190,6 @@ BOARD_InitCDC:
 /* Function assigned for the Cortex-M0P */
 void BOARD_InitCDC(void)
 {
-    /* Enables clock for switch matrix.: enable */
-    CLOCK_EnableClock(kCLOCK_Swm);
-
-    /* USART0_TXD connect to P0_25 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_USART0_TXD, kSWM_PortPin_P0_25);
-
-    /* USART0_RXD connect to P0_24 */
-    SWM_SetMovablePinSelect(SWM0, kSWM_USART0_RXD, kSWM_PortPin_P0_24);
 
     /* Disable clock for switch matrix. */
     CLOCK_DisableClock(kCLOCK_Swm);

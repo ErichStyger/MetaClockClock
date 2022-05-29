@@ -57,7 +57,6 @@ uint8_t McuFlash_InitErase(void *addr, size_t nofBytes);
  * \param dataSize Number of data bytes
  * \return Error code, ERR_OK if everything is fine
  */
-
 uint8_t McuFlash_Program(void *addr, const void *data, size_t dataSize);
 
 /*!
