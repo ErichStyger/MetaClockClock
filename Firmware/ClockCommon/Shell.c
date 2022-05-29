@@ -202,7 +202,7 @@ static const SHELL_IODesc ios[] =
 #if PL_CONFIG_USE_ESP32_UART
   {&Esp32ShellUart_stdio,  Esp32ShellUart_DefaultShellBuffer,  sizeof(Esp32ShellUart_DefaultShellBuffer)},
 #endif
-#if 0 && PL_CONFIG_USE_RTT
+#if PL_CONFIG_USE_RTT
   {&McuRTT_stdio,  McuRTT_DefaultShellBuffer,  sizeof(McuRTT_DefaultShellBuffer)},
 #endif
 #if PL_CONFIG_USE_USB_CDC
