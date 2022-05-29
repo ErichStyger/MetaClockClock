@@ -215,12 +215,13 @@ void MATRIX_SetHandBrightnessAll(uint8_t brightness) {
 }
 #endif
 
-
 uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z) {
 #if PL_CONFIG_IS_MASTER
   return clockMatrix[x][y][z].addr;
-#else
+#elif PL_CONFIG_USE_RS485
   return RS485_GetAddress();
+#else
+  return 0;
 #endif
 }
 
@@ -2931,7 +2932,11 @@ static void InitSteppers(void) {
 #endif
 
   /* setup board */
+#if PL_CONFIG_USE_RS485
   stepBoardConfig.addr = RS485_GetAddress();
+#else
+  stepBoardConfig.addr = 0;
+#endif
   stepBoardConfig.enabled = true;
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   #if MATRIX_NOF_STEPPERS>=1
