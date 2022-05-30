@@ -719,6 +719,8 @@ static void ClockTask(void *pv) {
   SHELL_SendString((unsigned char*)"\r\n*****************\r\n* LPC845 Client *\r\n*****************\r\n");
   #elif McuLib_CONFIG_CPU_IS_KINETIS && PL_CONFIG_IS_CLIENT
   SHELL_SendString((unsigned char*)"\r\n******************\r\n* tinyK22 Client *\r\n******************\r\n");
+  #elif McuLib_CONFIG_CPU_IS_KINETIS && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_LED_PIXEL
+  SHELL_SendString((unsigned char*)"\r\n***********************\r\n* MovingPixels Master *\r\n***********************\r\n");
   #elif McuLib_CONFIG_CPU_IS_KINETIS && PL_CONFIG_IS_MASTER
   SHELL_SendString((unsigned char*)"\r\n******************\r\n* tinyK22 Master *\r\n******************\r\n");
   #endif
@@ -765,6 +767,9 @@ static void ClockTask(void *pv) {
 #endif
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
   (void)SHELL_ParseCommand((const unsigned char *)"matrix motor on", NULL, true);
+#endif
+#if PL_CONFIG_USE_LED_PIXEL
+  MATRIX_MoveAllToStartPosition(10000, McuShell_GetStdio()); /* Move all Pixels to zero position, before starting clock. */
 #endif
   for(;;) {
     vTaskDelay(pdMS_TO_TICKS(200));
