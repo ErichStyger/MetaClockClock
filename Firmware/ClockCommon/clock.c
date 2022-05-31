@@ -846,7 +846,7 @@ static void ClockTask(void *pv) {
           #if PL_CONFIG_USE_EXTENDED_HANDS
             MHAND_2ndHandEnableAll(false);
           #endif
-            APP_RequestUpdateLEDs(); /* update LEDs */
+            MATRIX_RequestRgbUpdate(); /* update LEDs */
         #elif PL_MATRIX_CONFIG_IS_RGB
             MATRIX_EnableDisableHandsAll(false);
         #endif
