@@ -406,7 +406,7 @@ const unsigned char*GetModeString(STEPPER_MoveMode_e mode, bool speedUp, bool sl
   return str;
 }
 
-#if PL_CONFIG_USE_STEPPER
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
 static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_MoveMode_e mode, bool speedUp, bool slowDown, bool absolute) {
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
 
@@ -842,18 +842,18 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
     hour = 0;
   }
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485
-#if PL_CONFIG_USE_EXTENDED_HANDS
-  MHAND_2ndHandEnableAll(false);
-#endif
+  #if PL_CONFIG_USE_EXTENDED_HANDS
+    MHAND_2ndHandEnableAll(false);
+  #endif
   MPOS_SetAngleAll(hour*360/12);
   MATRIX_SetMoveDelayAll(2);
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
-#if PL_CONFIG_USE_LED_RING
-  MHAND_HandEnableAll(true);
-  MRING_EnableRingAll(false);
-#elif PL_MATRIX_CONFIG_IS_RGB
-  MHAND_HandEnableAll(true);
-#endif
+  #if PL_CONFIG_USE_LED_RING
+    MHAND_HandEnableAll(true);
+    MRING_EnableRingAll(false);
+  #elif PL_MATRIX_CONFIG_IS_RGB
+    MHAND_HandEnableAll(true);
+  #endif
   return MATRIX_SendToRemoteQueueExecuteAndWait(true);
 #elif PL_CONFIG_USE_STEPPER
   int x, y, z;
@@ -869,9 +869,8 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #endif
   return ERR_OK;
 }
-#else
+#else /* not analog clock => linear stepper */
 uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io) {
-#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485 && PL_CONFIG_USE_STEPPER
   /* moving all stepper motors to the start position. Will move them by the max steps so they hit the end stop */
 
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -883,7 +882,6 @@ uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOTyp
   }
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
   return ERR_OK;
-#endif
 }
 #endif
 
