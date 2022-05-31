@@ -871,7 +871,6 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io) {
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485 && PL_CONFIG_USE_STEPPER
   /* moving all stepper motors to the start position. Will move them by the max steps so they hit the end stop */
-  int x, y, z;
 
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {

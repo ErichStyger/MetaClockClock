@@ -17,15 +17,19 @@
 #include "StepperBoard.h"
 #include <assert.h>
 
+#define STEPPER_ZERO_OVERRIDE (100) /* Number of steps which are to be moved over the zero point during calibration drive */
+
 static void PIXEL_Zero(uint8_t x, uint8_t y, uint8_t z) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
-  STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 2); /* forward */
+  STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS+STEPPER_ZERO_OVERRIDE), 0); /* forward */
   STEPPER_StartTimer();
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
 
-  STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), -STEPPER_FULL_RANGE_NOF_STEPS, 2); /* backward */
+  STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), -(STEPPER_FULL_RANGE_NOF_STEPS+STEPPER_ZERO_OVERRIDE), 0); /* backward */
   STEPPER_StartTimer();
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
+
+  STEPPER_SetPos(MATRIX_GetStepper(x, y, z), 0);
 }
 
 static void PIXEL_ZeroAll(void) {
@@ -35,7 +39,7 @@ static void PIXEL_ZeroAll(void) {
 			for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
 				for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
 					if(d==1)dir=(-1); /* first do it forward, then backward */
-					STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS*dir, 0);
+					STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS+STEPPER_ZERO_OVERRIDE)*dir, 0);
 				}
 			}
 		}

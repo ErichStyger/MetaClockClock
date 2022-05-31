@@ -108,15 +108,14 @@ static bool dirInv[]= { /*Indicates whether the direction of rotation of the mot
 };
 
 void ShiftReg_WriteMotorBits(const uint8_t *data, size_t nofBytes) {
-//ToDo Fix Semaphore - ISR Problem
-  //if (xSemaphoreTake(ShiftRegMutex, portMAX_DELAY)==pdTRUE) {
+  if (xSemaphoreTake(ShiftRegMutex, portMAX_DELAY)==pdTRUE) {
     SpiReg_WriteData(data, nofBytes);
     /* latch: idle state is LOW, make a HIGH pulse: */
     McuGPIO_SetHigh(MotorLatch);
     McuWait_Wait10Cycles();
     McuGPIO_SetLow(MotorLatch);
-  //  xSemaphoreGive(ShiftRegMutex);
-  //}
+    xSemaphoreGive(ShiftRegMutex);
+  }
 }
 
 #if 0 /* not used */
@@ -247,7 +246,7 @@ void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx) {
 void ShiftReg_StoreMotorStbyBitsAll(void){
 	/*Clear all stdby-bits and send Data again (stdby is low active)*/
 	int byteCnt = 0;
-	int shiftCnt = 2; /*The stdby bit is the third bit*/
+	int shiftCnt = 2; /* The stdby bit is the third bit */
 	while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
 		if(shiftCnt>=8){
 			shiftCnt = shiftCnt-8;
@@ -266,11 +265,36 @@ void ShiftReg_SendStoredMotorBits(void) {
 }
 
 void ShiftReg_SendStoredMotorBitsAutoClk(void) {
+	bool turnOn = false;
 	int byteCnt = 0;
-	int shiftCnt = 0;
+	int shiftCnt = 0; /* The stdby bit is the third bit */
+
+	/* Check if Stepper Motors needs to be turned on first */
+	shiftCnt = 2; /* The stdby bit is the third bit */
+	while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
+		if(shiftCnt>=8){
+			shiftCnt = shiftCnt-8;
+		}
+		while(shiftCnt < 8){
+			if((MotorBitsByteToSend[byteCnt] & (0b10000000>>shiftCnt)) == (0b10000000>>shiftCnt)){ /* if stepper motor should be turned on */
+				if( (prevMotorBitsByte[byteCnt] & (0b10000000>>shiftCnt)) == 0){ /* if stepper motor previosuly was turned off */
+					turnOn = true; /* Stepper motor needs to be turned on first */
+				}
+			}
+			shiftCnt += SHIFTREG_NOF_MOTOR_BITS;
+		}
+		byteCnt++;
+	}
+	if(turnOn){ /* Send the bits to switch on the motors that were previously switched off. */
+		ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+	}
+
 	ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
 	memcpy(prevMotorBitsByte, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+
 	/*Clear all clk-bits and send Data again*/
+	byteCnt = 0;
+	shiftCnt = 0; /* The clk bit is the first bit */
 	while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
 		if(shiftCnt>=8){
 			shiftCnt = shiftCnt-8;
@@ -293,12 +317,37 @@ void ShiftReg_SendStoredMotorBitsIfChanged(void) {
 }
 
 void ShiftReg_SendStoredMotorBitsIfChangedAutoClk(void) {
+	bool turnOn = false;
 	int byteCnt = 0;
 	int shiftCnt = 0;
 	if (memcmp(MotorBitsByteToSend, prevMotorBitsByte, sizeof(MotorBitsByteToSend))!=0) { /* has it changed? */
+
+		/* Check if Stepper Motors needs to be turned on first */
+		shiftCnt = 2; /* The stdby bit is the third bit */
+		while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
+			if(shiftCnt>=8){
+				shiftCnt = shiftCnt-8;
+			}
+			while(shiftCnt < 8){
+				if((MotorBitsByteToSend[byteCnt] & (0b10000000>>shiftCnt)) == (0b10000000>>shiftCnt)){ /* if stepper motor should be turned on */
+					if( (prevMotorBitsByte[byteCnt] & (0b10000000>>shiftCnt)) == 0){ /* if stepper motor previosuly was turned off */
+						turnOn = true; /* Stepper motor needs to be turned on first */
+					}
+				}
+				shiftCnt += SHIFTREG_NOF_MOTOR_BITS;
+			}
+			byteCnt++;
+		}
+		if(turnOn){ /* Send the bits to switch on the motors that were previously switched off. */
+			ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+		}
+
 		ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
 		memcpy(prevMotorBitsByte, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+
 		/*Clear all clk-bits and send Data again*/
+		byteCnt = 0;
+		shiftCnt = 0; /* The clk bit is the first bit */
 		while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
 			if(shiftCnt>=8){
 				shiftCnt = shiftCnt-8;
@@ -501,13 +550,12 @@ void ShiftReg_Init(void) {
   SensorLatch = McuGPIO_InitGPIO(&config);
 #endif
 
-  //ToDo Fix Semaphore - ISR Problem
-  //ShiftRegMutex = xSemaphoreCreateMutex();
-  //if (ShiftRegMutex==NULL) { /* semaphore creation failed */
-  //  McuLog_fatal("failed creating ShiftReg mutex");
-  //  for(;;) {} /* error, not enough memory? */
-  //}
-  //vQueueAddToRegistry(ShiftRegMutex, "ShiftRegMutex");
+  ShiftRegMutex = xSemaphoreCreateMutex();
+  if (ShiftRegMutex==NULL) { /* semaphore creation failed */
+    McuLog_fatal("failed creating ShiftReg mutex");
+    for(;;) {} /* error, not enough memory? */
+  }
+  vQueueAddToRegistry(ShiftRegMutex, "ShiftRegMutex");
 }
 
 #endif /* PL_CONFIG_USE_SHIFT_REGS */

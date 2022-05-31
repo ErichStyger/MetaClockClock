@@ -547,7 +547,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcatNum32u(buf, sizeof(buf), xTimerGetPeriod(timer));
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
 #else
-  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"HW timer\, period (us): ");
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"HW timer, period (us): ");
   McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_TIME_STEP_US);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
 #endif
