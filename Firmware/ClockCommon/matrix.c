@@ -302,6 +302,7 @@ static void MATRIX_ResetBoardListCmdSent(void) {
   }
 }
 
+#if PL_CONFIG_USE_RS485
 static bool MATRIX_CommandHasBeenSentToBoards(void) {
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* initialize array */
     if (MATRIX_BoardList[i].cmdSent) {
@@ -310,6 +311,7 @@ static bool MATRIX_CommandHasBeenSentToBoards(void) {
   }
   return false;
 }
+#endif
 
 static bool MATRIX_CommandHasBeenSentToBoard(unsigned int i) {
   if (i>=MATRIX_NOF_BOARDS) {
@@ -370,7 +372,7 @@ uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
   return ERR_OK;
 }
 
-static const unsigned char*GetModeString(STEPPER_MoveMode_e mode, bool speedUp, bool slowDown) {
+const unsigned char*GetModeString(STEPPER_MoveMode_e mode, bool speedUp, bool slowDown) {
   const unsigned char *str = (unsigned char*)"SH"; /* default and error case */
   if (speedUp) {
     if (slowDown) {
@@ -404,7 +406,7 @@ static const unsigned char*GetModeString(STEPPER_MoveMode_e mode, bool speedUp, 
   return str;
 }
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
+#if PL_CONFIG_USE_STEPPER
 static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_MoveMode_e mode, bool speedUp, bool slowDown, bool absolute) {
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
 
@@ -587,7 +589,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
 }
 #endif /* PL_CONFIG_USE_RS485 */
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_RS485 && PL_MATRIX_CONFIG_IS_RGB
 static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
   /* example command: "@14 03 63 cmd matrix q 0 0 0 hc 0x100000 , ..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
@@ -645,7 +647,7 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
 }
 #endif
 
-#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_RS485 && PL_CONFIG_USE_LED_RING
 static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   /* example command: "@14 03 63 cmd matrix q 0 0 0 rc 0x100000 ,..." */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
@@ -864,8 +866,8 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
     }
   }
   STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
-  return ERR_OK;
 #endif
+  return ERR_OK;
 }
 #else
 uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io) {
