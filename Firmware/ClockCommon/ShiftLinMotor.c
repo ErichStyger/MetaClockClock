@@ -7,13 +7,10 @@
 #include "platform.h"
 #include "ShiftLinMotor.h"
 #include "McuRTOS.h"
+#include "shiftreg.h"
 #include <assert.h>
 #include <stdlib.h>
 #include <string.h>
-
-typedef struct ShiftLinMotor_Device_t {
-  int16_t shiftPos;
-} ShiftLinMotor_Device_t;
 
 void ShiftLinMotor_GetDefaultConfig(ShiftLinMotor_Config_t *config) {
   config->shiftPos = 0;
@@ -34,3 +31,31 @@ ShiftLinMotor_Handle_t ShiftLinMotor_InitDevice(ShiftLinMotor_Config_t *config) 
   }
   return handle;
 }
+
+void ShiftLinMotor_SingleStep(void *dev, int step) {
+	ShiftLinMotor_Device_t *device = (ShiftLinMotor_Device_t *)dev;
+	bool w[3];
+
+	w[0] = true; /* clk */
+	w[1] = step<0; /* dir */
+	w[2] = true; /* stby, low active */
+	if (step<0) {
+		step = -step;
+	}
+	ShiftReg_StoreMotorBits(device->shiftPos, w);
+}
+
+void ShiftLinMotor_Execute(void) {
+	ShiftReg_SendStoredMotorBitsIfChangedAutoClk();
+}
+
+void ShiftLinMotor_Stby(void *dev) {
+	ShiftLinMotor_Device_t *device = (ShiftLinMotor_Device_t *)dev;
+	ShiftReg_StoreMotorStbyBit(device->shiftPos);
+}
+
+void ShiftLinMotor_StbyAll(void) {
+	ShiftReg_StoreMotorStbyBitsAll();
+	/*ShiftReg_SendStoredMotorBitsIfChanged();*/
+}
+

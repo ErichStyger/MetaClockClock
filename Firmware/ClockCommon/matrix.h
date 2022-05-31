@@ -74,6 +74,8 @@ uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z);
 
 uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io);
 
+uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io);
+
 void MATRIX_EnableDisableHandsAll(bool enable);
 
 #if MATRIX_NOF_STEPPERS_Z==2 /* the special functions below are only available for dual shaft motors */

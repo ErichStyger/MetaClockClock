@@ -21,6 +21,10 @@
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
   #include "circleClock.h"
 #endif
+#if PL_CONFIG_USE_LED_PIXEL
+  #include "matrixpixel.h"
+  #include "LedClock.h"
+#endif
 
 static bool IntermezzoOn = /* if intermezzos are on by default or not */
 #if PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT
@@ -28,8 +32,15 @@ static bool IntermezzoOn = /* if intermezzos are on by default or not */
 #else
     false;
 #endif
+#if PL_CONFIG_USE_LED_PIXEL
+static uint8_t IntermezzoDelaySec = 2; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 2 secs to build the time */
+#else
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
+#endif
 
+/* #if-directive for all matrix configurations except SmartWall Matrix*/
+/* =============================================================================================================*/
+#if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
 static void Intermezzo0(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -837,10 +848,259 @@ static void IntermezzoCircleRays(void) {
 }
 #endif /* PL_CONFIG_HAS_CIRCLE_CLOCK */
 
+/* #elif-directive for SmartWall Matrix configuration */
+/* =============================================================================================================*/
+#elif PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
 
+static uint32_t randomColorGen(uint8_t br){
+	int rgbSet = McuUtility_random(1,7);
+	int bright = br;
+	int min = 10; /* minimal color value */
+	int max = 255; /* maximal color value */
+	if(bright>100) bright=100;
+	uint32_t color;
+	uint8_t r, g, b;
+	switch (rgbSet)
+	{
+		case 1:
+			r = McuUtility_random(min,max);
+			g = 0;
+			b = 0;
+			break;
+		case 2:
+			r = 0;
+			g = McuUtility_random(min,max);
+			b = 0;
+			break;
+		case 3:
+			r = 0;
+			g = 0;
+			b = McuUtility_random(min,max);
+			break;
+		case 4:
+			r = McuUtility_random(min,max);
+			g = McuUtility_random(min,max);
+			b = 0;
+			break;
+		case 5:
+			r = McuUtility_random(min,max);
+			g = 0;
+			b = McuUtility_random(min,max);
+			break;
+		case 6:
+			r = 0;
+			g = McuUtility_random(min,max);
+			b = McuUtility_random(min,max);
+			break;
+		case 7:
+			r = McuUtility_random(min,max);
+			g = McuUtility_random(min,max);
+			b = McuUtility_random(min,max);
+			break;
+		default:
+			r = 0;
+			g = 0;
+			b = 0;
+			break;
+	}
+	color = NEO_COMBINE_RGB(r,g,b);
+	color = NEO_BrightnessPercentColor(color, bright);
+	color = NEO_GammaCorrect24(color);
+	return color;
+}
+
+/*!
+ * \brief Mixing colors depending on their position
+ * \param colorA: rgb color value of color A
+ * \param colorB: rgb color value of color B
+ * \param distance: distance between point A and B (e.g. A-X-X-X-B distance is 5)
+ * \param pos: distance between point A and the blend color to be calculated. (e.g. A-X-X-[X] <-distance is 3)
+ */
+static uint32_t mixColorPos(uint32_t colorA, uint32_t colorB, uint32_t distance, uint32_t pos){
+	uint8_t rA, rB, rC, gA, gB, gC, bA, bB, bC;
+
+	rA = (colorA>>16)&0xff;
+	gA = (colorA>>8)&0xff;
+	bA = colorA&0xff;
+
+	rB = (colorB>>16)&0xff;
+	gB = (colorB>>8)&0xff;
+	bB = colorB&0xff;
+
+	rC = (rA*((distance-1)-pos)+rB*pos)/(distance-1);
+	gC = (gA*((distance-1)-pos)+gB*pos)/(distance-1);
+	bC = (bA*((distance-1)-pos)+bB*pos)/(distance-1);
+
+	return NEO_COMBINE_RGB(rC,gC,bC);
+}
+
+static void clearUnusedPixel(void){
+	for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+		for(int x=PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1; x>=0; x--) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(0x0));
+				}
+			}
+		}
+	}
+	NEO_TransferPixels();
+}
+
+static void Intermezzo0(void) {
+	int br = 40; /*Brightness of intermezzo color (0-100%)*/
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(randomColorGen(br)));
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
+				}
+			}
+		}
+	}
+	NEO_TransferPixels();
+	STEPPER_StartTimer();
+}
+
+static void Intermezzo1(void) {
+	int br = 10; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c01, c11, ca, cb, color;
+	c00 = randomColorGen(100);
+	c10 = randomColorGen(100);
+	c01 = randomColorGen(100);
+	c11 = randomColorGen(100);
+
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
+					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
+					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					color = NEO_BrightnessPercentColor(color, br);
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
+				}
+			}
+		}
+	}
+	NEO_TransferPixels();
+	STEPPER_StartTimer();
+}
+
+static void Intermezzo2(void) {
+	int br = 10; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c20, c01, c11, c21, ca, cb, color;
+	c00 = randomColorGen(100);
+	c10 = randomColorGen(100);
+	c20 = randomColorGen(100);
+	c01 = randomColorGen(100);
+	c11 = randomColorGen(100);
+	c21 = randomColorGen(100);
+
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					if(x<(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2)){
+						ca = mixColorPos(c00, c10, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x);
+						cb = mixColorPos(c01, c11, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x);
+					}
+					else{
+						ca = mixColorPos(c10, c20, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2));
+						cb = mixColorPos(c11, c21, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2));
+					}
+					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					color = NEO_BrightnessPercentColor(color, br);
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
+				}
+			}
+		}
+	}
+	NEO_TransferPixels();
+	STEPPER_StartTimer();
+}
+static void Intermezzo3(void) {
+	int br = 10; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c01, c11, ca, cb, color;
+	c00 = randomColorGen(100);
+	c10 = randomColorGen(100);
+	c01 = randomColorGen(100);
+	c11 = randomColorGen(100);
+
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
+					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
+					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					color = NEO_BrightnessPercentColor(color, br);
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
+				}
+			}
+		}
+	}
+	NEO_TransferPixels();
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1))*y, 0);
+				}
+				else{
+					//STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1))*((PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1)-y), 0);
+				}
+			}
+		}
+	}
+	STEPPER_StartTimer();
+}
+
+static void Intermezzo4(void) {
+	int br = 10; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c01, c11, ca, cb, color;
+	c00 = randomColorGen(100);
+	c10 = randomColorGen(100);
+	c01 = randomColorGen(100);
+	c11 = randomColorGen(100);
+
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
+					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
+					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					color = NEO_BrightnessPercentColor(color, br);
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
+				}
+			}
+		}
+	}
+	NEO_TransferPixels();
+	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				if(!LedClock_IsPixelUsed(x, y, z)){
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1))*x, 0);
+				}
+				else{
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1))*((PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1)-x), 0);
+				}
+			}
+		}
+	}
+	STEPPER_StartTimer();
+}
+
+#endif
 typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
 static const Intermezzofp intermezzos[] = /* list of intermezzos */
 {
+#if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
     Intermezzo0,
     Intermezzo1,
     Intermezzo2,
@@ -876,6 +1136,13 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     IntermezzoCircleCircle,
     IntermezzoCircleRays,
 #endif
+#elif PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
+	Intermezzo0,
+	Intermezzo1,
+	Intermezzo2,
+	Intermezzo3,
+	Intermezzo4,
+#endif
 };
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
 
@@ -901,6 +1168,11 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
       *intermezzoShown = true;
     }
   }
+#if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
+  else{
+	  clearUnusedPixel(); /*clear the unused pixels in the background */
+  }
+#endif
 }
 
 #if PL_CONFIG_USE_SHELL
@@ -953,6 +1225,9 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo off")==0) {
     *handled = true;
     IntermezzoOn = false;
+#if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
+    clearUnusedPixel(); /*clear the unused pixels in the background */
+#endif
     return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo toggle")==0) {
     *handled = true;

@@ -58,6 +58,9 @@
 #if PL_CONFIG_USE_LED_CLOCK
   #include "LedClock.h"
 #endif
+#if PL_CONFIG_USE_LED_PIXEL
+  #include "matrix.h"
+#endif
 
 static bool CLOCK_ClockIsOn =
   #if PL_CONFIG_CLOCK_ON_BY_DEFAULT
@@ -685,7 +688,7 @@ static void ClockTask(void *pv) {
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
-  bool intermezzoShown = false;
+  bool intermezzoShown = true;
 #endif
   #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
   #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
@@ -768,9 +771,7 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
   (void)SHELL_ParseCommand((const unsigned char *)"matrix motor on", NULL, true);
 #endif
-#if 0 && PL_CONFIG_USE_LED_PIXEL
-  MATRIX_MoveAllToStartPosition(10000, McuShell_GetStdio()); /* Move all Pixels to zero position, before starting clock. */
-#endif
+
   for(;;) {
     vTaskDelay(pdMS_TO_TICKS(200));
   #if PL_CONFIG_USE_WDT

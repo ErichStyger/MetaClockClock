@@ -33,9 +33,13 @@
 #include "McuCriticalSection.h"
 #include "McuLog.h"
 #include "nvmc.h"
+#if PL_CONFIG_USE_LINEAR_STEPPER
+  #include "ShiftLinMotor.h"
+#endif
 
 #define STEPPER_CMD_QUEUE_LENGTH    (8) /* maximum number of items in stepper command queue */
 
+#if !STEPPER_CONFIG_USE_FREERTOS_TIMER && McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
 typedef enum SCT_CHANNEL_MASK_e {
   SCT_CHANNEL_MASK_0 = (1<<0),
   SCT_CHANNEL_MASK_1 = (1<<1),
@@ -46,6 +50,11 @@ typedef enum SCT_CHANNEL_MASK_e {
   SCT_CHANNEL_MASK_6 = (1<<6),
   SCT_CHANNEL_MASK_7 = (1<<7)
 } SCT_CHANNEL_MASK_e;
+#endif
+
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
+  static TimerHandle_t timer;
+#endif
 
 /* default configuration, used for initializing the config */
 static const STEPPER_Config_t defaultConfig =
@@ -108,7 +117,10 @@ STEPPER_Handle_t STEPPER_InitDevice(STEPPER_Config_t *config) {
   return handle;
 }
 
-#if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
+  #define STEPPER_START_TIMER()        (void)xTimerStart(timer, pdMS_TO_TICKS(100));
+  #define STEPPER_STOP_TIMER()         (void)xTimerStop(timer, pdMS_TO_TICKS(100))
+#elif McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
   #define STEPPER_START_TIMER()        SCTIMER_StartTimer(SCT0, kSCTIMER_Counter_L)
   #define STEPPER_STOP_TIMER()         SCTIMER_StopTimer(SCT0, kSCTIMER_Counter_L)
 #elif McuLib_CONFIG_CPU_IS_KINETIS
@@ -128,7 +140,7 @@ STEPPER_Handle_t STEPPER_InitDevice(STEPPER_Config_t *config) {
   #define STEPPER_ACCELERATION_RANGE_DEGREE   (25)  /* acceleration is at the first 25 degree and the last 25 degree of the movement */
   #define STEPS_TO_DEGREE(steps)              (((steps)*360u)/STEPPER_CLOCK_360_STEPS)
 #else
-/* Check  Check AccelDelaySteps()! */
+  /* \todo Check AccelDelaySteps()! */
   #define STEPPER_ACCELERATION_RANGE_STEPS    (200) /* acceleration is within the first 200 steps and the last 200 steps */
 #endif
 
@@ -136,6 +148,9 @@ void STEPPER_StopTimer(void) {
   STEPPER_STOP_TIMER();
 #if PL_CONFIG_USE_MOTOR_ON_OFF && PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
   STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false); /* turn off motors */
+#elif PL_CONFIG_USE_LINEAR_STEPPER && PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
+  ShiftLinMotor_StbyAll(); /* Make sure that the motor coils are no longer powered. */
+  ShiftLinMotor_Execute();
 #endif
 }
 
@@ -216,6 +231,11 @@ bool STEPPER_TimerStepperCallback(STEPPER_Handle_t stepper) {
     mot->stepFn(mot->device, n);
   }
   mot->doSteps -= n; /* update remaining steps */
+#if PL_CONFIG_USE_LINEAR_STEPPER
+  if (mot->doSteps==0) { /* Make sure that the motor coils are no longer powered. */
+	  ShiftLinMotor_Stby(mot->device);
+  }
+#endif
   mot->delayCntr = mot->delay*STEP_SIZE; /* reload delay counter */
 
   /* check if we have to speed up or slow down */
@@ -255,6 +275,7 @@ bool STEPPER_TimerStepperCallback(STEPPER_Handle_t stepper) {
   return true; /* still work to do */
 }
 
+#if !STEPPER_CONFIG_USE_FREERTOS_TIMER
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
 static void SCTIMER_Handler0(void) {
   uint32_t flags;
@@ -272,8 +293,29 @@ void PIT_HANDLER(void) {
   __DSB();
 }
 #endif
+#endif /* !STEPPER_CONFIG_USE_FREERTOS_TIMER */
 
-#if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
+static void vTimerDebounce(TimerHandle_t pxTimer) {
+  MATRIX_TimerCallback();
+}
+
+static void Timer_Init(void) {
+  TickType_t tickPeriodMs;
+
+  tickPeriodMs = (STEPPER_TIME_STEP_US)/1000; /* stepper update time in ms */
+  timer = xTimerCreate(
+        "tmrStepper", /* name */
+        pdMS_TO_TICKS(tickPeriodMs), /* period/time */
+        pdTRUE, /* auto reload */
+        (void*)0, /* timer ID */
+        vTimerDebounce); /* callback */
+  if (timer==NULL) {
+    McuLog_fatal("failed creating timer");
+    for(;;); /* failure! */
+  }
+}
+#elif McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
 static void Timer_Init(void) {
   uint32_t eventNumberOutput = 0;
   sctimer_config_t sctimerInfo;
@@ -500,12 +542,27 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   unsigned char buf[128];
 
   McuShell_SendStatusStr((unsigned char*)"stepper", (unsigned char*)"Stepper settings\r\n", io->stdOut);
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"FreeRTOS Timer, period (ticks): ");
+  McuUtility_strcatNum32u(buf, sizeof(buf), xTimerGetPeriod(timer));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+#else
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"HW timer\, period (us): ");
+  McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_TIME_STEP_US);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+#endif
+  McuShell_SendStatusStr((unsigned char*)"  timer", buf, io->stdOut);
+
 #if PL_CONFIG_IS_ANALOG_CLOCK
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"360 degree steps: ");
   McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_CLOCK_360_STEPS);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", full round (ms): ");
+  McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_TIME_360_DEGREE_MS);
 #else /* linear stepper */
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"range steps: ");
   McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_FULL_RANGE_NOF_STEPS);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", full range (ms): ");
+  McuUtility_strcatNum32s(buf, sizeof(buf), STEPPER_TIME_FULL_RANGE_MS);
 #endif
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  steps", buf, io->stdOut);

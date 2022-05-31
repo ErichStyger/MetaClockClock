@@ -14,6 +14,8 @@ uint8_t LedClock_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
 
 void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date);
 
+bool LedClock_IsPixelUsed(int32_t x, int32_t y, int32_t z);
+
 void LedClock_Deinit(void);
 
 void LedClock_Init(void);

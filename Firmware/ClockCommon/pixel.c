@@ -29,13 +29,26 @@ static void PIXEL_Zero(uint8_t x, uint8_t y, uint8_t z) {
 }
 
 static void PIXEL_ZeroAll(void) {
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    for(int y=0; x<MATRIX_NOF_STEPPERS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        PIXEL_Zero(x, y, z);
-      }
-    }
-  }
+	int dir = 1;
+	for(int d=0; d<=1;d++){
+		for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+			for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+				for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+					if(d==1)dir=(-1); /* first do it forward, then backward */
+					STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS*dir, 0);
+				}
+			}
+		}
+		STEPPER_StartTimer();
+		STEPBOARD_MoveAndWait(STEPBOARD_GetBoard(), 10);
+	}
+	for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+		for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+			for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+				STEPPER_SetPos(MATRIX_GetStepper(x, y, z), 0);
+			}
+		}
+	}
 }
 
 #if PL_CONFIG_USE_SHELL
@@ -96,6 +109,7 @@ uint8_t PIXEL_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #endif /* PL_CONFIG_USE_SHELL */
 
 void PIXEL_Init(void) {
+	PIXEL_ZeroAll();
 }
 
 #endif /* PL_CONFIG_USE_LED_PIXEL */

@@ -13,14 +13,20 @@
 #include "McuTimeDate.h"
 #include "McuUtility.h"
 #include "matrixpixel.h"
+#include "matrix.h"
+#include "stepper.h"
+#include "stepperConfig.h"
 
-#define LED_CLOCK_CONFIG_USE_5x3_FONT         (1)
+#define LED_CLOCK_CONFIG_USE_5x3_FONT         (0)
+#define LED_CLOCK_CONFIG_USE_5x3_DIGI_FONT	  (1)
 #define LED_CLOCK_CONFIG_USE_8x4_FONT         (0)
 #define LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT   (0)
 
 static bool LedClock_doMirror = false;
-static NEO_PixelColor LedClock_colorDigits = 0x50;
-static NEO_PixelColor LedClock_colorDots = 0x5000;
+static NEO_PixelColor LedClock_colorDigits = 0xFF;
+static NEO_PixelColor LedClock_colorDots = 0x400000;
+
+static bool LedClock_PixelUsed [PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
 
 
 void LedDisp_Clear(void) {
@@ -35,30 +41,82 @@ int LedDisp_GetHeight(void) {
   return MPIXEL_NOF_Y;
 }
 
+bool LedClock_IsPixelUsed(int32_t x, int32_t y, int32_t z){
+	return LedClock_PixelUsed[x][y][z];
+}
+
+void LedClock_OccupyPixel(int32_t x, int32_t y, int32_t z){
+	LedClock_PixelUsed[x][y][z] = true;
+}
+void LedClock_ReleasePixel(int32_t x, int32_t y, int32_t z){
+	LedClock_PixelUsed[x][y][z] = false;
+}
+void LedClock_ReleasePixelAll(void){
+	for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+		for(int x=PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1; x>=0; x--) {
+			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				LedClock_ReleasePixel(x, y, z);
+			}
+		}
+	}
+}
+
 static void LedDisp_PutPixel(NEO_PixelIdxT x, NEO_PixelIdxT y, NEO_PixelColor color) {
-  MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(color));
+  if(color > 0){
+	  LedClock_OccupyPixel(x, y, 0);
+	  MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(color));
+  }
+  else{
+	  LedClock_ReleasePixel(x, y, 0);
+#if !PL_CONFIG_USE_INTERMEZZO
+	  MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(0));
+#endif
+  }
 }
 
 #if LED_CLOCK_CONFIG_USE_5x3_FONT
 static const uint16_t Numbers5x3[10] = { /* digits 0-9, data byte with two nibbles (rows) */
-    /* from MSB to LSB: 4bits for each row:
-     * 0   1   2     3   4   5   6   7   8   9
-     * 111 010 110 111 101 111 011 111 111 111
-     * 101 110 001 001 101 100 100 001 101 101
-     * 101 010 010 011 111 111 111 010 111 111
-     * 101 010 100 001 001 001 101 100 101 001
-     * 111 111 111 111 001 110 111 100 111 110
-     */
+	 /* from MSB to LSB: 4bits for each row:
+	  * 0   1   2     3   4   5   6   7   8   9
+	  * 111 010 110 111 101 111 011 111 111 111
+	  * 101 110 001 001 101 100 100 001 101 101
+	  * 101 010 010 011 111 111 111 010 111 111
+	  * 101 010 100 001 001 001 101 100 101 001
+	  * 111 111 111 111 001 110 111 100 111 110
+	  */
+	/* 0 */ 0b111101101101111,
+	/* 1 */ 0b010110010010111,
+    /* 2 */ 0b110001010100111,
+	/* 3 */ 0b111001011001111,
+	/* 4 */ 0b101101111001001,
+	/* 5 */ 0b111100111001110,
+	/* 6 */ 0b011100111101111,
+	/* 7 */ 0b111001010100100,
+	/* 8 */ 0b111101111101111,
+	/* 9 */ 0b111101111001110,
+};
+#endif
+
+#if LED_CLOCK_CONFIG_USE_5x3_DIGI_FONT
+static const uint16_t Numbers5x3[10] = { /* digits 0-9, data byte with two nibbles (rows) */
+  /* from MSB to LSB: 4bits for each row:
+   * 0   1   2     3   4   5   6   7   8   9
+   * 111 010 111 111 101 111 111 111 111 111
+   * 101 110 001 001 101 100 100 001 101 101
+   * 101 010 010 011 111 111 111 010 111 111
+   * 101 010 100 001 001 001 101 100 101 001
+   * 111 111 111 111 001 111 111 100 111 111
+   */
   /* 0 */ 0b111101101101111,
   /* 1 */ 0b010110010010111,
-  /* 2 */ 0b110001010100111,
+  /* 2 */ 0b111001111100111,
   /* 3 */ 0b111001011001111,
   /* 4 */ 0b101101111001001,
-  /* 5 */ 0b111100111001110,
-  /* 6 */ 0b011100111101111,
+  /* 5 */ 0b111100111001111,
+  /* 6 */ 0b111100111101111,
   /* 7 */ 0b111001010100100,
   /* 8 */ 0b111101111101111,
-  /* 9 */ 0b111101111001110,
+  /* 9 */ 0b111101111001111,
 };
 #endif
 
@@ -111,7 +169,7 @@ static const uint32_t Numbers8x4[10] = { /* digits 0-9, data byte with two nibbl
 };
 #endif
 
-#if LED_CLOCK_CONFIG_USE_5x3_FONT
+#if LED_CLOCK_CONFIG_USE_5x3_FONT || LED_CLOCK_CONFIG_USE_5x3_DIGI_FONT
 static void LedClock_SetChar5x3Pixels(char ch, NEO_PixelIdxT x0, NEO_PixelIdxT y0, NEO_PixelColor color) {
   uint16_t data;
   int i;
@@ -123,14 +181,18 @@ static void LedClock_SetChar5x3Pixels(char ch, NEO_PixelIdxT x0, NEO_PixelIdxT y
       if (LedClock_doMirror) {
         if (data&(1<<14)) { /* MSB set? */
           LedDisp_PutPixel(x0+(i%3), y0+4-(i/3), color);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%3), y0+4-(i/3), 0), STEPPER_FULL_RANGE_NOF_STEPS, 0);
         } else {
           LedDisp_PutPixel(x0+(i%3), y0+4-(i/3), 0);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%3), y0+4-(i/3), 0), 0, 0);
         }
       } else {
         if (data&(1<<14)) { /* MSB set? */
           LedDisp_PutPixel(x0+(i%3), y0+(i/3), color);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%3), y0+(i/3), 0), STEPPER_FULL_RANGE_NOF_STEPS, 0);
         } else {
           LedDisp_PutPixel(x0+(i%3), y0+(i/3), 0);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%3), y0+(i/3), 0), 0, 0);
         }
       }
       data <<= 1; /* next bit */
@@ -155,14 +217,18 @@ static void LedClock_SetChar8x4Pixels(char ch, NEO_PixelIdxT x0, NEO_PixelIdxT y
       if (LedClock_doMirror) {
         if (data&(1<<31)) { /* MSB set? */
           LedDisp_PutPixel(x0+(i%4), y0+7-(i/4), color);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%4), y0+7-(i/4), 0), STEPPER_FULL_RANGE_NOF_STEPS, 0);
         } else {
           LedDisp_PutPixel(x0+(i%4), y0+7-(i/4), 0);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%4), y0+7-(i/4), 0), 0, 0);
         }
       } else {
         if (data&(1<<31)) { /* MSB set? */
           LedDisp_PutPixel(x0+(i%4), y0+(i/4), color);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%4), y0+(i/4), 0), STEPPER_FULL_RANGE_NOF_STEPS, 0);
         } else {
           LedDisp_PutPixel(x0+(i%4), y0+(i/4), 0);
+          STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x0+(i%4), y0+(i/4), 0), 0, 0);
         }
       }
       data <<= 1; /* next bit */
@@ -177,7 +243,7 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
 
 #if LED_CLOCK_CONFIG_USE_8x4_SMALL_FONT || LED_CLOCK_CONFIG_USE_8x4_FONT
   fp = LedClock_SetChar8x4Pixels;
-#elif LED_CLOCK_CONFIG_USE_5x3_FONT
+#elif LED_CLOCK_CONFIG_USE_5x3_FONT || LED_CLOCK_CONFIG_USE_5x3_DIGI_FONT
   fp = LedClock_SetChar5x3Pixels;
 #else
   #error "???"
@@ -195,8 +261,13 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
     }
     if (showMM) {
       if (showHH) {
+#if !PL_CONFIG_USE_INTERMEZZO
         LedDisp_PutPixel(pos-1, 1, colorDots);
+        LedDisp_PutPixel(pos, 1, colorDots);
         LedDisp_PutPixel(pos-1, 3, colorDots);
+        LedDisp_PutPixel(pos, 3, colorDots);
+#endif
+        pos+=1;
       }
       fp('0'+(time->Min/10),  pos, 0, colorDigits);
       pos+=4;
@@ -291,6 +362,7 @@ void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   LedDisp_Clear();
   LedClock_PutClockPixels(time, date, LedClock_colorDigits, LedClock_colorDots, true, true, false);
   NEO_TransferPixels();
+  STEPPER_StartTimer();
 }
 
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
@@ -348,6 +420,7 @@ void LedClock_Deinit(void) {
 }
 
 void LedClock_Init(void) {
+	LedClock_ReleasePixelAll();
 }
 
 #endif /* PL_CONFIG_USE_LED_CLOCK */

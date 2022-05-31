@@ -868,30 +868,15 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
 #endif
 }
 #else
-static uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io) {
-#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485
-#warning "todo NYI"
-  #if 0 /* \todo not implemented yet */
-  #if PL_CONFIG_USE_EXTENDED_HANDS
-  MHAND_2ndHandEnableAll(false);
-  #endif
-    MPOS_SetAngleZ0Z1All(hour*360/12, hour*360/12);
-    MATRIX_SetMoveDelayZ0Z1All(2, 2);
-    MHAND_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
-  #if PL_CONFIG_USE_LED_RING
-    MHAND_HandEnableAll(true);
-    MRING_EnableRingAll(false);
-  #endif
-  #endif
-  return MATRIX_SendToRemoteQueueExecuteAndWait(true);
-#elif PL_CONFIG_USE_STEPPER
+uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io) {
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485 && PL_CONFIG_USE_STEPPER
   /* moving all stepper motors to the start position. Will move them by the max steps so they hit the end stop */
   int x, y, z;
 
-  for(x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    for(y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-      for(z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0);
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
+    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
+        STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
       }
     }
   }
@@ -2134,6 +2119,38 @@ void MATRIX_TimerCallback(void) {
   bool workToDo = false;
   STEPPER_Handle_t stepper;
 
+#if PL_CONFIG_USE_LINEAR_STEPPER
+  /* go through all boards and update steps */
+  /* Update maximum <STEPPER_MAX_SIMULTAN_MOVE> stepper motors at the same time*/
+
+  uint8_t workToDoCnt = 0;
+
+  //ShiftLinMotor_StbyAll();
+  for(int x = 0; x<MATRIX_NOF_STEPPERS_X; x++) {
+	for(int y = 0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+       for(int z = 0; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
+         stepper = MATRIX_GetStepper(x, y, z);
+         if(STEPPER_TimerStepperCallback(stepper)){
+        	workToDoCnt++;
+        	workToDo = true;
+         }
+         if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+        	 break;
+         }
+       #if PL_CONFIG_USE_LED_DIMMING
+         workToDo |= NEOSR_HandDimmingNotFinished(STEPPER_GetDevice(stepper));
+       #endif
+      } /* for */
+      if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+    	  break;
+      }
+    }
+	if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+		break;
+	}
+  }
+  ShiftLinMotor_Execute(); /* If shift registers are used, then send the data now.*/
+#else
   /* go through all boards and update steps */
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
@@ -2146,6 +2163,7 @@ void MATRIX_TimerCallback(void) {
       } /* for */
     }
   }
+#endif
   /* check if we can stop timer */
   if (!workToDo) {
     STEPPER_StopTimer();
@@ -2302,6 +2320,7 @@ static void MatrixQueueTask(void *pv) {
   BaseType_t res;
 
   McuLog_trace("Starting MatrixQueue Task");
+  PL_InitFromTask();
   for(;;) {
     res = xSemaphoreTake(semMatrixExecuteQueue, portMAX_DELAY); /* block until we get a request to update */
     if (res==pdTRUE) { /* received the signal */
@@ -2932,11 +2951,7 @@ static void InitSteppers(void) {
 #endif
 
   /* setup board */
-#if PL_CONFIG_USE_RS485
   stepBoardConfig.addr = RS485_GetAddress();
-#else
-  stepBoardConfig.addr = 0;
-#endif
   stepBoardConfig.enabled = true;
 #if PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN64 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   #if MATRIX_NOF_STEPPERS>=1
@@ -3090,12 +3105,11 @@ static void InitLinearSteppers(void) {
   ShiftLinMotor_GetDefaultConfig(&shiftLinMotConfig);
   shiftLinMotConfig.shiftPos = 0; /* motors starting with zero */
 
-  for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
-    for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+  for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+    for(int x=PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1; x>=0; x--) {
       for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
-
         stepperConfig.device = ShiftLinMotor_InitDevice(&shiftLinMotConfig);
-        stepperConfig.stepFn = NULL;
+        stepperConfig.stepFn = ShiftLinMotor_SingleStep;
         shiftLinMotConfig.shiftPos++; /* for next iteration */
         stepBoardConfig.stepper[x][y][z] = STEPPER_InitDevice(&stepperConfig);
       }
