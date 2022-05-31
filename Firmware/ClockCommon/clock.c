@@ -768,7 +768,7 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
   (void)SHELL_ParseCommand((const unsigned char *)"matrix motor on", NULL, true);
 #endif
-#if PL_CONFIG_USE_LED_PIXEL
+#if 0 && PL_CONFIG_USE_LED_PIXEL
   MATRIX_MoveAllToStartPosition(10000, McuShell_GetStdio()); /* Move all Pixels to zero position, before starting clock. */
 #endif
   for(;;) {
