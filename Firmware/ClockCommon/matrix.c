@@ -1356,7 +1356,7 @@ static uint8_t ParseMatrixCommand(const unsigned char **cmd, int32_t *xp, int32_
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_RequestRgbUpdate(void) {
   /* request LED update either locally or remote */
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_NEO_PIXEL_HW /* update locally attached NeoPixels */
   APP_RequestUpdateLEDs();
 #elif PL_CONFIG_USE_RS485 /* send over RS-485 */
   (void)MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no not need to wait */
