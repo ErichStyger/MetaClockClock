@@ -5,6 +5,7 @@
  */
 
 #include "platform.h"
+#if PL_CONFIG_USE_SHIFT_REGS
 #include "ShiftLinMotor.h"
 #include "McuRTOS.h"
 #include "shiftreg.h"
@@ -58,4 +59,5 @@ void ShiftLinMotor_StbyAll(void) {
 	ShiftReg_StoreMotorStbyBitsAll();
 	/*ShiftReg_SendStoredMotorBitsIfChanged();*/
 }
+#endif /* PL_CONFIG_USE_SHIFT_REGS */
 
