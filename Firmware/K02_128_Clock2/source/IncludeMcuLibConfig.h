@@ -46,8 +46,11 @@ Instructions:
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
 #define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
-#define configSYSTICK_USE_LOW_POWER_TIMER       (0)
-#define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
+
+#define configUSE_TICKLESS_IDLE               (1)
+#define configSYSTICK_USE_LOW_POWER_TIMER    (1)
+//#define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
+#define config_USE_STOP_MODE                  (0  && configSYSTICK_USE_LOW_POWER_TIMER)
 
 /* performance counter: */
 #define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
@@ -57,7 +60,7 @@ Instructions:
 /* Segger SystemViewer: */
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
 #define SYSVIEW_APP_NAME                     "K02 LedStepper"
-#define SYSVIEW_DEVICE_NAME                  "NXP K02FN64"
+#define SYSVIEW_DEVICE_NAME                  "NXP K02FN128"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
 #define McuSystemView_CONFIG_RTT_CHANNEL     (1)
 /* -------------------------------------------------*/

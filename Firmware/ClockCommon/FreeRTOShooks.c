@@ -13,6 +13,7 @@
   #include "McuTimeDate.h"
 #endif
 #include "McuTimeout.h"
+#include "LowPower.h"
 
 /*
 ** ===================================================================
@@ -119,14 +120,17 @@ void McuRTOS_vApplicationIdleHook(void)
 {
   /* Called whenever the RTOS is idle (from the IDLE task).
      Here would be a good place to put the CPU into low power mode. */
-  /* Write your code here ... */
 #if McuLib_CONFIG_CORTEX_M==0 && PL_CONFIG_USE_RTT
   /* somehow on LPC this does slow down RTT communication a lot! */
   /* a better solution here would be to check if there are RTT bytes in the buffer, but the buffer is not full yet */
 #else
-  __asm volatile("dsb");
-  __asm volatile("wfi");
-  __asm volatile("isb");
+  #if LP_MODE_SELECTED==LP_MODE_NONE
+    /* do nothing */
+  #elif !configUSE_TICKLESS_IDLE && LP_MODE_SELECTED==LP_MODE_WAIT
+    LP_EnterWaitMode();
+  #elif !configUSE_TICKLESS_IDLE && LP_MODE_SELECTED==LP_MODE_STOP
+    LP_EnterStopMode();
+  #endif
 #endif
 }
 
@@ -149,9 +153,11 @@ void McuRTOS_vOnPreSleepProcessing(TickType_t expectedIdleTicks)
   /* example for ARM Cortex-M (enable SetOperationMode() in CPU component): */
   /* Cpu_SetOperationMode(DOM_WAIT, NULL, NULL); */ /* Processor Expert way to get into WAIT mode */
   /* or to wait for interrupt: */
-    __asm volatile("dsb");
-    __asm volatile("wfi");
-    __asm volatile("isb");
+#if LP_MODE_SELECTED==LP_MODE_STOP
+  LP_EnterStopMode();
+#else
+  LP_EnterWaitMode();
+#endif
 #elif McuLib_CONFIG_CPU_IS_RISC_V
   #warning "NYI" /* \todo */
 #elif 0

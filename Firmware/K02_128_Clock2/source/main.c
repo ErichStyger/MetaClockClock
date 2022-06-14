@@ -18,10 +18,6 @@ int main(void) {
   BOARD_InitBootPins();
   BOARD_InitBootClocks();
   BOARD_InitBootPeripherals();
-
-  //void LP_Test(void);
-  //LP_Test();
   APP_Run();
   return 0;
 }
-

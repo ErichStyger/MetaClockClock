@@ -13,11 +13,18 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_LOW_POWER
 #include "LowPower.h"
 #include "McuRTOS.h"
 #include "fsl_llwu.h"
 #include "cmsis_gcc.h"
+
+void LP_EnterWaitMode(void) {
+  __asm volatile("dsb");
+  __asm volatile("wfi");
+  __asm volatile("isb");
+}
+
+#if PL_CONFIG_USE_LOW_POWER
 
 BaseType_t xEnterTicklessIdle(void) {
   return pdTRUE; /* enter FreeRTOS tickless idle mode */
