@@ -17,6 +17,8 @@
 #include "McuRTOS.h"
 #include "fsl_llwu.h"
 #include "cmsis_gcc.h"
+#include "fsl_smc.h"
+#include "McuLog.h"
 
 void LP_EnterWaitMode(void) {
   __asm volatile("dsb");
@@ -24,29 +26,24 @@ void LP_EnterWaitMode(void) {
   __asm volatile("isb");
 }
 
-#if PL_CONFIG_USE_LOW_POWER
+#if LP_MODE_SELECTED==LP_MODE_STOP
+void App_EnterStopMode(void) {
+  status_t status;
 
-BaseType_t xEnterTicklessIdle(void) {
-  return pdTRUE; /* enter FreeRTOS tickless idle mode */
-}
-
-void LP_EnterLowpowerMode(void) {
-#if 0 && PL_CONFIG_USE_LOW_POWER
-  if(stopModeAllowed) {
-    Cpu_SetOperationMode(DOM_STOP, NULL, NULL);
-  } else {
-    __asm volatile("dsb");
-    __asm volatile("wfi");
-    __asm volatile("isb");
+  SMC_PreEnterStopModes();
+  status = SMC_SetPowerModeStop(SMC, kSMC_PartialStop);
+  SMC_PostExitStopModes();
+  if (status!=kStatus_Success) {
+    McuLog_fatal("failed exit stop mode");
+    for(;;) {}
   }
-#else
-  #warning "low power mode disabled!"
-  __asm volatile("dsb");
-  __asm volatile("wfi");
-  __asm volatile("isb");
+}
 #endif
+
+void LP_Init(void) {
 }
 
+#if 0 && PL_CONFIG_USE_LOW_POWER
 #define DEMO_LLWU_PERIPHERAL  LLWU
 
 #define APP_LLWU              DEMO_LLWU_PERIPHERAL
@@ -89,13 +86,7 @@ void LLWU_ISR(void) {
   exception return operation might vector to incorrect interrupt */
   __DSB();
 }
-
-
-void LP_Init(void) {
-}
-
 #endif /* PL_CONFIG_USE_LOW_POWER */
-
 
 #if 0
 /*
@@ -233,5 +224,4 @@ void LLWU_ISR(void) {
        exception return operation might vector to incorrect interrupt */
   __DSB();
 }
-
 #endif
