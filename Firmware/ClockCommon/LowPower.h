@@ -9,6 +9,8 @@
 
 #include "LowPowerconfig.h"
 
+void LP_OnActivateFromISR(void);
+
 void LP_EnterWaitMode(void);
 void LP_EnterStopMode(void);
 

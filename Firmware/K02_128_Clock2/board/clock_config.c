@@ -33,11 +33,11 @@
 /* clang-format off */
 /* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Clocks v8.0
+product: Clocks v9.0
 processor: MK02FN128xxx10
 package_id: MK02FN128VFM10
 mcu_data: ksdk2_0
-processor_version: 10.0.0
+processor_version: 11.0.1
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
 
@@ -105,7 +105,7 @@ outputs:
 settings:
 - {id: powerMode, value: HSRUN}
 - {id: MCG.FCRDIV.scale, value: '1'}
-- {id: MCG.FLL_mul.scale, value: '2929', locked: true}
+- {id: MCG.FLL_mul.scale, value: '2929'}
 - {id: MCG.FRDIV.scale, value: '1536'}
 - {id: MCG.IRCS.sel, value: MCG.FCRDIV}
 - {id: MCG.OSCSEL.sel, value: SIM.IRC48MCLK}
@@ -114,9 +114,8 @@ settings:
 - {id: MCG_C2_RANGE0_CFG, value: High}
 - {id: MCG_C2_RANGE0_FRDIV_CFG, value: High}
 - {id: SIM.CLKOUTSEL.sel, value: IRC48M.IRC48MCLK}
-- {id: SIM.OUTDIV1.scale, value: '1', locked: true}
-- {id: SIM.OUTDIV2.scale, value: '2', locked: true}
-- {id: SIM.OUTDIV4.scale, value: '4', locked: true}
+- {id: SIM.OUTDIV2.scale, value: '2'}
+- {id: SIM.OUTDIV4.scale, value: '4'}
 - {id: SIM.PLLFLLSEL.sel, value: IRC48M.IRC48MCLK}
 sources:
 - {id: IRC48M.IRC48M.outFreq, value: 48 MHz}

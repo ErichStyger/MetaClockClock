@@ -303,7 +303,9 @@ static void ShellTask(void *pv) {
     #endif
       msCntr += 20;
       if (msCntr>=200) {
+#if !McuUart485_CONFIG_UART_ISR_HOOK_ENABLED /* only toogle if no RS-485 hook is installed, otherwise conflicts with toggling inside hook */
         McuLED_Toggle(LEDS_Led);
+#endif
         msCntr = 0;
       }
 #if PL_CONFIG_USE_AUTOMATIC_DEMO_MODE

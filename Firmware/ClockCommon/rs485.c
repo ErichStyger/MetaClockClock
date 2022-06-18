@@ -21,6 +21,9 @@
 #if PL_CONFIG_USE_WDT
   #include "watchdog.h"
 #endif
+#if PL_CONFIG_USE_LOW_POWER
+  #include "leds.h" /* debugging LED */
+#endif
 
 typedef enum RS485_Response_e {
   RS485_RESPONSE_CONTINUE, /* continue scanning and parsing */

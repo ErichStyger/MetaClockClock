@@ -32,25 +32,24 @@ Instructions:
 /* ------------------- SDK/Library ---------------------------*/
 #define McuLib_CONFIG_SDK_VERSION_USED   McuLib_CONFIG_SDK_MCUXPRESSO_2_0
 #define McuLib_CONFIG_CPU_IS_LPC         (0)  /* LPC845 */
-#define McuLib_CONFIG_CORTEX_M           (4)  /* K22 is a Cortex-M4 */
+#define McuLib_CONFIG_CORTEX_M           (4)  /* K02 is a Cortex-M4 */
 #define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K02 is a Kinetis */
 #define McuLib_CONFIG_CPU_VARIANT        McuLib_CONFIG_CPU_VARIANT_NXP_K02FN
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
 #define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
-#define configTOTAL_HEAP_SIZE                (8*1024)
+#define configTOTAL_HEAP_SIZE                (8*1024) /* not used for Heap scheme 5 */
 #define configUSE_HEAP_SECTION_NAME          (1)
 #define configHEAP_SECTION_NAME_STRING       ".bss.$SRAM_LOWER.FreeRTOS"
 #define configQUEUE_REGISTRY_SIZE            (16)
 #define configMINIMAL_STACK_SIZE             (200/sizeof(StackType_t))
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
-#define configUSE_TIMERS                     (0)
+#define configUSE_TIMERS                     (1)
 #define INCLUDE_xTimerPendFunctionCall       (0)
 
-#define configUSE_TICKLESS_IDLE               (1)
+/* low power support: */
+#define configUSE_TICKLESS_IDLE              (0)
 #define configSYSTICK_USE_LOW_POWER_TIMER    (1)
-//#define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
-#define config_USE_STOP_MODE                  (0  && configSYSTICK_USE_LOW_POWER_TIMER)
 
 /* performance counter: */
 #define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
@@ -77,7 +76,7 @@ Instructions:
 /* -------------------------------------------------*/
 /* RTT */
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (128)
-#define McuRTT_CONFIG_BLOCKING_SEND                   (1)
+#define McuRTT_CONFIG_BLOCKING_SEND                   (0)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (256)
@@ -114,5 +113,8 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485      (1)
+
+#define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED  (1)
+#define McuUart485_CONFIG_UART_ISR_HOOK_NAME     App_RsUartHook
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

@@ -126,7 +126,7 @@ static void NeoTask(void *pv) {
 #if configUSE_HEAP_SCHEME==5
 #if PL_CONFIG_IS_K02 /* K02 has two 8K memory banks */
   static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[8*1024]; /* placed in in no_init section inside SRAM_LOWER */
-  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[4*1024]; /* placed in in no_init section inside SRAM_UPPER */
+  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[3*1024 + 900]; /* placed in in no_init section inside SRAM_UPPER */
 #elif PL_CONFIG_IS_TINYK22 /* K22FN512 has two 64K memory banks */
   static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[64*1024]; /* placed in in no_init section inside SRAM_LOWER */
   static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[16*1024]; /* placed in in no_init section inside SRAM_UPPER */

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="MK02FN64xxx10" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_10 http://mcuxpresso.nxp.com/XSD/mex_configuration_10.xsd" uuid="9f5f7764-2977-41c3-8709-e83551f09c23" version="10" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_10" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="MK02FN64xxx10" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_11 http://mcuxpresso.nxp.com/XSD/mex_configuration_11.xsd" uuid="9f5f7764-2977-41c3-8709-e83551f09c23" version="11" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>MK02FN128xxx10</processor>
       <package>MK02FN128VFM10</package>
@@ -14,15 +14,16 @@
       <generate_extended_information>false</generate_extended_information>
       <generate_code_modified_registers_only>false</generate_code_modified_registers_only>
       <update_include_paths>true</update_include_paths>
+      <generate_registers_defines>false</generate_registers_defines>
    </preferences>
    <tools>
-      <pins name="Pins" version="10.0" enabled="true" update_project_code="true">
+      <pins name="Pins" version="11.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/pin_mux.c" update_enabled="true"/>
             <file path="board/pin_mux.h" update_enabled="true"/>
          </generated_project_files>
          <pins_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>11.0.1</processor_version>
             <pin_labels>
                <pin_label pin_num="20" pin_signal="ADC0_SE8/PTB0/LLWU_P5/I2C0_SCL/FTM1_CH0/FTM1_QD_PHA" label="M3_STEP" identifier="Lane0;M3_STEP"/>
                <pin_label pin_num="23" pin_signal="ADC0_SE4b/CMP1_IN0/PTC2/SPI0_PCS2/UART1_CTS_b/FTM0_CH1" label="LED"/>
@@ -189,16 +190,16 @@
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="8.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="9.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/clock_config.c" update_enabled="true"/>
             <file path="board/clock_config.h" update_enabled="true"/>
          </generated_project_files>
          <clocks_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>11.0.1</processor_version>
          </clocks_profile>
          <clock_configurations>
-            <clock_configuration name="BOARD_BootClockRUN">
+            <clock_configuration name="BOARD_BootClockRUN" id_prefix="" prefix_user_defined="false">
                <description></description>
                <options/>
                <dependencies>
@@ -231,7 +232,7 @@
                <clock_settings>
                   <setting id="powerMode" value="HSRUN" locked="false"/>
                   <setting id="MCG.FCRDIV.scale" value="1" locked="false"/>
-                  <setting id="MCG.FLL_mul.scale" value="2929" locked="true"/>
+                  <setting id="MCG.FLL_mul.scale" value="2929" locked="false"/>
                   <setting id="MCG.FRDIV.scale" value="1536" locked="false"/>
                   <setting id="MCG.IRCS.sel" value="MCG.FCRDIV" locked="false"/>
                   <setting id="MCG.OSCSEL.sel" value="SIM.IRC48MCLK" locked="false"/>
@@ -240,9 +241,8 @@
                   <setting id="MCG_C2_RANGE0_CFG" value="High" locked="false"/>
                   <setting id="MCG_C2_RANGE0_FRDIV_CFG" value="High" locked="false"/>
                   <setting id="SIM.CLKOUTSEL.sel" value="IRC48M.IRC48MCLK" locked="false"/>
-                  <setting id="SIM.OUTDIV1.scale" value="1" locked="true"/>
-                  <setting id="SIM.OUTDIV2.scale" value="2" locked="true"/>
-                  <setting id="SIM.OUTDIV4.scale" value="4" locked="true"/>
+                  <setting id="SIM.OUTDIV2.scale" value="2" locked="false"/>
+                  <setting id="SIM.OUTDIV4.scale" value="4" locked="false"/>
                   <setting id="SIM.PLLFLLSEL.sel" value="IRC48M.IRC48MCLK" locked="false"/>
                </clock_settings>
                <called_from_default_init>true</called_from_default_init>
@@ -256,13 +256,13 @@
          </dcdx_profile>
          <dcdx_configurations/>
       </dcdx>
-      <periphs name="Peripherals" version="10.0" enabled="true" update_project_code="true">
+      <periphs name="Peripherals" version="11.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/peripherals.c" update_enabled="true"/>
             <file path="board/peripherals.h" update_enabled="true"/>
          </generated_project_files>
          <peripherals_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>11.0.1</processor_version>
          </peripherals_profile>
          <functional_groups>
             <functional_group name="BOARD_InitPeripherals" uuid="d5656371-9895-44aa-9227-b3917716e6d6" called_from_default_init="true" id_prefix="" core="core0">
@@ -300,6 +300,9 @@
             </component>
             <component name="generic_enet" uuid="304c20db-dd8e-456b-8055-901694adfc7d" type_id="generic_enet_74db5c914f0ddbe47d86af40cb77a619">
                <config_set_global name="global_enet"/>
+            </component>
+            <component name="gpio_adapter_common" uuid="40b57c0a-af30-45cf-8855-e70f6073973c" type_id="gpio_adapter_common_57579b9ac814fe26bf95df0a384c36b6">
+               <config_set_global name="global_gpio_adapter_common" quick_selection="default"/>
             </component>
          </components>
       </periphs>

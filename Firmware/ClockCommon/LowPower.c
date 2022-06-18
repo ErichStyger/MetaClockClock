@@ -19,6 +19,42 @@
 #include "cmsis_gcc.h"
 #include "fsl_smc.h"
 #include "McuLog.h"
+#if PL_CONFIG_USE_RS485
+  #include "McuUart485.h"
+#endif
+#include "McuRTT.h"
+#include "McuShell.h"
+
+static TimerHandle_t timer;
+
+static void vTimerCallback(TimerHandle_t pxTimer) {
+  McuShell_SendStr((unsigned char*)"timer expired\r\n", McuRTT_stdio.stdOut);
+}
+
+void LP_OnActivateFromISR(void) {
+  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+#if 0
+
+  if (xTimerIsTimerActive(timer)==pdFALSE) {
+    /* timer is not active: start it */
+    if (xTimerStartFromISR(timer, &xHigherPriorityTaskWoken)!=pdPASS) {
+     // McuLog_fatal("failed starting timer");
+      for(;;); /* failure!?! */
+    }
+  } else {
+#endif
+    if (xTimerStartFromISR(timer, &xHigherPriorityTaskWoken)!=pdPASS) {
+     // McuLog_fatal("failed starting timer"); /* note: can happen if we overflow the timer queue */
+     // for(;;); /* failure!?! */
+    }
+#if 0
+    if (xTimerResetFromISR(timer, &xHigherPriorityTaskWoken)!=pdPASS) {  /* reset timer */
+     // McuLog_fatal("failed starting timer");
+      for(;;); /* failure!?! */
+    }
+#endif
+//  }
+}
 
 void LP_EnterWaitMode(void) {
   __asm volatile("dsb");
@@ -27,12 +63,36 @@ void LP_EnterWaitMode(void) {
 }
 
 #if LP_MODE_SELECTED==LP_MODE_STOP
-void App_EnterStopMode(void) {
+static bool CanEnterStopMode(void) {
+#if PL_CONFIG_USE_RS485
+  //return false;
+  if (McuUart485_CommOngoing()) {
+    return false;
+  }
+  if (xTimerIsTimerActive(timer)) {
+    return false;
+  }
+  return true;
+#else
+  return true;
+#endif
+}
+#endif
+
+#if LP_MODE_SELECTED==LP_MODE_STOP
+void LP_EnterStopMode(void) {
   status_t status;
 
+  if (!CanEnterStopMode()) { /* check if we can enter stop mode. In any case we have to wait for an interrupt */
+    LP_EnterWaitMode(); /* just do low power wait and wait for interrupt */
+    return;
+  }
+  McuUart485_CONFIG_UART_DEVICE->BDH |= UART_BDH_RXEDGIE(1); /* set flag */
   SMC_PreEnterStopModes();
   status = SMC_SetPowerModeStop(SMC, kSMC_PartialStop);
+//  status = SMC_SetPowerModeStop(SMC, kSMC_PartialStop2);
   SMC_PostExitStopModes();
+//  McuUart485_CONFIG_UART_DEVICE->BDH &= ~UART_BDH_RXEDGIE(1); /* clear flag */
   if (status!=kStatus_Success) {
     McuLog_fatal("failed exit stop mode");
     for(;;) {}
@@ -41,6 +101,16 @@ void App_EnterStopMode(void) {
 #endif
 
 void LP_Init(void) {
+  timer = xTimerCreate(
+         "tmrLowPower", /* name */
+         pdMS_TO_TICKS(LP_MODE_TIMEOUT_MS), /* period/time */
+         pdFALSE, /* auto reload */
+         (void*)0, /* timer ID */
+         vTimerCallback); /* callback */
+   if (timer==NULL) {
+     for(;;); /* failure! */
+   }
+   xTimerStart(timer, pdMS_TO_TICKS(100));
 }
 
 #if 0 && PL_CONFIG_USE_LOW_POWER

@@ -13,6 +13,17 @@ void McuEvents_AppHandleEvent(uint8_t event) {
   /* used if -lto? */
 }
 
+#if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
+#include "McuLED.h"
+#include "leds.h"
+#include "LowPower.h"
+
+void McuUart485_CONFIG_UART_ISR_HOOK_NAME(void) {
+  McuLED_Toggle(LEDS_Led);
+  LP_OnActivateFromISR();
+}
+#endif
+
 int main(void) {
   /* Init board hardware. */
   BOARD_InitBootPins();

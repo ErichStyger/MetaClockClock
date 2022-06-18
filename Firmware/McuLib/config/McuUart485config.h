@@ -63,7 +63,7 @@
   #define McuUart485_CONFIG_UART_CONFIG_STRUCT            uart_config_t
   #define McuUart485_CONFIG_UART_GET_DEFAULT_CONFIG       UART_GetDefaultConfig
   #define McuUart485_CONFIG_UART_ENABLE_INTERRUPTS        UART_EnableInterrupts
-  #define McuUart485_CONFIG_UART_ENABLE_INTERRUPT_FLAGS   (kUART_RxDataRegFullInterruptEnable | kUART_RxOverrunInterruptEnable | kUART_RxFifoOverflowInterruptEnable)
+  #define McuUart485_CONFIG_UART_ENABLE_INTERRUPT_FLAGS   (kUART_RxDataRegFullInterruptEnable | kUART_RxOverrunInterruptEnable | kUART_RxFifoOverflowInterruptEnable /*| kUART_RxActiveEdgeInterruptEnable*/)
   #define McuUart485_CONFIG_UART_IRQ_NUMBER               UART1_RX_TX_IRQn
   #define McuUart485_CONFIG_UART_INIT                     UART_Init
   #define McuUart485_CONFIG_UART_GET_CLOCK_FREQ_SELECT    kCLOCK_McgFllClk
@@ -119,7 +119,22 @@
 #endif
 
 #ifndef McuUart485_CONFIG_UART_BAUDRATE
-  #define McuUart485_CONFIG_UART_BAUDRATE           115200
+  #define McuUart485_CONFIG_UART_BAUDRATE           9600
+    /*!< default baud rate for UART */
+#endif
+
+#ifndef McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
+  #define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED   (0)
+    /*!< 1: UART debug hook (McuUart485_CONFIG_UART_ISR_HOOK_NAME) enabled in ISR; 0: UART debug hook disabled */
+#endif
+
+#ifndef McuUart485_CONFIG_UART_ISR_HOOK_NAME
+  #define McuUart485_CONFIG_UART_ISR_HOOK_NAME     McuUart485UartHook
+    /*!< hook name to be called */
+#endif
+
+#if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
+  void McuUart485_CONFIG_UART_ISR_HOOK_NAME(void); /* prototype */
 #endif
 
 #ifndef McuUart485_CONFIG_USE_HW_OE_RTS

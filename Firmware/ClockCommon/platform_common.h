@@ -192,7 +192,7 @@
 #endif
 
 #ifndef PL_CONFIG_USE_LOW_POWER
-  #define PL_CONFIG_USE_LOW_POWER       (0)  /* if using low power mode */
+  #define PL_CONFIG_USE_LOW_POWER       (1)  /* if using low power mode */
 #endif
 
 /* client only: */

@@ -10,6 +10,7 @@
 #include "McuRTOS.h"
 #include "McuUtility.h"
 #include "McuLog.h"
+#include "McuWait.h"
 
 #if McuLib_CONFIG_CPU_IS_ESP32
   #include "esp_system.h"
@@ -55,6 +56,10 @@ static void McuUart485_GPIO_Init(void) {
 /* -------------------------------------------------------------------------------------- */
 static QueueHandle_t RS485UartRxQueue; /* queue for the shell */
 static QueueHandle_t RS485UartResponseQueue; /* queue for the OK or NOK response */
+
+bool McuUart485_CommOngoing(void) {
+  return uxQueueMessagesWaiting(RS485UartRxQueue)!=0 /* || uxQueueMessagesWaiting(RS485UartResponseQueue)!=0 */;
+}
 
 void McuUart485_ClearRxQueue(void) {
   xQueueReset(RS485UartRxQueue);
@@ -118,6 +123,11 @@ static void rs485uart_task(void *arg) {
   for(;;) {
     /* Read data from UART */
     int len = uart_read_bytes(McuUart485_CONFIG_UART_DEVICE, data, sizeof(data)-1, pdMS_TO_TICKS(100));
+  #if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
+    if (len>0) {
+      McuUart485_CONFIG_UART_ISR_HOOK_NAME(); /* call application hook */
+    }
+  #endif
     #if 0 /* for debugging only */
     if (len>0) {
       data[len] = '\0';
@@ -209,6 +219,13 @@ McuShell_ConstStdIOType McuUart485_stdio = {
 
 uint8_t McuUart485_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* default buffer which can be used by the application */
 /*********************************************************************************************************/
+#include "McuRTT.h"
+
+static void DecodeUARTFlags(uint32_t flags, const McuShell_StdIOType *io);
+static bool reinit = false;
+static void InitUart(void);
+
+
 #if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
 void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
   uint8_t data;
@@ -219,22 +236,59 @@ void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
   uint8_t count;
 
   flags = McuUart485_CONFIG_UART_GET_FLAGS(McuUart485_CONFIG_UART_DEVICE);
+  McuRTT_SendChar('.');
+  if (flags&kUART_RxActiveFlag) {
+    McuRTT_SendChar('A');
+  }
+  if (flags&kUART_RxActiveEdgeFlag) {
+    McuRTT_SendChar('E');
+  }
+  if (flags&kUART_RxDataRegFullFlag) {
+    McuRTT_SendChar('F');
+  }
+  if (McuUart485_CONFIG_UART_DEVICE->RCFIFO==1) {
+    McuRTT_SendChar('1');
+  } else {
+    McuRTT_SendChar('0');
+    McuWait_Waitms(1);
+  }
+
+  if (reinit) {
+    DecodeUARTFlags(flags, McuShell_GetStdio());
+
+    McuUart485_CONFIG_UART_DEVICE->C2 = UART_C2_RE(0);
+    McuUart485_CONFIG_UART_DEVICE->C2 = UART_C2_RE(1);
+    BOARD_InitBootClocks();
+    UART_Deinit(McuUart485_CONFIG_UART_DEVICE);
+    InitUart();
+  }
+
+#if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
+  McuUart485_CONFIG_UART_ISR_HOOK_NAME(); /* call application hook */
+#endif
+
 #if McuUart485_CONFIG_HAS_FIFO
   if (flags&kUART_RxFifoOverflowFlag) {
     count = 0; /* statement to allow debugger to set a breakpoint here */
   }
 #endif
   /* new data arrived. */
-  if (flags&McuUart485_CONFIG_UART_HW_RX_READY_FLAGS) {
+  if (1 || flags&McuUart485_CONFIG_UART_HW_RX_READY_FLAGS) {
 #if McuUart485_CONFIG_HAS_FIFO
+   // McuWait_Wait100Cycles();
     count = McuUart485_CONFIG_UART_DEVICE->RCFIFO;
 #else
     count = 1;
 #endif
     while(count!=0) {
+     // McuWait_Wait100Cycles();
+
       data = McuUart485_CONFIG_UART_READ_BYTE(McuUart485_CONFIG_UART_DEVICE);
       if (data!=0) { /* data==0 could happen especially after power-up, ignore it */
         /* only store into RS485UartResponseQueue if we have a line starting with '@' */
+
+        McuRTT_SendChar(data);
+
         if (prevChar=='\n' && data=='@') {
           responseLine = true;
         }
@@ -251,7 +305,7 @@ void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
     }
   }
 #if McuLib_CONFIG_CPU_IS_KINETIS
-  flags |= kUART_RxOverrunFlag|kUART_RxFifoOverflowFlag; /* always clear these flags, as they might been set? Not clearing them will not generate future interrupts */
+  //flags |= kUART_RxOverrunFlag|kUART_RxFifoOverflowFlag; /* always clear these flags, as they might been set? Not clearing them will not generate future interrupts */
 #endif
   McuUart485_CONFIG_CLEAR_STATUS_FLAGS(McuUart485_CONFIG_UART_DEVICE, flags);
   if (xHigherPriorityTaskWoken1 != pdFALSE || xHigherPriorityTaskWoken2 != pdFALSE) {
@@ -260,6 +314,10 @@ void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
   __DSB();
 }
 #endif
+
+bool McuUart_CanEnterLowPower(void) {
+  return false;
+}
 
 static void InitUart(void) {
 #if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
@@ -299,6 +357,14 @@ static void InitUart(void) {
 #endif
   McuUart485_CONFIG_UART_ENABLE_INTERRUPTS(McuUart485_CONFIG_UART_DEVICE,
 		  McuUart485_CONFIG_UART_ENABLE_INTERRUPT_FLAGS
+		  | kUART_RxActiveEdgeInterruptEnable
+		 // | kUART_NoiseErrorInterruptEnable
+		 // | kUART_FramingErrorInterruptEnable
+		 // | kUART_ParityErrorInterruptEnable
+
+		  // | kUART_RxFifoOverflowInterruptEnable
+		 // | kUART_TxFifoOverflowInterruptEnable
+		 // | kUART_RxFifoUnderflowInterruptEnable
 		  );
   NVIC_SetPriority(McuUart485_CONFIG_UART_IRQ_NUMBER, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY); /* required as we are using FreeRTOS API calls */
   EnableIRQ(McuUart485_CONFIG_UART_IRQ_NUMBER);
@@ -472,8 +538,13 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #endif
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"Rx: ");
+  McuUtility_strcatNum32u(buf, sizeof(buf), uxQueueMessagesWaiting(RS485UartRxQueue));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"/");
   McuUtility_strcatNum32u(buf, sizeof(buf), McuUart485_CONFIG_UART_RX_QUEUE_LENGTH);
+
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", Response: ");
+  McuUtility_strcatNum32u(buf, sizeof(buf), uxQueueMessagesWaiting(RS485UartResponseQueue));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"/");
   McuUtility_strcatNum32u(buf, sizeof(buf), McuUart485_CONFIG_UART_RESPONSE_QUEUE_LENGTH);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  queues", buf, io->stdOut);
