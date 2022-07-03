@@ -27,19 +27,18 @@ Instructions:
 #ifndef INCLUDEMCULIBCONFIG_H_
 #define INCLUDEMCULIBCONFIG_H_
 
-#define SIM_UIDH    /* fix for wrong SIM_GetUniqueID() in the SDK */
+#define SIM_UIDH       /* FIX: SDK does not define this one, but should be! See https://mcuoneclipse.com/2020/11/30/getting-a-96bit-unique-id-for-each-kinetis-device-using-mcuxpresso-sdk/ */
 
 /* ------------------- SDK/Library ---------------------------*/
 #define McuLib_CONFIG_SDK_VERSION_USED   McuLib_CONFIG_SDK_MCUXPRESSO_2_0
 #define McuLib_CONFIG_CPU_IS_LPC         (0)  /* LPC845 */
-#define McuLib_CONFIG_CORTEX_M           (4)  /* K22 is a Cortex-M4 */
+#define McuLib_CONFIG_CORTEX_M           (4)  /* K02 is a Cortex-M4 */
 #define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K02 is a Kinetis */
 #define McuLib_CONFIG_CPU_VARIANT        McuLib_CONFIG_CPU_VARIANT_NXP_K02FN
-
 /* ------------------- RTOS ---------------------------*/
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
 #define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
-#define configTOTAL_HEAP_SIZE                (8*1024)
+#define configTOTAL_HEAP_SIZE                (8*1024) /* not used for Heap scheme 5 */
 #define configUSE_HEAP_SECTION_NAME          (1)
 #define configHEAP_SECTION_NAME_STRING       ".bss.$SRAM_LOWER.FreeRTOS"
 #define configQUEUE_REGISTRY_SIZE            (16)
@@ -47,7 +46,10 @@ Instructions:
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
 #define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
+
+/* low power support: */
 #define configSYSTICK_USE_LOW_POWER_TIMER       (0)
+#define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
 #define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
 
 /* performance counter: */
@@ -60,7 +62,7 @@ Instructions:
 #define SYSVIEW_APP_NAME                     "K02 LedStepper"
 #define SYSVIEW_DEVICE_NAME                  "NXP K02FN64"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
-#define McuSystemView_CONFIG_RTT_CHANNEL     (2)
+#define McuSystemView_CONFIG_RTT_CHANNEL     (1)
 /* -------------------------------------------------*/
 /* Percepio Tracealyzer */
 #define configUSE_PERCEPIO_TRACE_HOOKS                  (0)
