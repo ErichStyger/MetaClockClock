@@ -14,9 +14,9 @@
 #define LP_MODE_STOP    (2) /* partial stop mode: Note: not working with UART/RS-485 and DMA yet! FLL clocking? */
 
 #ifndef LP_MODE_SELECTED
-  #define LP_MODE_SELECTED   (LP_MODE_STOP)
+  #define LP_MODE_SELECTED   (LP_MODE_WAIT)
 #endif
 
-#define LP_MODE_TIMEOUT_MS    (10*1000)
+#define LP_MODE_TIMEOUT_MS    (5*1000)
 
 #endif /* LOWPOWERCONFIG_H_ */
