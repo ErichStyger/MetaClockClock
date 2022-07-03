@@ -50,6 +50,7 @@ Instructions:
 /* low power support: */
 #define configUSE_TICKLESS_IDLE              (0)
 #define configSYSTICK_USE_LOW_POWER_TIMER    (1)
+#define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
 
 /* performance counter: */
 #define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
@@ -76,7 +77,7 @@ Instructions:
 /* -------------------------------------------------*/
 /* RTT */
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (128)
-#define McuRTT_CONFIG_BLOCKING_SEND                   (0)
+#define McuRTT_CONFIG_BLOCKING_SEND                   (1)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (256)
@@ -111,10 +112,13 @@ Instructions:
 #define McuMinINI_CONFIG_READ_ONLY                  (0)
 #define McuMinINI_CONFIG_USE_REAL                   (0)
 /* -------------------------------------------------*/
+/* McuFlash */
+#define McuFlash_CONFIG_IS_ENABLED                  (1)
+/* -------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485      (1)
 
-#define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED  (1)
+#define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED  (0) /* hook for testing LP_MODE_SELECTED==LP_MODE_STOP with PL_CONFIG_USE_LOW_POWER */
 #define McuUart485_CONFIG_UART_ISR_HOOK_NAME     App_RsUartHook
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */
