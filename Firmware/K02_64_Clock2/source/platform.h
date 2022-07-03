@@ -7,7 +7,7 @@
 #ifndef PLATFORM_H_
 #define PLATFORM_H_
 
-#include "McuLibConfig.h"
+#include "McuLibconfig.h"
 #include "platform_id.h"
 
 /* select the board used: */
@@ -24,7 +24,6 @@
 #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
 
 #include "platform_common.h"
-
 
 void PL_InitFromTask(void);
 void PL_Init(void);
