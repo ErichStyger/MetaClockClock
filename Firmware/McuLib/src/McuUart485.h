@@ -22,6 +22,12 @@ extern uint8_t McuUart485_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]
 extern McuShell_ConstStdIOType McuUart485_stdio;
 
 /*!
+ * \brief Return a char from the Rx ring buffer
+ * \return Character, otherwise '\0'
+ */
+unsigned char McuUart485_RxRingBufferGetChar(void);
+
+/*!
  * \brief Sending a string to the bus
  * \param data string to be sent
  */

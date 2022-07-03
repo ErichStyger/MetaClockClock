@@ -11,10 +11,24 @@
 #include "McuUtility.h"
 #include "McuLog.h"
 #include "McuWait.h"
+#include "McuRB.h"
 
 #if McuLib_CONFIG_CPU_IS_ESP32
   #include "esp_system.h"
   #include "driver/uart.h"
+#endif
+
+#if McuUart485_CONFIG_USE_RING_BUFFER
+static McuRB_Handle_t McuUart485_RingBuffer;
+
+unsigned char McuUart485_RxRingBufferGetChar(void) {
+  unsigned char ch;
+
+  if (McuRB_Get(McuUart485_RingBuffer, &ch)==ERR_OK) {
+    return ch;
+  }
+  return '\0'; /* no data */
+}
 #endif
 
 #if !McuUart485_CONFIG_USE_HW_OE_RTS
@@ -219,40 +233,216 @@ McuShell_ConstStdIOType McuUart485_stdio = {
 
 uint8_t McuUart485_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* default buffer which can be used by the application */
 /*********************************************************************************************************/
+#define DO_DEBUG_OUTPUT  (0)
+
+#if DO_DEBUG_OUTPUT
 #include "McuRTT.h"
 
 static void DecodeUARTFlags(uint32_t flags, const McuShell_StdIOType *io);
-static bool reinit = false;
+//static bool reinit = false;
 static void InitUart(void);
 
+static void DecodeFlags(uint32_t flags) {
+  McuRTT_SendChar('\n');
+  if (flags&kUART_TxDataRegEmptyFlag) {
+    McuRTT_SendChar('e');
+  }
+  if (flags&kUART_TransmissionCompleteFlag) {
+    McuRTT_SendChar('t');
+  }
+  if (flags&kUART_RxDataRegFullFlag) {
+    McuRTT_SendChar('f');
+  }
+  if (flags&kUART_IdleLineFlag) {
+    McuRTT_SendChar('i');
+  }
+  if (flags&kUART_RxOverrunFlag) {
+    McuRTT_SendChar('o');
+  }
+  if (flags&kUART_NoiseErrorFlag) {
+    McuRTT_SendChar('n');
+  }
+  if (flags&kUART_FramingErrorFlag) {
+    McuRTT_SendChar('m');
+  }
+  if (flags&kUART_ParityErrorFlag) {
+    McuRTT_SendChar('p');
+  }
+#if defined(FSL_FEATURE_UART_HAS_LIN_BREAK_DETECT) && FSL_FEATURE_UART_HAS_LIN_BREAK_DETECT
+  if (flags&kUART_LinBreakFlag) {
+    McuRTT_SendChar('l');
+  }
+#endif
+  if (flags&kUART_RxActiveEdgeFlag) {
+    McuRTT_SendChar('E');
+  }
+  if (flags&kUART_RxActiveFlag) {
+    McuRTT_SendChar('R');
+  }
+#if defined(FSL_FEATURE_UART_HAS_EXTENDED_DATA_REGISTER_FLAGS) && FSL_FEATURE_UART_HAS_EXTENDED_DATA_REGISTER_FLAGS
+  if (flags&kUART_NoiseErrorInRxDataRegFlag) {
+    McuRTT_SendChar('N');
+  }
+  if (flags&kUART_ParityErrorInRxDataRegFlag) {
+    McuRTT_SendChar('P');
+  }
+#endif
+#if defined(FSL_FEATURE_UART_HAS_FIFO) && FSL_FEATURE_UART_HAS_FIFO
+  if (flags&kUART_TxFifoEmptyFlag) {
+    McuRTT_SendChar('x');
+  }
+  if (flags&kUART_RxFifoEmptyFlag) {
+    McuRTT_SendChar('r');
+  }
+  if (flags&kUART_TxFifoOverflowFlag) {
+    McuRTT_SendChar('@');
+  }
+  if (flags&kUART_RxFifoOverflowFlag) {
+    McuRTT_SendChar('!');
+  }
+  if (flags&kUART_RxFifoOverflowFlag) {
+    McuRTT_SendChar('#');
+  }
+#endif
+}
+#endif
 
 #if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
 void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
   uint8_t data;
   uint32_t flags;
-  BaseType_t xHigherPriorityTaskWoken1 = false, xHigherPriorityTaskWoken2 = false;
+  BaseType_t xHigherPriorityTaskWoken1, xHigherPriorityTaskWoken2;
   static unsigned char prevChar = '\n';
   static bool responseLine = false;
   uint8_t count;
 
   flags = McuUart485_CONFIG_UART_GET_FLAGS(McuUart485_CONFIG_UART_DEVICE);
-  McuRTT_SendChar('.');
-  if (flags&kUART_RxActiveFlag) {
-    McuRTT_SendChar('A');
-  }
-  if (flags&kUART_RxActiveEdgeFlag) {
-    McuRTT_SendChar('E');
-  }
-  if (flags&kUART_RxDataRegFullFlag) {
-    McuRTT_SendChar('F');
-  }
-  if (McuUart485_CONFIG_UART_DEVICE->RCFIFO==1) {
-    McuRTT_SendChar('1');
+#if 0 /* UART STOP mode testing code, not working :-( */
+  /* in Stop mode, get the below flags just after wake-up */
+  if ((flags&(kUART_RxActiveEdgeFlag|kUART_RxActiveFlag|kUART_RxFifoEmptyFlag))==(kUART_RxActiveEdgeFlag|kUART_RxActiveFlag|kUART_RxFifoEmptyFlag)) {
+    /* first interrupt to wakup from STOP mode */
+    /* disable wake up by edge detect */
+    McuUart485_CONFIG_UART_DEVICE->BDH &= ~UART_BDH_RXEDGIE(1); /* will be set again with entering stop mode */
+    McuUart485_CONFIG_UART_DEVICE->S2 |= UART_S2_RXEDGIF(1); /* clear kUART_RxActiveEdgeFlag by writing a 1 */
+    McuRTT_SendChar('%');
+     __DSB();
+    return;
+  } else if ((flags&(kUART_RxDataRegFullFlag|kUART_RxActiveEdgeFlag|kUART_RxActiveFlag))==(kUART_RxDataRegFullFlag|kUART_RxActiveEdgeFlag|kUART_RxActiveFlag)) {
+    /* second interrupt from stop mode: fER with RCFIF=1, but data is not valid */
+    McuUart485_CONFIG_UART_DEVICE->S2 |= UART_S2_RXEDGIF(1); /* clear kUART_RxActiveEdgeFlag by writing a 1 */
+#if 0
+    if (McuUart485_CONFIG_UART_DEVICE->RCFIFO==1) {
+      McuRTT_SendChar('1');
+      data = McuUart485_CONFIG_UART_READ_BYTE(McuUart485_CONFIG_UART_DEVICE);
+      McuRTT_SendChar(data);
+    } else {
+      McuRTT_SendChar('0');
+    }
+#else
+    McuRTT_SendChar('!');
+#endif
+    __DSB();
+   return;
+  } else if ((flags&(kUART_RxDataRegFullFlag|kUART_RxActiveFlag))==(kUART_RxDataRegFullFlag|kUART_RxActiveFlag)) {
+    /* next is with fR */
+     // f: kUART_RxDataRegFullFlag
+     // R: kUART_RxActiveFlag
+    McuRTT_SendChar('@');
+    __DSB();
+    return;
+  } else if ((flags&(kUART_RxDataRegFullFlag|kUART_IdleLineFlag))==(kUART_RxDataRegFullFlag|kUART_IdleLineFlag)) {
+    /* next is fi */
+    // f: kUART_RxDataRegFullFlag
+    // i: kUART_IdleLineFlag
+    McuRTT_SendChar('?');
+    data = McuUart485_CONFIG_UART_READ_BYTE(McuUart485_CONFIG_UART_DEVICE);
+    McuRTT_SendChar(data);
+    McuUart485_CONFIG_CLEAR_STATUS_FLAGS(McuUart485_CONFIG_UART_DEVICE, flags);
+   __DSB();
+    return;
   } else {
-    McuRTT_SendChar('0');
-    McuWait_Waitms(1);
+    /* next is fi */
+    // f: kUART_RxDataRegFullFlag
+    // i: kUART_IdleLineFlag
+
+    // R: kUART_RxActiveFlag
+
+    // E: kUART_RxActiveEdgeFlag
+
+    // i: kUART_IdleLineFlag
+    // E: kUART_RxActiveEdgeFlag
+    // x: kUART_TxFifoEmptyFlag
+    // r: kUART_RxFifoEmptyFlag
+  }
+  McuRTT_SendChar('\n');
+  DecodeFlags(flags);
+  McuUart485_CONFIG_CLEAR_STATUS_FLAGS(McuUart485_CONFIG_UART_DEVICE, flags);
+  __DSB();
+   return;
+
+////////////////////////////////
+
+
+  if ((McuUart485_CONFIG_UART_DEVICE->BDH&UART_S2_RXEDGIF(1)) && (flags&kUART_RxActiveEdgeFlag)) { /* woken up by active edge from STOP mode? */
+    McuUart485_CONFIG_UART_DEVICE->S2 |= UART_S2_RXEDGIF(1); /* clear by writing a 1 */
+    /* disable wake up by edge detect */
+    McuUart485_CONFIG_UART_DEVICE->BDH &= ~UART_BDH_RXEDGIE(1); /* will be set again with entering stop mode */
+    McuRTT_SendChar('E');
+    data = 'E';
+    McuRB_Put(McuUart485_RingBuffer, &data);
+  }
+  if (flags&kUART_RxDataRegFullFlag) { /* RDRF in S1 is set. Flag already cleared by reading the flag. Just read the data now */
+    data = McuUart485_CONFIG_UART_READ_BYTE(McuUart485_CONFIG_UART_DEVICE);
+    McuRTT_SendChar('{');
+    McuRTT_SendChar(data);
+    McuRB_Put(McuUart485_RingBuffer, &data);
+  #if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
+ //   McuUart485_CONFIG_UART_ISR_HOOK_NAME(); /* call application hook */
+  #endif
+    __DSB();
+    for(;;) {}
+    return;
+  }
+  McuRTT_SendChar('.');
+  for(;;) {}
+  data = '.';
+  McuRB_Put(McuUart485_RingBuffer, &data);
+//  McuRTT_SendChar('\n');
+  __DSB();
+  return;
+
+  if (flags&(kUART_RxDataRegFullFlag|kUART_RxOverrunFlag|kUART_RxFifoOverflowFlag)) {
+    data = McuUart485_CONFIG_UART_READ_BYTE(McuUart485_CONFIG_UART_DEVICE);
+    McuRTT_SendChar('[');
+    McuRTT_SendChar(data);
+    McuUart485_CONFIG_CLEAR_STATUS_FLAGS(McuUart485_CONFIG_UART_DEVICE, flags);
+    __DSB();
+    return;
   }
 
+  xHigherPriorityTaskWoken1 = xHigherPriorityTaskWoken2 = false;
+
+#if 1 || DO_DEBUG_OUTPUT
+  DecodeFlags(flags);
+#endif
+  if (McuUart485_CONFIG_UART_DEVICE->RCFIFO==1) {
+#if DO_DEBUG_OUTPUT
+    McuRTT_SendChar('1');
+#endif
+  } else {
+#if 1 || DO_DEBUG_OUTPUT
+    McuRTT_SendChar('0');
+#endif
+    if (!(flags&(kUART_RxActiveFlag|kUART_RxActiveEdgeFlag))) { /* only call if tx/rx is idle */
+#if 1 || DO_DEBUG_OUTPUT
+      McuRTT_SendChar('*');
+#endif
+      McuUart485_CONFIG_CLEAR_STATUS_FLAGS(McuUart485_CONFIG_UART_DEVICE, /*kUART_RxActiveEdgeFlag|*/kUART_RxDataRegFullFlag|kUART_RxOverrunFlag|kUART_RxFifoOverflowFlag);
+    }
+    __DSB();
+    return;
+  }
+#if 0
   if (reinit) {
     DecodeUARTFlags(flags, McuShell_GetStdio());
 
@@ -262,6 +452,9 @@ void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
     UART_Deinit(McuUart485_CONFIG_UART_DEVICE);
     InitUart();
   }
+#endif
+
+#endif /* UART ISR test code end */
 
 #if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
   McuUart485_CONFIG_UART_ISR_HOOK_NAME(); /* call application hook */
@@ -273,22 +466,20 @@ void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
   }
 #endif
   /* new data arrived. */
-  if (1 || flags&McuUart485_CONFIG_UART_HW_RX_READY_FLAGS) {
+  if (flags&McuUart485_CONFIG_UART_HW_RX_READY_FLAGS) {
 #if McuUart485_CONFIG_HAS_FIFO
-   // McuWait_Wait100Cycles();
     count = McuUart485_CONFIG_UART_DEVICE->RCFIFO;
 #else
     count = 1;
 #endif
     while(count!=0) {
-     // McuWait_Wait100Cycles();
-
       data = McuUart485_CONFIG_UART_READ_BYTE(McuUart485_CONFIG_UART_DEVICE);
       if (data!=0) { /* data==0 could happen especially after power-up, ignore it */
         /* only store into RS485UartResponseQueue if we have a line starting with '@' */
-
+#if DO_DEBUG_OUTPUT
+        McuRTT_SendChar('>');
         McuRTT_SendChar(data);
-
+#endif
         if (prevChar=='\n' && data=='@') {
           responseLine = true;
         }
@@ -305,13 +496,18 @@ void McuUart485_CONFIG_UART_IRQ_HANDLER(void) {
     }
   }
 #if McuLib_CONFIG_CPU_IS_KINETIS
-  //flags |= kUART_RxOverrunFlag|kUART_RxFifoOverflowFlag; /* always clear these flags, as they might been set? Not clearing them will not generate future interrupts */
+  flags |= kUART_RxOverrunFlag|kUART_RxFifoOverflowFlag; /* always clear these flags, as they might been set? Not clearing them will not generate future interrupts */
 #endif
   McuUart485_CONFIG_CLEAR_STATUS_FLAGS(McuUart485_CONFIG_UART_DEVICE, flags);
   if (xHigherPriorityTaskWoken1 != pdFALSE || xHigherPriorityTaskWoken2 != pdFALSE) {
     vPortYieldFromISR();
   }
+#if McuLib_CONFIG_CPU_IS_ARM_CORTEX_M && ((McuLib_CONFIG_CORTEX_M==4) || (McuLib_CONFIG_CORTEX_M==7))
+  /* ARM errata 838869, affects Cortex-M4, Cortex-M4F Store immediate overlapping exception return operation might vector to incorrect interrupt.
+  * For Cortex-M7, if core speed much faster than peripheral register write speed, the peripheral interrupt flags may be still set after exiting ISR, this results to
+  * the same error similar with errata 83869. */
   __DSB();
+#endif
 }
 #endif
 
@@ -357,14 +553,7 @@ static void InitUart(void) {
 #endif
   McuUart485_CONFIG_UART_ENABLE_INTERRUPTS(McuUart485_CONFIG_UART_DEVICE,
 		  McuUart485_CONFIG_UART_ENABLE_INTERRUPT_FLAGS
-		  | kUART_RxActiveEdgeInterruptEnable
-		 // | kUART_NoiseErrorInterruptEnable
-		 // | kUART_FramingErrorInterruptEnable
-		 // | kUART_ParityErrorInterruptEnable
-
-		  // | kUART_RxFifoOverflowInterruptEnable
-		 // | kUART_TxFifoOverflowInterruptEnable
-		 // | kUART_RxFifoUnderflowInterruptEnable
+	//	  | kUART_RxActiveEdgeInterruptEnable
 		  );
   NVIC_SetPriority(McuUart485_CONFIG_UART_IRQ_NUMBER, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY); /* required as we are using FreeRTOS API calls */
   EnableIRQ(McuUart485_CONFIG_UART_IRQ_NUMBER);
@@ -630,6 +819,18 @@ void McuUart485_Init(void) {
     McuLog_fatal("failed creating res485-uart task!");
   }
 #endif
+
+#if McuUart485_CONFIG_USE_RING_BUFFER
+  McuRB_Config_t config;
+
+  McuRB_GetDefaultconfig(&config);
+  config.elementSize = 1;
+  config.nofElements = 32;
+  McuUart485_RingBuffer = McuRB_InitRB(&config);
+  if (McuUart485_RingBuffer==NULL) {
+    McuLog_fatal("failed creating Rx Ringbuffer!");
+  }
+#endif /* McuUart485_CONFIG_USE_RING_BUFFER */
 }
 
 #endif /* #ifdef McuUart485_CONFIG_UART_DEVICE  */
