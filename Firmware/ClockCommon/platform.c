@@ -67,6 +67,7 @@
 /* application modules: */
 #if PL_CONFIG_USE_RS485
   #include "rs485.h"
+  #include "McuUart485.h"
 #endif
 #if PL_CONFIG_USE_NVMC
   #include "nvmc.h"
@@ -270,4 +271,36 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_LED_CLOCK
   LedClock_Init();
 #endif
+
+#if PL_CONFIG_USE_LOW_POWER &&  0 /* test code for UART/RS-485 in low power modes. Not working for STOP mode :-( */
+  EnableGlobalIRQ(0);
+  __set_BASEPRI(0);
+  McuUart485_SendString((unsigned char*)"Enter text:\r\n");
+  for(;;) {
+#if 1
+    McuUart485_SendString((unsigned char*)"stop...");
+    LP_EnterStopMode();
+    McuUart485_SendString((unsigned char*)"done\r\n");
+#elif 1
+    McuUart485_SendString((unsigned char*)"\r\nwait...");
+    LP_EnterWaitMode();
+    McuUart485_SendString((unsigned char*)"done\r\n");
+#elif 1 /* normal run mode */
+    // do NOT set | kUART_RxActiveEdgeInterruptEnable
+#endif
+    McuLED_On(LEDS_Led);
+
+    unsigned char str[2];
+    str[1] = '\0';
+    do {
+      str[0] = McuUart485_RxRingBufferGetChar();
+      if (str[0]!='\0') {
+        McuUart485_SendString(str);
+      }
+    } while(str[0]!='\0');
+    //McuWait_Waitms(1000);
+    McuLED_Off(LEDS_Led);
+  }
+#endif
+
 }
