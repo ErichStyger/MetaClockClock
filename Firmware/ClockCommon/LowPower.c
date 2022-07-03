@@ -13,6 +13,7 @@
  */
 
 #include "platform.h"
+#if PL_CONFIG_USE_LOW_POWER
 #include "LowPower.h"
 #include "McuRTOS.h"
 #include "fsl_llwu.h"
@@ -62,10 +63,16 @@ void LP_EnterWaitMode(void) {
   __asm volatile("isb");
 }
 
+
 #if LP_MODE_SELECTED==LP_MODE_STOP
+static bool enterStop = true;
+
 static bool CanEnterStopMode(void) {
 #if PL_CONFIG_USE_RS485
-  //return false;
+  if (enterStop) {
+    return true;
+  }
+  return false;
   if (McuUart485_CommOngoing()) {
     return false;
   }
@@ -87,20 +94,24 @@ void LP_EnterStopMode(void) {
     LP_EnterWaitMode(); /* just do low power wait and wait for interrupt */
     return;
   }
-  McuUart485_CONFIG_UART_DEVICE->BDH |= UART_BDH_RXEDGIE(1); /* set flag */
   SMC_PreEnterStopModes();
+  /* for STOP mode, need to configure RS-485 UART to wake up on edge detect */
+  McuUart485_CONFIG_UART_DEVICE->BDH |= UART_BDH_RXEDGIE(1); /* enable to wake up by Rx edge*/
   status = SMC_SetPowerModeStop(SMC, kSMC_PartialStop);
-//  status = SMC_SetPowerModeStop(SMC, kSMC_PartialStop2);
+  /* here we are in STOP mode: interrupt will wake us up */
+  McuUart485_CONFIG_UART_DEVICE->BDH &= ~UART_BDH_RXEDGIE(1); /* clear flag */
   SMC_PostExitStopModes();
-//  McuUart485_CONFIG_UART_DEVICE->BDH &= ~UART_BDH_RXEDGIE(1); /* clear flag */
+#if 0
   if (status!=kStatus_Success) {
     McuLog_fatal("failed exit stop mode");
     for(;;) {}
   }
+#endif
 }
 #endif
 
 void LP_Init(void) {
+  SMC_SetPowerModeProtection(SMC, kSMC_AllowPowerModeAll);
   timer = xTimerCreate(
          "tmrLowPower", /* name */
          pdMS_TO_TICKS(LP_MODE_TIMEOUT_MS), /* period/time */
@@ -113,7 +124,7 @@ void LP_Init(void) {
    xTimerStart(timer, pdMS_TO_TICKS(100));
 }
 
-#if 0 && PL_CONFIG_USE_LOW_POWER
+#if 0 && PL_CONFIG_USE_LOW_POWER /* demo code from the SDK examples, to be cleaned up */
 #define DEMO_LLWU_PERIPHERAL  LLWU
 
 #define APP_LLWU              DEMO_LLWU_PERIPHERAL
@@ -295,3 +306,5 @@ void LLWU_ISR(void) {
   __DSB();
 }
 #endif
+
+#endif /* PL_CONFIG_USE_LOW_POWER */
