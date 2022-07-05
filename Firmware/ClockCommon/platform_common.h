@@ -47,6 +47,10 @@
 #define PL_CONFIG_IS_MASTER        (PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* Master configuration, otherwise it is the client */
 #define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
 
+#ifndef PL_CONFIG_USE_MATRIX
+  #define PL_CONFIG_USE_MATRIX  (1)
+#endif
+
 /* predefined Matrix configurations: */
 #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3 /* first small 'meta-clock, 6 LPC845 boards building a 8x3 matrix */
   #define PL_MATRIX_CONFIG_IS_RGB    (0 && PL_CONFIG_IS_MASTER) /* if matrix is with color functionality */

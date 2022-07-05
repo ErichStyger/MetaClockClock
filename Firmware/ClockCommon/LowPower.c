@@ -16,7 +16,9 @@
 #if PL_CONFIG_USE_LOW_POWER
 #include "LowPower.h"
 #include "McuRTOS.h"
+#if 0
 #include "fsl_llwu.h"
+#endif
 #include "cmsis_gcc.h"
 #include "fsl_smc.h"
 #include "McuLog.h"

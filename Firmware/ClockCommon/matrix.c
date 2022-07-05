@@ -5,7 +5,7 @@
  */
 
 #include "platform.h"
-
+#if PL_CONFIG_USE_MATRIX
 #include <assert.h>
 #include "matrixconfig.h"
 #include "matrix.h"
@@ -3180,3 +3180,5 @@ void MATRIX_Init(void) {
 #endif
 #endif
 }
+
+#endif /* PL_CONFIG_USE_MATRIX */

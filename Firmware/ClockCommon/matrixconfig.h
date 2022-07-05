@@ -53,6 +53,11 @@
   #define MATRIX_NOF_STEPPERS_X       (16)   /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (5)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (1)   /* number of clocks in z direction */
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
+  #define MATRIX_NOF_BOARDS           (0)   /* total number of boards in matrix: only one, everything is with shift registers connected */
+  #define MATRIX_NOF_STEPPERS_X       (0)   /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_STEPPERS_Y       (0)   /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_STEPPERS_Z       (0)   /* number of clocks in z direction */
 #else
   #error "unknown configuration"
 #endif
@@ -200,7 +205,9 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_06=0x86,
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
   BOARD_ADDR_00=0x0, /* default value, not the usual RS-485 address, but the motor handle ID */
- #else
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
+  dummy,
+#else
   #error "unknown matrix"
 #endif
 } MATRIX_BOARD_ADDR_e;

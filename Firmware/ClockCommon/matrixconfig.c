@@ -717,6 +717,8 @@ const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MA
     MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
       {.addr=BOARD_ADDR_00, .cmdSent=false},
     };
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
+    /* nothing needed */
 #else
   #error "unknown matrix"
 #endif

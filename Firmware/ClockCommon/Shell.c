@@ -149,7 +149,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
   RS485_ParseCommand,
   McuUart485_ParseCommand,
 #endif
+#if PL_CONFIG_USE_MATRIX
   MATRIX_ParseCommand,
+#endif
 #if PL_CONFIG_USE_CLOCK
   CLOCK_ParseCommand,
 #endif

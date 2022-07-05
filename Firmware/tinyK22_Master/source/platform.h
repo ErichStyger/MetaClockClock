@@ -60,7 +60,7 @@
   #define PL_CONFIG_USE_CLOCK             (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
-#elif 1 /* second Sm(A)rtWall project by Livio Stadelmann */
+#elif 0 /* second Sm(A)rtWall project by Livio Stadelmann */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_16x5
   #define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */
   #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
@@ -89,6 +89,15 @@
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (1) /* intermezzos on by default */
   /* below things are not supported yet for this clock */
   #define PL_CONFIG_USE_FONT              (0)
+#elif 1 /* Verkehrshaus */
+  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_VERKEHRSHAUS
+  #define PL_CONFIG_USE_DEMOS         (0)
+  #define PL_CONFIG_USE_FONT          (0)
+  #define PL_CONFIG_USE_CLOCK         (0)
+  #define PL_CONFIG_USE_MATRIX        (0)
+  #define PL_CONFIG_USE_BLE           (0)
+  #define PL_CONFIG_USE_NEO_PIXEL_HW  (1)
+  #define PL_CONFIG_USE_STEPPER       (0)
 #else
   #error
 #endif
