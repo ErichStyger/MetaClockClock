@@ -123,6 +123,10 @@
 #if PL_CONFIG_USE_USB_CDC
   #include "virtual_com.h"
 #endif
+#if PL_CONFIG_USE_OLED
+  #include "oled.h"
+#endif
+#include "vh.h"
 
 void PL_InitFromTask(void) {
   /* call here things which need interrupts enabled */
@@ -304,5 +308,11 @@ void PL_Init(void) {
     McuLED_Off(LEDS_Led);
   }
 #endif
+#if PL_CONFIG_USE_OLED
+  OLED_Init();
+#endif
 
+#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
+  VH_Init();
+#endif
 }

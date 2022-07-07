@@ -38,11 +38,16 @@
     #define NEOC_NOF_LEDS_IN_COL   (1) /* just one stripe */
     #define NEOC_NOF_LEDS_IN_ROW   (30) /* total number of leds in stripe */
     #define NEOC_NOF_LEDS_IN_LANE  (NEOC_NOF_LEDS_IN_COL*NEOC_NOF_LEDS_IN_ROW) /* number of LEDs, all in one line */
+    #define NEOC_NOF_COLORS        (4)  /* 3 for RGB, 4 for RGBW */
   #else
     #error "unknown configuration?"
   #endif
 #else
   #error "unknown"
+#endif
+
+#ifndef NEOC_NOF_COLORS
+  #define NEOC_NOF_COLORS (3)  /* 3 for RGB, 4 for RGBW */
 #endif
 
 #if (NEOC_NOF_LANES>8)

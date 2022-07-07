@@ -171,5 +171,8 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuWait */
 #define McuWait_CONFIG_USE_CYCLE_COUNTER  (0)
+/* ---------------------------------------------------------------------------------------*/
+/* McuSSD1306 */
+#define McuSSD1306_CONFIG_SSD1306_DRIVER_TYPE   (1106)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

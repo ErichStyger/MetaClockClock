@@ -284,6 +284,10 @@
   #define PL_CONFIG_USE_LED_CLOCK   (1 && (PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5))
 #endif
 
+#ifndef PL_CONFIG_USE_OLED
+  #define PL_CONFIG_USE_OLED   (0 && PL_CONFIG_USE_I2C)
+#endif
+
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)

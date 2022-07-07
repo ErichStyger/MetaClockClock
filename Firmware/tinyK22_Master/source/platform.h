@@ -91,6 +91,7 @@
   #define PL_CONFIG_USE_FONT              (0)
 #elif 1 /* Verkehrshaus */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_VERKEHRSHAUS
+  #define PL_CONFIG_USE_OLED          (1)
   #define PL_CONFIG_USE_DEMOS         (0)
   #define PL_CONFIG_USE_FONT          (0)
   #define PL_CONFIG_USE_CLOCK         (0)

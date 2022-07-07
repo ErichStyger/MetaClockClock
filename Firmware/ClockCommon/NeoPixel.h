@@ -23,8 +23,12 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
 typedef uint32_t NEO_PixelIdxT;
 typedef uint32_t NEO_PixelColor;
 
-#define NEO_SPLIT_RGB(u32)   (((u32)>>16)&0xff), (((u32)>>8)&0xff), ((u32)&0xff)
-#define NEO_COMBINE_RGB(r,g,b)   ( ((uint32_t)(r)<<16) | ((uint32_t)(g)<<8) | (uint32_t)(b) )
+#define NEO_SPLIT_RGB(u32)        (((u32)>>16)&0xff), (((u32)>>8)&0xff), ((u32)&0xff)
+#define NEO_COMBINE_RGB(r,g,b)    (((uint32_t)(r)<<16) | ((uint32_t)(g)<<8) | (uint32_t)(b))
+#if NEOC_NOF_COLORS==4
+  #define NEO_SPLIT_WRGB(u32)          (((u32)>>24)&0xff), (((u32)>>16)&0xff), (((u32)>>8)&0xff), ((u32)&0xff)
+  #define NEO_COMBINE_WRGB(w,r,g,b)    (((uint32_t)(w)<<24) | ((uint32_t)(r)<<16) | ((uint32_t)(g)<<8) | (uint32_t)(b))
+#endif
 
 uint8_t NEO_ClearPixel(NEO_PixelIdxT x, NEO_PixelIdxT y);
 
@@ -34,9 +38,9 @@ uint8_t NEO_ClearPixel(NEO_PixelIdxT x, NEO_PixelIdxT y);
  */
 uint8_t NEO_ClearAllPixel(void);
 
-uint8_t NEO_SetAllPixelColor(uint32_t rgb);
-uint8_t NEO_SetPixelColor(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint32_t rgb);
-uint8_t NEO_GetPixelColor(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint32_t *rgb);
+uint8_t NEO_SetAllPixelColor(uint32_t color);
+uint8_t NEO_SetPixelColor(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint32_t color);
+uint8_t NEO_GetPixelColor(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint32_t *color);
 
 uint8_t NEO_SetPixelRGB(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint8_t red, uint8_t green, uint8_t blue);
 
@@ -56,6 +60,11 @@ uint8_t NEO_TransferPixels(void);
 uint8_t NEO_GammaCorrect8(uint8_t color);
 
 uint32_t NEO_GammaCorrect24(uint32_t rgb);
+
+#if NEOC_NOF_COLORS==4
+  uint8_t NEO_SetPixelWRGB(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint8_t white, uint8_t red, uint8_t green, uint8_t blue);
+  uint8_t NEO_GetPixelWRGB(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint8_t *whiteP, uint8_t *redP, uint8_t *greenP, uint8_t *blueP);
+#endif
 
 /*!
  * \brief Driver initialization routine.
