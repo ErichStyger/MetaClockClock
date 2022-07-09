@@ -33,7 +33,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer */
+#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
@@ -90,7 +90,7 @@
   /* below things are not supported yet for this clock */
   #define PL_CONFIG_USE_FONT              (0)
 #elif 1 /* Verkehrshaus */
-  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_VERKEHRSHAUS
+  #define PL_MATRIX_CONFIGURATION_ID  PL_MATRIX_ID_VERKEHRSHAUS
   #define PL_CONFIG_USE_OLED          (1)
   #define PL_CONFIG_USE_DEMOS         (0)
   #define PL_CONFIG_USE_FONT          (0)

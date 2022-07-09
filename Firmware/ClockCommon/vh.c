@@ -6,6 +6,7 @@
 
 
 #include "platform.h"
+#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
 #include "vh.h"
 #include "McuRTOS.h"
 #include "McuUtility.h"
@@ -14,12 +15,8 @@
 
 static void test(void) {
   uint8_t r, g, b, w;
-#define MIN_VAL  1  /* miniumum brightness */
-#if NEOC_NOF_LEDS>8
-  #define MAX_VAL  80 /* maximum brightness */
-#else
-  #define MAX_VAL  150 /* maximum brightness */
-#endif
+  #define MIN_VAL  1  /* miniumum brightness */
+  #define MAX_VAL  200 /* maximum brightness */
 
   (void)NEO_ClearAllPixel();
   for(int i=0; i<1; i++) {
@@ -147,3 +144,4 @@ void VH_Init(void) {
     for(;;){} /* error! probably out of memory */
   }
 }
+#endif /* #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS */

@@ -20,6 +20,7 @@
 #include "McuFontHelv18Bold.h"
 #include "McuFontHelv24Bold.h"
 #include "McuTimeDate.h"
+#include "McuSHT31.h"
 
 static const uint8_t vh_pixData[] = {
   0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x0a, 0xef, 0xff, 0xfe, 0xa8, 0x00, 0x00, 0x00, 0x00,
@@ -118,6 +119,7 @@ void Sensor_ShowTemperature(float value) {
 
   McuGDisplaySSD1306_Clear();
   McuUtility_NumFloatToStr(buf,  sizeof(buf), value, 2);
+  McuUtility_chcat(buf, sizeof(buf), ' ');
   McuUtility_chcat(buf, sizeof(buf), 'C');
   w = McuFontDisplay_GetStringWidth(buf, McuFontHelv18Bold_GetFont(), NULL);
   h = McuFontDisplay_GetStringHeight(buf, McuFontHelv18Bold_GetFont(), NULL);
@@ -131,6 +133,26 @@ void Sensor_ShowTemperature(float value) {
   McuGDisplaySSD1306_UpdateFull();
 }
 
+void Sensor_ShowHumidity(float value) {
+  McuFontDisplay_PixelDim x, y, w, h;
+  uint8_t buf[24];
+
+  McuGDisplaySSD1306_Clear();
+  McuUtility_NumFloatToStr(buf,  sizeof(buf), value, 2);
+  McuUtility_chcat(buf, sizeof(buf), '%');
+  McuUtility_chcat(buf, sizeof(buf), ' ');
+  McuUtility_chcat(buf, sizeof(buf), 'H');
+  w = McuFontDisplay_GetStringWidth(buf, McuFontHelv18Bold_GetFont(), NULL);
+  h = McuFontDisplay_GetStringHeight(buf, McuFontHelv18Bold_GetFont(), NULL);
+  x = (McuGDisplaySSD1306_GetWidth()-w)/2;
+  y = (McuGDisplaySSD1306_GetHeight()-h)/2;
+  McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_BLUE, &x, &y, McuFontHelv18Bold_GetFont());
+
+  McuGDisplaySSD1306_DrawBox(0, 0, McuGDisplaySSD1306_GetWidth()-1, McuGDisplaySSD1306_GetHeight()-1, 1, McuGDisplaySSD1306_COLOR_WHITE);
+  McuGDisplaySSD1306_DrawBox(2, 2, McuGDisplaySSD1306_GetWidth()-5, McuGDisplaySSD1306_GetHeight()-5, 1, McuGDisplaySSD1306_COLOR_WHITE);
+
+  McuGDisplaySSD1306_UpdateFull();
+}
 
 #if 0
 static void test(void) {
@@ -250,33 +272,95 @@ static void ShowDateTime(void) {
   DATEREC date;
   unsigned char bufTime[16];
   unsigned char bufDate[16];
+  uint8_t oldSec = 0;
 
-  McuTimeDate_GetTimeDate(&time, &date);
-  bufTime[0] = '\0';
-  bufDate[0] = '\0';
-  McuTimeDate_AddDateString(bufDate, sizeof(bufDate), &date, (unsigned char*)"dd.mm.yyyy");
-  McuTimeDate_AddTimeString(bufTime, sizeof(bufTime), &time, (unsigned char*)"hh:mm:ss,cc");
+  for(int i=0; i<50; i++) {
+    McuTimeDate_GetTimeDate(&time, &date);
+    if (time.Sec != oldSec) {
+      oldSec = time.Sec;
+      bufTime[0] = '\0';
+      bufDate[0] = '\0';
+      McuTimeDate_AddDateString(bufDate, sizeof(bufDate), &date, (unsigned char*)"dd.mm.yyyy");
 
-  Show2Liner(bufTime, bufDate);
+      McuUtility_strcatNum16sFormatted(bufTime, sizeof(bufTime), time.Hour, '0', 2);
+      McuUtility_chcat(bufTime, sizeof(bufTime), ':');
+      McuUtility_strcatNum16sFormatted(bufTime, sizeof(bufTime), time.Min, '0', 2);
+      McuUtility_chcat(bufTime, sizeof(bufTime), ':');
+      McuUtility_strcatNum16sFormatted(bufTime, sizeof(bufTime), time.Sec, '0', 2);
+
+      Show2Liner(bufTime, bufDate);
+    }
+    vTaskDelay(pdMS_TO_TICKS(100));
+  }
 }
 
 static void ShowEnergy(void) {
-  //McuGDisplaySSD1306_UpdateFull();
+  int32_t pvP, houseP, gridP;
+  McuFontDisplay_PixelDim x, y, charHeight, totalHeight, rightXpos;
+  uint8_t buf[32];
+  PGFONT_Callbacks font = McuFontHelv12Normal_GetFont();
+
+  rightXpos = McuGDisplaySSD1306_GetWidth()-10;
+
+  McuFontDisplay_GetFontHeight(font, &charHeight, &totalHeight);
+  for(int i=0; i<10; i++) {
+    pvP = McuUtility_random(1000, 1050);
+    houseP = McuUtility_random(200, 500);
+    gridP = houseP-pvP;
+
+    McuGDisplaySSD1306_Clear();
+    McuGDisplaySSD1306_DrawBox(0, 0, McuGDisplaySSD1306_GetWidth()-1, McuGDisplaySSD1306_GetHeight()-1, 1, McuGDisplaySSD1306_COLOR_WHITE);
+    McuGDisplaySSD1306_DrawBox(2, 2, McuGDisplaySSD1306_GetWidth()-5, McuGDisplaySSD1306_GetHeight()-5, 1, McuGDisplaySSD1306_COLOR_WHITE);
+    x = 7;
+    y = 7;
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"PV:");
+    McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_WHITE, &x, &y, font);
+    McuUtility_Num32sToStrFormatted(buf, sizeof(buf), pvP, ' ', 5);
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W");
+    x = rightXpos - McuFontDisplay_GetStringWidth(buf, font, NULL);
+    McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_WHITE, &x, &y, font);
+
+    x = 7;
+    y += totalHeight;
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"House:");
+    McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_WHITE, &x, &y, font);
+    McuUtility_Num32sToStrFormatted(buf, sizeof(buf), houseP, ' ', 5);
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W");
+    x = rightXpos - McuFontDisplay_GetStringWidth(buf, font, NULL);
+    McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_WHITE, &x, &y, font);
+
+    x = 7;
+    y += totalHeight;
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"Grid:");
+    McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_WHITE, &x, &y, font);
+    McuUtility_Num32sToStrFormatted(buf, sizeof(buf), gridP, ' ', 5);
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" W");
+    x = rightXpos - McuFontDisplay_GetStringWidth(buf, font, NULL);
+    McuFontDisplay_WriteString(buf, McuGDisplaySSD1306_COLOR_WHITE, &x, &y, font);
+
+    McuGDisplaySSD1306_UpdateFull();
+    vTaskDelay(pdMS_TO_TICKS(1000));
+  }
 }
 
 static void OledTask(void *pv) {
+  float temperature = 24.5f, humidity = 50.0f;
+
   McuSSD1306_Init();
+  McuTimeDate_Init();
+  McuSHT31_Init();
   for(;;) {
-    ShowCenteredText((const unsigned char*)"Verkehrshaus\nder Schweiz", McuFontHelv12Bold_GetFont());
-    vTaskDelay(pdMS_TO_TICKS(1000));
     ShowVHimage();
-    vTaskDelay(pdMS_TO_TICKS(1000));
-    Sensor_ShowTemperature(24.5);
-    vTaskDelay(pdMS_TO_TICKS(1000));
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    McuSHT31_ReadTempHum(&temperature, &humidity);
+    Sensor_ShowTemperature(temperature);
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    Sensor_ShowHumidity(humidity);
+    vTaskDelay(pdMS_TO_TICKS(2000));
+    ShowCenteredText((const unsigned char*)"Verkehrshaus\nder Schweiz", McuFontHelv12Bold_GetFont());
+    vTaskDelay(pdMS_TO_TICKS(2000));
     ShowDateTime();
-    vTaskDelay(pdMS_TO_TICKS(1000));
     ShowEnergy();
-    vTaskDelay(pdMS_TO_TICKS(1000));
   }
 }
 
