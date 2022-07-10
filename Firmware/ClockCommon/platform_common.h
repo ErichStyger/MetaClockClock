@@ -283,7 +283,7 @@
   #define PL_CONFIG_USE_SHIFT_REGS  (1 && PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5) /* not supported on LPC845 */
 #endif
 
-#ifndef PL_CONFIG_USE_LED_CLOCK
+#ifndef PL_CONFIG_USE_LED_CLOCK /* shows a clock with LED matrix */
   #define PL_CONFIG_USE_LED_CLOCK   (1 && (PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5))
 #endif
 

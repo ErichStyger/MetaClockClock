@@ -1264,12 +1264,11 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
       McuLog_info("Intermezzo: %d done", intermezzo);
       *intermezzoShown = true;
     }
-  }
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
-  else{
+  } else {
 	  clearUnusedPixel(); /*clear the unused pixels in the background */
-  }
 #endif
+  }
 }
 
 void INTERMEZZO_PlaySpecific(uint8_t nr) {

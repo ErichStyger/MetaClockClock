@@ -72,7 +72,7 @@
   #define PL_CONFIG_USE_DEMOS             (1) /* only implemented for dual shaft motors and smart wall */
   #define PL_CONFIG_DEMOS_ON_BY_DEFAULT	  (0) /* Demos on by default */
   #define PL_CONFIG_USE_INTERMEZZO        (1) /* only implemented for dual shaft motors and smart wall */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (1) /* intermezzo on by default*/
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (0) /* intermezzo on by default*/
   #define PL_CONFIG_USE_CLOCK             (1) /* only implemented for dual shaft motors and smart wall */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT   (0) /* clock on by default */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */

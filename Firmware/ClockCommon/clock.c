@@ -105,17 +105,18 @@ static bool CLOCK_ClockIsParked = false;
 #define CLOCK_TASK_NOTIFY_CLOCK_TOGGLE        (1<<5) /* request to toggle clock on/off */
 #define CLOCK_TASK_NOTIFY_BUTTON_USR          (1<<6) /* request to toggle clock on/off */
 #define CLOCK_TASK_NOTIFY_BUTTON_USR_LONG     (1<<7) /* request to toggle clock on/off */
+#define CLOCK_TASK_NOTIFY_UPDATE_CLOCK        (1<<8) /* request to update clock */
 #if PL_CONFIG_HAS_SWITCH_7WAY
-#define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<8) /* up button */
-#define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<9) /* down button */
-#define CLOCK_TASK_NOTIFY_BUTTON_LEFT         (1<<10) /* left button */
-#define CLOCK_TASK_NOTIFY_BUTTON_RIGHT        (1<<11) /* right button */
-#define CLOCK_TASK_NOTIFY_BUTTON_MID          (1<<12) /* middle button */
-#define CLOCK_TASK_NOTIFY_BUTTON_RST          (1<<13) /* reset button */
-#define CLOCK_TASK_NOTIFY_BUTTON_SET          (1<<14) /* set button */
-#define CLOCK_TASK_NOTIFY_ALL                ((1<<15)-1) /* all notification bits */
+#define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<9) /* up button */
+#define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<10) /* down button */
+#define CLOCK_TASK_NOTIFY_BUTTON_LEFT         (1<<11) /* left button */
+#define CLOCK_TASK_NOTIFY_BUTTON_RIGHT        (1<<12) /* right button */
+#define CLOCK_TASK_NOTIFY_BUTTON_MID          (1<<13) /* middle button */
+#define CLOCK_TASK_NOTIFY_BUTTON_RST          (1<<14) /* reset button */
+#define CLOCK_TASK_NOTIFY_BUTTON_SET          (1<<15) /* set button */
+#define CLOCK_TASK_NOTIFY_ALL                ((1<<16)-1) /* all notification bits */
 #else
-#define CLOCK_TASK_NOTIFY_ALL                 ((1<<8)-1) /* all notification bits */
+#define CLOCK_TASK_NOTIFY_ALL                 ((1<<9)-1) /* all notification bits */
 #endif
 
 static TaskHandle_t clockTaskHndl;
@@ -345,6 +346,9 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
 
 void CLOCK_Notify(CLOCK_Notify_e msg) {
   switch(msg) {
+    case CLOCK_NOTIFY_UPDATE_CLOCK:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_UPDATE_CLOCK, eSetBits);
+      break;
     case CLOCK_NOTIFY_BUTTON_PRESSED_USR:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_USR, eSetBits);
       break;
@@ -798,6 +802,10 @@ static void ClockTask(void *pv) {
        &ulNotificationValue,
        0);
     if (res==pdTRUE) { /* notification received */
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_UPDATE_CLOCK) {
+        McuLog_info("Notification: update clock");
+        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
+      }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR) {
         McuLog_info("Notification: button pressed");
         SHELL_ParseCommand((unsigned char*)"clock toggle", McuShell_GetStdio(), true);
@@ -806,7 +814,6 @@ static void ClockTask(void *pv) {
         McuLog_info("Notification: button pressed long");
         SHELL_ParseCommand((unsigned char*)"intermezzo toggle", McuShell_GetStdio(), true);
       }
-
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_ON) {
         McuLog_info("Start parking clock");
         SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
@@ -837,7 +844,6 @@ static void ClockTask(void *pv) {
           CLOCK_ClockIsParked = true;
         }
       }
-
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
         McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
@@ -869,7 +875,7 @@ static void ClockTask(void *pv) {
             LedClock_ReleasePixelAll();
             INTERMEZZO_PlaySpecific(1);
             MATRIX_RequestRgbUpdate(); /* update LEDs */
-            MATRIX_MoveAllToStartPosition(1000, NULL); /* Move Steppers to start postition */
+            MATRIX_MoveAllToStartPosition(1000, NULL); /* Move steppers to start position */
       #endif
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {

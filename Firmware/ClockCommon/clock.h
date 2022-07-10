@@ -27,6 +27,7 @@ typedef enum CLOCK_Notify_e { /* direct task notification bits */
   CLOCK_NOTIFY_BUTTON_PRESSED_RIGHT     = (1<<6),
   CLOCK_NOTIFY_BUTTON_PRESSED_MID       = (1<<7),
   CLOCK_NOTIFY_BUTTON_PRESSED_SET       = (1<<8),
+  CLOCK_NOTIFY_UPDATE_CLOCK             = (1<<9), /* update clock because settings have changed */
 } CLOCK_Notify_e;
 
 void CLOCK_Notify(CLOCK_Notify_e msg);

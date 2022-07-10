@@ -17,6 +17,7 @@
 #include "stepper.h"
 #include "stepperConfig.h"
 #include "intermezzo.h"
+#include "clock.h"
 
 #define LED_CLOCK_CONFIG_USE_5x3_FONT         (0)
 #define LED_CLOCK_CONFIG_USE_5x3_DIGI_FONT	  (1)
@@ -362,12 +363,11 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
 void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 	if(!INTERMEZZO_IsOn()){
 		LedDisp_Clear();
-	}
-	else{
-		for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
-			for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
-				for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
-					if(LedClock_IsPixelUsed(x, y, z)){
+	} else {
+		for (int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+			for (int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+				for (int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+					if (LedClock_IsPixelUsed(x, y, z)) {
 						MPIXEL_SetColor(x, y, z, 0,0,0);
 					}
 				}
@@ -417,6 +417,7 @@ uint8_t LedClock_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
     p = cmd + sizeof("ledclock color digit ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
       LedClock_colorDigits = NEO_COMBINE_RGB(r, g, b);
+      CLOCK_Notify(CLOCK_NOTIFY_UPDATE_CLOCK); /* trigger clock update */
       return ERR_OK;
     }
     return ERR_FAILED;
@@ -425,6 +426,7 @@ uint8_t LedClock_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
     p = cmd + sizeof("ledclock color dot ")-1;
     if (McuUtility_ScanRGB(&p, &r, &g, &b)==ERR_OK) {
       LedClock_colorDots = NEO_COMBINE_RGB(r, g, b);
+      CLOCK_Notify(CLOCK_NOTIFY_UPDATE_CLOCK); /* trigger clock update */
       return ERR_OK;
     }
     return ERR_FAILED;
