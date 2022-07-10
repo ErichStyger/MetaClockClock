@@ -214,6 +214,11 @@ bool STEPPER_TimerStepperCallback(STEPPER_Handle_t stepper) {
   int n;
 
   if (mot->doSteps==0) {
+#if PL_CONFIG_USE_LINEAR_STEPPER
+	  if (mot->doSteps==0) { /* Make sure that the motor coils are no longer powered. */
+		  ShiftLinMotor_Stby(mot->device);
+	  }
+#endif
     return false; /* no work to do */
   }
   if (mot->delayCntr!=0) { /* delay going on? */
@@ -231,11 +236,7 @@ bool STEPPER_TimerStepperCallback(STEPPER_Handle_t stepper) {
     mot->stepFn(mot->device, n);
   }
   mot->doSteps -= n; /* update remaining steps */
-#if PL_CONFIG_USE_LINEAR_STEPPER
-  if (mot->doSteps==0) { /* Make sure that the motor coils are no longer powered. */
-	  ShiftLinMotor_Stby(mot->device);
-  }
-#endif
+
   mot->delayCntr = mot->delay*STEP_SIZE; /* reload delay counter */
 
   /* check if we have to speed up or slow down */

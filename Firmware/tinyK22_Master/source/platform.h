@@ -33,7 +33,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer */
+#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
@@ -60,7 +60,7 @@
   #define PL_CONFIG_USE_CLOCK             (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
-#elif 0 /* second Sm(A)rtWall project by Livio Stadelmann */
+#elif 1 /* second Sm(A)rtWall project by Livio Stadelmann */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_16x5
   #define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */
   #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
@@ -69,7 +69,8 @@
   #define PL_CONFIG_USE_MOTOR_ON_OFF_AUTO (1) /* automatically turn on/off motors */
   #define PL_CONFIG_IS_ANALOG_CLOCK       (0) /* we are not a (round) analog clock with hands */
   #define PL_CONFIG_USE_STEPPER           (1) /* we do use stepper, but through shift registers */
-  #define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
+  #define PL_CONFIG_USE_DEMOS             (1) /* only implemented for dual shaft motors and smart wall */
+  #define PL_CONFIG_DEMOS_ON_BY_DEFAULT	  (0) /* Demos on by default */
   #define PL_CONFIG_USE_INTERMEZZO        (1) /* only implemented for dual shaft motors and smart wall */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (1) /* intermezzo on by default*/
   #define PL_CONFIG_USE_CLOCK             (1) /* only implemented for dual shaft motors and smart wall */

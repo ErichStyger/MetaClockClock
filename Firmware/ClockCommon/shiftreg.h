@@ -58,13 +58,13 @@ void ShiftReg_WriteMotorBits(const uint8_t *data, size_t nofBytes);
 void ShiftReg_StoreMotorBits(uint32_t index, const bool w[SHIFTREG_NOF_MOTOR_BITS]);
 
 /*!
- * \brief Set the motor specific stdby-bit  in global variable array. Send them later using ShiftReg_WriteMotorBits()
+ * \brief Set the motor specific stdby-bit  in global variable array and clear the clk-bit. Send them later using ShiftReg_WriteMotorBits()
  * \param index Motor index number, starting with 0
  */
 void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx);
 
 /*!
- * \brief Set ALL stby-bits in global variable array. Send them later using ShiftReg_WriteMotorBits()
+ * \brief Set ALL stby-bits in global variable array and clear the clk-bits. Send them later using ShiftReg_WriteMotorBits()
  */
 void ShiftReg_StoreMotorStbyBitsAll(void);
 

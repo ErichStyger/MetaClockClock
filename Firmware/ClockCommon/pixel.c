@@ -19,7 +19,7 @@
 
 #define STEPPER_ZERO_OVERRIDE (100) /* Number of steps which are to be moved over the zero point during calibration drive */
 
-static void PIXEL_Zero(uint8_t x, uint8_t y, uint8_t z) {
+void PIXEL_Zero(uint8_t x, uint8_t y, uint8_t z) {
   assert(x<MATRIX_NOF_STEPPERS_X && y<MATRIX_NOF_STEPPERS_Y && z<MATRIX_NOF_STEPPERS_Z);
   STEPPER_MoveMotorStepsRel(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS+STEPPER_ZERO_OVERRIDE), 0); /* forward */
   STEPPER_StartTimer();
@@ -32,7 +32,7 @@ static void PIXEL_Zero(uint8_t x, uint8_t y, uint8_t z) {
   STEPPER_SetPos(MATRIX_GetStepper(x, y, z), 0);
 }
 
-static void PIXEL_ZeroAll(void) {
+void PIXEL_ZeroAll(void) {
 	int dir = 1;
 	for(int d=0; d<=1;d++){
 		for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -113,7 +113,6 @@ uint8_t PIXEL_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #endif /* PL_CONFIG_USE_SHELL */
 
 void PIXEL_Init(void) {
-	PIXEL_ZeroAll();
 }
 
 #endif /* PL_CONFIG_USE_LED_PIXEL */

@@ -16,6 +16,7 @@
 #include "matrix.h"
 #include "stepper.h"
 #include "stepperConfig.h"
+#include "intermezzo.h"
 
 #define LED_CLOCK_CONFIG_USE_5x3_FONT         (0)
 #define LED_CLOCK_CONFIG_USE_5x3_DIGI_FONT	  (1)
@@ -64,7 +65,9 @@ void LedClock_ReleasePixelAll(void){
 static void LedDisp_PutPixel(NEO_PixelIdxT x, NEO_PixelIdxT y, NEO_PixelColor color) {
   if(color > 0){
 	  LedClock_OccupyPixel(x, y, 0);
-	  MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(color));
+	  if(!INTERMEZZO_IsOn()){
+		  MPIXEL_SetColor(x, y, 0, NEO_SPLIT_RGB(color));
+	  }
   }
   else{
 	  LedClock_ReleasePixel(x, y, 0);
@@ -260,15 +263,13 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
       pos+=4;
     }
     if (showMM) {
-      if (showHH) {
-#if !PL_CONFIG_USE_INTERMEZZO
+      if (showHH && !INTERMEZZO_IsOn()) {
         LedDisp_PutPixel(pos-1, 1, colorDots);
         LedDisp_PutPixel(pos, 1, colorDots);
         LedDisp_PutPixel(pos-1, 3, colorDots);
         LedDisp_PutPixel(pos, 3, colorDots);
-#endif
-        pos+=1;
       }
+      pos+=1;
       fp('0'+(time->Min/10),  pos, 0, colorDigits);
       pos+=4;
       fp('0'+(time->Min%10), pos, 0, colorDigits);
@@ -359,10 +360,25 @@ static void LedClock_PutClockPixels(TIMEREC *time, DATEREC *date, NEO_PixelColor
 }
 
 void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date) {
-  LedDisp_Clear();
+	if(!INTERMEZZO_IsOn()){
+		LedDisp_Clear();
+	}
+	else{
+		for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+			for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+				for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+					if(LedClock_IsPixelUsed(x, y, z)){
+						MPIXEL_SetColor(x, y, z, 0,0,0);
+					}
+				}
+			}
+		}
+	}
   LedClock_PutClockPixels(time, date, LedClock_colorDigits, LedClock_colorDots, true, true, false);
-  NEO_TransferPixels();
-  STEPPER_StartTimer();
+  if (!INTERMEZZO_IsOn()) {
+	  NEO_TransferPixels();
+	  STEPPER_StartTimer();
+  }
 }
 
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {

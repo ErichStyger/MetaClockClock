@@ -15,6 +15,10 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
 
 void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown);
 
+void INTERMEZZO_PlaySpecific(uint8_t nr);
+
+bool INTERMEZZO_IsOn(void);
+
 void INTERMEZZO_Init(void);
 
 #endif /* INTERMEZZO_H_ */

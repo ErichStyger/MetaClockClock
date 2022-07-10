@@ -16,6 +16,8 @@ void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date);
 
 bool LedClock_IsPixelUsed(int32_t x, int32_t y, int32_t z);
 
+void LedClock_ReleasePixelAll(void);
+
 void LedClock_Deinit(void);
 
 void LedClock_Init(void);

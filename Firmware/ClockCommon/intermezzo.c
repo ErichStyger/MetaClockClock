@@ -24,6 +24,7 @@
 #if PL_CONFIG_USE_LED_PIXEL
   #include "matrixpixel.h"
   #include "LedClock.h"
+  #include "stepperconfig.h"
 #endif
 
 static bool IntermezzoOn = /* if intermezzos are on by default or not */
@@ -33,7 +34,10 @@ static bool IntermezzoOn = /* if intermezzos are on by default or not */
     false;
 #endif
 #if PL_CONFIG_USE_LED_PIXEL
-static uint8_t IntermezzoDelaySec = 2; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 2 secs to build the time */
+static uint8_t IntermezzoDelaySec = 0; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 2 secs to build the time */
+static uint8_t IntermezzoFadeSec = (STEPPER_TIME_FULL_RANGE_MS/2000);  /* this is the fading-time of color changes between intermezzos */
+#define INTERMEZZO_BG_BRIGHTNESS 	(20)	/* Brightness of the intermezzo background color */
+#define INTERMEZZO_FONT_BRIGHTNESS 	(100)	/* Brightness of the intermezzo font color */
 #else
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 #endif
@@ -852,10 +856,17 @@ static void IntermezzoCircleRays(void) {
 /* =============================================================================================================*/
 #elif PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
 
-static uint32_t randomColorGen(uint8_t br){
+static uint32_t oldColor[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
+static uint32_t newColor[PL_CONFIG_NOF_STEPPER_ON_BOARD_X][PL_CONFIG_NOF_STEPPER_ON_BOARD_Y][PL_CONFIG_NOF_STEPPER_ON_BOARD_Z];
+
+/*!
+ * \brief Returns a random background color
+ * \param br: brightness of the color in percent
+ */
+static uint32_t randomBGColorGen(uint8_t br){
 	int rgbSet = McuUtility_random(1,7);
 	int bright = br;
-	int min = 10; /* minimal color value */
+	int min = 50; /* minimal color value */
 	int max = 255; /* maximal color value */
 	if(bright>100) bright=100;
 	uint32_t color;
@@ -910,13 +921,47 @@ static uint32_t randomColorGen(uint8_t br){
 }
 
 /*!
+ * \brief Returns a random foreground color
+ * \param br: brightness of the color in percent
+ */
+static uint32_t randomFGColorGen(uint8_t br){
+	uint32_t color;
+	uint8_t r, g, b;
+	r = McuUtility_random(0, 255);
+	g = McuUtility_random(0, 255);
+	b = McuUtility_random(0, 255);
+	switch (McuUtility_random(1, 3)) /* Choose red green or blue as main color and add some other colors */
+	{
+		case 1:
+			color=0xff0000;
+			color |= (g<<8);
+			color |= b;
+			break;
+		case 2:
+			color=0x00ff00;
+			color |= (r<<16);
+			color |= b;
+			break;
+		case 3:
+			color=0x0000ff;
+			color |= (r<<16);
+			color |= (g<<8);
+		break;
+		default:
+			break;
+	}
+	color = NEO_GammaCorrect24(color);
+	return NEO_BrightnessPercentColor(color, br );
+}
+
+/*!
  * \brief Mixing colors depending on their position
  * \param colorA: rgb color value of color A
  * \param colorB: rgb color value of color B
- * \param distance: distance between point A and B (e.g. A-X-X-X-B distance is 5)
- * \param pos: distance between point A and the blend color to be calculated. (e.g. A-X-X-[X] <-distance is 3)
+ * \param steps: number of steps from point A to B (e.g. A-X-X-X-B steps is 4)
+ * \param pos: distance between point A and the blend color to be calculated. (e.g. A-X-X-[X] <-pos is 3)
  */
-static uint32_t mixColorPos(uint32_t colorA, uint32_t colorB, uint32_t distance, uint32_t pos){
+static uint32_t mixColorPos(uint32_t colorA, uint32_t colorB, uint32_t steps, uint32_t pos){
 	uint8_t rA, rB, rC, gA, gB, gC, bA, bB, bC;
 
 	rA = (colorA>>16)&0xff;
@@ -927,11 +972,34 @@ static uint32_t mixColorPos(uint32_t colorA, uint32_t colorB, uint32_t distance,
 	gB = (colorB>>8)&0xff;
 	bB = colorB&0xff;
 
-	rC = (rA*((distance-1)-pos)+rB*pos)/(distance-1);
-	gC = (gA*((distance-1)-pos)+gB*pos)/(distance-1);
-	bC = (bA*((distance-1)-pos)+bB*pos)/(distance-1);
+	rC = (rA*((steps)-pos)+rB*pos)/(steps);
+	gC = (gA*((steps)-pos)+gB*pos)/(steps);
+	bC = (bA*((steps)-pos)+bB*pos)/(steps);
 
 	return NEO_COMBINE_RGB(rC,gC,bC);
+}
+
+/*!
+ * \brief Fades from a current color to a new color
+ * \brief There are no function parameters, since the static arrays are used for this purpose.
+ * \param oldColor[][][] Current color, starting from this color is faded.
+ * \param newColor[][][] New color, to this color will be faded.
+ */
+static void intermezzo_FadeColors(void){
+	int steps = 255; //100
+	uint32_t setColor;
+	for(int i = 0; i<=steps; i++){
+		for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
+			for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
+				for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+					setColor = mixColorPos(oldColor[x][y][z], newColor[x][y][z], steps, i);
+					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(setColor));
+				}
+			}
+		}
+		MATRIX_RequestRgbUpdate();
+		vTaskDelay(pdMS_TO_TICKS((IntermezzoFadeSec * 1000)/255)); //20
+	}
 }
 
 static void clearUnusedPixel(void){
@@ -944,156 +1012,185 @@ static void clearUnusedPixel(void){
 			}
 		}
 	}
-	NEO_TransferPixels();
+	MATRIX_RequestRgbUpdate();
 }
 
-static void Intermezzo0(void) {
-	int br = 40; /*Brightness of intermezzo color (0-100%)*/
+static void Intermezzo0(void){
+	uint32_t cf;
+	uint8_t br = INTERMEZZO_BG_BRIGHTNESS;
+	cf = randomFGColorGen(INTERMEZZO_FONT_BRIGHTNESS); /* font color */
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				oldColor[x][y][z]=MPIXEL_GetColor(x,y,z);
 				if(!LedClock_IsPixelUsed(x, y, z)){
-					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(randomColorGen(br)));
-					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
+					newColor[x][y][z]=randomBGColorGen(br*2); /* set background color */
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0); /* set background position */
+				}
+				else{
+					newColor[x][y][z]=cf; /* set font color */
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0); /* set font position */
 				}
 			}
 		}
 	}
-	NEO_TransferPixels();
+
 	STEPPER_StartTimer();
+	intermezzo_FadeColors();
 }
 
 static void Intermezzo1(void) {
-	int br = 10; /*Brightness of intermezzo color (0-100%)*/
-	uint32_t c00, c10, c01, c11, ca, cb, color;
-	c00 = randomColorGen(100);
-	c10 = randomColorGen(100);
-	c01 = randomColorGen(100);
-	c11 = randomColorGen(100);
-
+	int br = INTERMEZZO_BG_BRIGHTNESS; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c01, c11, cf, ca, cb, color;
+	c00 = randomBGColorGen(100); /* background color 1 */
+	c10 = randomBGColorGen(100); /* background color 2 */
+	c01 = randomBGColorGen(100); /* background color 3 */
+	c11 = randomBGColorGen(100); /* background color 4 */
+	cf = randomFGColorGen(INTERMEZZO_FONT_BRIGHTNESS); /* font color */
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				oldColor[x][y][z]=MPIXEL_GetColor(x,y,z);
 				if(!LedClock_IsPixelUsed(x, y, z)){
-					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
-					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
-					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					ca = mixColorPos(c00, c10, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1), x);
+					cb = mixColorPos(c01, c11, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1), x);
+					color = mixColorPos(ca, cb, (PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1), y);
 					color = NEO_BrightnessPercentColor(color, br);
-					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
-					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
+					newColor[x][y][z] = color; /* set background color */
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0); /* set background position */
+				}
+				else{
+					newColor[x][y][z]=cf; /* set font color */
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0); /* set font position */
 				}
 			}
 		}
 	}
-	NEO_TransferPixels();
 	STEPPER_StartTimer();
+	intermezzo_FadeColors();
 }
 
 static void Intermezzo2(void) {
-	int br = 10; /*Brightness of intermezzo color (0-100%)*/
-	uint32_t c00, c10, c20, c01, c11, c21, ca, cb, color;
-	c00 = randomColorGen(100);
-	c10 = randomColorGen(100);
-	c20 = randomColorGen(100);
-	c01 = randomColorGen(100);
-	c11 = randomColorGen(100);
-	c21 = randomColorGen(100);
+	int br = INTERMEZZO_BG_BRIGHTNESS; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c20, c01, c11, c21, cf, ca, cb, color;
+	c00 = randomBGColorGen(100); /* background color 1 */
+	c10 = randomBGColorGen(100); /* background color 2 */
+	c20 = randomBGColorGen(100); /* background color 3 */
+	c01 = randomBGColorGen(100); /* background color 4 */
+	c11 = randomBGColorGen(100); /* background color 5 */
+	c21 = randomBGColorGen(100); /* background color 6 */
+	cf = randomFGColorGen(INTERMEZZO_FONT_BRIGHTNESS); /* font color */
 
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				oldColor[x][y][z]=MPIXEL_GetColor(x,y,z);
 				if(!LedClock_IsPixelUsed(x, y, z)){
 					if(x<(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2)){
-						ca = mixColorPos(c00, c10, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x);
-						cb = mixColorPos(c01, c11, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x);
+						ca = mixColorPos(c00, c10, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2)-1, x);
+						cb = mixColorPos(c01, c11, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2)-1, x);
 					}
 					else{
-						ca = mixColorPos(c10, c20, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2));
-						cb = mixColorPos(c11, c21, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2), x-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2));
+						ca = mixColorPos(c10, c20, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2)-1, x-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2));
+						cb = mixColorPos(c11, c21, (PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2)-1, x-(PL_CONFIG_NOF_STEPPER_ON_BOARD_X/2));
 					}
 					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
 					color = NEO_BrightnessPercentColor(color, br);
-					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
-					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0);
+					newColor[x][y][z] = color; /* set background color */
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0); /* set background position */
+				}
+				else{
+					newColor[x][y][z]= cf; /* set font color */
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0); /* set font position */
 				}
 			}
 		}
 	}
-	NEO_TransferPixels();
 	STEPPER_StartTimer();
+	intermezzo_FadeColors();
 }
 static void Intermezzo3(void) {
-	int br = 10; /*Brightness of intermezzo color (0-100%)*/
-	uint32_t c00, c10, c01, c11, ca, cb, color;
-	c00 = randomColorGen(100);
-	c10 = randomColorGen(100);
-	c01 = randomColorGen(100);
-	c11 = randomColorGen(100);
+	int br = INTERMEZZO_BG_BRIGHTNESS; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c01, c11, cf, ca, cb, color;
+	c00 = randomBGColorGen(100); /* background color 1 */
+	c10 = randomBGColorGen(100); /* background color 2 */
+	c01 = randomBGColorGen(100); /* background color 3 */
+	c11 = randomBGColorGen(100); /* background color 4 */
+	cf = randomFGColorGen(INTERMEZZO_FONT_BRIGHTNESS); /* font color */
 
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				oldColor[x][y][z]=MPIXEL_GetColor(x,y,z);
 				if(!LedClock_IsPixelUsed(x, y, z)){
-					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
-					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
-					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1, x);
+					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1, x);
+					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1, y);
 					color = NEO_BrightnessPercentColor(color, br);
-					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
+					newColor[x][y][z] = color; /* set background color */
+				}
+				else{
+					newColor[x][y][z] = cf; /* set font color */
 				}
 			}
 		}
 	}
-	NEO_TransferPixels();
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
 				if(!LedClock_IsPixelUsed(x, y, z)){
-					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1))*y, 0);
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1))*y, 0); /* set background position */
 				}
 				else{
-					//STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1))*((PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1)-y), 0);
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0); /* set font position */
 				}
 			}
 		}
 	}
 	STEPPER_StartTimer();
+	intermezzo_FadeColors();
 }
 
 static void Intermezzo4(void) {
-	int br = 10; /*Brightness of intermezzo color (0-100%)*/
-	uint32_t c00, c10, c01, c11, ca, cb, color;
-	c00 = randomColorGen(100);
-	c10 = randomColorGen(100);
-	c01 = randomColorGen(100);
-	c11 = randomColorGen(100);
+	int br = INTERMEZZO_BG_BRIGHTNESS; /*Brightness of intermezzo color (0-100%)*/
+	uint32_t c00, c10, c01, c11, cf, ca, cb, color;
+	c00 = randomBGColorGen(100); /* background color 1 */
+	c10 = randomBGColorGen(100); /* background color 2 */
+	c01 = randomBGColorGen(100); /* background color 3 */
+	c11 = randomBGColorGen(100); /* background color 4 */
+	cf = randomFGColorGen(INTERMEZZO_FONT_BRIGHTNESS); /* font color */
 
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
+				oldColor[x][y][z]=MPIXEL_GetColor(x,y,z);
 				if(!LedClock_IsPixelUsed(x, y, z)){
-					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
-					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X, x);
-					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y, y);
+					ca = mixColorPos(c00, c10, PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1, x);
+					cb = mixColorPos(c01, c11, PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1, x);
+					color = mixColorPos(ca, cb, PL_CONFIG_NOF_STEPPER_ON_BOARD_Y-1, y);
 					color = NEO_BrightnessPercentColor(color, br);
-					MPIXEL_SetColor(x, y, z, NEO_SPLIT_RGB(color));
+					newColor[x][y][z] = color; /* set background color */
+				}
+				else{
+					newColor[x][y][z] = cf; /* set font color */
 				}
 			}
 		}
 	}
-	NEO_TransferPixels();
 	for(int x=0; x<PL_CONFIG_NOF_STEPPER_ON_BOARD_X; x++) {
 		for(int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 			for(int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
 				if(!LedClock_IsPixelUsed(x, y, z)){
-					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1))*x, 0);
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), STEPPER_FULL_RANGE_NOF_STEPS, 0); /* set background position */
 				}
 				else{
-					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), (STEPPER_FULL_RANGE_NOF_STEPS/(PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1))*((PL_CONFIG_NOF_STEPPER_ON_BOARD_X-1)-x), 0);
+					STEPPER_MoveMotorStepsAbs(MATRIX_GetStepper(x, y, z), 0, 0); /*set font position*/
 				}
 			}
 		}
 	}
 	STEPPER_StartTimer();
+	intermezzo_FadeColors();
 }
 
 #endif
@@ -1175,6 +1272,17 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
 #endif
 }
 
+void INTERMEZZO_PlaySpecific(uint8_t nr) {
+	if(nr > NOF_INTERMEZZOS){
+		nr=0;
+	}
+	intermezzos[nr]();
+}
+
+bool INTERMEZZO_IsOn(void){
+	return IntermezzoOn;
+}
+
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   uint8_t buf[64];
@@ -1192,6 +1300,13 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" s\r\n");
   McuShell_SendStatusStr((unsigned char*)"  delay", buf, io->stdOut);
 
+  #if PL_CONFIG_USE_LED_PIXEL
+  buf[0] = '\0';
+  McuUtility_strcatNum32u(buf, sizeof(buf), IntermezzoFadeSec);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" s\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  fade", buf, io->stdOut);
+  #endif
+
   return ERR_OK;
 }
 #endif
@@ -1202,6 +1317,9 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  on|off|toggle", (unsigned char*)"Turn intermezzos on, off or toggle\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <sec>", (unsigned char*)"Intermezzo delay in seconds\r\n", io->stdOut);
+  #if PL_CONFIG_USE_LED_PIXEL
+  McuShell_SendHelpStr((unsigned char*)"  fade <sec>", (unsigned char*)"Intermezzo color fade in seconds\r\n", io->stdOut);
+  #endif
   McuShell_SendHelpStr((unsigned char*)"  <nr>", (unsigned char*)"Play Intermezzo (0-", io->stdOut);
   McuShell_SendNum32u(NOF_INTERMEZZOS-1, io->stdOut);
   McuShell_SendStr((unsigned char*)")\r\n", io->stdOut);
@@ -1244,6 +1362,19 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     } else {
       return ERR_FAILED;
     }
+  #if PL_CONFIG_USE_LED_PIXEL
+  } else if (McuUtility_strncmp((char*)cmd, "intermezzo fade ", sizeof("intermezzo fade ")-1)==0) {
+	uint8_t sec;
+
+	*handled = TRUE;
+	p = cmd + sizeof("intermezzo fade ")-1;
+	if (McuUtility_ScanDecimal8uNumber(&p, &sec)==ERR_OK) {
+	  IntermezzoFadeSec = sec;
+	  return ERR_OK;
+	} else {
+	  return ERR_FAILED;
+	}
+  #endif
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo ", sizeof("intermezzo ")-1)==0) {
     uint8_t nr;
 

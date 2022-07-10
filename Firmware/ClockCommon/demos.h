@@ -13,6 +13,8 @@
 
 uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
+bool DEMO_IsOn(void);
+
 void DEMO_Init(void);
 
 #endif /* DEMOS_H_ */

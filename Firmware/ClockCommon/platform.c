@@ -131,9 +131,6 @@
 void PL_InitFromTask(void) {
   /* call here things which need interrupts enabled */
   /* the clock time/date gets initialized in the clock task */
-#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
-  PIXEL_Init();
-#endif
 }
 
 void PL_Init(void) {

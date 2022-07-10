@@ -57,7 +57,5 @@ void ShiftLinMotor_Stby(void *dev) {
 
 void ShiftLinMotor_StbyAll(void) {
 	ShiftReg_StoreMotorStbyBitsAll();
-	/*ShiftReg_SendStoredMotorBitsIfChanged();*/
 }
 #endif /* PL_CONFIG_USE_SHIFT_REGS */
-

@@ -23,6 +23,7 @@ static McuGPIO_Handle_t SensorLatch;  /* to latch the sensor signals, this pin d
 #endif
 static SemaphoreHandle_t ShiftRegMutex = NULL; /* Mutex to protect SPI bus access */
 static uint8_t MotorBitsByteToSend[SHIFTREG_NOF_MOTORBIT_BYTES]; /* array of bits stored to be sent */
+static uint8_t MotorBitsByteToSendWithoutClk[SHIFTREG_NOF_MOTORBIT_BYTES]; /* array of bits stored to be sent */
 static uint8_t prevMotorBitsByte[SHIFTREG_NOF_MOTORBIT_BYTES]; /* backup of what has been sent */
 static bool dirInv[]= { /*Indicates whether the direction of rotation of the motor is inverted.*/
 		false, /*0*/
@@ -108,14 +109,18 @@ static bool dirInv[]= { /*Indicates whether the direction of rotation of the mot
 };
 
 void ShiftReg_WriteMotorBits(const uint8_t *data, size_t nofBytes) {
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
   if (xSemaphoreTake(ShiftRegMutex, portMAX_DELAY)==pdTRUE) {
+#endif
     SpiReg_WriteData(data, nofBytes);
     /* latch: idle state is LOW, make a HIGH pulse: */
     McuGPIO_SetHigh(MotorLatch);
     McuWait_Wait10Cycles();
     McuGPIO_SetLow(MotorLatch);
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
     xSemaphoreGive(ShiftRegMutex);
   }
+#endif
 }
 
 #if 0 /* not used */
@@ -147,7 +152,8 @@ void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_
   /* One driver board:
    * Each motor has 3 bits
    * MotorBitsByteToSend: [5]        [4]        [3]        [2]        [1]        [0]
-   * MotorIdx             fffe'eedd  dccc'bbba  aa99'9888  7776'6655  5444'3332  2211'1000  ==> shift (MSB first!)
+   * MotorIdx             ddee'efff  abbb'cccd  8889'99aa  5566'6777  2333'4445  0001'1122  ==> shift (MSB first!)
+   * clock/dir/stdby	  dscd scds  scds cdsc  cdsc dscd  dscd scds  scds cdsc  cdsc dscd
    */
 
   /*Invert direction bit if the motor rotation is inverted. (true=CW | false=CCW)*/
@@ -199,7 +205,7 @@ void ShiftReg_StoreMotorBits(uint32_t motorIdx, const bool w[SHIFTREG_NOF_MOTOR_
   }
 }
 
-void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx) {
+void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx) { /* Clear stby- and clk-bit */
   /* w[0]: CLK
    * w[1]: DIR
    * w[2]: STDBY
@@ -209,34 +215,38 @@ void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx) {
   /* One driver board:
    * Each motor has 3 bits
    * MotorBitsByteToSend: [5]        [4]        [3]        [2]        [1]        [0]
-   * MotorIdx             fffe'eedd  dccc'bbba  aa99'9888  7776'6655  5444'3332  2211'1000  ==> shift (MSB first!)
+   * MotorIdx             ddee'efff  abbb'cccd  8889'99aa  5566'6777  2333'4445  0001'1122  ==> shift (MSB first!)
+   * clock/dir/stdby	  dscd scds  scds cdsc  cdsc dscd  dscd scds  scds cdsc  cdsc dscd
    */
+
   /* transform truth table for motor wires/connections into bit sequence */
   byteIdx = 3*(motorIdx/8);
   switch(motorIdx%8) {
     case 0:
-      MotorBitsByteToSend[byteIdx] &= ~0b00100000;
+      MotorBitsByteToSend[byteIdx] &= ~0b10100000;
       break;
     case 1:
-      MotorBitsByteToSend[byteIdx] &= ~0b00000100;
+      MotorBitsByteToSend[byteIdx] &= ~0b00010100;
       break;
     case 2:
+      MotorBitsByteToSend[byteIdx] &= ~0b00000010;
       MotorBitsByteToSend[byteIdx+1] &= ~0b10000000;
       break;
     case 3:
-      MotorBitsByteToSend[byteIdx+1] &= ~0b00010000;
+      MotorBitsByteToSend[byteIdx+1] &= ~0b01010000;
       break;
     case 4:
-      MotorBitsByteToSend[byteIdx+1] &= ~0b00000010;
+      MotorBitsByteToSend[byteIdx+1] &= ~0b00001010;
       break;
     case 5:
+      MotorBitsByteToSend[byteIdx+1] &= ~0b00000001;
       MotorBitsByteToSend[byteIdx+2] &= ~0b01000000;
       break;
     case 6:
-      MotorBitsByteToSend[byteIdx+2] &= ~0b00001000;
+      MotorBitsByteToSend[byteIdx+2] &= ~0b00101000;
       break;
     case 7:
-      MotorBitsByteToSend[byteIdx+2] &= ~0b00000001;
+      MotorBitsByteToSend[byteIdx+2] &= ~0b00000101;
       break;
     default:
       break;
@@ -244,9 +254,24 @@ void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx) {
 }
 
 void ShiftReg_StoreMotorStbyBitsAll(void){
-	/*Clear all stdby-bits and send Data again (stdby is low active)*/
+	/* Clear all stdby bits (stdby is low active) */
 	int byteCnt = 0;
 	int shiftCnt = 2; /* The stdby bit is the third bit */
+	while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
+		if(shiftCnt>=8){
+			shiftCnt = shiftCnt-8;
+		}
+		while(shiftCnt < 8){
+			MotorBitsByteToSend[byteCnt] &= ~(0b10000000>>shiftCnt);
+			shiftCnt += SHIFTREG_NOF_MOTOR_BITS;
+		}
+		byteCnt++;
+	}
+
+
+	/*Clear all clk-bits */
+	byteCnt = 0;
+	shiftCnt = 0; /* The clk bit is the first bit */
 	while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
 		if(shiftCnt>=8){
 			shiftCnt = shiftCnt-8;
@@ -265,6 +290,13 @@ void ShiftReg_SendStoredMotorBits(void) {
 }
 
 void ShiftReg_SendStoredMotorBitsAutoClk(void) {
+	/* One driver board:
+	 * Each motor has 3 bits
+	 * MotorBitsByteToSend: [5]        [4]        [3]        [2]        [1]        [0]
+	 * MotorIdx             ddee'efff  abbb'cccd  8889'99aa  5566'6777  2333'4445  0001'1122  ==> shift (MSB first!)
+	 * clock/dir/stdby	  	dscd scds  scds cdsc  cdsc dscd  dscd scds  scds cdsc  cdsc dscd
+	 */
+
 	bool turnOn = false;
 	int byteCnt = 0;
 	int shiftCnt = 0; /* The stdby bit is the third bit */
@@ -285,14 +317,9 @@ void ShiftReg_SendStoredMotorBitsAutoClk(void) {
 		}
 		byteCnt++;
 	}
-	if(turnOn){ /* Send the bits to switch on the motors that were previously switched off. */
-		ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
-	}
 
-	ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
-	memcpy(prevMotorBitsByte, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
-
-	/*Clear all clk-bits and send Data again*/
+	/* Copy data and delet clk-bits */
+	memcpy(MotorBitsByteToSendWithoutClk, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
 	byteCnt = 0;
 	shiftCnt = 0; /* The clk bit is the first bit */
 	while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
@@ -300,13 +327,24 @@ void ShiftReg_SendStoredMotorBitsAutoClk(void) {
 			shiftCnt = shiftCnt-8;
 		}
 		while(shiftCnt < 8){
-			MotorBitsByteToSend[byteCnt] &= ~(0b10000000>>shiftCnt);
+			MotorBitsByteToSendWithoutClk[byteCnt] &= ~(0b10000000>>shiftCnt);
 			shiftCnt += SHIFTREG_NOF_MOTOR_BITS;
 		}
 		byteCnt++;
 	}
+
+	if(turnOn){ /* Send the bytes without clk-bits to switch on the motors that were previously switched off. */
+		ShiftReg_WriteMotorBits(MotorBitsByteToSendWithoutClk, sizeof(MotorBitsByteToSendWithoutClk));
+		ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+	}
+
+	/* Send the bytes now with clk-bits */
 	ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
 	memcpy(prevMotorBitsByte, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+
+	/* Send the same data again without clk-bits (Auto Clock) */
+	ShiftReg_WriteMotorBits(MotorBitsByteToSendWithoutClk, sizeof(MotorBitsByteToSendWithoutClk));
+	memcpy(prevMotorBitsByte, MotorBitsByteToSendWithoutClk, sizeof(MotorBitsByteToSend));
 }
 
 void ShiftReg_SendStoredMotorBitsIfChanged(void) {
@@ -317,11 +355,17 @@ void ShiftReg_SendStoredMotorBitsIfChanged(void) {
 }
 
 void ShiftReg_SendStoredMotorBitsIfChangedAutoClk(void) {
+	/* One driver board:
+	 * Each motor has 3 bits
+	 * MotorBitsByteToSend: [5]        [4]        [3]        [2]        [1]        [0]
+	 * MotorIdx             ddee'efff  abbb'cccd  8889'99aa  5566'6777  2333'4445  0001'1122  ==> shift (MSB first!)
+	 * clock/dir/stdby	  	dscd scds  scds cdsc  cdsc dscd  dscd scds  scds cdsc  cdsc dscd
+	 */
+
 	bool turnOn = false;
 	int byteCnt = 0;
 	int shiftCnt = 0;
 	if (memcmp(MotorBitsByteToSend, prevMotorBitsByte, sizeof(MotorBitsByteToSend))!=0) { /* has it changed? */
-
 		/* Check if Stepper Motors needs to be turned on first */
 		shiftCnt = 2; /* The stdby bit is the third bit */
 		while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
@@ -338,28 +382,34 @@ void ShiftReg_SendStoredMotorBitsIfChangedAutoClk(void) {
 			}
 			byteCnt++;
 		}
-		if(turnOn){ /* Send the bits to switch on the motors that were previously switched off. */
-			ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+
+		/* Copy data and delet clk-bits */
+			memcpy(MotorBitsByteToSendWithoutClk, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+			byteCnt = 0;
+			shiftCnt = 0; /* The clk bit is the first bit */
+			while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
+				if(shiftCnt>=8){
+					shiftCnt = shiftCnt-8;
+				}
+				while(shiftCnt < 8){
+					MotorBitsByteToSendWithoutClk[byteCnt] &= ~(0b10000000>>shiftCnt);
+					shiftCnt += SHIFTREG_NOF_MOTOR_BITS;
+				}
+				byteCnt++;
+			}
+
+		if(turnOn){ /* Send the bytes without clk-bits to switch on the motors that were previously switched off. */
+			ShiftReg_WriteMotorBits(MotorBitsByteToSendWithoutClk, sizeof(MotorBitsByteToSendWithoutClk));
+			//vTaskDelay(pdMS_TO_TICKS(2));
 		}
 
+		/* Send the bytes now with clk-bits */
 		ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
 		memcpy(prevMotorBitsByte, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
 
-		/*Clear all clk-bits and send Data again*/
-		byteCnt = 0;
-		shiftCnt = 0; /* The clk bit is the first bit */
-		while(byteCnt<SHIFTREG_NOF_MOTORBIT_BYTES){
-			if(shiftCnt>=8){
-				shiftCnt = shiftCnt-8;
-			}
-			while(shiftCnt < 8){
-				MotorBitsByteToSend[byteCnt] &= ~(0b10000000>>shiftCnt);
-				shiftCnt += SHIFTREG_NOF_MOTOR_BITS;
-			}
-			byteCnt++;
-		}
-		ShiftReg_WriteMotorBits(MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
-		memcpy(prevMotorBitsByte, MotorBitsByteToSend, sizeof(MotorBitsByteToSend));
+		/* Send the same data again without clk-bits (Auto Clock) */
+		ShiftReg_WriteMotorBits(MotorBitsByteToSendWithoutClk, sizeof(MotorBitsByteToSendWithoutClk));
+		memcpy(prevMotorBitsByte, MotorBitsByteToSendWithoutClk, sizeof(MotorBitsByteToSend));
 	}
 }
 
@@ -453,8 +503,6 @@ uint8_t ShiftReg_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
     if (McuUtility_xatoi(&p, &motorIdx)==ERR_OK && motorIdx<SHIFTREG_CONFIG_NOF_MOTORS) {
       if (McuUtility_xatoi(&p, &val)==ERR_OK && val<=0x7) {
         bool w[SHIFTREG_NOF_MOTOR_BITS];
-
-        //bool testit = true;
 
         w[0] = (val&(1<<0))!=0; /* clk */
         w[1] = (val&(1<<1))!=0; /* dir */
@@ -550,12 +598,14 @@ void ShiftReg_Init(void) {
   SensorLatch = McuGPIO_InitGPIO(&config);
 #endif
 
+#if STEPPER_CONFIG_USE_FREERTOS_TIMER
   ShiftRegMutex = xSemaphoreCreateMutex();
   if (ShiftRegMutex==NULL) { /* semaphore creation failed */
     McuLog_fatal("failed creating ShiftReg mutex");
     for(;;) {} /* error, not enough memory? */
   }
   vQueueAddToRegistry(ShiftRegMutex, "ShiftRegMutex");
+#endif
 }
 
 #endif /* PL_CONFIG_USE_SHIFT_REGS */

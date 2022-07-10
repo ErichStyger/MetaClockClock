@@ -2119,36 +2119,86 @@ void MATRIX_TimerCallback(void) {
   STEPPER_Handle_t stepper;
 
 #if PL_CONFIG_USE_LINEAR_STEPPER
+#if 1 /* Implementation with a maximum <STEPPER_MAX_SIMULTAN_MOVE> stepper motors driving at the same  */
   /* go through all boards and update steps */
   /* Update maximum <STEPPER_MAX_SIMULTAN_MOVE> stepper motors at the same time*/
+  static uint8_t workToDoCnt = 0;
 
-  uint8_t workToDoCnt = 0;
+#if 1 /* Steppers move in groups until they reach their target position, then the next group moves.  */
+  int x = 0;
+  int y = 0;
+  int z = 0;
+#else /* Steppers move alternately in groups. */
+  static int x = 0;
+  static int y = 0;
+  static int z = 0;
+#endif
 
-  //ShiftLinMotor_StbyAll();
+  /* Check if there was more work to do on the last run. */
+  if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+	  ShiftLinMotor_StbyAll();
+	  workToDo = true; /* Set so that the timer is not stopped. */
+  }
+  workToDoCnt = 0;
+
+  if(x>=MATRIX_NOF_STEPPERS_X)x=0;
+  for(; x<MATRIX_NOF_STEPPERS_X; x++) {
+	  if(y>=MATRIX_NOF_STEPPERS_Y)y=0;
+	  for(; y<MATRIX_NOF_STEPPERS_Y; y++) {
+		  if(z>=MATRIX_NOF_STEPPERS_Z)z=0;
+		  for(; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
+			  stepper = MATRIX_GetStepper(x, y, z);
+			  if(STEPPER_TimerStepperCallback(stepper)){
+				  workToDoCnt++;
+				  workToDo = true;
+			  }
+#if PL_CONFIG_USE_LED_DIMMING
+			  workToDo |= NEOSR_HandDimmingNotFinished(STEPPER_GetDevice(stepper));
+#endif
+			  if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+				  z++;
+				  break;
+			  }
+		  } /* for */
+		  if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+			  if(z>=MATRIX_NOF_STEPPERS_Z){
+				  z=0;
+				  y++;
+			  }
+			  break;
+		  }
+	  }
+	  if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
+		  if(y>=MATRIX_NOF_STEPPERS_Y){
+			  y=0;
+			  x++;
+		  }
+		  break;
+	  }
+  }
+  if(workToDoCnt > 0){
+	  ShiftLinMotor_Execute(); /* If shift registers are used, then send the data now.*/
+  }
+#endif
+
+#if 0 /* go through all boards and update steps */
+
   for(int x = 0; x<MATRIX_NOF_STEPPERS_X; x++) {
-	for(int y = 0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-       for(int z = 0; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
-         stepper = MATRIX_GetStepper(x, y, z);
-         if(STEPPER_TimerStepperCallback(stepper)){
-        	workToDoCnt++;
-        	workToDo = true;
-         }
-         if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
-        	 break;
-         }
-       #if PL_CONFIG_USE_LED_DIMMING
-         workToDo |= NEOSR_HandDimmingNotFinished(STEPPER_GetDevice(stepper));
-       #endif
-      } /* for */
-      if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
-    	  break;
-      }
-    }
-	if(workToDoCnt>=STEPPER_MAX_SIMULTAN_MOVE){
-		break;
-	}
+	  for(int y = 0; y<MATRIX_NOF_STEPPERS_Y; y++) {
+		  for(int z = 0; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
+			  stepper = MATRIX_GetStepper(x, y, z);
+			  if (STEPPER_TimerStepperCallback(stepper)){
+				  workToDo = true;
+			  }
+			  #if PL_CONFIG_USE_LED_DIMMING
+			  workToDo |= NEOSR_HandDimmingNotFinished(STEPPER_GetDevice(stepper));
+			  #endif
+		  } /* for */
+	  }
   }
   ShiftLinMotor_Execute(); /* If shift registers are used, then send the data now.*/
+#endif
+
 #else
   /* go through all boards and update steps */
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -2319,7 +2369,7 @@ static void MatrixQueueTask(void *pv) {
   BaseType_t res;
 
   McuLog_trace("Starting MatrixQueue Task");
-  PL_InitFromTask();
+  /* PL_InitFromTask();*/  /* disabled for LED (moving) pixel project */
   for(;;) {
     res = xSemaphoreTake(semMatrixExecuteQueue, portMAX_DELAY); /* block until we get a request to update */
     if (res==pdTRUE) { /* received the signal */

@@ -25,13 +25,34 @@
 #include "StepperBoard.h"
 #include "NeoPixel.h"
 #include "McuLog.h"
+#if PL_CONFIG_USE_LED_PIXEL
+  #include "matrixpixel.h"
+  #include "intermezzo.h"
+#endif
 
-#if PL_CONFIG_IS_MASTER
+static bool DemoIsOn = PL_CONFIG_DEMOS_ON_BY_DEFAULT; /* if demo mode is on or not */
+
+#if PL_CONFIG_IS_MASTER && !PL_CONFIG_USE_LED_PIXEL
 static uint8_t DEMO_FailedDemo(uint8_t res) {
   return res; /* used to set a breakpoint in case of failure */
 }
 #endif
 
+bool DEMO_IsOn(void){
+	return DemoIsOn;
+}
+
+#if PL_CONFIG_USE_LED_PIXEL /* We are an LED Pixel project (Sm(Art)Wall) */
+static void SmartWallDemoTask(void *pv) {
+	for(;;){
+		if(DemoIsOn){
+			INTERMEZZO_PlaySpecific(McuUtility_random(1,2));
+			vTaskDelay(pdMS_TO_TICKS(500));
+		}
+	}
+}
+
+#else /* We are not an LED Pixel project (Sm(Art)Wall) (#endif on line 1271)*/
 #if PL_MATRIX_CONFIG_IS_RGB
 static void DEMO_LedDemo0(void) {
   MRING_EnableRingAll(true);
@@ -1262,9 +1283,14 @@ static uint8_t DemoMiddle(void) {
   return MATRIX_ExecuteRemoteQueueAndWait(true);
 }
 #endif
+#endif /* We are not an LED Pixel project (Sm(Art)Wall) */
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
+#if PL_CONFIG_USE_LED_PIXEL
+  McuShell_SendStatusStr((unsigned char*)"demo", (unsigned char*)"status\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  mode", DemoIsOn?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
+#endif
   return ERR_OK;
 }
 
@@ -1279,7 +1305,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
   McuShell_SendHelpStr((unsigned char*)"  clap", (unsigned char*)"Clapping hands\r\n", io->stdOut);
   #endif
-  #if PL_CONFIG_IS_MASTER
+  #if PL_CONFIG_IS_MASTER && !PL_CONFIG_USE_LED_PIXEL
   McuShell_SendHelpStr((unsigned char*)"  square", (unsigned char*)"Building squares\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  square rotate", (unsigned char*)"Rotating squares\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  square clap", (unsigned char*)"Squares clapping\r\n", io->stdOut);
@@ -1296,14 +1322,17 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   #endif
   McuShell_SendHelpStr((unsigned char*)"  middle", (unsigned char*)"middle demo\r\n", io->stdOut);
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_MATRIX_CONFIG_IS_RGB && !PL_CONFIG_USE_LED_PIXEL
   McuShell_SendHelpStr((unsigned char*)"  led 0", (unsigned char*)"LED color demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  led 1", (unsigned char*)"LED rainbow demo\r\n", io->stdOut);
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
+#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK && !PL_CONFIG_USE_LED_PIXEL
   McuShell_SendHelpStr((unsigned char*)"  pong", (unsigned char*)"pong demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  weather <weather>", (unsigned char*)"Show weather: sunny, cloudy, rainy, icy\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  game of life", (unsigned char*)"Conway's Game of Life\r\n", io->stdOut);
+#endif
+#if PL_CONFIG_USE_LED_PIXEL
+  McuShell_SendHelpStr((unsigned char*)"  on|off", (unsigned char*)"Enable or disable the Sm(Art)Wall demo mode\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
@@ -1311,7 +1340,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_CLOCK
 static uint8_t CheckIfClockIsOn(const McuShell_StdIOType *io) {
   if (CLOCK_GetClockIsOn()) {
-    McuShell_SendStr((unsigned char*)"Clock is on, disable it first with 'clock off'.\n", io->stdErr);
+    McuShell_SendStr((unsigned char*)"Clock is on, disable it first with 'clock off'.\r\n", io->stdErr);
     return ERR_FAILED;
   }
   return ERR_OK;
@@ -1325,6 +1354,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "demo status")==0)) {
     *handled = true;
     return PrintStatus(io);
+#if !PL_CONFIG_USE_LED_PIXEL
 #if PL_CONFIG_IS_MASTER || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128
   } else if (McuUtility_strcmp((char*)cmd, "demo hands random pos")==0) {
     *handled = TRUE;
@@ -1434,10 +1464,16 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
 #if PL_MATRIX_CONFIG_IS_RGB
   } else if (McuUtility_strcmp((char*)cmd, "demo led 0")==0) {
     *handled = TRUE;
+    if (CheckIfClockIsOn(io)!=ERR_OK) {
+          return ERR_FAILED;
+    }
     DEMO_LedDemo0();
     return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "demo led 1")==0) {
     *handled = TRUE;
+    if (CheckIfClockIsOn(io)!=ERR_OK) {
+          return ERR_FAILED;
+    }
     DEMO_LedDemo1();
     return ERR_OK;
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
@@ -1460,12 +1496,39 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     }
     #endif
     return DemoRandomHandsColor();
-#endif
+#endif /* !PL_CONFIG_USE_LED_PIXEL */
+#elif PL_CONFIG_USE_LED_PIXEL
+  } else if (McuUtility_strcmp((char*)cmd, "demo on")==0) {
+    *handled = TRUE;
+    #if PL_CONFIG_USE_CLOCK
+    if (CheckIfClockIsOn(io)!=ERR_OK) {
+    	return ERR_FAILED;
+    }
+    #endif
+    DemoIsOn = true;
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "demo off")==0) {
+    *handled = TRUE;
+    DemoIsOn = false;
+    return ERR_OK;
+#endif /* PL_CONFIG_USE_LED_PIXEL */
   }
   return ERR_OK;
 }
-#endif
+#endif /* PL_CONFIG_USE_SHELL */
 
 void DEMO_Init(void) {
+  #if PL_CONFIG_USE_LED_PIXEL
+  if (xTaskCreate(
+      SmartWallDemoTask,  /* pointer to the task */
+	  "SmartWallDemo", /* task name for kernel awareness debugging */
+	  800/sizeof(StackType_t), /* task stack size */
+	  (void*)NULL, /* optional task startup argument */
+	  tskIDLE_PRIORITY,  /* initial priority */
+	  NULL /* optional task handle to create */
+	  ) != pdPASS){
+	  for(;;){} /* error! probably out of memory */
+  }
+  #endif
 }
 #endif /* PL_CONFIG_USE_DEMOS */

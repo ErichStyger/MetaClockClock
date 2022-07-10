@@ -19,6 +19,8 @@
 
   void MPIXEL_SetColor(int32_t x, int32_t y, int32_t z, uint8_t red, uint8_t green, uint8_t blue);
 
+  uint32_t MPIXEL_GetColor(int32_t x, int32_t y, int32_t z);
+
   void MPIXEL_ClearAll(void);
 #endif
 

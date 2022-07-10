@@ -153,6 +153,9 @@
 #ifndef PL_CONFIG_USE_DEMOS
   #define PL_CONFIG_USE_DEMOS           (1 && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485) /* if using demos or not */
 #endif
+#ifndef PL_CONFIG_DEMOS_ON_BY_DEFAULT
+  #define PL_CONFIG_DEMOS_ON_BY_DEFAULT (0)
+#endif
 #ifndef PL_CONFIG_USE_BLE
   #define PL_CONFIG_USE_BLE             (1 && PL_CONFIG_IS_TINYK22) /* if using BLE or not */
 #endif

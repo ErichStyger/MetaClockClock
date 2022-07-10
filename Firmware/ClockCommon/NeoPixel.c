@@ -449,9 +449,9 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
   } else if (McuUtility_strncmp((char*)cmd, "neo set all", sizeof("neo set all")-1)==0) {
     p = cmd+sizeof("neo set all")-1;
 #if NEOC_NOF_COLORS==3
-    res = McuUtility_ScanRGB32(&p, &rgb); /* read color RGB value */
+    res = McuUtility_ScanRGB32(&p, &color); /* read color RGB value */
     if (res==ERR_OK) { /* within RGB value */
-      NEO_SetAllPixelColor(rgb);
+      NEO_SetAllPixelColor(color);
 #elif NEOC_NOF_COLORS==4
     res = McuUtility_ScanWRGB32(&p, &color); /* read color RGB value */
     if (res==ERR_OK) { /* within RGB value */
@@ -467,7 +467,7 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
       res = McuUtility_xatoi(&p, &pos); /* read pos index */
       if (res==ERR_OK && pos>=0 && pos<NEO_NOF_LEDS_IN_LANE) {
 #if NEOC_NOF_COLORS==3
-        res = McuUtility_ScanRGB32(&p, &rgb); /* read color RGB value */
+        res = McuUtility_ScanRGB32(&p, &color); /* read color RGB value */
         if (res==ERR_OK) {
 #elif NEOC_NOF_COLORS==4
         res = McuUtility_ScanWRGB32(&p, &color); /* read color RGB value */

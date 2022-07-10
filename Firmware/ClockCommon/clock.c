@@ -59,7 +59,10 @@
   #include "LedClock.h"
 #endif
 #if PL_CONFIG_USE_LED_PIXEL
-  #include "matrix.h"
+  #include "pixel.h"
+#endif
+#if PL_CONFIG_USE_DEMOS
+  #include "demos.h"
 #endif
 
 static bool CLOCK_ClockIsOn =
@@ -520,7 +523,15 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     return PrintStatus(io);
   } else if (McuUtility_strcmp((char*)cmd, "clock on")==0) {
     *handled = true;
+#if PL_CONFIG_USE_DEMOS
+    if (DEMO_IsOn()) {
+        McuShell_SendStr((unsigned char*)"Demo is on, disable it first with 'demo off'.\r\n", io->stdErr);
+    } else {
+    	CLOCK_On(CLOCK_MODE_ON);
+    }
+#else
     CLOCK_On(CLOCK_MODE_ON);
+#endif
   } else if (McuUtility_strcmp((char*)cmd, "clock off")==0) {
     *handled = true;
     CLOCK_On(CLOCK_MODE_OFF);
@@ -690,6 +701,9 @@ static void ClockTask(void *pv) {
   TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
   bool intermezzoShown = true;
 #endif
+#if PL_CONFIG_USE_LED_PIXEL
+  PIXEL_ZeroAll();
+#endif
   #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
   #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
   int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* time of previous clock update time stamp (start time), seconds since 1972. */
@@ -851,6 +865,11 @@ static void ClockTask(void *pv) {
             MATRIX_EnableDisableHandsAll(false);
         #endif
             MATRIX_MoveAllto12(5000, NULL);
+      #elif PL_CONFIG_USE_LED_CLOCK
+            LedClock_ReleasePixelAll();
+            INTERMEZZO_PlaySpecific(1);
+            MATRIX_RequestRgbUpdate(); /* update LEDs */
+            MATRIX_MoveAllToStartPosition(1000, NULL); /* Move Steppers to start postition */
       #endif
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
@@ -866,7 +885,8 @@ static void ClockTask(void *pv) {
           #if PL_CONFIG_USE_EXTENDED_HANDS
           MHAND_2ndHandEnableAll(false);
           #endif
-        #else
+        #elif PL_CONFIG_USE_LED_CLOCK
+          LedClock_ReleasePixelAll();
           NEO_ClearAllPixel(); /* clear all pixels */
         #endif
           APP_RequestUpdateLEDs(); /* update LEDs */
@@ -875,7 +895,9 @@ static void ClockTask(void *pv) {
         if (!CLOCK_ClockIsOn) {
           #if PL_CONFIG_IS_ANALOG_CLOCK
           MATRIX_MoveAllto12(5000, NULL);
-          #endif
+          #elif PL_CONFIG_USE_LED_CLOCK
+          MATRIX_MoveAllToStartPosition(1000, NULL);
+		  #endif
         }
       }
   #if PL_CONFIG_HAS_SWITCH_7WAY
