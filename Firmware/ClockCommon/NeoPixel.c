@@ -5,9 +5,14 @@
  */
 
 #include "platform.h"
+#include <stdbool.h>
 #include "NeoPixel.h"
 #include "McuUtility.h"
-#include "PixelDMA.h"
+#if NEOC_USE_DMA
+  #include "PixelDMA.h"
+#else
+  #include "ws2812.h"
+#endif
 
 static const uint8_t gamma8[] = {
     0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,
@@ -309,7 +314,7 @@ uint8_t NEO_OrPixelRGB(NEO_PixelIdxT x, NEO_PixelIdxT y, uint8_t red, uint8_t gr
 }
 
 #if NEOC_NOF_COLORS==4
-uint8_t NEO_OrPixelWRGBW(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint8_t white, uint8_t red, uint8_t green, uint8_t blue) {
+uint8_t NEO_OrPixelWRGB(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint8_t white, uint8_t red, uint8_t green, uint8_t blue) {
   uint8_t r, g, b, w;
 
   if (pos>=NEO_NOF_PIXEL) {
@@ -387,7 +392,11 @@ uint8_t NEO_SetAllPixelColor(uint32_t color) {
 }
 
 uint8_t NEO_TransferPixels(void) {
+#if NEOC_USE_DMA
   return PIXDMA_Transfer((uint32_t)&transmitBuf[0], sizeof(transmitBuf));
+#else
+  return WS2812_Transfer();
+#endif
 }
 
 static uint8_t PrintStatus(McuShell_ConstStdIOType *io) {
@@ -414,7 +423,7 @@ static uint8_t PrintStatus(McuShell_ConstStdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (uint8_t*)"\r\n");
   McuShell_SendStatusStr((uint8_t*)"  Pixels", buf, io->stdOut);
 
-  McuShell_SendStatusStr((uint8_t*)"  Colors", NEOC_NOF_COLORS==3?(uint8_t*)"RGB\r\n":(uint8_t*)"RGBW\r\n", io->stdOut);
+  McuShell_SendStatusStr((uint8_t*)"  Colors", NEOC_NOF_COLORS==3?(uint8_t*)"RGB\r\n":(uint8_t*)"WRGB\r\n", io->stdOut);
 
   return ERR_OK;
 }
@@ -433,7 +442,7 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
     McuShell_SendHelpStr((unsigned char*)"  set all <rgb>", (const unsigned char*)"Set all pixel with RGB value\r\n", io->stdOut);
     McuShell_SendHelpStr((unsigned char*)"  set <lane> <pos> <rgb>", (const unsigned char*)"Set pixel in a lane and position with RGB value\r\n", io->stdOut);
 #elif NEOC_NOF_COLORS==4
-    McuShell_SendHelpStr((unsigned char*)"  set all <wrgbr>", (const unsigned char*)"Set all pixel with WRGB value\r\n", io->stdOut);
+    McuShell_SendHelpStr((unsigned char*)"  set all <wrgb>", (const unsigned char*)"Set all pixel with WRGB value\r\n", io->stdOut);
     McuShell_SendHelpStr((unsigned char*)"  set <lane> <pos> <wrgb>", (const unsigned char*)"Set pixel in a lane and position with WRGB value\r\n", io->stdOut);
 #endif
     *handled = TRUE;

@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Erich Styger
+ * Copyright (c) 200-2022, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -55,6 +55,8 @@
 #endif
 
 #define NEOC_NOF_PIXEL   ((NEOC_LANE_END+1-NEOC_LANE_START)*(NEOC_NOF_LEDS_IN_LANE)) /* number of pixels */
+
+#define NEOC_USE_DMA     (1)
 
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
