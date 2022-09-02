@@ -5,6 +5,7 @@
  */
 
 #include "platform.h"
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 #include <stdbool.h>
 #include "NeoPixel.h"
 #include "McuUtility.h"
@@ -75,7 +76,6 @@ NEO_PixelColor NEO_BrightnessFactorColor(NEO_PixelColor rgbColor, uint8_t factor
   return rgbColor;
 }
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
 
 #define VAL0          0  /* 0 Bit: 0.396 us (need: 0.4 us low) */
 #define VAL1          1  /* 1 Bit: 0.792 us (need: 0.8 us high */
@@ -439,11 +439,11 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
     McuShell_SendHelpStr((unsigned char*)"  help|status", (const unsigned char*)"Print help or status information\r\n", io->stdOut);
     McuShell_SendHelpStr((unsigned char*)"  clear all", (const unsigned char*)"Clear all pixels\r\n", io->stdOut);
 #if NEOC_NOF_COLORS==3
-    McuShell_SendHelpStr((unsigned char*)"  set all <rgb>", (const unsigned char*)"Set all pixel with RGB value\r\n", io->stdOut);
-    McuShell_SendHelpStr((unsigned char*)"  set <lane> <pos> <rgb>", (const unsigned char*)"Set pixel in a lane and position with RGB value\r\n", io->stdOut);
+    McuShell_SendHelpStr((unsigned char*)"  set all 0x<rgb>", (const unsigned char*)"Set all pixel with RGB value\r\n", io->stdOut);
+    McuShell_SendHelpStr((unsigned char*)"  set <lane> <pos> 0x<rgb>", (const unsigned char*)"Set pixel in a lane and position with RGB value\r\n", io->stdOut);
 #elif NEOC_NOF_COLORS==4
-    McuShell_SendHelpStr((unsigned char*)"  set all <wrgb>", (const unsigned char*)"Set all pixel with WRGB value\r\n", io->stdOut);
-    McuShell_SendHelpStr((unsigned char*)"  set <lane> <pos> <wrgb>", (const unsigned char*)"Set pixel in a lane and position with WRGB value\r\n", io->stdOut);
+    McuShell_SendHelpStr((unsigned char*)"  set all 0x<wrgb>", (const unsigned char*)"Set all pixel with WRGB value\r\n", io->stdOut);
+    McuShell_SendHelpStr((unsigned char*)"  set <lane> <pos> 0x<wrgb>", (const unsigned char*)"Set pixel in a lane and position with WRGB value\r\n", io->stdOut);
 #endif
     *handled = TRUE;
     return ERR_OK;
@@ -456,38 +456,39 @@ uint8_t NEO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
     *handled = TRUE;
     return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "neo set all", sizeof("neo set all")-1)==0) {
+    *handled = TRUE;
     p = cmd+sizeof("neo set all")-1;
-#if NEOC_NOF_COLORS==3
-    res = McuUtility_ScanRGB32(&p, &color); /* read color RGB value */
-    if (res==ERR_OK) { /* within RGB value */
+    #if NEOC_NOF_COLORS==3
+      res = McuUtility_ScanRGB32(&p, &color); /* read color RGB value */
+    #elif NEOC_NOF_COLORS==4
+      res = McuUtility_ScanWRGB32(&p, &color); /* read color RGB value */
+    #endif
+      if (res!=ERR_OK) {
+        return res;
+      }
       NEO_SetAllPixelColor(color);
-#elif NEOC_NOF_COLORS==4
-    res = McuUtility_ScanWRGB32(&p, &color); /* read color RGB value */
-    if (res==ERR_OK) { /* within RGB value */
-      NEO_SetAllPixelColor(color);
-#endif
       NEO_TransferPixels();
-      *handled = TRUE;
-    }
+      return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "neo set ", sizeof("neo set ")-1)==0) {
+    *handled = TRUE;
     p = cmd+sizeof("neo set ")-1;
     res = McuUtility_xatoi(&p, &lane); /* read lane */
     if (res==ERR_OK && lane>=NEO_LANE_START && lane<=NEO_LANE_END) {
       res = McuUtility_xatoi(&p, &pos); /* read pos index */
       if (res==ERR_OK && pos>=0 && pos<NEO_NOF_LEDS_IN_LANE) {
-#if NEOC_NOF_COLORS==3
+      #if NEOC_NOF_COLORS==3
         res = McuUtility_ScanRGB32(&p, &color); /* read color RGB value */
-        if (res==ERR_OK) {
-#elif NEOC_NOF_COLORS==4
+      #elif NEOC_NOF_COLORS==4
         res = McuUtility_ScanWRGB32(&p, &color); /* read color RGB value */
-        if (res==ERR_OK) {
-#endif
-          NEO_SetPixelColor((NEO_PixelIdxT)lane, (NEO_PixelIdxT)pos, color);
-          NEO_TransferPixels();
-          *handled = TRUE;
+      #endif
+        if (res!=ERR_OK) {
+          return res;
         }
+        NEO_SetPixelColor((NEO_PixelIdxT)lane, (NEO_PixelIdxT)pos, color);
+        NEO_TransferPixels();
       }
     }
+    return ERR_OK;
   }
   return res;
 }

@@ -20,7 +20,9 @@
 #include "fsl_llwu.h"
 #endif
 #include "cmsis_gcc.h"
-#include "fsl_smc.h"
+#if McuLib_CONFIG_CPU_IS_KINETIS
+  #include "fsl_smc.h"
+#endif
 #include "McuLog.h"
 #if PL_CONFIG_USE_RS485
   #include "McuUart485.h"
@@ -28,11 +30,13 @@
 #include "McuRTT.h"
 #include "McuShell.h"
 
+#if configUSE_TIMERS
 static TimerHandle_t timer;
 
 static void vTimerCallback(TimerHandle_t pxTimer) {
   McuShell_SendStr((unsigned char*)"timer expired\r\n", McuRTT_stdio.stdOut);
 }
+#endif
 
 void LP_OnActivateFromISR(void) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
@@ -46,10 +50,12 @@ void LP_OnActivateFromISR(void) {
     }
   } else {
 #endif
+#if configUSE_TIMERS
     if (xTimerStartFromISR(timer, &xHigherPriorityTaskWoken)!=pdPASS) {
      // McuLog_fatal("failed starting timer"); /* note: can happen if we overflow the timer queue */
      // for(;;); /* failure!?! */
     }
+#endif
 #if 0
     if (xTimerResetFromISR(timer, &xHigherPriorityTaskWoken)!=pdPASS) {  /* reset timer */
      // McuLog_fatal("failed starting timer");
@@ -113,7 +119,10 @@ void LP_EnterStopMode(void) {
 #endif
 
 void LP_Init(void) {
+#if McuLib_CONFIG_CPU_IS_KINETIS
   SMC_SetPowerModeProtection(SMC, kSMC_AllowPowerModeAll);
+#endif
+#if configUSE_TIMERS
   timer = xTimerCreate(
          "tmrLowPower", /* name */
          pdMS_TO_TICKS(LP_MODE_TIMEOUT_MS), /* period/time */
@@ -124,6 +133,7 @@ void LP_Init(void) {
      for(;;); /* failure! */
    }
    xTimerStart(timer, pdMS_TO_TICKS(100));
+#endif
 }
 
 #if 0 && PL_CONFIG_USE_LOW_POWER /* demo code from the SDK examples, to be cleaned up */

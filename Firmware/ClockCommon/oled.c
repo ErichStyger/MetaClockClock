@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-
 #include "platform.h"
 #if PL_CONFIG_USE_OLED
 #include "McuLog.h"
@@ -344,7 +343,7 @@ static void ShowEnergy(void) {
 }
 
 static void OledTask(void *pv) {
-  float temperature = 24.5f, humidity = 50.0f;
+  float temperature = 20.0f, humidity = 50.0f;
 
   McuSSD1306_Init();
   McuTimeDate_Init();

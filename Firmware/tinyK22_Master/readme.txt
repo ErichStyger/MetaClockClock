@@ -1,3 +1,13 @@
+TODO:
+
+If intermezzo stopped or not running: clear pixels (but not all the time)!
+#if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
+  } else {
+    clearUnusedPixel(); /*clear the unused pixels in the background */
+#endif
+
+
+
 readme.txt
 ----------
 Project for a tinyK22 board (NXP K22FN512VLH12) with with FreeRTOS.

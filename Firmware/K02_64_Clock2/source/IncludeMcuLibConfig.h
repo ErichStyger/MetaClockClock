@@ -44,7 +44,7 @@ Instructions:
 #define configQUEUE_REGISTRY_SIZE            (16)
 #define configMINIMAL_STACK_SIZE             (200/sizeof(StackType_t))
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
-#define configUSE_TIMERS                     (0)
+#define configUSE_TIMERS                     (1)
 #define INCLUDE_xTimerPendFunctionCall       (0)
 
 /* low power support: */
