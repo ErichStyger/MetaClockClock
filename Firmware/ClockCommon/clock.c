@@ -442,6 +442,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"  board", buf, io->stdOut);
 #endif
   McuShell_SendStatusStr((unsigned char*)"  clock", CLOCK_GetClockIsOn()?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  parked", CLOCK_ClockIsParked?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"every ");
   McuUtility_strcatNum8u(buf, sizeof(buf), CLOCK_UpdatePeriodMinutes);

@@ -29,6 +29,9 @@
 #if PL_CONFIG_USE_MAG_SENSOR
   #include "magnets.h"
 #endif
+#if PL_CONFIG_USE_CLOCK
+  #include "clock.h"
+#endif
 #if PL_CONFIG_USE_NVMC
   #include "nvmc.h"
 #endif
@@ -2079,6 +2082,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park on")==0) {
     *handled = TRUE;
+  #if PL_CONFIG_USE_CLOCK
+    CLOCK_On(CLOCK_MODE_OFF);
+  #endif
   #if PL_CONFIG_IS_ANALOG_CLOCK
     MATRIX_MoveAlltoHour(12, 10000, io); /* move hands to 12-o-clock position */
   #else

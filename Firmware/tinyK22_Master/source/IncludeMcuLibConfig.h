@@ -137,7 +137,7 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER    (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (0)
+#define McuLog_CONFIG_IS_ENABLED                      (1)
 #define McuLog_CONFIG_DEFAULT_LEVEL                   (McuLog_DEBUG)
 #define McuLog_CONFIG_USE_COLOR                       (0)
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER              (3) /* RTT, UART and USB CDC */

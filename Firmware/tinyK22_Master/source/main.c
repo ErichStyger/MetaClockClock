@@ -15,11 +15,6 @@ int main(void) {
   BOARD_InitBootClocks();
   BOARD_InitBootPeripherals();
 
-  typedef void (*fp_t)(void); /* function pointer */
-  fp_t fp;
-  fp = (fp_t)0x1246; /* thumb bit (LSB) not bit set */
-  fp();
-
   APP_Run();
   return 0;
 }

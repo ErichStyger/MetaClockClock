@@ -5,14 +5,15 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_NEO_PIXEL_HW
 #include <stdbool.h>
 #include "NeoPixel.h"
 #include "McuUtility.h"
-#if NEOC_USE_DMA
-  #include "PixelDMA.h"
-#else
-  #include "ws2812.h"
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  #if NEOC_USE_DMA
+    #include "PixelDMA.h"
+  #else
+    #include "ws2812.h"
+  #endif
 #endif
 
 static const uint8_t gamma8[] = {
@@ -76,6 +77,7 @@ NEO_PixelColor NEO_BrightnessFactorColor(NEO_PixelColor rgbColor, uint8_t factor
   return rgbColor;
 }
 
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 
 #define VAL0          0  /* 0 Bit: 0.396 us (need: 0.4 us low) */
 #define VAL1          1  /* 1 Bit: 0.792 us (need: 0.8 us high */

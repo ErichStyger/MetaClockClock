@@ -68,17 +68,26 @@
 
   #define BUTTONS_ENABLE_CLOCK() GPIO_PortInit(GPIO, 0) /* ungate the clocks for GPIO0 (Port 0): used for user button */
 #elif McuLib_CONFIG_CPU_IS_KINETIS
-#if PL_CONFIG_HAS_SWITCH_2WAY
-  /* using ESP32 UART pins */
-  #define BUTTONS_UP_GPIO        GPIOE
-  #define BUTTONS_UP_PORT        PORTE
-  #define BUTTONS_UP_PIN         0
+#if PL_CONFIG_HAS_SWITCH_USER
+  #define BUTTONS_USER_GPIO        GPIOE /* ESP32_Tx: PTE0 */
+  #define BUTTONS_USER_PORT        PORTE
+  #define BUTTONS_USER_PIN         0
 
-  #define BUTTONS_DOWN_GPIO      GPIOE
-  #define BUTTONS_DOWN_PORT      PORTE
-  #define BUTTONS_DOWN_PIN       1
-#endif
   #define BUTTONS_ENABLE_CLOCK()   CLOCK_EnableClock(kCLOCK_PortE);
+  #define BUTTONS_IRQ              PORTE_IRQn
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+  /* using ESP32 UART pins */
+  #define BUTTONS_SET_GPIO        GPIOE /* ESP32_Tx: PTE0 */
+  #define BUTTONS_SET_PORT        PORTE
+  #define BUTTONS_SET_PIN         0
+
+  #define BUTTONS_RST_GPIO      GPIOE /* ESP32_Rx: PTE1 */
+  #define BUTTONS_RST_PORT      PORTE
+  #define BUTTONS_RST_PIN       1
+
+  #define BUTTONS_ENABLE_CLOCK()   CLOCK_EnableClock(kCLOCK_PortE);
+  #define BUTTONS_IRQ              PORTE_IRQn
+#endif
 #endif
 
 typedef enum {

@@ -148,20 +148,26 @@ static void StartDebounce(uint32_t buttons, bool fromISR) {
   }
 }
 
-#if 0 && McuLib_CONFIG_CPU_IS_KINETIS
+#if McuLib_CONFIG_CPU_IS_KINETIS
 void PORTE_IRQHandler(void) {
   uint32_t flags;
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
-#if PL_CONFIG_HAS_SWITCH_2WAY
+#if PL_CONFIG_HAS_SWITCH_USER
   flags = GPIO_PortGetInterruptFlags(GPIOE);
-  if (flags&(1U<<BUTTONS_DOWN_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_DOWN_GPIO, 1U<<BUTTONS_DOWN_PIN);
-    StartDebounce(BTN_BIT_DOWN, true);
+  if (flags&(1U<<BUTTONS_USER_PIN)) {
+    GPIO_PortClearInterruptFlags(BUTTONS_USER_GPIO, 1U<<BUTTONS_USER_PIN);
+    StartDebounce(BTN_USER, true);
   }
-  if (flags&(1U<<BUTTONS_UP_PIN)) {
-    GPIO_PortClearInterruptFlags(BUTTONS_UP_GPIO, 1U<<BUTTONS_UP_PIN);
-    StartDebounce(BTN_BIT_UP, true);
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+  flags = GPIO_PortGetInterruptFlags(GPIOE);
+  if (flags&(1U<<BUTTONS_SET_PIN)) {
+    GPIO_PortClearInterruptFlags(BUTTONS_SET_GPIO, 1U<<BUTTONS_SET_PIN);
+    StartDebounce(BTN_SET, true);
+  }
+  if (flags&(1U<<BUTTONS_RST_PIN)) {
+    GPIO_PortClearInterruptFlags(BUTTONS_RST_GPIO, 1U<<BUTTONS_RST_PIN);
+    StartDebounce(BTN_RST, true);
   }
 #endif
   if (xHigherPriorityTaskWoken) {
@@ -219,18 +225,33 @@ void BTN_Init(void) {
   McuBtn_GetDefaultConfig(&btnConfig);
   btnConfig.isLowActive = true;
 
-#if PL_CONFIG_HAS_SWITCH_2WAY
-  btnConfig.hw.gpio = BUTTONS_UP_GPIO;
-  btnConfig.hw.port = BUTTONS_UP_PORT;
-  btnConfig.hw.pin = BUTTONS_UP_PIN;
-  BTN_Infos[BTN_SET].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_SET].handle);
+#if PL_CONFIG_HAS_SWITCH_USER
+  btnConfig.hw.gpio = BUTTONS_USER_GPIO;
+  btnConfig.hw.port = BUTTONS_USER_PORT;
+  btnConfig.hw.pin = BUTTONS_USER_PIN;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
+  BTN_Infos[BTN_USER].handle = McuBtn_InitButton(&btnConfig);
 
-  btnConfig.hw.gpio = BUTTONS_DOWN_GPIO;
-  btnConfig.hw.port = BUTTONS_DOWN_PORT;
-  btnConfig.hw.pin = BUTTONS_DOWN_PIN;
+  PORT_SetPinInterruptConfig(BUTTONS_USER_PORT, BUTTONS_USER_PIN, kPORT_InterruptFallingEdge);
+  NVIC_SetPriority(BUTTONS_IRQ, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
+  EnableIRQ(BUTTONS_IRQ);
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+  btnConfig.hw.gpio = BUTTONS_SET_GPIO;
+  btnConfig.hw.port = BUTTONS_SET_PORT;
+  btnConfig.hw.pin = BUTTONS_SET_PIN;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
+  BTN_Infos[BTN_SET].handle = McuBtn_InitButton(&btnConfig);
+
+  btnConfig.hw.gpio = BUTTONS_RST_GPIO;
+  btnConfig.hw.port = BUTTONS_RST_PORT;
+  btnConfig.hw.pin = BUTTONS_RST_PIN;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_RST].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_RST].handle);
+
+  PORT_SetPinInterruptConfig(BUTTONS_SET_PORT, BUTTONS_SET_PIN, kPORT_InterruptFallingEdge);
+  PORT_SetPinInterruptConfig(BUTTONS_RST_PORT, BUTTONS_RST_PIN, kPORT_InterruptFallingEdge);
+  NVIC_SetPriority(BUTTONS_IRQ, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY);
+  EnableIRQ(BUTTONS_IRQ);
 #endif
 
 #elif McuLib_CONFIG_CPU_IS_LPC
@@ -256,56 +277,56 @@ void BTN_Init(void) {
   btnConfig.hw.port = BUTTONS_UP_PORT;
   btnConfig.hw.pin = BUTTONS_UP_PIN;
   btnConfig.hw.iocon = BUTTONS_UP_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_UP].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_UP].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt1, BUTTONS_UP_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_DOWN_GPIO;
   btnConfig.hw.port = BUTTONS_DOWN_PORT;
   btnConfig.hw.pin = BUTTONS_DOWN_PIN;
   btnConfig.hw.iocon = BUTTONS_DOWN_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_DOWN].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_DOWN].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt2, BUTTONS_DOWN_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_LEFT_GPIO;
   btnConfig.hw.port = BUTTONS_LEFT_PORT;
   btnConfig.hw.pin = BUTTONS_LEFT_PIN;
   btnConfig.hw.iocon = BUTTONS_LEFT_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_LEFT].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_LEFT].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt3, BUTTONS_LEFT_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_RIGHT_GPIO;
   btnConfig.hw.port = BUTTONS_RIGHT_PORT;
   btnConfig.hw.pin = BUTTONS_RIGHT_PIN;
   btnConfig.hw.iocon = BUTTONS_RIGHT_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_RIGHT].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_RIGHT].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt4, BUTTONS_RIGHT_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_MID_GPIO;
   btnConfig.hw.port = BUTTONS_MID_PORT;
   btnConfig.hw.pin = BUTTONS_MID_PIN;
   btnConfig.hw.iocon = BUTTONS_MID_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_MID].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_MID].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt5, BUTTONS_MID_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_SET_GPIO;
   btnConfig.hw.port = BUTTONS_SET_PORT;
   btnConfig.hw.pin = BUTTONS_SET_PIN;
   btnConfig.hw.iocon = BUTTONS_SET_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_SET].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_SET].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt6, BUTTONS_SET_PINTSEL);
 
   btnConfig.hw.gpio = BUTTONS_RST_GPIO;
   btnConfig.hw.port = BUTTONS_RST_PORT;
   btnConfig.hw.pin = BUTTONS_RST_PIN;
   btnConfig.hw.iocon = BUTTONS_RST_IOCON;
+  btnConfig.hw.pull = McuGPIO_PULL_UP;
   BTN_Infos[BTN_RST].handle = McuBtn_InitButton(&btnConfig);
-  McuBtn_EnablePullResistor(BTN_Infos[BTN_RST].handle);
   SYSCON_AttachSignal(SYSCON, kPINT_PinInt7, BUTTONS_RST_PINTSEL);
 #endif
 
@@ -332,7 +353,7 @@ void BTN_Init(void) {
   PINT_EnableCallbackByIndex(PINT, kPINT_PinInt7);
 #endif
 #endif
-
+  /* creating timer for debouncing engine */
   data.timer = xTimerCreate(
         "tmrDbnc", /* name */
         pdMS_TO_TICKS(TIMER_PERIOD_MS), /* period/time */
