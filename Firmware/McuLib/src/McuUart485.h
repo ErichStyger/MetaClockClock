@@ -9,7 +9,6 @@
 
 #include "McuUart485config.h"
 #include "McuShell.h"
-#include <stdbool.h>
 
 #ifdef __cplusplus
 extern "C" {
@@ -20,12 +19,6 @@ extern uint8_t McuUart485_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]
 
 /*! The shell standard I/O handler to send/receive shell commands over the bus*/
 extern McuShell_ConstStdIOType McuUart485_stdio;
-
-/*!
- * \brief Return a char from the Rx ring buffer
- * \return Character, otherwise '\0'
- */
-unsigned char McuUart485_RxRingBufferGetChar(void);
 
 /*!
  * \brief Sending a string to the bus
@@ -51,12 +44,6 @@ void McuUart485_ClearResponseQueue(void);
 void McuUart485_ClearRxQueue(void);
 
 /*!
- * \brief Decides if communication is ongoing.
- * \return true if there is still communication going on, false otherwiese.
- */
-bool McuUart485_CommOngoing(void);
-
-/*!
  * \brief Pull (dequeue) a character from the response queue
  * \return Error code, or ERR_OK
  */
@@ -67,12 +54,6 @@ uint8_t McuUart485_GetResponseQueueChar(void);
  * \return Error code, or ERR_OK
  */
 uint8_t McuUart485_GetRxQueueChar(void);
-
-/*!
- * \brief Hook which can be called to decide if we can go into low power mode. Useful to check if there is still communication on-going
- * \return true if it is ok to get into low power mode
- */
-bool McuUart_CanEnterLowPower(void);
 
 /*!
  * \brief Shell command line parser

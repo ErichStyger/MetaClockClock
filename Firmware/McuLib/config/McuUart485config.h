@@ -63,10 +63,10 @@
   #define McuUart485_CONFIG_UART_CONFIG_STRUCT            uart_config_t
   #define McuUart485_CONFIG_UART_GET_DEFAULT_CONFIG       UART_GetDefaultConfig
   #define McuUart485_CONFIG_UART_ENABLE_INTERRUPTS        UART_EnableInterrupts
-  #define McuUart485_CONFIG_UART_ENABLE_INTERRUPT_FLAGS   (kUART_RxDataRegFullInterruptEnable /*| kUART_RxOverrunInterruptEnable | kUART_RxFifoOverflowInterruptEnable*/ /*| kUART_RxActiveEdgeInterruptEnable*/)
+  #define McuUart485_CONFIG_UART_ENABLE_INTERRUPT_FLAGS   (kUART_RxDataRegFullInterruptEnable | kUART_RxOverrunInterruptEnable | kUART_RxFifoOverflowInterruptEnable)
   #define McuUart485_CONFIG_UART_IRQ_NUMBER               UART1_RX_TX_IRQn
   #define McuUart485_CONFIG_UART_INIT                     UART_Init
-  #define McuUart485_CONFIG_UART_GET_CLOCK_FREQ_SELECT    kCLOCK_BusClk
+  #define McuUart485_CONFIG_UART_GET_CLOCK_FREQ_SELECT    kCLOCK_McgFllClk
   #define McuUart485_CONFIG_UART_IRQ_HANDLER              UART1_RX_TX_IRQHandler
   #define McuUart485_CONFIG_CLEAR_STATUS_FLAGS            UART_ClearStatusFlags
 #elif McuLib_CONFIG_CPU_VARIANT==McuLib_CONFIG_CPU_VARIANT_NXP_K22FN
@@ -109,32 +109,17 @@
 #endif
 
 #ifndef McuUart485_CONFIG_UART_RX_QUEUE_LENGTH
-  #define McuUart485_CONFIG_UART_RX_QUEUE_LENGTH          (3*1024)
+  #define McuUart485_CONFIG_UART_RX_QUEUE_LENGTH         (3*1024)
     /*!< Queue length to buffer incoming data and messages */
 #endif
 
 #ifndef McuUart485_CONFIG_UART_RESPONSE_QUEUE_LENGTH
-  #define McuUart485_CONFIG_UART_RESPONSE_QUEUE_LENGTH    (96)
+  #define McuUart485_CONFIG_UART_RESPONSE_QUEUE_LENGTH   (96)
     /*!< Queue length to check the OK from the other side */
 #endif
 
 #ifndef McuUart485_CONFIG_UART_BAUDRATE
-  #define McuUart485_CONFIG_UART_BAUDRATE                 (115200)
-    /*!< default baud rate for UART */
-#endif
-
-#ifndef McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
-  #define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED         (0)
-    /*!< 1: UART debug hook (McuUart485_CONFIG_UART_ISR_HOOK_NAME) enabled in ISR; 0: UART debug hook disabled */
-#endif
-
-#ifndef McuUart485_CONFIG_UART_ISR_HOOK_NAME
-  #define McuUart485_CONFIG_UART_ISR_HOOK_NAME            McuUart485UartHook
-    /*!< hook name to be called */
-#endif
-
-#if McuUart485_CONFIG_UART_ISR_HOOK_ENABLED
-  void McuUart485_CONFIG_UART_ISR_HOOK_NAME(void); /* prototype */
+  #define McuUart485_CONFIG_UART_BAUDRATE           115200
 #endif
 
 #ifndef McuUart485_CONFIG_USE_HW_OE_RTS
@@ -163,12 +148,6 @@
     #endif
   #endif
 #endif
-
-#define McuUart485_CONFIG_USE_RING_BUFFER   (0)
-   /* using ring buffer instead of RTOS queue */
-
 #endif /* McuUart485_CONFIG_USE_RS_485 */
-
-
 
 #endif /* MCUUART485CONFIG_H_ */

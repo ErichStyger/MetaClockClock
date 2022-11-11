@@ -332,14 +332,22 @@ static void LockUnlockCallback(void *data, bool lock) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 
   if (lock) {
+#if McuLib_CONFIG_CPU_IS_ESP32
+    if (xPortInIsrContext()) {
+#else
     if (xPortIsInsideInterrupt()) {
+#endif
       xSemaphoreTakeFromISR(McuLog_ConfigData.McuLog_Mutex, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     } else {
       (void)xSemaphoreTakeRecursive(McuLog_ConfigData.McuLog_Mutex, portMAX_DELAY);
     }
   } else {
+#if McuLib_CONFIG_CPU_IS_ESP32
+    if (xPortInIsrContext()) {
+#else
     if (xPortIsInsideInterrupt()) {
+#endif
       xSemaphoreGiveFromISR(McuLog_ConfigData.McuLog_Mutex, &xHigherPriorityTaskWoken);
       portYIELD_FROM_ISR(xHigherPriorityTaskWoken);
     } else {

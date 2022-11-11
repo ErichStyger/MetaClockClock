@@ -93,6 +93,8 @@
   #include "Cpu.h" /* include CPU related interfaces and defines */
 #elif McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_S32K
   #include "Cpu.h" /* include CPU related interfaces and defines */
+#elif McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_RPI_PICO
+  #include "hardware/flash.h" /* for UID */
 #elif McuLib_CONFIG_CPU_IS_ARM_CORTEX_M
   /* include device specific header file for CMSIS inside "McuArmToolsconfig.h" */
 #endif
@@ -130,14 +132,14 @@ static const unsigned char *const KinetisM0FamilyStrings[] =
 #if McuArmTools_CONFIG_PARSE_COMMAND_ENABLED
 static uint8_t PrintStatus(const McuShell_StdIOType *io)
 {
-#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
+#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC || McuLib_CONFIG_CPU_IS_RPxxxx
   uint8_t buf[1+(16*5)+1+1]; /* "{0xAA,...0xBB}" */
   uint8_t res;
   McuArmTools_UID uid;
 #endif
 
   McuShell_SendStatusStr((unsigned char*)"McuArmTools", (unsigned char*)"Hardware status\r\n", io->stdOut);
-#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
+#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC || McuLib_CONFIG_CPU_IS_RPxxxx
   res = McuArmTools_UIDGet(&uid);
   if (res==ERR_OK) {
     res = McuArmTools_UIDtoString(&uid, buf, sizeof(buf));
@@ -211,6 +213,13 @@ void McuArmTools_SoftwareReset(void)
   SCB_AIRCR = SCB_AIRCR_VECTKEY(0x5FA) | SCB_AIRCR_SYSRESETREQ_MASK;
 #elif McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_S32K
   S32_SCB->AIRCR = S32_SCB_AIRCR_VECTKEY(0x5FA) | S32_SCB_AIRCR_SYSRESETREQ_MASK;
+#elif McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_RPI_PICO
+#define SCB_AIRCR       (*((uint32_t*)(0xe0000000+0xed0c)))
+#define SCB_AIRCR_VECTKEY_Pos              16U                                            /*!< SCB AIRCR: VECTKEY Position */
+#define SCB_AIRCR_SYSRESETREQ_Pos           2U                                            /*!< SCB AIRCR: SYSRESETREQ Position */
+#define SCB_AIRCR_SYSRESETREQ_Msk          (1UL << SCB_AIRCR_SYSRESETREQ_Pos)             /*!< SCB AIRCR: SYSRESETREQ Mask */
+
+  SCB_AIRCR = (0x5FA<<SCB_AIRCR_VECTKEY_Pos)|SCB_AIRCR_SYSRESETREQ_Msk;
 #else
   SCB->AIRCR = (0x5FA<<SCB_AIRCR_VECTKEY_Pos)|SCB_AIRCR_SYSRESETREQ_Msk;
 #endif
@@ -389,6 +398,10 @@ uint8_t McuArmTools_UIDGet(McuArmTools_UID *uid)
   }
 #endif
   return ERR_FAILED; /* not implemented yet */
+#elif McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_RPI_PICO
+  memset(uid, 0, sizeof(McuArmTools_UID));
+  flash_get_unique_id(uid->id);
+  return ERR_OK;
 #else
   (void)uid; /* not used */
   return ERR_FAILED;
@@ -591,6 +604,12 @@ McuArmTools_ConstCharPtr McuArmTools_GetKinetisFamilyString(void)
   return (McuArmTools_ConstCharPtr)"NXP LPC55xx";
   #else
   return (McuArmTools_ConstCharPtr)"NXP LPC";
+  #endif
+#elif McuLib_CONFIG_SDK_VERSION_USED==McuLib_CONFIG_SDK_RPI_PICO
+  #if McuLib_CONFIG_CPU_VARIANT==McuLib_CONFIG_CPU_VARIANT_RP2040
+    return (McuArmTools_ConstCharPtr)"Raspberry Pi Pico, RP2040";
+  #else
+    return (McuArmTools_ConstCharPtr)"Raspberry Pi Pico";
   #endif
 #else
   return (McuArmTools_ConstCharPtr)"UNKNOWN";
