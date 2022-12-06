@@ -39,7 +39,7 @@
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
   #define PL_CONFIG_USE_EXTENDED_HANDS              (0) /* using extended hand */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* intermezzo on by default */
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x80)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color */
