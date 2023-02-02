@@ -256,7 +256,7 @@
 								<option id="com.crt.advproject.link.gcc.lto.293017287" name="Enable Link-time optimization (-flto)" superClass="com.crt.advproject.link.gcc.lto" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.link.gcc.lto.optmization.level.1588874528" name="Link-time optimization level" superClass="com.crt.advproject.link.gcc.lto.optmization.level" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.link.manage.1217533198" name="Manage linker script" superClass="com.crt.advproject.link.manage" useByScannerDiscovery="false" value="true" valueType="boolean"/>
-								<option id="com.crt.advproject.link.script.1678757460" name="Linker script" superClass="com.crt.advproject.link.script" useByScannerDiscovery="false" value="&quot;LPC845_Master_Debug.ld&quot;" valueType="string"/>
+								<option id="com.crt.advproject.link.script.1678757460" name="Linker script" superClass="com.crt.advproject.link.script" useByScannerDiscovery="false" value="LPC845_Master_Debug.ld" valueType="string"/>
 								<option id="com.crt.advproject.link.scriptdir.2124201315" name="Script path" superClass="com.crt.advproject.link.scriptdir" useByScannerDiscovery="false" value="" valueType="string"/>
 								<option id="com.crt.advproject.link.crpenable.713089671" name="Enable automatic placement of Code Read Protection field in image" superClass="com.crt.advproject.link.crpenable" useByScannerDiscovery="false"/>
 								<option id="com.crt.advproject.link.flashconfigenable.224148587" name="Enable automatic placement of Flash Configuration field in image" superClass="com.crt.advproject.link.flashconfigenable" useByScannerDiscovery="false" value="true" valueType="boolean"/>
