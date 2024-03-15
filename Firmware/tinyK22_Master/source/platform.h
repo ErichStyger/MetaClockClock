@@ -33,13 +33,13 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer */
+#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
   #define PL_CONFIG_USE_EXTENDED_HANDS              (0) /* using extended hand */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* intermezzo on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0xff) /* 0..0xff */
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color */
@@ -65,7 +65,7 @@
 #elif 1 /* second Sm(A)rtWall project by Livio Stadelmann */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_16x5
   #define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */
-  #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
+  #define PL_CONFIG_USE_LED_PIXEL         (1 && PL_CONFIG_USE_NEO_PIXEL_HW) /* 'moving' pixels */
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* we drive the NeoPixels directly by hardware */
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (0) /* has motor on/off hardware */
   #define PL_CONFIG_USE_MOTOR_ON_OFF_AUTO (1) /* automatically turn on/off motors */
@@ -76,7 +76,7 @@
   #define PL_CONFIG_USE_INTERMEZZO        (1) /* only implemented for dual shaft motors and smart wall */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT (0) /* intermezzo on by default*/
   #define PL_CONFIG_USE_CLOCK             (1) /* only implemented for dual shaft motors and smart wall */
-  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT   (0) /* clock on by default */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT   (1) /* clock on by default */
   #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
   #define PL_CONFIG_USE_BLE               (0) /* no module installed, SPI1 on PTD5, PTD6 and PDTD7 used for shift register access */
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE (0) /* used to test the LEDs */

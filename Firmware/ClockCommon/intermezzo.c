@@ -1266,20 +1266,20 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
     }
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
   } else {
-	  clearUnusedPixel(); /*clear the unused pixels in the background */
+	clearUnusedPixel(); /*clear the unused pixels in the background */
 #endif
   }
 }
 
 void INTERMEZZO_PlaySpecific(uint8_t nr) {
-	if(nr > NOF_INTERMEZZOS){
-		nr=0;
-	}
-	intermezzos[nr]();
+  if(nr > NOF_INTERMEZZOS) {
+    nr = 0;
+  }
+  intermezzos[nr]();
 }
 
 bool INTERMEZZO_IsOn(void){
-	return IntermezzoOn;
+  return IntermezzoOn;
 }
 
 #if PL_CONFIG_USE_SHELL

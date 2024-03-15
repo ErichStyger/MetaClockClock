@@ -162,7 +162,7 @@ Instructions:
 #define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
 #define McuMinINI_CONFIG_FLASH_NVM_ADDR_START       ((0+512*1024)-McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE)
 #define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x800)
-#define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (256) /* must be 64, 128, 256, ... */
+#define McuMinINI_CONFIG_FLASH_NVM_MAX_DATA_SIZE    (0x800) /* must be 64, 128, 256, ... */
 #define McuMinINI_CONFIG_READ_ONLY                  (0)
 #define McuMinINI_CONFIG_USE_REAL                   (0)
 /* -------------------------------------------------*/

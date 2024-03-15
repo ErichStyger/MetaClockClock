@@ -235,6 +235,11 @@
   #define PL_CONFIG_USE_INTERMEZZO    (1 && PL_CONFIG_USE_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_RS485)
 #endif
 
+#ifndef PL_CONFIG_USE_CLOCK_TIME_OFF
+  #define PL_CONFIG_USE_CLOCK_TIME_OFF (1 && PL_CONFIG_USE_CLOCK)
+    /*!< if clock can be turned off, e.g. during night */
+#endif
+
 #ifndef PL_CONFIG_CHECK_LAST_ERROR
   /* if after sending a command the clients shall be checked if they have an error: if communication is reliable, this can be turned off to improve speed */
   #define PL_CONFIG_CHECK_LAST_ERROR  (1 && PL_CONFIG_IS_MASTER)

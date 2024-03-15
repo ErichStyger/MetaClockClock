@@ -6,7 +6,7 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_LED_PIXEL && PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_PIXEL
 #include "matrixpixel.h"
 #include "matrix.h"
 #include "NeoPixel.h"

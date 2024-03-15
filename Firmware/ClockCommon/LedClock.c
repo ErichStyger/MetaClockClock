@@ -368,7 +368,7 @@ void LedClock_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 			for (int y=0; y<PL_CONFIG_NOF_STEPPER_ON_BOARD_Y; y++) {
 				for (int z=0; z<PL_CONFIG_NOF_STEPPER_ON_BOARD_Z; z++) {
 					if (LedClock_IsPixelUsed(x, y, z)) {
-						MPIXEL_SetColor(x, y, z, 0,0,0);
+						MPIXEL_SetColor(x, y, z, 0,0,0); /* clear pixel */
 					}
 				}
 			}
@@ -390,7 +390,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", dot: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), LedClock_colorDots);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-  McuShell_SendStatusStr((unsigned char*)"color", buf, io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  color", buf, io->stdOut);
   return ERR_OK;
 }
 
@@ -399,6 +399,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  color digit <color>", (unsigned char*)"Set digit color\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  color dot <color>", (unsigned char*)"Set dot color\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  show", (unsigned char*)"Show time and date\r\n", io->stdOut);
   return ERR_OK;
 }
 
@@ -430,6 +431,16 @@ uint8_t LedClock_ParseCommand(const unsigned char *cmd, bool *handled, const Mcu
       return ERR_OK;
     }
     return ERR_FAILED;
+  } else if (McuUtility_strcmp((char*)cmd, "ledclock show")==0) {
+    TIMEREC time;
+    DATEREC date;
+
+    *handled = TRUE;
+    McuTimeDate_GetTimeDate(&time, &date);
+    LedClock_PutClockPixels(&time, &date, LedClock_colorDigits, LedClock_colorDots, true, true, false);
+    NEO_TransferPixels();
+    STEPPER_StartTimer();
+    return ERR_OK;
   }
   return ERR_OK;
 }

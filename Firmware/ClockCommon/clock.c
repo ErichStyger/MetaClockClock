@@ -96,6 +96,21 @@ static bool CLOCK_ClockIsParked = false;
   static uint32_t CLOCK_SecondColor = 0x050000;
 #endif
 
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+  static struct CLOCK_TimeOff {
+    bool isTimeOnOffEnabled; /* if range for automatically turning on and off is enabled */
+    TIMEREC offStartTime;
+    TIMEREC offEndTime;
+  } CLOCK_TimeOff =
+  {
+      .isTimeOnOffEnabled = true,
+      .offStartTime.Hour = 15,
+      .offStartTime.Min = 00,
+      .offEndTime.Hour = 7,
+      .offEndTime.Min = 15,
+  };
+#endif
+
 /* direct task notification messages: */
 #define CLOCK_TASK_NOTIFY_PARK_ON             (1<<0) /* request to park the motors */
 #define CLOCK_TASK_NOTIFY_PARK_OFF            (1<<1) /* request to un-park the motors */
@@ -443,6 +458,16 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #endif
   McuShell_SendStatusStr((unsigned char*)"  clock", CLOCK_GetClockIsOn()?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
   McuShell_SendStatusStr((unsigned char*)"  parked", CLOCK_ClockIsParked?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+  McuShell_SendStatusStr((unsigned char*)"  on/off", CLOCK_TimeOff.isTimeOnOffEnabled?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+
+  buf[0] = '\0';
+  McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offStartTime, (uint8_t*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+  McuUtility_chcat(buf, sizeof(buf), '-');
+  McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offEndTime, (uint8_t*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  off", buf, io->stdOut);
+#endif
 
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"every ");
   McuUtility_strcatNum8u(buf, sizeof(buf), CLOCK_UpdatePeriodMinutes);
@@ -486,6 +511,9 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"clock", (unsigned char*)"Group of clock commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  on|off|toggle", (unsigned char*)"Enable or disable the clock\r\n", io->stdOut);
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+  McuShell_SendHelpStr((unsigned char*)"  onoff on|off", (unsigned char*)"Enable tima based automatic on/off\r\n", io->stdOut);
+#endif
   McuShell_SendHelpStr((unsigned char*)"  24h on|off", (unsigned char*)"Show time in 24h (17:35) or 12h (5:35) format\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  park on|off|toggle", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  period <minute>", (unsigned char*)"Clock update period in minutes (>0)\r\n", io->stdOut);
@@ -536,6 +564,14 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     }
 #else
     CLOCK_On(CLOCK_MODE_ON);
+#endif
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+  } else if (McuUtility_strcmp((char*)cmd, "clock onoff on")==0) {
+    *handled = true;
+    CLOCK_TimeOff.isTimeOnOffEnabled = true;
+  } else if (McuUtility_strcmp((char*)cmd, "clock onoff off")==0) {
+    *handled = true;
+    CLOCK_TimeOff.isTimeOnOffEnabled = false;
 #endif
   } else if (McuUtility_strcmp((char*)cmd, "clock off")==0) {
     *handled = true;
@@ -874,9 +910,10 @@ static void ClockTask(void *pv) {
             MATRIX_MoveAllto12(5000, NULL);
       #elif PL_CONFIG_USE_LED_CLOCK
             LedClock_ReleasePixelAll();
-            INTERMEZZO_PlaySpecific(1);
+            // INTERMEZZO_PlaySpecific(1); /* show rainbow colors */
+            NEO_ClearAllPixel(); /* clear all pixels */
             MATRIX_RequestRgbUpdate(); /* update LEDs */
-            MATRIX_MoveAllToStartPosition(1000, NULL); /* Move steppers to start position */
+            MATRIX_MoveAllToStartPosition(1000, NULL); /* Move all stepper to start position */
       #endif
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
@@ -941,6 +978,34 @@ static void ClockTask(void *pv) {
     /* ----------------------------------------------------------------------------------*/
     /* Clock */
     /* ----------------------------------------------------------------------------------*/
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+    if (CLOCK_TimeOff.isTimeOnOffEnabled) {
+      res = McuTimeDate_GetTimeDate(&time, NULL);
+      if (res==ERR_OK) {
+        uint32_t offStartMinutes = CLOCK_TimeOff.offStartTime.Hour*60 + CLOCK_TimeOff.offStartTime.Min;
+        uint32_t offEndMinutes = CLOCK_TimeOff.offEndTime.Hour*60 + CLOCK_TimeOff.offEndTime.Min;
+        uint32_t currMinutes = time.Hour*60 + time.Min;
+
+        if (offStartMinutes <= offEndMinutes) { /* e.g. 10:00 - 11:30 */
+          if (CLOCK_ClockIsOn && currMinutes>=offStartMinutes && currMinutes<=offEndMinutes) {
+            /* clock is on, and we are in the off time range */
+            CLOCK_On(CLOCK_MODE_OFF);
+          } else if (!CLOCK_ClockIsOn && (currMinutes<offStartMinutes || currMinutes>offEndMinutes)) {
+            /* clock is off, and we are in the on time range */
+            CLOCK_On(CLOCK_MODE_ON);
+          }
+        } else { /* e.g. 19:00 - 03:00 */
+          if (CLOCK_ClockIsOn && (currMinutes>=offStartMinutes || currMinutes<=offEndMinutes)) {
+            /* clock is on, and we are in the off time range */
+            CLOCK_On(CLOCK_MODE_OFF);
+          } else if (!CLOCK_ClockIsOn && (currMinutes>offEndMinutes && currMinutes<offStartMinutes)) {
+            /* clock is off, and we are in the on time range */
+            CLOCK_On(CLOCK_MODE_ON);
+          }
+        }
+      }
+    }
+#endif
     if (CLOCK_ClockIsOn) { /* show time */
       if (prevClockUpdateTimestampSec==PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE) { /* sync on start of the minute */
         do {
