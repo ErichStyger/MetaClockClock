@@ -107,6 +107,8 @@ uint8_t NEO_SetPixelColor(NEO_PixelIdxT lane, NEO_PixelIdxT pos, uint32_t color)
   return NEO_SetPixelRGB(lane, pos, NEO_SPLIT_RGB(color));
 #elif NEOC_NOF_COLORS==4
   return NEO_SetPixelWRGB(lane, pos, NEO_SPLIT_WRGB(color));
+#else
+  return ERR_FAILED;
 #endif
 }
 

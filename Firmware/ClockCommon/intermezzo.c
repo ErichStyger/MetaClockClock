@@ -26,6 +26,10 @@
   #include "LedClock.h"
   #include "stepperconfig.h"
 #endif
+#if PL_CONFIG_USE_MININI
+  #include "minIni/McuMinINI.h"
+  #include "MinIniKeys.h"
+#endif
 
 static bool IntermezzoOn = /* if intermezzos are on by default or not */
 #if PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT
@@ -41,6 +45,13 @@ static uint8_t IntermezzoFadeSec = (STEPPER_TIME_FULL_RANGE_MS/2000);  /* this i
 #else
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 #endif
+
+static void Intermezzo_SetIsOn(bool onOff) {
+  IntermezzoOn = onOff;
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_INTERMEZZO_ON, onOff, NVMC_MININI_FILE_NAME);
+#endif
+}
 
 /* #if-directive for all matrix configurations except SmartWall Matrix*/
 /* =============================================================================================================*/
@@ -1337,11 +1348,11 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     return PrintStatus(io);
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo on")==0) {
     *handled = true;
-    IntermezzoOn = true;
+    Intermezzo_SetIsOn(true);
     return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo off")==0) {
     *handled = true;
-    IntermezzoOn = false;
+    Intermezzo_SetIsOn(false);
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
     clearUnusedPixel(); /*clear the unused pixels in the background */
 #endif

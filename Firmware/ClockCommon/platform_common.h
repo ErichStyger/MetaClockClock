@@ -276,6 +276,11 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS (0x10)
 #endif
 
+#ifndef PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR
+  #define PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR (0x00ff00)
+#endif
+
+
 #ifndef PL_CONFIG_CLOCK_RANDOM_COLOR_ON
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON  (0) /* if clock hand random color is enabled by default */
 #endif
