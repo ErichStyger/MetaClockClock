@@ -60,6 +60,7 @@ Instructions:
 #define SYSVIEW_DEVICE_NAME                  "NXP K22FN512"
 #define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
 #define McuSystemView_CONFIG_RTT_CHANNEL     (1)
+#define McuSystemView_CONFIG_GENERATE_QUEUE_EVENTS  (0) /* to reduce messages */
 /* -------------------------------------------------*/
 /* Percepio Tracealyzer */
 #define configUSE_PERCEPIO_TRACE_HOOKS                  (0)
