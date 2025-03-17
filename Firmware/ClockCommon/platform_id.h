@@ -1,7 +1,7 @@
 /*
  * platform_id.h
  *
- * Copyright (c) 2020: Erich Styger
+ * Copyright (c) 2020-2022: Erich Styger
  * License: PDX-License-Identifier: BSD-3-Clause
  */
 

@@ -12,7 +12,7 @@
 #include "rs485.h"
 #include "McuUtility.h"
 #include "stepper.h"
-#include "Shell.h"
+#include "shell.h"
 #include "McuLog.h"
 #include "McuRTOS.h"
 #if PL_CONFIG_USE_WDT
@@ -178,13 +178,13 @@ void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
   if (toAddr==RS485_BROADCAST_ADDRESS) {
     for(int i=0; i<MATRIX_NOF_BOARDS; i++) {
       addr = MATRIX_BoardList[i].addr;
-      res = RS485_SendCommand(addr, cmd, 1000, false, 1);
+      res = RS485_SendCommand(addr, cmd, 1000, 1, NULL, NULL);
       if (res!=ERR_OK) {
         McuLog_error("failed sending command '%s' to %d", cmd, addr);
       }
     } /* for */
   } else {
-    res = RS485_SendCommand(toAddr, cmd, 1000, false, 1);
+    res = RS485_SendCommand(toAddr, cmd, 1000, 1, NULL, NULL);
     if (res!=ERR_OK) {
       McuLog_error("failed sending command '%s' to %d", cmd, toAddr);
     }
@@ -343,7 +343,7 @@ uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
 #endif
         if (MATRIX_CommandHasBeenSentToBoard(i)) {
           McuLog_trace("Waiting for idle (addr 0x%02x)", addr);
-          res = RS485_SendCommand(addr, (unsigned char*)"idle", 1000, false, 1); /* ask board if it is idle */
+          res = RS485_SendCommand(addr, (unsigned char*)"idle", 1000, 1, NULL, NULL); /* ask board if it is idle */
           if (res==ERR_OK) { /* board is idle */
             boardIsIdle[i] = true;
           }
@@ -576,7 +576,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
   if (nof>0) {
     *cmdSent = true;
     McuLog_trace("Queue enable & move (0x%02x)", addr);
-    resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
+    resBoards = RS485_SendCommand(addr, buf, 1000, 1, NULL, NULL); /* queue the command for the remote board */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
     resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, true, 1); /* queue the command for ourself (LED ring) */
     if (resBoards!=ERR_OK || resLeds!=ERR_OK) {
@@ -641,7 +641,7 @@ static uint8_t QueueBoardHandColorCommand(uint8_t addr, bool *cmdSent) {
   if (nof>0) {
     *cmdSent = true;
     McuLog_trace("Queue hand color (0x%02x)", addr);
-    resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
+    resBoards = RS485_SendCommand(addr, buf, 1000, 1, NULL, NULL); /* queue the command for the remote board */
     if (resBoards!=ERR_OK) {
       return ERR_FAILED;
     }
@@ -684,7 +684,7 @@ static uint8_t QueueBoardRingColorCommand(uint8_t addr, bool *cmdSent) {
   if (nof>0) {
     *cmdSent = true;
     McuLog_trace("Queue ring color (0x%02x)", addr);
-    resBoards = RS485_SendCommand(addr, buf, 1000, true, 1); /* queue the command for the remote board */
+    resBoards = RS485_SendCommand(addr, buf, 1000, 1, NULL, NULL); /* queue the command for the remote board */
     if (resBoards!=ERR_OK) {
       return ERR_FAILED;
     }
@@ -746,12 +746,12 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
 #endif
       if (MATRIX_CommandHasBeenSentToBoard(i)) {
         McuLog_trace("Checking last error (addr 0x%02x)", addr);
-        res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, false, 1); /* ask board if there was an error */
+        res = RS485_SendCommand(addr, (unsigned char*)"lastError", 1000, 1, NULL, NULL); /* ask board if there was an error */
         if (res==ERR_OK) { /* no error */
           boardHasError[i] = false;
         } else { /* send command again! */
           boardHasError[i] = true;
-          (void)RS485_SendCommand(addr, (unsigned char*)"matrix exq", 1000, true, 1); /* execute the queue */
+          (void)RS485_SendCommand(addr, (unsigned char*)"matrix exq", 1000, 1, NULL, NULL); /* execute the queue */
         }
       } else { /* board is not enabled, so it is considered to be fine */
         boardHasError[i] = false;
@@ -766,7 +766,7 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
 static uint8_t SendExecuteCommand(void) {
   McuLog_trace("Sending broadcast exq");
   /* send broadcast execute queue command */
-  (void)RS485_SendCommand(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix exq", 1000, true, 0); /* execute the queue */
+  (void)RS485_SendCommand(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix exq", 1000, 0, NULL, NULL); /* execute the queue */
   /* check with lastEror if all have received the message */
 #if PL_CONFIG_CHECK_LAST_ERROR
   return MATRIX_CheckRemoteLastError();
@@ -825,7 +825,7 @@ static uint8_t MATRIX_SendMatrixCmdToAllBoards(const unsigned char *cmd) {
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* go through all boards */
     addr = MATRIX_BoardList[i].addr;
     McuLog_trace("Sending '%s' to board 0x%02x", cmd, addr);
-    res = RS485_SendCommand(addr, cmd, 1000, false, 1);
+    res = RS485_SendCommand(addr, cmd, 1000, 1, NULL, NULL);
     if (res!=ERR_OK) {
       McuLog_error("failed sending command '%s' to board 0x%x", cmd, addr);
       hasError = true;

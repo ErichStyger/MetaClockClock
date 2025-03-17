@@ -16,7 +16,7 @@
 #include "leds.h"
 #if PL_CONFIG_USE_SHELL
   #include "McuShell.h"
-  #include "Shell.h"
+  #include "shell.h"
   #include "McuShellUart.h"
 #endif
 #include "McuTimeDate.h"
@@ -905,8 +905,8 @@ static void ClockTask(void *pv) {
   MATRIX_SetHandBrightnessAll(CLOCK_HandBrightness);
 #endif
   /* toggle hands: it could be that only the master has reset, make sure all clocks get the update */
-  (void)SHELL_ParseCommand((const unsigned char *)"matrix he all off", NULL, true);
-  (void)SHELL_ParseCommand((const unsigned char *)"matrix he all on", NULL, true);
+  (void)SHELL_ParseCommandIO((const unsigned char *)"matrix he all off", NULL, true);
+  (void)SHELL_ParseCommandIO((const unsigned char *)"matrix he all on", NULL, true);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   APP_RequestUpdateLEDs(); /* update LEDs */
 #endif
@@ -925,7 +925,7 @@ static void ClockTask(void *pv) {
   }
 #endif
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
-  (void)SHELL_ParseCommand((const unsigned char *)"matrix motor on", NULL, true);
+  (void)SHELL_ParseCommandIO((const unsigned char *)"matrix motor on", NULL, true);
 #endif
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
@@ -969,22 +969,22 @@ static void ClockTask(void *pv) {
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR) {
         McuLog_info("Notification: button pressed");
-        SHELL_ParseCommand((unsigned char*)"clock toggle", McuShell_GetStdio(), true);
+        SHELL_ParseCommandIO((unsigned char*)"clock toggle", McuShell_GetStdio(), true);
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR_LONG) {
         McuLog_info("Notification: button pressed long");
-        SHELL_ParseCommand((unsigned char*)"intermezzo toggle", McuShell_GetStdio(), true);
+        SHELL_ParseCommandIO((unsigned char*)"intermezzo toggle", McuShell_GetStdio(), true);
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_ON) {
         McuLog_info("Start parking clock");
-        SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+        SHELL_ParseCommandIO((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
         McuLog_info("Parking done.");
         CLOCK_ClockIsOn = false; /* disabled clock */
         CLOCK_ClockIsParked = true;
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_PARK_OFF) {
         McuLog_info("Start unparking clock");
-        SHELL_ParseCommand((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+        SHELL_ParseCommandIO((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
         McuLog_info("Unparking done.");
         CLOCK_ClockIsOn = false; /* disabled clock */
         CLOCK_ClockIsParked = false;
@@ -993,13 +993,13 @@ static void ClockTask(void *pv) {
         McuLog_info("toggle park");
         if (CLOCK_ClockIsParked) {
           McuLog_info("Start unparking clock");
-          SHELL_ParseCommand((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+          SHELL_ParseCommandIO((unsigned char*)"matrix park off", McuShell_GetStdio(), true); /* move to 12-o-clock position */
           McuLog_info("Unparking done.");
           CLOCK_ClockIsOn = false; /* disabled clock */
           CLOCK_ClockIsParked = false;
         } else {
           McuLog_info("Start parking clock");
-          SHELL_ParseCommand((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
+          SHELL_ParseCommandIO((unsigned char*)"matrix park on", McuShell_GetStdio(), true); /* move to 12-o-clock position */
           McuLog_info("Parking done.");
           CLOCK_ClockIsOn = false; /* disabled clock */
           CLOCK_ClockIsParked = true;

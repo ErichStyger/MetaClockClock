@@ -13,7 +13,7 @@
 #endif
 #include "McuLib.h"
 #include "McuUtility.h"
-#include "Shell.h"
+#include "shell.h"
 #include "McuLog.h"
 
 #define NVMC_MININI_FILE_NAME         "settings.ini" /* 'file' name used */

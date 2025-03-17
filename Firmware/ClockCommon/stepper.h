@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Erich Styger
+ * Copyright (c) 2021-2022, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -8,6 +8,11 @@
 #define STEPPER_H_
 
 #include "platform.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 
 typedef enum {
   STEPPER_MOVE_MODE_SHORT,  /* shortest move to position */
@@ -70,8 +75,15 @@ QueueHandle_t STEPPER_GetQueue(STEPPER_Handle_t stepper);
 
 void *STEPPER_GetDevice(STEPPER_Handle_t stepper);
 
+/*! de-initialize module */
 void STEPPER_Deinit(void);
+
+/*! initialize module */
 void STEPPER_Init(void);
 #endif /* PL_CONFIG_USE_STEPPER */
+
+#ifdef __cplusplus
+}  /* extern "C" */
+#endif
 
 #endif /* STEPPER_H_ */

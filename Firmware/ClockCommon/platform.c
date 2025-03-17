@@ -79,7 +79,7 @@
   #include "buttons.h"
 #endif
 #if PL_CONFIG_USE_SHELL
-  #include "Shell.h"
+  #include "shell.h"
 #endif
 #if PL_CONFIG_USE_SHELL_UART
   #include "McuShellUart.h"

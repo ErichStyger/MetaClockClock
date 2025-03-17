@@ -8,7 +8,7 @@
 #if PL_CONFIG_USE_BLE_MSG
 #include "bleMsg.h"
 #include "McuRTOS.h"
-#include "Shell.h"
+#include "shell.h"
 #include "McuUtility.h"
 #include "McuLog.h"
 #include <string.h>
@@ -96,7 +96,7 @@ bool BLEMSG_HandleMessage(void) {
     //  McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix hand rgb all 0x");
     //  McuUtility_strcatNum24Hex(cmd, sizeof(cmd), msg.value);
     }
-    (void)SHELL_ParseCommand(cmd, NULL, true);
+    (void)SHELL_ParseCommandIO(cmd, NULL, true);
   } else {
     return false; /* no messages waiting */
   }

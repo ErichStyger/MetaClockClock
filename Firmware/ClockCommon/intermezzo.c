@@ -10,7 +10,7 @@
 #include "matrix.h"
 #include "matrixposition.h"
 #include "matrixhand.h"
-#include "Shell.h"
+#include "shell.h"
 #include "McuUtility.h"
 #include "McuExtRTC.h"
 #include "McuTimeDate.h"

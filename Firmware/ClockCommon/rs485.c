@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Erich Styger
+ * Copyright (c) 2019-2022, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -13,14 +13,14 @@
 #include "McuRTOS.h"
 #include "McuUtility.h"
 #include "McuLog.h"
-#include "Shell.h"
-#include "nvmc.h"
-#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-  #include "StepperBoard.h"
+#include "shell.h"
+#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
+  #include "nvmc.h"
 #endif
 #if PL_CONFIG_USE_WDT
   #include "watchdog.h"
 #endif
+#include "stepper.h"
 
 typedef enum RS485_Response_e {
   RS485_RESPONSE_CONTINUE, /* continue scanning and parsing */
@@ -30,15 +30,19 @@ typedef enum RS485_Response_e {
 } RS485_Response_e;
 
 static bool RS485_DoLogging = false; /* if traffic on the bus shall be reported on the shell */
+static SemaphoreHandle_t RS485_stdioMutex; /* mutex to protect access to standard I/O */
 
 uint8_t RS485_GetAddress(void) {
-  uint8_t addr, res;
+#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
+  uint8_t addr = 0;
 
-  res = NVMC_GetRS485Addr(&addr);
-  if (res==ERR_OK) {
+  if (NVMC_GetRS485Addr(&addr)==ERR_OK) {
     return addr;
   }
-  return 0x1; /* default */
+  return 0; /* failed */
+#elif McuLib_CONFIG_CPU_IS_ESP32
+  return 1; /* hard coded */
+#endif
 }
 
 static void RS485_SendChar(unsigned char ch) {
@@ -58,24 +62,77 @@ static bool RS485_CharPresent(void) {
 }
 
 McuShell_ConstStdIOType RS485_stdio = {
-    (McuShell_StdIO_In_FctType)RS485_ReadChar, /* stdin */
-    (McuShell_StdIO_OutErr_FctType)RS485_SendChar,  /* stdout */
-    (McuShell_StdIO_OutErr_FctType)RS485_SendChar,  /* stderr */
-    RS485_CharPresent /* if input is not empty */
-  };
+    .stdIn = (McuShell_StdIO_In_FctType)RS485_ReadChar,
+    .stdOut = (McuShell_StdIO_OutErr_FctType)RS485_SendChar,
+    .stdErr = (McuShell_StdIO_OutErr_FctType)RS485_SendChar,
+    .keyPressed = RS485_CharPresent, /* if input is not empty */
+  #if McuShell_CONFIG_ECHO_ENABLED
+    .echoEnabled = false,
+  #endif
+};
 
 McuShell_ConstStdIOType RS485_stdioBroadcast = {
-    (McuShell_StdIO_In_FctType)RS485_ReadChar, /* stdin */
-    (McuShell_StdIO_OutErr_FctType)RS485_NullSend,  /* stdout */
-    (McuShell_StdIO_OutErr_FctType)RS485_NullSend,  /* stderr */
-    RS485_CharPresent /* if input is not empty */
-  };
+    .stdIn = (McuShell_StdIO_In_FctType)RS485_ReadChar,
+    .stdOut = (McuShell_StdIO_OutErr_FctType)RS485_NullSend,
+    .stdErr = (McuShell_StdIO_OutErr_FctType)RS485_NullSend,
+    .keyPressed = RS485_CharPresent, /* if input is not empty */
+  #if McuShell_CONFIG_ECHO_ENABLED
+    .echoEnabled = false,
+  #endif
+};
 
+bool RS485_TakeMutex(void) {
+  return xSemaphoreTakeRecursive(RS485_stdioMutex, portMAX_DELAY)==pdPASS;
+}
 
+void RS485_GiveMutex(void) {
+  (void)xSemaphoreGiveRecursive(RS485_stdioMutex); /* give back mutex */
+}
+
+/*-----------------------------------------------------------------------*/
+/* parser I/O handler, used to parse the returned data after sending a command to the RS-485 bus */
+static void RS485Parse_SendChar(unsigned char ch) {
+  if (xSemaphoreTakeRecursive(RS485_stdioMutex, portMAX_DELAY)==pdPASS) { /* take mutex */
+    McuUart485_stdio.stdOut(ch);
+    (void)xSemaphoreGiveRecursive(RS485_stdioMutex); /* give back mutex */
+  }
+}
+
+static void RS485Parse_ReadChar(uint8_t *c) {
+  if (xSemaphoreTakeRecursive(RS485_stdioMutex, portMAX_DELAY)==pdPASS) { /* take mutex */
+    McuUart485_stdio.stdIn(c);
+    (void)xSemaphoreGiveRecursive(RS485_stdioMutex); /* give back mutex */
+  }
+}
+
+static bool RS485Parse_CharPresent(void) {
+  bool inputPresent = false;
+
+  if (xSemaphoreTakeRecursive(RS485_stdioMutex, portMAX_DELAY)==pdPASS) { /* take mutex */
+    inputPresent = McuUart485_stdio.keyPressed();
+    (void)xSemaphoreGiveRecursive(RS485_stdioMutex); /* give back mutex */
+  }
+  return inputPresent;
+}
+
+static McuShell_ConstStdIOType RS485Parse_stdio = {
+    .stdIn = (McuShell_StdIO_In_FctType)RS485Parse_ReadChar,
+    .stdOut = (McuShell_StdIO_OutErr_FctType)RS485Parse_SendChar,
+    .stdErr = (McuShell_StdIO_OutErr_FctType)RS485Parse_SendChar,
+    .keyPressed = RS485Parse_CharPresent, /* if input is not empty */
+  #if McuShell_CONFIG_ECHO_ENABLED
+    .echoEnabled = false,
+  #endif
+ };
+/*-----------------------------------------------------------------------*/
 static void RS485_SendStr(unsigned char *str) {
   while(*str!='\0') {
     RS485_stdio.stdOut(*str++);
   }
+}
+
+void RS485_SendData(unsigned char *data, size_t size) {
+  McuUart485_SendBlock(data, size);
 }
 
 static uint8_t CalcCRC(const uint8_t *data, uint8_t dataSize, uint8_t start) {
@@ -224,25 +281,42 @@ static RS485_Response_e Scan(CMD_ParserState_e *state, unsigned char ch, unsigne
   return RS485_RESPONSE_CONTINUE;
 }
 
-static RS485_Response_e WaitForResponse(int32_t timeoutMs, uint8_t fromAddr) {
-  unsigned char buf[24] = ""; /* "@<addr> <fromAddr> OK" or "@<addr> <fromAddr> NOK" */
+static RS485_Response_e WaitForResponse(int32_t timeoutMs, uint8_t fromAddr, McuShell_ConstStdIOType *shellIO, McuShell_ConstStdIOType *rsIO) {
+  unsigned char buf[24] = ""; /* enough for "@<addr> <fromAddr> OK" or "@<addr> <fromAddr> NOK" */
   unsigned char ch;
   RS485_Response_e resp;
   CMD_ParserState_e state = CMD_PARSER_INIT;
 
   for(;;) { /* returns */
+    /* read response text and write into buffer or to console */
+    static unsigned char lineBuffer[512]; /* enough for a line of text coming back from the bus */
+
+    lineBuffer[0] = '\0'; /* initialize buffer */
+    do {
+      rsIO->stdIn(&ch);
+      if (ch!='\0') {
+        McuUtility_chcat(lineBuffer, sizeof(lineBuffer), ch);
+        if (ch=='\n') {
+          if (lineBuffer[0]!='@') { /* do not send things like OK or NOK messages from bus */
+            SHELL_SendStringToIO(lineBuffer, shellIO);
+          }
+          lineBuffer[0] = '\0'; /* reset buffer */
+        }
+      }
+    } while(ch!='\0');
+
     ch = McuUart485_GetResponseQueueChar();
     if (ch!='\0') {
       resp = Scan(&state, ch, buf, sizeof(buf), fromAddr);
       if (resp==RS485_RESPONSE_OK || resp==RS485_RESPONSE_NOK) {
         return resp;
       }
-    } else { /* empty input buffer: wait */
-      vTaskDelay(pdMS_TO_TICKS(10));
+    } else { /* empty response buffer: check normal incoming characters */
+      vTaskDelay(pdMS_TO_TICKS(50));
     #if PL_CONFIG_USE_WDT
-      WDT_Report(WDT_REPORT_ID_CURR_TASK, 10);
+      WDT_Report(WDT_REPORT_ID_CURR_TASK, 50);
     #endif
-      timeoutMs -= 10;
+      timeoutMs -= 50;
       if (timeoutMs<=0) {
         return RS485_RESPONSE_TIMEOUT;
       }
@@ -251,13 +325,16 @@ static RS485_Response_e WaitForResponse(int32_t timeoutMs, uint8_t fromAddr) {
   return RS485_RESPONSE_CONTINUE;
 }
 
-uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t timeoutMs, bool intern, uint32_t nofRetry) {
+uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t timeoutMs, uint32_t nofRetry, McuShell_ConstStdIOType *shellIO, McuShell_ConstStdIOType *rsIO) {
   /* example: send "@16 1 cmd stepper status" */
   unsigned char buf[McuShell_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t res = ERR_OK;
   RS485_Response_e resp;
   uint8_t crc, hex;
 
+  if (rsIO==NULL) { /* assign default */
+    rsIO = &RS485Parse_stdio;
+  }
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   if (intern && (dstAddr==RS485_GetAddress() || dstAddr==RS485_BROADCAST_ADDRESS)) {
     SHELL_ParseCommand(cmd, NULL, true); /* parse it for the LED rings */
@@ -281,36 +358,39 @@ uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t tim
   hex = (char)(crc & 0x0F);
   buf[sizeof("@dd ss c")-1] = (char)(hex + ((hex <= 9) ? '0' : ('A'-10)));
 
-  for(;;) { /* breaks */
-    McuUart485_ClearResponseQueue(); /* clear up if there is something pending */
-    if (RS485_DoLogging) {
-      McuLog_trace("Tx: %s", buf);
-    }
-    RS485_SendStr(buf);
-    RS485_SendStr((unsigned char*)"\n");
-    if (dstAddr==RS485_BROADCAST_ADDRESS) {
-      /* do not wait for a OK/NOK response for broadcast messages. The caller has to check with 'lastError' */
-      res = ERR_OK;
-      break; /* leave loop */
-    } else {
-      vTaskDelay(pdMS_TO_TICKS(10)); /* give back some time for a response */
-      resp = WaitForResponse(500, dstAddr);
-      if (resp==RS485_RESPONSE_OK) {
-        res = ERR_OK;
-        break; /* fine, leave loop */
-      } else if (resp==RS485_RESPONSE_TIMEOUT) { /* board did not respond? */
-        res = ERR_BUSOFF; /* retry */
-      } else if (resp==RS485_RESPONSE_NOK) { /* not ok, crc error? */
-        res = ERR_CRC; /* retry */
+  if (xSemaphoreTakeRecursive(RS485_stdioMutex, portMAX_DELAY)==pdPASS) { /* take mutex */
+    for(;;) { /* breaks */
+      McuUart485_ClearResponseQueue(); /* clear up if there is something pending */
+      if (RS485_DoLogging) {
+        McuLog_trace("Tx: %s", buf);
       }
-    }
-    /* NOK or timeout */
-    if (nofRetry==0) { /* tried enough */
-      res = ERR_FAILED;
-      break; /* leave loop */
-    }
-    nofRetry--; /* try again */
-  } /* for */
+      RS485_SendStr(buf);
+      RS485_SendStr((unsigned char*)"\n");
+      if (dstAddr==RS485_BROADCAST_ADDRESS) {
+        /* do not wait for a OK/NOK response for broadcast messages. The caller has to check with 'lastError' */
+        res = ERR_OK;
+        break; /* leave loop */
+      } else {
+        vTaskDelay(pdMS_TO_TICKS(100)); /* give back some time for receiving a response */
+        resp = WaitForResponse(timeoutMs, dstAddr, shellIO, rsIO);
+        if (resp==RS485_RESPONSE_OK) {
+          res = ERR_OK;
+          break; /* fine, leave loop */
+        } else if (resp==RS485_RESPONSE_TIMEOUT) { /* board did not respond? */
+          res = ERR_BUSOFF; /* retry */
+        } else if (resp==RS485_RESPONSE_NOK) { /* not ok, crc error? */
+          res = ERR_CRC; /* retry */
+        }
+      }
+      /* NOK or timeout */
+      if (nofRetry==0) { /* tried enough */
+        res = ERR_FAILED;
+        break; /* leave loop */
+      }
+      nofRetry--; /* try again */
+    } /* for */
+    (void)xSemaphoreGiveRecursive(RS485_stdioMutex); /* give back mutex */
+  }
   return res;
 }
 
@@ -327,7 +407,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 }
 
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
-  McuShell_SendHelpStr((unsigned char*)"rs", (unsigned char*)"Group of RS-458 commands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"rs", (unsigned char*)"Group of RS-485 commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_USE_NVMC
   McuShell_SendHelpStr((unsigned char*)"  addr <addr>", (unsigned char*)"Set RS-485 address\r\n", io->stdOut);
@@ -364,11 +444,7 @@ uint8_t RS485_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     *handled = true;
     p = cmd + sizeof("rs addr ")-1;
     if (McuUtility_xatoi(&p, &val)==ERR_OK && val>=0 && val<=0xff) {
-      if (NVMC_SetRS485Addr(val)!=ERR_OK) {
-        McuShell_SendStr((unsigned char*)"Failed writing configuration!\r\n", io->stdErr);
-        return ERR_FAILED;
-      }
-      return ERR_OK;
+      return NVMC_SetRS485Addr(val);
     }
     return ERR_FAILED;
 #endif
@@ -380,17 +456,24 @@ uint8_t RS485_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     *handled = true;
     p = cmd + sizeof("rs sendcmd ")-1;
     if (McuUtility_xatoi(&p, &val)==ERR_OK) { /* parse destination address */
+      unsigned char buffer[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
+
       while (*p==' ') { /* skip leading spaces */
         p++;
       }
-      return RS485_SendCommand(val, (unsigned char*)p, 10000, true, 0); /* 10 seconds should be enough */
+      if (*p=='"') { /* double-quoted command: it can contain multiple commands */
+        if (McuUtility_ScanDoubleQuotedString(&p, buffer, sizeof(buffer))!=ERR_OK) {
+          return ERR_FAILED;
+        }
+        p = buffer;
+      }
+      return RS485_SendCommand(val, (unsigned char*)p, 10000, 0, io, &RS485Parse_stdio); /* 10 seconds should be enough */
     }
     return ERR_FAILED;
   }
   return ERR_OK;
 }
 
-//#if PL_CONFIG_IS_CLIENT
 static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, uint8_t *sourceAddr, uint8_t *destinationAddr) {
   /* format is in the form "@<DST_ADDR> <SRC_ADDR> <CRC> cmd help" */
   const unsigned char *p;
@@ -437,11 +520,9 @@ static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, u
   }
   return ERR_FAILED;
 }
-//#endif
 
 static void RS485Task(void *pv) {
-  static uint8_t cmdBuf[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* command line from the RS-485 bus */
-//#if PL_CONFIG_IS_CLIENT
+  static uint8_t cmdBuf[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* command line and text from the RS-485 bus */
   const unsigned char *startCmd;
   uint8_t srcAddr, dstAddr;
   uint8_t res, crc;
@@ -449,16 +530,21 @@ static void RS485Task(void *pv) {
   unsigned char hex;
   bool reply;
   static uint8_t lastError = ERR_OK;
-//#endif
 
   (void)pv; /* not used */
   McuLog_trace("Starting RS485 Task");
   #if PL_CONFIG_USE_WDT
   WDT_SetTaskHandle(WDT_REPORT_ID_TASK_RS485, xTaskGetCurrentTaskHandle());
-#endif
+  #endif
   cmdBuf[0] = '\0';
   for(;;) {
-    if (McuShell_ReadCommandLine(cmdBuf, sizeof(cmdBuf), &McuUart485_stdio)==ERR_OK) {
+    while (!McuUart485_stdio.keyPressed()) { /* if nothing in input queue, give back some CPU time */
+      vTaskDelay(pdMS_TO_TICKS(10));
+    #if PL_CONFIG_USE_WDT
+      WDT_Report(WDT_REPORT_ID_TASK_RS485, 10);
+    #endif
+    }
+    if (McuShell_ReadCommandLine(cmdBuf, sizeof(cmdBuf), &RS485Parse_stdio)==ERR_OK) {
       reply = false;
       srcAddr = RS485_ILLEGAL_ADDRESS;
       dstAddr = RS485_ILLEGAL_ADDRESS;
@@ -472,26 +558,29 @@ static void RS485Task(void *pv) {
           lastError = ERR_CRC;
           reply = true;
         } else if (res==ERR_OK) { /* header was ok */
-          res = ERR_FAILED; /* set error case */
+          res = ERR_FAILED; /* set default return value */
           if (McuUtility_strcmp((char*)startCmd, (char*)" cmd lastError")==0) {
             reply = true;
             res = lastError;  /* report back last error */
             lastError = ERR_OK; /* clear error */
-        #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
           } else if (McuUtility_strcmp((char*)startCmd, (char*)" cmd idle")==0) {
             reply = true;
-            if (!STEPBOARD_ItemsInQueue(STEPBOARD_GetBoard()) && STEPBOARD_IsIdle(STEPBOARD_GetBoard())) {
+#if PL_CONFIG_USE_STEPPER
+            if (STEPPER_IsIdle()) {
               res = ERR_OK;  /* ERR_OK if board is idle */
             } else {
               res = ERR_FAILED; /* not idle */
             }
-        #endif
+#else
+            res = ERR_FAILED; /* not idle */
+#endif
           } else if (McuUtility_strncmp((char*)startCmd, " cmd ", sizeof(" cmd ")-1)==0) { /* shell command? */
+            McuUart485_ClearResponseQueue(); /* clear any pending response: we are going to parse a new command */
             startCmd += sizeof(" cmd ")-1;
             if (dstAddr==RS485_BROADCAST_ADDRESS) {
-              res = SHELL_ParseCommand(startCmd, &RS485_stdioBroadcast, true); /* do not write anything back if broadcast */
+              res = SHELL_ParseCommandIO(startCmd, &RS485_stdioBroadcast, true); /* do not write anything back if broadcast */
             } else {
-              res = SHELL_ParseCommand(startCmd, &RS485_stdio, true);
+              res = SHELL_ParseCommandIO(startCmd, &RS485_stdio, true);
             }
             lastError = res; /* remember error status if we get asked later on */
             reply = true;
@@ -503,8 +592,8 @@ static void RS485Task(void *pv) {
         }
       } else {
         /* not starting with '@', print it ... */
-        SHELL_SendString((unsigned char *)cmdBuf);
-        SHELL_SendString((unsigned char*)"\r\n");
+        McuUtility_strcat(cmdBuf, sizeof(cmdBuf), (unsigned char*)"\r\n"); /* for the shell parser, the new-line has been removed. Add it again for output */
+        SHELL_SendString((unsigned char *)cmdBuf); /* \TODO do not send directly to UART: instead, use a stdio which buffers the output */
       }
       cmdBuf[0] = '\0'; /* reset buffer for next iteration */
       /* send response back to sender */
@@ -529,12 +618,6 @@ static void RS485Task(void *pv) {
         RS485_SendStr(buf);
       }
     }
-    if (!McuUart485_stdio.keyPressed()) { /* if nothing in input queue, give back some CPU time */
-      vTaskDelay(pdMS_TO_TICKS(10));
-    #if PL_CONFIG_USE_WDT
-      WDT_Report(WDT_REPORT_ID_TASK_RS485, 10);
-    #endif
-    }
   } /* for */
 }
 
@@ -543,7 +626,6 @@ void RS485_Deinit(void) {
 }
 
 void RS485_Init(void) {
-  McuUart485_Init();
   if (xTaskCreate(
       RS485Task,  /* pointer to the task */
       "RS-485", /* task name for kernel awareness debugging */
@@ -553,8 +635,15 @@ void RS485_Init(void) {
       (TaskHandle_t*)NULL /* optional task handle to create */
     ) != pdPASS)
   {
+    McuLog_fatal("Failed creating RS-485 task");
     for(;;){} /* error! probably out of memory */
   }
+  RS485_stdioMutex = xSemaphoreCreateRecursiveMutex();
+  if (RS485_stdioMutex==NULL) { /* creation failed? */
+    McuLog_fatal("Failed creating RS-485 Standard I/O mutex");
+    for(;;);
+  }
+  vQueueAddToRegistry(RS485_stdioMutex, "RS485StdIoMutex");
 }
 
 #endif /* PL_CONFIG_USE_RS485 */

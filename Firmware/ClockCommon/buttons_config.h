@@ -11,6 +11,7 @@
 #define BUTTONS_CONFIG_H_
 
 #include "McuLib.h"
+#include "platform.h"
 
 /* button pins are defined in IncludeMcuLibConfig.h */
 #if McuLib_CONFIG_CPU_IS_LPC

@@ -21,7 +21,7 @@
 #include "McuRTOS.h"
 #include "McuUtility.h"
 #include "leds.h"
-#include "Shell.h"
+#include "shell.h"
 #include "matrix.h"
 #if McuLib_CONFIG_CPU_IS_LPC
   #include "fsl_ctimer.h"

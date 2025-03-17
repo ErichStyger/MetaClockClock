@@ -17,7 +17,7 @@
 #include "McuWait.h"
 #include "McuUtility.h"
 #include "McuWatchdog.h"
-#include "Shell.h"
+#include "shell.h"
 
 #define WDT_DISABLED_FOR_DEBUG (0)  /* set to 1 for easier debugging */
 

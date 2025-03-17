@@ -1,11 +1,12 @@
 /*
- * Copyright (c) 2020, Erich Styger
+ * Copyright (c) 2019-2023, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
 #include "platform.h"
 #if PL_CONFIG_USE_SHELL
+#include "shell.h"
 #include "McuShell.h"
 #include "McuRTOS.h"
 #include "McuRTT.h"
@@ -124,7 +125,7 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #if PL_CONFIG_USE_I2C_SPY
   McuI2CSpy_ParseCommand,
 #endif
-#if PL_CONFIG_USE_RTC
+#if PL_CONFIG_USE_TIME_DATE
   McuTimeDate_ParseCommand,
 #endif
 #if PL_CONFIG_USE_EXT_I2C_RTC
@@ -238,7 +239,11 @@ void SHELL_SendChar(unsigned char ch) {
   }
 }
 
-void SHELL_SendString(unsigned char *str) {
+void SHELL_SendStringToIO(const unsigned char *str, McuShell_ConstStdIOType *io) {
+  McuShell_SendStr(str, io->stdOut);
+}
+
+void SHELL_SendString(const unsigned char *str) {
   for(int i=0;i<sizeof(ios)/sizeof(ios[0]);i++) {
 #if PL_CONFIG_USE_RTT
     if (ios[i].stdio==&McuRTT_stdio) { /* only send to RTT if there is enough space available to avoid slowing down things */
@@ -259,8 +264,8 @@ void SHELL_SendString(unsigned char *str) {
   }
 }
 
-uint8_t SHELL_ParseCommand(const unsigned char *command, McuShell_ConstStdIOType *io, bool silent) {
-  if (io==NULL) {
+uint8_t SHELL_ParseCommandIO(const unsigned char *command, McuShell_ConstStdIOType *io, bool silent) {
+  if (io==NULL) { /* use a default */
 #if PL_CONFIG_USE_SHELL_UART
     io = &McuShellUart_stdio;
 #elif PL_CONFIG_USE_USB_CDC
