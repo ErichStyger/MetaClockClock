@@ -11,6 +11,8 @@
 #include "McuShell.h"
 #include "McuRTOS.h"
 
+void Intermezzo_InitSettings(void);
+
 uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
 void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown);

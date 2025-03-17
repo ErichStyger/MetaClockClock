@@ -950,6 +950,9 @@ static void ClockTask(void *pv) {
 #else
   CLOCK_ClockIsOn = PL_CONFIG_CLOCK_ON_BY_DEFAULT;
 #endif
+#if PL_CONFIG_USE_INTERMEZZO
+  Intermezzo_InitSettings();
+#endif
 
   for(;;) {
     vTaskDelay(pdMS_TO_TICKS(200));

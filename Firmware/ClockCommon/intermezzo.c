@@ -53,6 +53,14 @@ static void Intermezzo_SetIsOn(bool onOff) {
 #endif
 }
 
+void Intermezzo_InitSettings(void) {
+#if PL_CONFIG_USE_MININI && PL_CONFIG_USE_CLOCK_TIME_OFF
+  IntermezzoOn = McuMinINI_ini_getbool(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_INTERMEZZO_ON, PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT, NVMC_MININI_FILE_NAME);
+#else
+  IntermezzoOn = PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT;
+#endif
+}
+
 /* #if-directive for all matrix configurations except SmartWall Matrix*/
 /* =============================================================================================================*/
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12

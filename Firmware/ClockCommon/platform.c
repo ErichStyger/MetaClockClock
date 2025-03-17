@@ -227,6 +227,7 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_RS485
   RS485_Init();
+  McuUart485_Init();
 #endif
 #if PL_CONFIG_USE_MATRIX
   MATRIX_Init();
