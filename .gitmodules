@@ -1,0 +1,3 @@
+[submodule "Firmware/McuLib"]
+	path = Firmware/McuLib
+	url = https://github.com/ErichStyger/McuLib
