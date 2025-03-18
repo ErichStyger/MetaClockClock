@@ -94,16 +94,22 @@
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzos on by default */
   /* below things are not supported yet for this clock */
   #define PL_CONFIG_USE_FONT                        (0)
-#elif 1 /* Verkehrshaus */
-  #define PL_MATRIX_CONFIGURATION_ID  PL_MATRIX_ID_VERKEHRSHAUS
-  #define PL_CONFIG_USE_OLED          (1)
-  #define PL_CONFIG_USE_DEMOS         (0)
-  #define PL_CONFIG_USE_FONT          (0)
-  #define PL_CONFIG_USE_CLOCK         (0)
-  #define PL_CONFIG_USE_MATRIX        (0)
-  #define PL_CONFIG_USE_BLE           (0)
-  #define PL_CONFIG_USE_NEO_PIXEL_HW  (1)
-  #define PL_CONFIG_USE_STEPPER       (0)
+#elif 1 /* Cornelius: 6x12 matrix */
+  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x6
+  #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
+  #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
+  #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
+#elif 1 /* Cornelius: 8x15 matrix */
+  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_15x8
+  #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
+  #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
+  #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
 #else
   #error
 #endif

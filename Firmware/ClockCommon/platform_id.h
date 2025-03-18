@@ -38,5 +38,7 @@
 #define PL_MATRIX_ID_CLOCK_8x3_V4         (6)  /* 24 clocks using the round modular boards */
 #define PL_MATRIX_ID_CIRCULAR_CLOCK_1x12  (7)  /* Circular clock with 12 clocks */
 #define PL_MATRIX_ID_SMARTWALL_16x5       (8)  /* Sm(A)rtwall with 5 boards with 16 pixels each stacked up */
+#define PL_MATRIX_ID_CLOCK_12x6           (9)  /* Cornelius: 12x6 clock */
+#define PL_MATRIX_ID_CLOCK_15x8           (10) /* Cornelius: 15x8 clock */
 
 #endif /* PLATFORM_ID_H_ */
