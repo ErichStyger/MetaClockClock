@@ -13,6 +13,12 @@
 extern "C" {
 #endif
 
+#include "platform.h"
+#if PL_CONFIG_USE_NEO_PIXEL_HW
+  bool APP_RequestUpdateLEDsFromISR(void);
+  void APP_RequestUpdateLEDs(void);
+#endif
+
 /*!
  * \brief Command line shell parser
  * \param cmd Pointer to the command line string
