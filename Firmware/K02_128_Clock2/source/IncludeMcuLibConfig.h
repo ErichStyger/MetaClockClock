@@ -39,13 +39,14 @@ Instructions:
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
 #define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
 #define configTOTAL_HEAP_SIZE                (8*1024) /* not used for Heap scheme 5 */
-#define configUSE_HEAP_SECTION_NAME          (1)
+#define configUSE_HEAP_SECTION_NAME          (1) /* use a name for the heap */
 #define configHEAP_SECTION_NAME_STRING       ".bss.$SRAM_LOWER.FreeRTOS"
-#define configQUEUE_REGISTRY_SIZE            (16)
-#define configMINIMAL_STACK_SIZE             (200/sizeof(StackType_t))
+#define configQUEUE_REGISTRY_SIZE            (0)
+#define configMINIMAL_STACK_SIZE             (128/sizeof(StackType_t))
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
 #define configUSE_TIMERS                     (1)
 #define INCLUDE_xTimerPendFunctionCall       (0)
+#define configMAX_TASK_NAME_LEN              (4)
 
 /* low power support: */
 #define configUSE_TICKLESS_IDLE              (0)
@@ -53,6 +54,7 @@ Instructions:
 #define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
 
 /* performance counter: */
+#define configGENERATE_RUN_TIME_STATS               (0)
 #define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
 #define configGET_RUNTIMER_COUNTER_VALUE_FROM_ISR   AppGetRuntimeCounterValueFromISR
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
@@ -70,17 +72,17 @@ Instructions:
 /* -------------------------------------------------*/
 /* Shell */
 #define McuShell_CONFIG_PROJECT_NAME_STRING           "K02 LedStepper"
-#define McuShell_CONFIG_MULTI_CMD_ENABLED             (1)
-#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256)
-#define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
+#define McuShell_CONFIG_MULTI_CMD_ENABLED             (0)
+#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256/4)
+#define McuShell_CONFIG_MULTI_CMD_SIZE                (200/4) /* max size of each command */
 #define McuShellUart_CONFIG_UART                      McuShellUart_CONFIG_UART_NONE
 /* -------------------------------------------------*/
 /* RTT */
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (128)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (32)
 #define McuRTT_CONFIG_BLOCKING_SEND                   (1)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (256)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (32)
 /* ------------------- I2C ---------------------------*/
 #define CONFIG_USE_HW_I2C                             (0) /* if using HW I2C, otherwise use software bit banging */
 #define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)

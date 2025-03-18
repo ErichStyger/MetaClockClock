@@ -34,14 +34,13 @@
 static TimerHandle_t timer;
 
 static void vTimerCallback(TimerHandle_t pxTimer) {
-  McuShell_SendStr((unsigned char*)"timer expired\r\n", McuRTT_stdio.stdOut);
+  McuShell_SendStr((unsigned char*)"LP timer expired\r\n", McuRTT_stdio.stdOut);
 }
 #endif
 
 void LP_OnActivateFromISR(void) {
   BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 #if 0
-
   if (xTimerIsTimerActive(timer)==pdFALSE) {
     /* timer is not active: start it */
     if (xTimerStartFromISR(timer, &xHigherPriorityTaskWoken)!=pdPASS) {
@@ -70,7 +69,6 @@ void LP_EnterWaitMode(void) {
   __asm volatile("wfi");
   __asm volatile("isb");
 }
-
 
 #if LP_MODE_SELECTED==LP_MODE_STOP
 static bool enterStop = true;

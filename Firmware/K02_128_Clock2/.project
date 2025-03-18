@@ -41,6 +41,11 @@
 			<type>2</type>
 			<locationURI>copy_PARENT/McuLib</locationURI>
 		</link>
+		<link>
+			<name>tinyK22_NeoPixel</name>
+			<type>2</type>
+			<locationURI>PARENT-3-PROJECT_LOC/McuOnEclipse/Examples/KDS/tinyK22/tinyK22_NeoPixel</locationURI>
+		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
