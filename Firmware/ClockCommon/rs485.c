@@ -336,8 +336,8 @@ uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t tim
     rsIO = &RS485Parse_stdio;
   }
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  if (intern && (dstAddr==RS485_GetAddress() || dstAddr==RS485_BROADCAST_ADDRESS)) {
-    SHELL_ParseCommand(cmd, NULL, true); /* parse it for the LED rings */
+  if (dstAddr==RS485_GetAddress() || dstAddr==RS485_BROADCAST_ADDRESS) {
+    SHELL_ParseCommandIO(cmd, shellIO, true); /* parse it for the LED rings */
     if (dstAddr!=RS485_BROADCAST_ADDRESS) { /* only for us */
       return ERR_OK;
     }
@@ -566,7 +566,7 @@ static void RS485Task(void *pv) {
           } else if (McuUtility_strcmp((char*)startCmd, (char*)" cmd idle")==0) {
             reply = true;
 #if PL_CONFIG_USE_STEPPER
-            if (STEPPER_IsIdle()) {
+            if (STEPPER_IsIdle(NULL)) {
               res = ERR_OK;  /* ERR_OK if board is idle */
             } else {
               res = ERR_FAILED; /* not idle */

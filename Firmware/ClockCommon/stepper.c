@@ -205,6 +205,9 @@ static void AccelDelaySteps(STEPPER_Device_t *dev, int32_t steps) {
 #endif
 
 bool STEPPER_IsIdle(STEPPER_Handle_t stepper) {
+  if (stepper==NULL) {
+    return false;
+  }
   STEPPER_Device_t *mot = (STEPPER_Device_t*)stepper;
   return mot->doSteps==0;
 }

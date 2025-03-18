@@ -79,13 +79,6 @@ Instructions:
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (256)
-#if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
-  #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (2)
-  #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (2)
-#else
-  #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (1)
-  #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (1)
-#endif
 /* ------------------- I2C ---------------------------*/
 #define CONFIG_USE_HW_I2C                             (1) /* if using HW I2C, otherwise use software bit banging */
 #define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)

@@ -268,6 +268,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 #endif /* PL_CONFIG_USE_FONT */
 
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
+  MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   CC_ShowTime(time->Hour, time->Min);
 #endif
 
@@ -513,8 +514,6 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   clock_type = (unsigned char*)"Circular Clock 1x12\r\n";
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
   clock_type = (unsigned char*)"SmartWall 16x5\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
-  clock_type = (unsigned char*)"\r\n";
 #else
   #error "unknown"
   clock_type = (unsigned char*)"unknown\r\n";

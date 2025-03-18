@@ -32,13 +32,6 @@
     #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
     #define NEOC_LANE_END          (4) /* this is the last GPIO pin used */
     #define NEOC_NOF_LEDS_IN_LANE  (12*40) /* number of LEDs in each lane */
-  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_VERKEHRSHAUS
-    #define NEOC_LANE_START        (0) /* this is the first GPIO pin used */
-    #define NEOC_LANE_END          (0) /* this is the last GPIO pin used */
-    #define NEOC_NOF_LEDS_IN_COL   (1) /* just one stripe */
-    #define NEOC_NOF_LEDS_IN_ROW   (30) /* total number of leds in stripe */
-    #define NEOC_NOF_LEDS_IN_LANE  (NEOC_NOF_LEDS_IN_COL*NEOC_NOF_LEDS_IN_ROW) /* number of LEDs, all in one line */
-    #define NEOC_NOF_COLORS        (4)  /* 3 for RGB, 4 for RGBW */
   #else
     #error "unknown configuration?"
   #endif

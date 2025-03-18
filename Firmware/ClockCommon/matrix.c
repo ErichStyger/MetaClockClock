@@ -48,7 +48,9 @@
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
-static uint8_t MATRIX_DefaultDelay = 1;
+#if PL_CONFIG_IS_MASTER
+  static uint8_t MATRIX_DefaultDelay = 2;
+#endif
 
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
   static uint32_t MATRIX_LedHandColor = PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR;
@@ -248,6 +250,17 @@ void MATRIX_Delay(int32_t ms) {
 #endif
 
 #if PL_CONFIG_IS_MASTER
+uint8_t MATRIX_GetDefaultDelay(void) {
+  return MATRIX_DefaultDelay;
+}
+
+void MATRIX_SetDefaultDelay(uint8_t delay) {
+  MATRIX_DefaultDelay = delay;
+  MATRIX_SetMoveDelayAll(delay);
+}
+#endif
+
+#if PL_CONFIG_IS_MASTER
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
@@ -267,15 +280,6 @@ void MATRIX_DrawAllRingColor(uint32_t color) {
   }
 }
 #endif
-
-uint8_t MATRIX_GetDefaultDelay(void) {
-  return MATRIX_DefaultDelay;
-}
-
-void MATRIX_SetDefaultDelay(uint8_t delay) {
-  MATRIX_DefaultDelay = delay;
-  MATRIX_SetMoveDelayAll(delay);
-}
 
 #if MATRIX_NOF_STEPPERS_Z==2
 void MATRIX_SetMoveDelayZ0Z1Checked(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1) {
@@ -1264,11 +1268,11 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_STEPPERS_Z);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  stepper", buf, io->stdOut);
-
+#if PL_CONFIG_IS_MASTER
   McuUtility_Num8uToStr(buf, sizeof(buf), MATRIX_GetDefaultDelay());
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  delay", buf, io->stdOut);
-
+#endif
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"hand: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), MATRIX_LedHandColor);
@@ -1448,7 +1452,6 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<d>: delay, 0 is no delay\r\n", io->stdOut);
 #endif
-  McuShell_SendHelpStr((unsigned char*)"  delay <val>", (unsigned char*)"Set default movement delay (0-127) \r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  R <xyz> <a> <d> <md>", (unsigned char*)"Relative angle move for LED and motor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  A <xyz> <a> <d> <md>", (unsigned char*)"Absolute angle move for LED and motor\r\n", io->stdOut);
@@ -1468,6 +1471,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  lastError", (unsigned char*)"Check remotes for last error\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  waitidle", (unsigned char*)"Check remotes for idle state\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  sendcmd <cmd>", (unsigned char*)"Send a command to all boards\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  delay <val>", (unsigned char*)"Set default movement delay (0-127) \r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_X12_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  reset high|low", (unsigned char*)"Set motor driver reset line (LOW active)\r\n", io->stdOut);
@@ -2117,6 +2121,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     p = cmd + sizeof("matrix sendcmd ")-1;
     return MATRIX_SendMatrixCmdToAllBoards(p);
 #endif /* PL_CONFIG_IS_MASTER */
+#if PL_CONFIG_IS_MASTER
   } else if (McuUtility_strncmp((char*)cmd, "matrix delay ", sizeof("matrix delay ")-1)==0) {
     *handled = TRUE;
     uint8_t delay;
@@ -2127,6 +2132,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
     MATRIX_SetDefaultDelay(delay);
     return ERR_OK;
+#endif
   }
   return res;
 }

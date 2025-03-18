@@ -309,20 +309,20 @@
 							</tool>
 						</toolChain>
 					</folderInfo>
-					<folderInfo id="com.crt.advproject.config.exe.debug.1652255002.49429628" name="/" resourcePath="McuLib/SEGGER_Sysview">
-						<toolChain id="com.crt.advproject.toolchain.exe.debug.1861823860" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
-							<tool id="com.crt.advproject.cpp.exe.debug.242470477" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.2132798231"/>
-							<tool id="com.crt.advproject.gcc.exe.debug.1430990158" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1505299104"/>
-							<tool id="com.crt.advproject.gas.exe.debug.2009731058" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.625261844"/>
-							<tool id="com.crt.advproject.link.cpp.exe.debug.339125061" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1649601390"/>
-							<tool id="com.crt.advproject.link.exe.debug.655607108" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1999308306"/>
-							<tool id="com.crt.advproject.tool.debug.debug.1249654947" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1585692387"/>
+					<folderInfo id="com.crt.advproject.config.exe.debug.1652255002.1561740348" name="/" resourcePath="McuLib/SEGGER_Sysview">
+						<toolChain id="com.crt.advproject.toolchain.exe.debug.677881828" name="NXP MCU Tools" superClass="com.crt.advproject.toolchain.exe.debug" unusedChildren="">
+							<tool id="com.crt.advproject.cpp.exe.debug.1687057131" name="MCU C++ Compiler" superClass="com.crt.advproject.cpp.exe.debug.2132798231"/>
+							<tool id="com.crt.advproject.gcc.exe.debug.1865151218" name="MCU C Compiler" superClass="com.crt.advproject.gcc.exe.debug.1505299104"/>
+							<tool id="com.crt.advproject.gas.exe.debug.2088921606" name="MCU Assembler" superClass="com.crt.advproject.gas.exe.debug.625261844"/>
+							<tool id="com.crt.advproject.link.cpp.exe.debug.2114263405" name="MCU C++ Linker" superClass="com.crt.advproject.link.cpp.exe.debug.1649601390"/>
+							<tool id="com.crt.advproject.link.exe.debug.1231907171" name="MCU Linker" superClass="com.crt.advproject.link.exe.debug.1999308306"/>
+							<tool id="com.crt.advproject.tool.debug.debug.430441807" name="MCU Debugger" superClass="com.crt.advproject.tool.debug.debug.1585692387"/>
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CMSIS"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="ClockCommon"/>
-						<entry excluding="SEGGER_Sysview|unity|RNet|rdimon|Modbus|littleFS|fonts|FreeRTOS/FreeRTOShooks.c|LittlevGL|TraceRecorder|HD44780|FatFS|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
+						<entry excluding="unity|RNet|rdimon|Modbus|littleFS|fonts|FreeRTOS/FreeRTOShooks.c|LittlevGL|TraceRecorder|HD44780|FatFS|FreeRTOS/Source/portable/GCC/RISC-V|FreeRTOS/Source/portable/GCC/ARM_CM33" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="McuLib"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="board"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="component"/>
 						<entry flags="LOCAL|VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="device"/>
