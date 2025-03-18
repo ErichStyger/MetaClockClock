@@ -48,6 +48,8 @@
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
+static uint8_t MATRIX_DefaultDelay = 1;
+
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
   static uint32_t MATRIX_LedHandColor = PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR;
   static uint8_t MATRIX_LedHandBrightness = PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS; /* led brightness, 0-255 */
@@ -265,6 +267,15 @@ void MATRIX_DrawAllRingColor(uint32_t color) {
   }
 }
 #endif
+
+uint8_t MATRIX_GetDefaultDelay(void) {
+  return MATRIX_DefaultDelay;
+}
+
+void MATRIX_SetDefaultDelay(uint8_t delay) {
+  MATRIX_DefaultDelay = delay;
+  MATRIX_SetMoveDelayAll(delay);
+}
 
 #if MATRIX_NOF_STEPPERS_Z==2
 void MATRIX_SetMoveDelayZ0Z1Checked(uint8_t x, uint8_t y, uint8_t delay0, uint8_t delay1) {
@@ -849,7 +860,7 @@ static uint8_t MATRIX_MoveAlltoHour(uint8_t hour, int32_t timeoutMs, const McuSh
     MHAND_2ndHandEnableAll(false);
   #endif
   MPOS_SetAngleAll(hour*360/12);
-  MATRIX_SetMoveDelayAll(2);
+  MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_CW);
   #if PL_CONFIG_USE_LED_RING
     MHAND_HandEnableAll(true);
@@ -1254,6 +1265,10 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  stepper", buf, io->stdOut);
 
+  McuUtility_Num8uToStr(buf, sizeof(buf), MATRIX_GetDefaultDelay());
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  delay", buf, io->stdOut);
+
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"hand: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), MATRIX_LedHandColor);
@@ -1433,6 +1448,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<d>: delay, 0 is no delay\r\n", io->stdOut);
 #endif
+  McuShell_SendHelpStr((unsigned char*)"  delay <val>", (unsigned char*)"Set default movement delay (0-127) \r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  R <xyz> <a> <d> <md>", (unsigned char*)"Relative angle move for LED and motor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  A <xyz> <a> <d> <md>", (unsigned char*)"Absolute angle move for LED and motor\r\n", io->stdOut);
@@ -1509,19 +1525,6 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     }
     return ERR_FAILED;
 #endif
-#if PL_CONFIG_IS_MASTER
-  } else if (McuUtility_strncmp((char*)cmd, "matrix delay ", sizeof("matrix delay ")-1)==0) {
-    uint8_t delay;
-
-    *handled = TRUE;
-    p = cmd + sizeof("matrix delay ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &delay)==ERR_OK) {
-      MATRIX_SetMoveDelayAll(delay);
-      return ERR_OK;
-    } else {
-      return ERR_FAILED;
-    }
-#endif /* PL_CONFIG_IS_MASTER */
 #if PL_CONFIG_USE_STEPPER
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_NEO_PIXEL_HW && PL_CONFIG_IS_ANALOG_CLOCK
   } else if (McuUtility_strncmp((char*)cmd, "matrix A ", sizeof("matrix A ")-1)==0   /* "matrix A <x> <y> <z> <a> <d> <md>" */
@@ -2114,6 +2117,16 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     p = cmd + sizeof("matrix sendcmd ")-1;
     return MATRIX_SendMatrixCmdToAllBoards(p);
 #endif /* PL_CONFIG_IS_MASTER */
+  } else if (McuUtility_strncmp((char*)cmd, "matrix delay ", sizeof("matrix delay ")-1)==0) {
+    *handled = TRUE;
+    uint8_t delay;
+
+    p = cmd + sizeof("matrix delay ")-1;
+    if (McuUtility_ScanDecimal8uNumber(&p, &delay)!=ERR_OK) {
+      return ERR_FAILED;
+    }
+    MATRIX_SetDefaultDelay(delay);
+    return ERR_OK;
   }
   return res;
 }
@@ -3221,7 +3234,7 @@ void MATRIX_Init(void) {
   MPOS_RelativeMoveAll(0);
 #endif
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
-  MATRIX_SetMoveDelayAll(2);
+  MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
 #if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(0); /* set to zero, will be set below after the matrix copy operation */
   MATRIX_DrawAllRingColor(0x000000); /* ring color off */

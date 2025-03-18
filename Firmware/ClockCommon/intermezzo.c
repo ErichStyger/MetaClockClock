@@ -714,7 +714,7 @@ static void IntermezzoHalfHalf(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-  MATRIX_SetMoveDelayAll(3);
+  MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetAngleZ0Z1All(270, 90);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 

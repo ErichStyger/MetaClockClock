@@ -84,6 +84,9 @@ void MATRIX_SetMoveDelayZ0Z1All(uint8_t delay0, uint8_t delay1);
 #endif
 void MATRIX_SetMoveDelayAll(uint8_t delay);
 
+uint8_t MATRIX_GetDefaultDelay(void);
+void MATRIX_SetDefaultDelay(uint8_t delay);
+
 uint8_t MATRIX_SendToRemoteQueue(void);
 uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait);
 uint8_t MATRIX_SendToRemoteQueueExecuteAndWait(bool wait);

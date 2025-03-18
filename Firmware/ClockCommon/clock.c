@@ -232,7 +232,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 #if PL_CONFIG_IS_ANALOG_CLOCK && PL_CONFIG_USE_FONT
   uint8_t buf[8], res;
 
-  MATRIX_SetMoveDelayAll(5);
+  MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_LED_RING
   if (CLOCK_doRandomHandColor) {
