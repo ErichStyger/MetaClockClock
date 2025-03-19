@@ -27,6 +27,14 @@
 #define PL_CONFIG_IS_K02           (PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128) /* Kinetis K02FN64 or K02FN128 */
 /* ********************************************************************************************************** */
 
+#ifndef PL_CONFIG_IS_SPLIT_FLAP
+  #define PL_CONFIG_IS_SPLIT_FLAP           (0)  /* if it is a split-flap system */
+#endif
+
+#ifndef PL_CONFIG_IS_CLOCK_CLOCK
+  #define PL_CONFIG_IS_CLOCK_CLOCK          (1)  /* if it is a clock-clock system */
+#endif
+
 #ifndef PL_CONFIG_USE_MININI
   #define PL_CONFIG_USE_MININI   (1)
 #endif
