@@ -654,7 +654,12 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  font <f>", (unsigned char*)"Set clock font, e.g. 2x3\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
+#if PL_CONFIG_IS_SPLIT_FLAP
+  McuShell_SendHelpStr((unsigned char*)"  time <time>", (unsigned char*)"Show time\r\n", io->stdOut);
+#endif
+#if PL_CONFIG_IS_CLOCK_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  time <x> <y> <time>", (unsigned char*)"Show time on clock at coordinate (x,y)\r\n", io->stdOut);
+#endif
 #endif
 #if PL_CONFIG_WORLD_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  clocks", (unsigned char*)"[0,0] London    [1,0] New York\r\n", io->stdOut);
@@ -820,10 +825,14 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
   } else if (McuUtility_strncmp((char*)cmd, "clock time ", sizeof("clock time ")-1)==0) {
     uint8_t hour, minute, second, hsec;
-    int32_t x, y;
 
     *handled = TRUE;
     p = cmd + sizeof("clock time ")-1;
+    #if PL_CONFIG_IS_SPLIT_FLAP
+    if (McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK) {
+      ShowTime(hour, minute);
+    #elif PL_CONFIG_IS_CLOCK_CLOCK
+    int32_t x, y;
     if (
            McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
         && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
@@ -831,6 +840,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
        )
     {
       ShowTime(x, y, hour, minute);
+    #endif
     } else {
       return ERR_FAILED;
     }
@@ -888,9 +898,6 @@ static void ClockTask(void *pv) {
   McuLog_trace("Starting Clock Task");
 #if PL_CONFIG_USE_LED_PIXEL
   PIXEL_ZeroAll();
-#endif
-#if PL_CONFIG_USE_EXT_I2C_RTC
-  McuExtRTC_Init();
 #endif
   res = McuTimeDate_Init();
   if(res==ERR_OK) { /* initialize time from external RTC if configured with McuTimeDate_INIT_SOFTWARE_RTC_FROM_EXTERNAL_RTC */
@@ -1066,7 +1073,6 @@ static void ClockTask(void *pv) {
         }
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
-        McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
         doImmediateClockUpdate = true;
       #if PL_CONFIG_USE_LED_RING
