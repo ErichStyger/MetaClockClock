@@ -40,7 +40,7 @@
 #if PL_CONFIG_USE_INTERMEZZO
   #include "intermezzo.h"
 #endif
-#if PL_CONFIG_USE_RTC
+#if PL_CONFIG_USE_EXT_I2C_RTC
   #include "McuExtRTC.h"
 #endif
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
@@ -48,6 +48,7 @@
 #endif
 #include "StepperBoard.h"
 #include "application.h"
+#include "McuLog.h"
 #include "matrixposition.h"
 #include "matrixhand.h"
 #include "matrixring.h"
@@ -77,6 +78,8 @@ static bool CLOCK_ClockIsOn =
   #endif
 static bool CLOCK_ClockIs24h = true; /* if showing time in 24h format (17:35) or 12h format (5:35) */
 static bool CLOCK_ClockIsParked = false;
+
+#if PL_CONFIG_IS_CLOCK_CLOCK
 #if PL_CONFIG_USE_FONT
   static MFONT_Size_e CLOCK_font = PL_CONFIG_CLOCK_DEFAULT_FONT; /* default font */
 #endif
@@ -99,6 +102,7 @@ static bool CLOCK_ClockIsParked = false;
   static bool CLOCK_ShowSeconds = false;
   static uint32_t CLOCK_SecondColor = 0x050000;
 #endif
+#endif /* PL_CONFIG_IS_CLOCK_CLOCK */
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
   #define CONFIG_CLOCK_DEFAULT_ON_OFF         (true)
@@ -133,16 +137,20 @@ static bool CLOCK_ClockIsParked = false;
 #define CLOCK_TASK_NOTIFY_BUTTON_USR_LONG     (1<<7) /* request to toggle clock on/off */
 #define CLOCK_TASK_NOTIFY_UPDATE_CLOCK        (1<<8) /* request to update clock */
 #if PL_CONFIG_HAS_SWITCH_7WAY
-#define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<9) /* up button */
-#define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<10) /* down button */
-#define CLOCK_TASK_NOTIFY_BUTTON_LEFT         (1<<11) /* left button */
-#define CLOCK_TASK_NOTIFY_BUTTON_RIGHT        (1<<12) /* right button */
-#define CLOCK_TASK_NOTIFY_BUTTON_MID          (1<<13) /* middle button */
-#define CLOCK_TASK_NOTIFY_BUTTON_RST          (1<<14) /* reset button */
-#define CLOCK_TASK_NOTIFY_BUTTON_SET          (1<<15) /* set button */
-#define CLOCK_TASK_NOTIFY_ALL                ((1<<16)-1) /* all notification bits */
+  #define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<9) /* up button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<10) /* down button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_LEFT         (1<<11) /* left button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_RIGHT        (1<<12) /* right button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_MID          (1<<13) /* middle button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_RST          (1<<14) /* reset button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_SET          (1<<15) /* set button */
+  #define CLOCK_TASK_NOTIFY_ALL                ((1<<16)-1) /* all notification bits */
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+  #define CLOCK_TASK_NOTIFY_BUTTON_UP           (1<<9) /* up button */
+  #define CLOCK_TASK_NOTIFY_BUTTON_DOWN         (1<<10) /* down button */
+  #define CLOCK_TASK_NOTIFY_ALL                ((1<<11)-1) /* all notification bits */
 #else
-#define CLOCK_TASK_NOTIFY_ALL                 ((1<<9)-1) /* all notification bits */
+  #define CLOCK_TASK_NOTIFY_ALL                 ((1<<9)-1) /* all notification bits */
 #endif
 
 static TaskHandle_t clockTaskHndl;
@@ -395,15 +403,22 @@ void CLOCK_ButtonHandler(McuDbnc_EventKinds event, uint32_t buttons) {
       if (buttons&BTN_BIT_SET) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_SET);
       }
+   #elif PL_CONFIG_HAS_SWITCH_2WAY
+      if (buttons&BTN_BIT_UP) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_UP);
+      }
+      if (buttons&BTN_BIT_DOWN) {
+        CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_DOWN);
+      }
    #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
       break;
 
     case MCUDBNC_EVENT_LONG_RELEASED:
-#if PL_CONFIG_HAS_SWITCH_USER
+      #if PL_CONFIG_HAS_SWITCH_USER
       if (buttons&BTN_BIT_USER) {
         CLOCK_Notify(CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG);
       }
-#endif
+      #endif
       break;
 
     default:
@@ -417,12 +432,14 @@ void CLOCK_Notify(CLOCK_Notify_e msg) {
     case CLOCK_NOTIFY_UPDATE_CLOCK:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_UPDATE_CLOCK, eSetBits);
       break;
+#if PL_CONFIG_HAS_SWITCH_USER
     case CLOCK_NOTIFY_BUTTON_PRESSED_USR:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_USR, eSetBits);
       break;
     case CLOCK_NOTIFY_BUTTON_PRESSED_USR_LONG:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_USR_LONG, eSetBits);
       break;
+#endif
 #if PL_CONFIG_HAS_SWITCH_7WAY
     case CLOCK_NOTIFY_BUTTON_PRESSED_RST:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_RST, eSetBits);
@@ -444,6 +461,13 @@ void CLOCK_Notify(CLOCK_Notify_e msg) {
       break;
     case CLOCK_NOTIFY_BUTTON_PRESSED_SET:
       (void)xTaskNotify(clockTaskHndl, CLOCK_TASK_NOTIFY_BUTTON_SET, eSetBits);
+      break;
+#elif PL_CONFIG_HAS_SWITCH_2WAY
+    case CLOCK_NOTIFY_BUTTON_PRESSED_UP:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_NOTIFY_BUTTON_PRESSED_UP, eSetBits);
+      break;
+    case CLOCK_NOTIFY_BUTTON_PRESSED_DOWN:
+      (void)xTaskNotify(clockTaskHndl, CLOCK_NOTIFY_BUTTON_PRESSED_DOWN, eSetBits);
       break;
 #endif
     default:
@@ -482,12 +506,27 @@ void CLOCK_On(CLOCK_Mode_e mode) {
 }
 
 #if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
+
+#if PL_CONFIG_IS_SPLIT_FLAP
+static void ShowTime(uint8_t hour, uint8_t minute) {
+  uint8_t buf[16];
+
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
+  McuUtility_strcatNum16uFormatted(buf, sizeof(buf), minute, '0', 2);
+  STEPPER_ShowLocalString(buf);
+}
+#endif
+
+#if PL_CONFIG_IS_CLOCK_CLOCK
 static void ShowTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
   STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
 
   SetTime(x, y, hour, minute);
   STEPBOARD_MoveAndWait(board, 5);
 }
+#endif
+
 #endif /* PL_CONFIG_USE_STEPPER */
 
 #if PL_CONFIG_USE_SHELL
@@ -833,6 +872,8 @@ static void ShowSeconds(const TIMEREC *time) {
 #endif
 
 static void ClockTask(void *pv) {
+  uint8_t res;
+  bool doImmediateClockUpdate = true;
   TIMEREC time;
   DATEREC date;
 #if PL_CONFIG_USE_EXT_I2C_RTC
@@ -842,23 +883,22 @@ static void ClockTask(void *pv) {
   TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
   bool intermezzoShown = true;
 #endif
+  uint32_t ulNotificationValue;
+
+  McuLog_trace("Starting Clock Task");
 #if PL_CONFIG_USE_LED_PIXEL
   PIXEL_ZeroAll();
 #endif
-  #define PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE  (0) /* 0 means to show next clock exactly on the minute. */
-  #define PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW  (1) /* 1, dummy value, means do update at the next opportunity */
-  int32_t prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* time of previous clock update time stamp (start time), seconds since 1972. */
-  uint32_t ulNotificationValue;
-  uint8_t res;
-
-  McuLog_trace("Starting Clock Task");
+#if PL_CONFIG_USE_EXT_I2C_RTC
+  McuExtRTC_Init();
+#endif
   res = McuTimeDate_Init();
   if(res==ERR_OK) { /* initialize time from external RTC if configured with McuTimeDate_INIT_SOFTWARE_RTC_FROM_EXTERNAL_RTC */
   #if PL_CONFIG_USE_EXT_I2C_RTC
     lastUpdateFromRTCtickCount = xTaskGetTickCount(); /* remember last time we updated the RTC */
   #endif
   } else{
-    McuLog_error("Failed initializing time!");
+    McuLog_error("Failed initializing time from RTC!");
   #if PL_CONFIG_USE_EXT_I2C_RTC
     lastUpdateFromRTCtickCount = 0; /* set it to zero: will retry in the main loop below */
   #endif
@@ -923,9 +963,17 @@ static void ClockTask(void *pv) {
     McuUtility_randomSetSeed(seed);
   }
 #endif
+#if PL_CONFIG_IS_CLOCK_CLOCK
 #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
   (void)SHELL_ParseCommandIO((const unsigned char *)"matrix motor on", NULL, true);
 #endif
+#endif /* PL_CONFIG_IS_CLOCK_CLOCK */
+#if PL_CONFIG_IS_SPLIT_FLAP
+#if PL_CONFIG_IS_SPLIT_FLAP && PL_CONFIG_CLOCK_ZERO_STEPPER
+  (void)SHELL_ParseCommandIO((const unsigned char*)"stepper zero all", NULL, false);
+  vTaskDelay(pdMS_TO_TICKS(3000)); /* give some time to zero motors */
+#endif
+#endif /* PL_CONFIG_IS_SPLIT_FLAP */
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
   CLOCK_TimeOff.offIsActive = false;
@@ -967,12 +1015,22 @@ static void ClockTask(void *pv) {
     if (res==pdTRUE) { /* notification received */
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_UPDATE_CLOCK) {
         McuLog_info("Notification: update clock");
-        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
+        doImmediateClockUpdate = true;
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR) {
         McuLog_info("Notification: button pressed");
         SHELL_ParseCommandIO((unsigned char*)"clock toggle", McuShell_GetStdio(), true);
       }
+    #ifdef CLOCK_TASK_NOTIFY_BUTTON_UP
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_UP) {
+        McuLog_info("Notification: up button pressed");
+      }
+    #endif
+    #ifdef CLOCK_TASK_NOTIFY_BUTTON_DOWN
+      if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_DOWN) {
+        McuLog_info("Notification: down button pressed");
+      }
+    #endif
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_BUTTON_USR_LONG) {
         McuLog_info("Notification: button pressed long");
         SHELL_ParseCommandIO((unsigned char*)"intermezzo toggle", McuShell_GetStdio(), true);
@@ -1010,7 +1068,7 @@ static void ClockTask(void *pv) {
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_ON) {
         McuLog_info("Clock on");
         CLOCK_ClockIsOn = true; /* enable clock */
-        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
+        doImmediateClockUpdate = true;
       #if PL_CONFIG_USE_LED_RING
         MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
         MATRIX_DrawAllRingColor(0x000000); /* ring color off */
@@ -1020,7 +1078,6 @@ static void ClockTask(void *pv) {
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_OFF) {
         McuLog_info("Clock off");
         CLOCK_ClockIsOn = false; /* disable clock */
-        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE;
       #if PL_CONFIG_IS_ANALOG_CLOCK
         MATRIX_MoveAllto12(5000, NULL); /* this turns on the hands */
         #if PL_CONFIG_USE_LED_RING
@@ -1041,11 +1098,14 @@ static void ClockTask(void *pv) {
             MATRIX_RequestRgbUpdate(); /* update LEDs */
             MATRIX_MoveAllToStartPosition(1000, NULL); /* Move all stepper to start position */
       #endif
+      #if PL_CONFIG_IS_SPLIT_FLAP
+        (void)SHELL_ParseCommandIO((const unsigned char*)"stepper display \"    \"", NULL, false);
+        vTaskDelay(pdMS_TO_TICKS(3000)); /* give some time to zero motors */
+      #endif
       }
       if (ulNotificationValue&CLOCK_TASK_NOTIFY_CLOCK_TOGGLE) {
         McuLog_info("Clock toggle");
         CLOCK_ClockIsOn = !CLOCK_ClockIsOn; /* toggle clock */
-        prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_CLOCK_NOW; /* to make sure it will update */
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         if (!CLOCK_ClockIsOn) {
           /* turn off LEDs */
@@ -1067,23 +1127,36 @@ static void ClockTask(void *pv) {
           MATRIX_MoveAllto12(5000, NULL);
           #elif PL_CONFIG_USE_LED_CLOCK
           MATRIX_MoveAllToStartPosition(1000, NULL);
-		  #endif
+		      #endif
+        }
+        if (CLOCK_ClockIsOn) {
+          doImmediateClockUpdate = true;
         }
       }
   #if PL_CONFIG_HAS_SWITCH_7WAY
       CLOCK_ButtonMenu(ulNotificationValue);
   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
-  #if PL_CONFIG_USE_EXT_I2C_RTC
     /* ----------------------------------------------------------------------------------*/
+#if PL_CONFIG_USE_EXT_I2C_RTC
     /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
     TickType_t tickCount = xTaskGetTickCount();
     /* update SW RTC from external RTC */
-    if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(60*60*1000)) { /* every hour */
-      McuLog_info("Updating RTC from external RTC");
+    if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(5*60*1000)) { /* update frequency from RTC */
+      unsigned char timeBuf[16];
+
+      McuTimeDate_GetTimeDate(&time, NULL);
+      timeBuf[0] = '\0';
+      McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+      McuLog_info("Current software RTC: %s", timeBuf);
       res = McuTimeDate_SyncWithExternalRTC(); /* update SW RTC with external HW RTC to avoid too much clock drift */
       if (res!=ERR_OK) {
-        McuLog_error("Updating RTC from external RTC");
+        McuLog_error("Failed updating RTC from external RTC");
+      } else {
+        McuTimeDate_GetTimeDate(&time, NULL);
+        timeBuf[0] = '\0';
+        McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+        McuLog_info("Updated software RTC: %s", timeBuf);
       }
       lastUpdateFromRTCtickCount = tickCount;
     }
@@ -1096,7 +1169,7 @@ static void ClockTask(void *pv) {
       if (!intermezzoShown) { /* not shown intermezzo? */
         INTERMEZZO_Play(lastClockUpdateTickCount, &intermezzoShown);
         if (intermezzoShown) {
-          prevClockUpdateTimestampSec = PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE; /* if there is time after the intermezzo: trigger showing clock again */
+          doImmediateClockUpdate = true;
         }
       }
     } /* if clock is on */
@@ -1141,30 +1214,35 @@ static void ClockTask(void *pv) {
     }
 #endif
     if (CLOCK_ClockIsOn) { /* show time */
-      if (prevClockUpdateTimestampSec==PREV_CLOCK_UPDATE_VALUE_SHOW_ON_MINUTE) { /* sync on start of the minute */
-        do {
-          res = McuTimeDate_GetTimeDate(&time, NULL);
-          if (time.Sec==0) {
-            break; /* leave loop */
-          }
-          vTaskDelay(pdMS_TO_TICKS(200));
-        } while(res==ERR_OK);
-      }
-      res = McuTimeDate_GetTimeDate(&time, &date);
-    #if PL_CONFIG_USE_NEO_PIXEL_HW
-      ShowSeconds(&time);
-    #endif
-      if (res==ERR_OK && (McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0) >= prevClockUpdateTimestampSec+60*CLOCK_UpdatePeriodMinutes)) {
-        prevClockUpdateTimestampSec = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
+      if (doImmediateClockUpdate) { /* if not immediate update: sync on beginning of minute */
+        McuTimeDate_GetTimeDate(&time, &date);
         CLOCK_ShowTimeDate(&time, &date);
-      #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
-        lastClockUpdateTickCount = xTaskGetTickCount();
-        intermezzoShown = false;
-      #endif
-        McuLog_info("finished showing clock");
-      } /* if */
+        doImmediateClockUpdate = false;
+      } else {
+        res = McuTimeDate_GetTimeDate(&time, NULL);
+        if (time.Sec>=55) { /* sync on start of the minute */
+          McuLog_trace("Sync on full minute");
+          do {
+            res = McuTimeDate_GetTimeDate(&time, NULL);
+            if (time.Sec==0) {
+              break; /* leave loop */
+            }
+            vTaskDelay(pdMS_TO_TICKS(200));
+          } while(res==ERR_OK);
+          res = McuTimeDate_GetTimeDate(&time, &date);
+        #if PL_CONFIG_USE_NEO_PIXEL_HW
+          ShowSeconds(&time);
+        #endif
+          CLOCK_ShowTimeDate(&time, &date);
+        #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
+          lastClockUpdateTickCount = xTaskGetTickCount();
+          intermezzoShown = false;
+        #endif
+          McuLog_info("finished showing clock");
+        } /* if close to minute */
+      } /* immediate udpate or not */
     } /* if clock is on */
-  } /* for */
+  } /* for(;;) */
 }
 
 void CLOCK_Init(void) {
