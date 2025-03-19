@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2019, Erich Styger
+ * Copyright (c) 2019-2022, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -11,6 +11,10 @@
 #include <stdint.h>
 #include <stdbool.h>
 #include "McuShell.h"
+
+#ifdef __cplusplus
+extern "C" {
+#endif
 
 #define NVMC_FLAGS_MAGNET_ENABLED   (1<<0)  /* if magnets are present on hands or not */
 
@@ -87,5 +91,9 @@ void NVMC_Deinit(void);
 
 /*! \brief Module initialization */
 void NVMC_Init(void);
+
+#ifdef __cplusplus
+}  /* extern "C" */
+#endif
 
 #endif /* NVMC_H_ */
