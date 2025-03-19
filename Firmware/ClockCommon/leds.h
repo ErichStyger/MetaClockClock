@@ -9,10 +9,18 @@
 
 #include "McuLED.h"
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /* led handles */
 extern McuLED_Handle_t LEDS_Led;
 
 void LEDS_Deinit(void);
 void LEDS_Init(void);
+
+#ifdef __cplusplus
+}  /* extern "C" */
+#endif
 
 #endif /* LEDS_H_ */
