@@ -52,7 +52,7 @@ static void SmartWallDemoTask(void *pv) {
 	}
 }
 
-#else /* We are not an LED Pixel project (Sm(Art)Wall) (#endif on line 1271)*/
+#else /* We are not an LED Pixel project (Sm(Art)Wall) */
 #if PL_MATRIX_CONFIG_IS_RGB
 static void DEMO_LedDemo0(void) {
   MRING_EnableRingAll(true);

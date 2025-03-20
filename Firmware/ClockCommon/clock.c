@@ -1144,7 +1144,7 @@ static void ClockTask(void *pv) {
   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
     /* ----------------------------------------------------------------------------------*/
-#if PL_CONFIG_USE_EXT_I2C_RTC
+  #if PL_CONFIG_USE_EXT_I2C_RTC
     /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
     TickType_t tickCount = xTaskGetTickCount();
     /* update SW RTC from external RTC */
