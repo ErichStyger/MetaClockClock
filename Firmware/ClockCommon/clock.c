@@ -154,7 +154,9 @@ static bool CLOCK_ClockIsParked = false;
 #endif
 
 static TaskHandle_t clockTaskHndl;
+#if 0 /* not implemented yet */
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
+#endif
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
 static uint8_t SetClock_OnOff(bool onOff) {
@@ -586,14 +588,13 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), CLOCK_TimeOff.offIsActive?(unsigned char*)", off is active\r\n":(unsigned char*)", off not active\r\n");
   McuShell_SendStatusStr((unsigned char*)"  on/off", buf, io->stdOut);
 #endif
-
+#if 0 /* not implemented yet */
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"every ");
   McuUtility_strcatNum8u(buf, sizeof(buf), CLOCK_UpdatePeriodMinutes);
   McuUtility_strcat(buf, sizeof(buf), CLOCK_UpdatePeriodMinutes==1?(unsigned char*)" minute\r\n":(unsigned char*)" minutes\r\n");
   McuShell_SendStatusStr((unsigned char*)"  period", buf, io->stdOut);
-
+#endif
   McuShell_SendStatusStr((unsigned char*)"  24h", CLOCK_ClockIs24h?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
-
 #if PL_CONFIG_USE_LED_RING
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"color: 0x");
   McuUtility_strcatNum24Hex(buf, sizeof(buf), CLOCK_HandColor);
@@ -738,6 +739,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   } else if (McuUtility_strcmp((char*)cmd, "clock park toggle")==0) {
     *handled = true;
     CLOCK_Park(CLOCK_MODE_TOGGLE);
+#if 0 /* not implemented yet */
   } else if (McuUtility_strncmp((char*)cmd, "clock period ", sizeof("clock period ")-1)==0) {
     uint8_t val;
 
@@ -749,6 +751,7 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       return ERR_FAILED;
     }
     return ERR_OK;
+#endif
 #if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strcmp((char*)cmd, "clock hand rgb random on")==0) {
     *handled = true;
