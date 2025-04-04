@@ -852,9 +852,10 @@ static void IntermezzoRectangles3(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-  DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
-  DrawNestedRectangles(MATRIX_NOF_STEPPERS_X/3, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
-  DrawNestedRectangles(2*MATRIX_NOF_STEPPERS_X/3, 0, MATRIX_NOF_STEPPERS_X/3, MATRIX_NOF_STEPPERS_Y);
+  const int w = 2;
+  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=w) {
+    DrawNestedRectangles(x, 0,  w, MATRIX_NOF_STEPPERS_Y);
+  }
 }
 
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
