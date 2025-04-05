@@ -1151,21 +1151,29 @@ static void ClockTask(void *pv) {
     /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
     TickType_t tickCount = xTaskGetTickCount();
     /* update SW RTC from external RTC */
-    if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(5*60*1000)) { /* update frequency from RTC */
+    if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(60*60*1000)) { /* update frequency from RTC */
       unsigned char timeBuf[16];
+      uint32_t oldSWRTC, newSWRTC;
 
-      McuTimeDate_GetTimeDate(&time, NULL);
+      McuTimeDate_GetTimeDate(&time, &date);
+      oldSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
       timeBuf[0] = '\0';
       McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
-      McuLog_info("Current software RTC: %s", timeBuf);
       res = McuTimeDate_SyncWithExternalRTC(); /* update SW RTC with external HW RTC to avoid too much clock drift */
       if (res!=ERR_OK) {
         McuLog_error("Failed updating RTC from external RTC");
       } else {
-        McuTimeDate_GetTimeDate(&time, NULL);
+        McuTimeDate_GetTimeDate(&time, &date);
+        newSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
         timeBuf[0] = '\0';
         McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
-        McuLog_info("Updated software RTC: %s", timeBuf);
+        if (newSWRTC>oldSWRTC) {
+          McuLog_info("Updated software RTC: %s, was behind %d secs", timeBuf, newSWRTC-oldSWRTC);
+        } else if (newSWRTC==oldSWRTC) {
+          McuLog_info("Updated software RTC: %s, no drift", timeBuf);
+        } else { /* newSWRTC<oldSWRTC */
+          McuLog_info("Updated software RTC: %s, was ahead %d secs", timeBuf, oldSWRTC-newSWRTC);
+        }
       }
       lastUpdateFromRTCtickCount = tickCount;
     }
