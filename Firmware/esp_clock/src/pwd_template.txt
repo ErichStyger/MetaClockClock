@@ -1,0 +1,20 @@
+/*
+ * Copyright (c) 2025, Erich Styger
+ *
+ * SPDX-License-Identifier: BSD-3-Clause
+ */
+
+#ifndef _WIFI_PWD_CONFIG_H_
+#define _WIFI_PWD_CONFIG_H_
+
+#include "platform.h"
+
+#define CONFIG_WIFI_EAP_METHOD     EAP_PEAP
+#define CONFIG_WIFI_EAP_SSID       "mySSIDPEAPName"
+
+#define CONFIG_WIFI_START_WITH     WIFI_PASSWORD_METHOD_PSK /* start with home network */
+
+#define CONFIG_WIFI_PSK_SSID       "mySSIDhome"
+#define CONFIG_WIFI_PSK_PASSWORD   "myPasswordHome"
+
+#endif /* _WIFI_PWD_CONFIG_H_ */

@@ -1,0 +1,14 @@
+{
+    "idf.adapterTargetName": "esp32",
+    "idf.portWin": "COM100",
+    "idf.openOcdConfigs": [
+        "interface/ftdi/esp32_devkitj_v1.cfg",
+        "target/esp32.cfg"
+    ],
+    "idf.flashType": "JTAG",
+    "files.associations": {
+        "freertos.h": "c",
+        "*.txt": "c"
+    },
+    "idf.pythonInstallPath": "C:\\Espressif\\tools\\idf-python\\3.11.2\\python.exe"
+}

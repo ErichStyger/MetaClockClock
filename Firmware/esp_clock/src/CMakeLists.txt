@@ -1,0 +1,26 @@
+idf_component_register(
+    SRCS  
+      "main.c"
+      "leds.c"
+      "blinky.c"
+      "application.c"
+      "platform.c"
+      "wifi.c"
+      "shell.c"
+      "rs485.c"
+      "timer.c"
+      "sntp_time.c"
+      "buttons.c"
+      "debounce.c"
+
+     INCLUDE_DIRS
+        "."
+     REQUIRES
+        McuLib
+        driver
+        console
+        esp_wifi
+        wpa_supplicant
+        spi_flash
+        nvs_flash
+)

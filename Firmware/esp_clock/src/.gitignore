@@ -1,0 +1,3 @@
+/build/
+# do NOT put the password on git
+/pwd.txt
