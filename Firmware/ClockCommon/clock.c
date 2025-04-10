@@ -69,6 +69,9 @@
   #include "minIni/McuMinINI.h"
   #include "MinIniKeys.h"
 #endif
+#if PL_CONFIG_USE_ESP_TIME
+  #include "esp_time.h"
+#endif
 
 static bool CLOCK_ClockIsOn =
   #if PL_CONFIG_CLOCK_ON_BY_DEFAULT
@@ -884,13 +887,52 @@ static void ShowSeconds(const TIMEREC *time) {
 }
 #endif
 
+#if PL_CONFIG_USE_ESP_TIME
+static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint8_t (*getter)(TIMEREC *, DATEREC *)) {
+  /* update time/date from the esp32 time server */
+  /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
+  TickType_t tickCount = xTaskGetTickCount();
+  /* update SW RTC from external RTC */
+  if ((tickCount-*lastUpdateTickCount) > pdMS_TO_TICKS(30*60*1000)) { /* update frequency */
+    unsigned char timeBuf[16];
+    uint32_t oldSWRTC, newSWRTC;
+
+    getter(&time, &date);
+    oldSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
+    timeBuf[0] = '\0';
+    McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+    res = McuTimeDate_SyncWithExternalRTC(); /* update SW RTC with external HW RTC to avoid too much clock drift */
+    if (res!=ERR_OK) {
+      McuLog_error("Failed updating RTC from external RTC");
+    } else {
+      McuTimeDate_GetTimeDate(&time, &date);
+      newSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
+      timeBuf[0] = '\0';
+      McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+      if (newSWRTC>oldSWRTC) {
+        McuLog_info("Updated software RTC: %s, was behind %d secs", timeBuf, newSWRTC-oldSWRTC);
+      } else if (newSWRTC==oldSWRTC) {
+        McuLog_info("Updated software RTC: %s, no drift", timeBuf);
+      } else { /* newSWRTC<oldSWRTC */
+        McuLog_info("Updated software RTC: %s, was ahead %d secs", timeBuf, oldSWRTC-newSWRTC);
+      }
+    }
+    lastUpdateFromRTCtickCount = tickCount;
+  }
+}
+#endif
+
+
 static void ClockTask(void *pv) {
   uint8_t res;
   bool doImmediateClockUpdate = true;
   TIMEREC time;
   DATEREC date;
+#if PL_CONFIG_USE_ESP_TIME
+  TickType_t lastUpdateFromESPtickCount; /* time stamp when last time the SW RTC has been updated from the ESP */
+#endif
 #if PL_CONFIG_USE_EXT_I2C_RTC
-  TickType_t lastUpdateFromRTCtickCount; /* time stamp when last time the SW RTC has been update from HW RTC: it gets updated every hour */
+  TickType_t lastUpdateFromRTCtickCount; /* time stamp when last time the SW RTC has been updated from HW RTC */
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
@@ -904,13 +946,21 @@ static void ClockTask(void *pv) {
 #endif
   res = McuTimeDate_Init();
   if(res==ERR_OK) { /* initialize time from external RTC if configured with McuTimeDate_INIT_SOFTWARE_RTC_FROM_EXTERNAL_RTC */
+    /* remember last time we updated it */
+  #if PL_CONFIG_USE_ESP_TIME
+    lastUpdateFromESPtickCount = 0;
+  #endif
   #if PL_CONFIG_USE_EXT_I2C_RTC
-    lastUpdateFromRTCtickCount = xTaskGetTickCount(); /* remember last time we updated the RTC */
+    lastUpdateFromRTCtickCount = xTaskGetTickCount();
   #endif
   } else{
     McuLog_error("Failed initializing time from RTC!");
+    /* set it to zero: will retry in the main loop below */
   #if PL_CONFIG_USE_EXT_I2C_RTC
-    lastUpdateFromRTCtickCount = 0; /* set it to zero: will retry in the main loop below */
+    lastUpdateFromRTCtickCount = 0;
+  #endif
+  #if PL_CONFIG_USE_ESP_TIME
+    lastUpdateFromESPtickCount = 0;
   #endif
   }
 #if PL_CONFIG_USE_WDT
@@ -1147,36 +1197,11 @@ static void ClockTask(void *pv) {
   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
     /* ----------------------------------------------------------------------------------*/
+  #if PL_CONFIG_USE_ESP_TIME
+    UpdateTimeDate(&lastUpdateFromESPtickCount, EspTime_GetTimeDate);
+  #endif
   #if PL_CONFIG_USE_EXT_I2C_RTC
-    /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every hour */
-    TickType_t tickCount = xTaskGetTickCount();
-    /* update SW RTC from external RTC */
-    if ((tickCount-lastUpdateFromRTCtickCount) > pdMS_TO_TICKS(60*60*1000)) { /* update frequency from RTC */
-      unsigned char timeBuf[16];
-      uint32_t oldSWRTC, newSWRTC;
-
-      McuTimeDate_GetTimeDate(&time, &date);
-      oldSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
-      timeBuf[0] = '\0';
-      McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
-      res = McuTimeDate_SyncWithExternalRTC(); /* update SW RTC with external HW RTC to avoid too much clock drift */
-      if (res!=ERR_OK) {
-        McuLog_error("Failed updating RTC from external RTC");
-      } else {
-        McuTimeDate_GetTimeDate(&time, &date);
-        newSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
-        timeBuf[0] = '\0';
-        McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
-        if (newSWRTC>oldSWRTC) {
-          McuLog_info("Updated software RTC: %s, was behind %d secs", timeBuf, newSWRTC-oldSWRTC);
-        } else if (newSWRTC==oldSWRTC) {
-          McuLog_info("Updated software RTC: %s, no drift", timeBuf);
-        } else { /* newSWRTC<oldSWRTC */
-          McuLog_info("Updated software RTC: %s, was ahead %d secs", timeBuf, oldSWRTC-newSWRTC);
-        }
-      }
-      lastUpdateFromRTCtickCount = tickCount;
-    }
+    UpdateTimeDate(&lastUpdateFromRTCtickCount, McuTimeDate_GetTimeDate);
   #endif
   #if PL_CONFIG_USE_INTERMEZZO
     /* ----------------------------------------------------------------------------------*/

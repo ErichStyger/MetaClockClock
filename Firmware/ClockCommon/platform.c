@@ -126,6 +126,9 @@
 #if PL_CONFIG_USE_OLED
   #include "oled.h"
 #endif
+#if PL_CONFIG_USE_ESP_TIME
+  #include "esp_time.h"
+#endif
 
 void PL_InitFromTask(void) {
   /* call here things which need interrupts enabled */
@@ -307,5 +310,8 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_OLED
   OLED_Init();
+#endif
+#if PL_CONFIG_USE_ESP_TIME
+  EspTime_Init();
 #endif
 }

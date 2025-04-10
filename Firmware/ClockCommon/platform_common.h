@@ -210,6 +210,10 @@
   #define PL_CONFIG_USE_LOW_POWER       (1)  /* if using low power mode: the mode is selected in LowPowerconfig.h */
 #endif
 
+#ifndef PL_CONFIG_USE_ESP_TIME
+  #define PL_CONFIG_USE_ESP_TIME        (0)  /* if getting time from an external ESP from a time service */
+#endif
+
 /* client only: */
 #ifndef PL_CONFIG_USE_MAG_SENSOR
   #define PL_CONFIG_USE_MAG_SENSOR      (0 && PL_CONFIG_IS_CLIENT)      /* has magnets and hall sensors */
