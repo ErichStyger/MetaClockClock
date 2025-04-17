@@ -161,24 +161,22 @@ static void SetPasswordMode(WiFi_PasswordMethod_e mode) {
   }
   ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA) );
   ESP_ERROR_CHECK(esp_wifi_set_config(ESP_IF_WIFI_STA, &wifi_config) );
+#if 0
   if (mode==WIFI_PASSWORD_METHOD_WPA2) {
-    const ESP32_Device_t *device;
-
-    device = ESP32_GetDeviceConfig();
-    McuLog_info("EAP_ID: %s", device->eee_id);
-    ESP_ERROR_CHECK( esp_eap_client_set_identity((uint8_t *)device->eee_id, strlen(device->eee_id)) );
+    McuLog_info("EAP_ID: %s", CONFIG_WIFI_EAP_ID);
+    ESP_ERROR_CHECK( esp_eap_client_set_identity((uint8_t *)CONFIG_WIFI_EAP_ID, strlen(CONFIG_WIFI_EAP_ID) );
     if (CONFIG_WIFI_EAP_METHOD == EAP_PEAP || CONFIG_WIFI_EAP_METHOD == EAP_TTLS) {
-      McuLog_info("EAP_USERNAME: %s", device->eee_id);
-      ESP_ERROR_CHECK( esp_eap_client_set_username((uint8_t *)device->eee_id, strlen(device->eee_id)) );
-      ESP_ERROR_CHECK( esp_eap_client_set_password((uint8_t *)device->eee_pwd, strlen(device->eee_pwd)) );
+      McuLog_info("EAP_USERNAME: %s", CONFIG_WIFI_EAP_ID;
+      ESP_ERROR_CHECK( esp_eap_client_set_username((uint8_t *)CONFIG_WIFI_EAP_ID, strlen(CONFIG_WIFI_EAP_ID)) );
+      ESP_ERROR_CHECK( esp_eap_client_set_password((uint8_t *)CONFIG_WIFI_EAP_PASSWORD, strlen(CONFIG_WIFI_EAP_PASSWORD)) );
     }
     ESP_ERROR_CHECK( esp_wifi_sta_enterprise_enable() );
   }
+#endif  
 }
 
 static void initialise_wifi(void) {
   WiFi_PasswordMethod_e mode = CONFIG_WIFI_START_WITH; /* starting mode */
-  const ESP32_Device_t *config;
 
   s_wifi_event_group = xEventGroupCreate();
   if (esp_netif_init()!=ESP_OK) {
@@ -194,9 +192,8 @@ static void initialise_wifi(void) {
     McuLog_fatal("failed initializing WiFi");
   }
 
-  config = ESP32_GetDeviceConfig();
-  McuLog_info("Setting hostname: %s", config->hostName);
-  if (esp_netif_set_hostname(APP_WiFi_NetIf, config->hostName)!=ESP_OK) {
+  McuLog_info("Setting hostname: %s", CONFIG_WIFI_HOSTNAME);
+  if (esp_netif_set_hostname(APP_WiFi_NetIf, CONFIG_WIFI_HOSTNAME)!=ESP_OK) {
     McuLog_fatal("failed setting hostname");
   }
 

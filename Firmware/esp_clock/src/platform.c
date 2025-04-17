@@ -108,6 +108,7 @@
 #if PL_CONFIG_USE_RS485_SHELL
   #include "rs485.h"
 #endif
+#include "esp32_mac.h" /* for ESP32 MAC address */
 #include "application.h"
 
 #if McuLib_CONFIG_CPU_IS_ESP32

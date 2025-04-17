@@ -29,12 +29,12 @@
    * and 3.11 in https://www.espressif.com/sites/default/files/documentation/esp32_errata_en.pdf  */
 
 /* Wireless related settings */
-#define PL_CONFIG_USE_WIFI              (0) /* if using WiFi functionality */
-#define PL_CONFIG_USE_IDENTIFY          (1 && PL_CONFIG_USE_WIFI) /*!< used to identify MAC, needed for EEE network */
-#define PL_CONFIG_USE_UDP_SERVER        (1 && PL_CONFIG_USE_WIFI) /*!< UDP server, used for communication to robot */
+#define PL_CONFIG_USE_WIFI              (1) /* if using WiFi functionality */
+#define PL_CONFIG_USE_IDENTIFY          (0 && PL_CONFIG_USE_WIFI) /*!< used to identify MAC, needed for EEE network */
+#define PL_CONFIG_USE_UDP_SERVER        (0 && PL_CONFIG_USE_WIFI) /*!< UDP server, used for communication to robot */
 #define PL_CONFIG_USE_UDP_CLIENT        (0 && PL_CONFIG_USE_WIFI) /*!< UDP client, optionally available for tests */
 #define PL_CONFIG_USE_PING              (0 && PL_CONFIG_USE_WIFI) /*!< shell command with ping, to test network connection */
-#define PL_CONFIG_USE_SNTP_TIME         (1 && PL_CONFIG_USE_WIFI) /*!< getting time from an NTP server */
+#define PL_CONFIG_USE_SNTP_TIME         (0 && PL_CONFIG_USE_WIFI) /*!< getting time from an NTP server */
 
 #define PL_CONFIG_USE_TIME_DATE         (1) /*!< if using Time and Date information */
 

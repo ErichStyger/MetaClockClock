@@ -1,0 +1,11 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"type": "esp-idf",
+			"command": "ESP-IDF Build",
+			"problemMatcher": [],
+			"label": "espressif.esp-idf-extension: ESP-IDF Build"
+		}
+	]
+}

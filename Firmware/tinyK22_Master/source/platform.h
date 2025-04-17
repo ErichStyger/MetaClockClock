@@ -52,7 +52,7 @@
   //#define PL_CONFIG_USE_USB_CDC     (0)
   //#define PL_CONFIG_USE_CLOCK       (0)
   //#define PL_CONFIG_USE_RS485       (0)
-  #define PL_CONFIG_USE_ESP_TIME                    (1) /* if getting time and date from an external ESP */
+  #define PL_CONFIG_USE_ESP_TIME                    (0) /* if getting time and date from an external ESP */
 #elif 0 /* Alexis clock */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_ESP32_UART        (1) /* using the 'ESP32' UART for the shell */

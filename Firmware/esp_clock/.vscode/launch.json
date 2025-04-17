@@ -8,6 +8,11 @@
             "name": "ESP-IDF Debug: Launch",
             "type": "espidf",
             "request": "launch"
+        },
+        {
+            "type": "gdbtarget",
+            "request": "attach",
+            "name": "Eclipse CDT GDB Adapter"
         }
     ]
 }

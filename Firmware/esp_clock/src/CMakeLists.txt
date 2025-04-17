@@ -12,6 +12,7 @@ idf_component_register(
       "sntp_time.c"
       "buttons.c"
       "debounce.c"
+      "esp32_mac.c"
 
      INCLUDE_DIRS
         "."

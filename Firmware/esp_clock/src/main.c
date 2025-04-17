@@ -26,7 +26,7 @@ int main(void) {
 #include "esp_flash.h"
 
 void app_main(void) {
-#if 0
+
   /* Print chip information */
   esp_chip_info_t chip_info;
   uint32_t flash_size;
@@ -48,7 +48,7 @@ void app_main(void) {
   printf("%lu MB %s flash\n", flash_size / (uint32_t)(1024 * 1024),
          (chip_info.features & CHIP_FEATURE_EMB_FLASH) ? "embedded" : "external");
   printf("Minimum free heap size: %lu bytes\n", esp_get_minimum_free_heap_size());
-#endif
+
 #if 0
   for (int i = 10; i >= 0; i--) {
     printf("Restarting in %d seconds...\n", i);
