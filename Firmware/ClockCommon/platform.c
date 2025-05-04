@@ -199,6 +199,9 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_SHT31
   McuSHT31_Init();
 #endif
+#if PL_CONFIG_USE_MININI
+  McuMinINI_Init();
+#endif
 
   /* application modules: */
 #if PL_CONFIG_USE_USB_CDC
@@ -261,9 +264,6 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_LOW_POWER
   LP_Init();
-#endif
-#if PL_CONFIG_USE_MININI
-  McuMinINI_Init();
 #endif
 #if PL_CONFIG_USE_NVMC
   NVMC_Init();
