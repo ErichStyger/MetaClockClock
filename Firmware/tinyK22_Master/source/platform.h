@@ -33,7 +33,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
+#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* has RGB functionality */
@@ -44,8 +44,8 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0xff) /* 0..0xff */
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color */
-  #define PL_CONFIG_HAS_BUTTONS                     (0) /* has user button on master to turn on/off clock */
-  #define PL_CONFIG_HAS_SWITCH_USER                 (0 && PL_CONFIG_HAS_BUTTONS) /* user button */
+  #define PL_CONFIG_HAS_BUTTONS                     (1) /* has user button on master to turn on/off clock */
+  #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
   //#define PL_CONFIG_USE_ESP32_UART  (1) /* using the 'ESP32' UART for the shell */
   //#define PL_CONFIG_USE_RTT         (1) /* with RTT and access to I2C (RTC) and no RTT connection, it stalls? */
   //#define PL_CONFIG_USE_BLE         (0) /* Adafruit module not mounted on board */
