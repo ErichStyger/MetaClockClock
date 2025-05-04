@@ -1201,12 +1201,12 @@ static void ClockTask(void *pv) {
     /* ----------------------------------------------------------------------------------*/
 #if 0
   #if PL_CONFIG_USE_ESP_TIME
-    UpdateTimeDate(&lastTimeDateUpdatTickCount, EspTime_GetTimeDate, 10);
+    UpdateTimeDate(&lastTimeDateUpdatTickCount, EspTime_GetTimeDate, 60);
   #elif PL_CONFIG_USE_EXT_I2C_RTC
-    UpdateTimeDate(&lastTimeDateUpdatTickCount, McuTimeDate_GetTimeDate, 10);
+    UpdateTimeDate(&lastTimeDateUpdatTickCount, McuTimeDate_GetTimeDate, 60);
   #endif
 #else
-  UpdateTimeDate(&lastTimeDateUpdatTickCount, McuTimeDate_GetTimeDate, 1);
+  UpdateTimeDate(&lastTimeDateUpdatTickCount, McuTimeDate_GetTimeDate, 60);
 #endif
   #if PL_CONFIG_USE_INTERMEZZO
     /* ----------------------------------------------------------------------------------*/
