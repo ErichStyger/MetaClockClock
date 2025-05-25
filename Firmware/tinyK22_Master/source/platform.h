@@ -96,6 +96,16 @@
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* intermezzos on by default */
   /* below things are not supported yet for this clock */
   #define PL_CONFIG_USE_FONT                        (0)
+#elif 1 /* Cornelius 8x3 matrix, without LED rings, with tinyK22 plus Adafruit BLE module */
+  #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
+  #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* no RGB LEDs */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* no LED rings */
+  #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* if intermezzo is on by default */
+  #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
+  #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module present */
 #elif 1 /* Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
