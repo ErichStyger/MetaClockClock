@@ -39,13 +39,14 @@ Instructions:
 #define configTOTAL_HEAP_SIZE                (12*1024 + 256)
 //#define configUSE_HEAP_SECTION_NAME        (1)
 //#define configHEAP_SECTION_NAME_STRING     ".bss.$SRAM_LOWER.FreeRTOS"
-#define configQUEUE_REGISTRY_SIZE            (16)
+#define configQUEUE_REGISTRY_SIZE            (0)
 #define configMINIMAL_STACK_SIZE             (200/sizeof(StackType_t))
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
 #define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
 
-#define configUSE_TRACE_FACILITY              (0)
+#define configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H (0)
+#define configUSE_TRACE_FACILITY              (0 || configINCLUDE_FREERTOS_TASK_C_ADDITIONS_H) /* neded for freertos_tasks_c_additions.h */
 #define configGENERATE_RUN_TIME_STATS         (0)
 
 /* performance counter: */
@@ -77,13 +78,6 @@ Instructions:
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (128)
-#if configUSE_SEGGER_SYSTEM_VIEWER_HOOKS
-  #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (2)
-  #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (2)
-#else
-  #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (1)
-  #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (1)
-#endif
 /* ------------------- I2C ---------------------------*/
 #define CONFIG_USE_HW_I2C                             (0) /* if using HW I2C, otherwise use software bit banging */
 #define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)

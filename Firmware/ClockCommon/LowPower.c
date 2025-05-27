@@ -39,7 +39,7 @@ static void vTimerCallback(TimerHandle_t pxTimer) {
 #endif
 
 void LP_OnActivateFromISR(void) {
-  BaseType_t xHigherPriorityTaskWoken = pdFALSE;
+  //BaseType_t xHigherPriorityTaskWoken = pdFALSE;
 #if 0
   if (xTimerIsTimerActive(timer)==pdFALSE) {
     /* timer is not active: start it */
