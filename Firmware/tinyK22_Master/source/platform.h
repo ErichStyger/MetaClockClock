@@ -33,7 +33,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
+#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* has RGB functionality */
