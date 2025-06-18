@@ -99,9 +99,6 @@ void McuRTOS_vApplicationTickHook(void)
     McuTimeout_AddTick();
     cntr = 0;
   }
-#if PL_CONFIG_USE_RTC
-  McuTimeDate_AddTick();
-#endif
 }
 
 /*

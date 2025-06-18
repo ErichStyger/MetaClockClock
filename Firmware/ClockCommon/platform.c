@@ -26,7 +26,7 @@
   #include "McuI2CSpy.h"
 #endif
 #if PL_CONFIG_USE_RTC
-  #include "McuTimeDate.h"
+  #include "sw_timers.h"
 #endif
 #if PL_CONFIG_USE_EXT_EEPROM
   #include "McuEE24.h"
@@ -313,5 +313,8 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_ESP_TIME
   EspTime_Init();
+#endif
+#if PL_CONFIG_USE_RTC
+  Timers_Init();
 #endif
 }

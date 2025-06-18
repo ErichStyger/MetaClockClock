@@ -116,6 +116,8 @@ Instructions:
 #endif
 /* -------------------------------------------------*/
 /* Time/Date */
+#define McuTimeDate_CONFIG_TICK_TIME_MS                            (100)
+
 #define McuTimeDate_CONFIG_USE_SOFTWARE_RTC                        (1) /* enable software RTC */
 #define McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC                     (1) /* enable external I2C RTC */
 #define McuTimeDate_CONFIG_USE_INTERNAL_HW_RTC                     (0) /* no internal RTC */
