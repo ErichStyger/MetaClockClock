@@ -3214,6 +3214,13 @@ static void InitMatrixHardware(void) {
 }
 #endif /* PL_CONFIG_USE_STEPPER */
 
+#define IGNORE_SOME_CLOCKS   (1) /* if some clocks shall be ignored */
+#if IGNORE_SOME_CLOCKS
+static bool IgnoreCallback(int32_t x, int32_t y, int32_t z) {
+  return (x==0 && y==0); /* ignore center clock which is at (0,0,x) */
+}
+#endif
+
 void MATRIX_Init(void) {
 #if PL_CONFIG_USE_STEPPER
   if (xTaskCreate(
@@ -3254,6 +3261,10 @@ void MATRIX_Init(void) {
 #if PL_CONFIG_IS_ANALOG_CLOCK && PL_MATRIX_CONFIG_IS_RGB
   MHAND_SetHandColorAll(MATRIX_GetHandColorAdjusted()); /* default hand color */
 #endif
+#endif
+
+#if IGNORE_SOME_CLOCKS
+  MATRIX_SetIgnoreCallback(IgnoreCallback);
 #endif
 }
 
