@@ -55,11 +55,11 @@ Instructions:
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
-#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
-#define SYSVIEW_APP_NAME                     "tinyK22 Master"
-#define SYSVIEW_DEVICE_NAME                  "NXP K22FN512"
-#define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
-#define McuSystemView_CONFIG_RTT_CHANNEL     (1)
+#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
+#define SYSVIEW_APP_NAME                            "tinyK22 Master"
+#define SYSVIEW_DEVICE_NAME                         "NXP K22FN512"
+#define McuSystemView_CONFIG_RTT_BUFFER_SIZE        (4*1024)
+#define McuSystemView_CONFIG_RTT_CHANNEL            (1)
 #define McuSystemView_CONFIG_GENERATE_QUEUE_EVENTS  (0) /* to reduce messages */
 /* -------------------------------------------------*/
 /* Percepio Tracealyzer */
@@ -75,10 +75,10 @@ Instructions:
 /* -------------------------------------------------*/
 /* RTT */
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (150)
-#define McuRTT_CONFIG_BLOCKING_SEND                   (0)
-#define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
-#define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (256)
+#define McuRTT_CONFIG_BLOCKING_SEND                   (1)
+#define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (1)
+#define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (1)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (4*1024)
 /* ------------------- I2C ---------------------------*/
 #define CONFIG_USE_HW_I2C                             (1) /* if using HW I2C, otherwise use software bit banging */
 #define McuGenericI2C_CONFIG_USE_ON_ERROR_EVENT       (0)
