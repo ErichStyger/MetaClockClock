@@ -1,6 +1,6 @@
 TODO:
 
-If intermezzo stopped or not running: clear pixels (but not all the time)!
+If intermezzo stopped or not running: clear pixels (but not every time)!
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
   } else {
     clearUnusedPixel(); /*clear the unused pixels in the background */
@@ -34,11 +34,12 @@ In terminal with RS-485-2-USB converter (virtual address 0x2):
 @20 02 xx cmd matrix q 0 0 0 a 270 10 sh
 @00 02 xx cmd matrix exq
 
-From Master (tinyK22) (address 0x1):
+From Master (tinyK22) (address 0x1), examples assume RS-485 target address as 0x20
 -----------------
 rs sendcmd 0x20 rs help
+rs sendcmd 0x20 matrix help
 
-Example hand immediate move (without leds):
+Example hand immediate move immediate relativ 'r' at (0,0,0) local coordinate, 180 degree with a delay of 10, clockwise (cw):
 rs sendcmd 0x20 matrix r 0 0 0 180 10 cw
 
 rs sendcmd 0x20 matrix q 0 0 0 r 90 8 cc
