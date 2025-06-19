@@ -853,8 +853,8 @@ static void IntermezzoRectangles3(void) {
   MHAND_HandEnableAll(true);
 #endif
   const int w = 2;
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x+=w) {
-    DrawNestedRectangles(x, 0,  w, MATRIX_NOF_STEPPERS_Y);
+  for(int x=0; x<(MATRIX_NOF_STEPPERS_X/w)*w; x+=w) { /* for odd number of X, make sure we are not drawing beyond */
+    DrawNestedRectangles(x, 0, w, MATRIX_NOF_STEPPERS_Y);
   }
 }
 
