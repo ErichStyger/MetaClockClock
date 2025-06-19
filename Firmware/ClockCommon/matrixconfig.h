@@ -44,8 +44,8 @@
   #define MATRIX_NOF_STEPPERS_Y       (3)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
-  #define MATRIX_NOF_BOARDS           (7)   /* total number of boards in matrix: one in the center and 2x6 for the hours */
-  #define MATRIX_NOF_STEPPERS_X       (13)   /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_BOARDS           (7)   /* total number of boards in matrix: one in the center (0,0) and 2x6 for the hours */
+  #define MATRIX_NOF_STEPPERS_X       (13)  /* number of clocks in x (horizontal) direction: because not a real matrix, handle it as a line of clocks */
   #define MATRIX_NOF_STEPPERS_Y       (1)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
