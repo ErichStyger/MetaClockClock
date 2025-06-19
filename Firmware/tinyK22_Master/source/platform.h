@@ -83,7 +83,7 @@
   #define PL_CONFIG_USE_BLE               (0) /* no module installed, SPI1 on PTD5, PTD6 and PDTD7 used for shift register access */
   #define PL_CONFIG_USE_AUTOMATIC_DEMO_MODE (0) /* used to test the LEDs */
   #define PL_CONFIG_NOF_DRIVER_BOARDS     (5) /* number of motor/LED boards (with each 16 motors+LEDs on it */
-#elif 0 /* circular clock: 12 for each digit plus on in the center: https://mcuoneclipse.com/2021/07/11/round-metaclockclock/ */
+#elif 1 /* circular clock: 12 for each digit plus on in the center: https://mcuoneclipse.com/2021/07/11/round-metaclockclock/ */
   #define PL_CONFIG_HAS_CIRCLE_CLOCK                (1)
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0x00FF00)
