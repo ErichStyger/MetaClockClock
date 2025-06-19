@@ -344,6 +344,7 @@ uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
   bool boardIsIdle[MATRIX_NOF_BOARDS];
   uint8_t res;
   uint8_t addr;
+  TickType_t currTicks, startTicks = xTaskGetTickCount();
 
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) { /* initialize array */
     boardIsIdle[i] = false;
@@ -381,9 +382,9 @@ uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
   #if PL_CONFIG_USE_WDT
     WDT_Report(WDT_REPORT_ID_CURR_TASK, 1000);
   #endif
-    timeoutMs -= 1000;
-    if (timeoutMs<0) {
-      McuLog_error("Timeout.");
+    currTicks = xTaskGetTickCount();
+    if (pdMS_TO_TICKS(currTicks-startTicks)>timeoutMs) {
+      McuLog_error("Timeout");
       return ERR_BUSY;
     }
   } /* for which breaks or returns */
