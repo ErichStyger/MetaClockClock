@@ -34,7 +34,7 @@
 static TimerHandle_t timer;
 
 static void vTimerCallback(TimerHandle_t pxTimer) {
-  McuShell_SendStr((unsigned char*)"LP timer expired\r\n", McuRTT_stdio.stdOut);
+  //McuShell_SendStr((unsigned char*)"LP timer expired\r\n", McuRTT_stdio.stdOut);
 }
 #endif
 
