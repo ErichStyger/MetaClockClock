@@ -442,7 +442,7 @@ static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_
   McuUtility_strcatNum16u(buf, sizeof(buf), delay); /* <d> */
   McuUtility_chcat(buf, sizeof(buf), ' ');
   McuUtility_strcat(buf, sizeof(buf), GetModeString(mode, speedUp, slowDown));
-  (void)RS485_SendCommand(clockMatrix[x][y][z].addr, buf, 1000, true, 1); /* queue the command for the remote boards */
+  (void)RS485_SendCommand(clockMatrix[x][y][z].addr, buf, 1000, 1, NULL, NULL); /* queue the command for the remote boards */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   /* build a command for the LED rings:  */
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"matrix q ");
@@ -457,7 +457,7 @@ static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_
   McuUtility_strcatNum16u(buf, sizeof(buf), delay); /* <d> */
   McuUtility_chcat(buf, sizeof(buf), ' ');
   McuUtility_strcat(buf, sizeof(buf), GetModeString(mode, speedUp, slowDown));
-  (void)RS485_SendCommand(RS485_GetAddress(), buf, 1000, true, 1); /* queue the command for ourself (LED ring) */
+  (void)RS485_SendCommand(RS485_GetAddress(), buf, 1000, 1, NULL, NULL); /* queue the command for ourself (LED ring) */
 #endif
 }
 #endif
@@ -594,7 +594,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
     McuLog_trace("Queue enable & move (0x%02x)", addr);
     resBoards = RS485_SendCommand(addr, buf, 1000, 1, NULL, NULL); /* queue the command for the remote board */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-    resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, true, 1); /* queue the command for ourself (LED ring) */
+    resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, 1, NULL, NULL); /* queue the command for ourself (LED ring) */
     if (resBoards!=ERR_OK || resLeds!=ERR_OK) {
       return ERR_FAILED;
     }
@@ -1544,9 +1544,9 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     if (res==ERR_OK) {
       QueueMoveCommand(x, y, z, v, d, mode, speedUp, slowDown, cmd[7]=='A');
       /* send it to the ourselve as master first. RS485_SendCommand() below will wait for the OK which adds time. */
-      (void)RS485_SendCommand(RS485_GetAddress(), (unsigned char*)"matrix exq", 1000, true, 0);
+      (void)RS485_SendCommand(RS485_GetAddress(), (unsigned char*)"matrix exq", 1000, 0, NULL, NULL);
       /* send execute to the deviceon the bus: */
-      (void)RS485_SendCommand(clockMatrix[x][y][z].addr, (unsigned char*)"matrix exq", 1000, true, 0); /* execute the queue */
+      (void)RS485_SendCommand(clockMatrix[x][y][z].addr, (unsigned char*)"matrix exq", 1000, 0, NULL, NULL); /* execute the queue */
       return ERR_OK;
     } else {
       return ERR_FAILED;
