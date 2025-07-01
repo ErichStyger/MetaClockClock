@@ -21,6 +21,7 @@
   #define NVMC_MININI_KEY_CLOCK_OFF_START_MM        "offStartMM"  /* off start minute, e.g. 0 */
   #define NVMC_MININI_KEY_CLOCK_OFF_END_HH          "offEndHH"    /* off end hour, e.g. 5 */
   #define NVMC_MININI_KEY_CLOCK_OFF_END_MM          "offEndMM"    /* off end minute, e.g. 15 */
+  #define NVMC_MININI_KEY_CLOCK_FONT                "font"         /* "2x3" or "3x5" */
 #endif
 
 #if PL_CONFIG_USE_INTERMEZZO

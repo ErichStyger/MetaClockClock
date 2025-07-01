@@ -208,6 +208,17 @@ static void CLOCK_SetClockIsOn(bool onOff) {
 #endif
 }
 
+#if PL_CONFIG_USE_FONT
+static void SetClockFont(MFONT_Size_e font) {
+  CLOCK_font = font;
+#if PL_CONFIG_USE_MININI
+  unsigned char buf[16];
+  MFONT_FontToStr(font, buf, sizeof(buf));
+  McuMinINI_ini_puts(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_FONT, (char*)buf, NVMC_MININI_FILE_NAME);
+#endif
+}
+#endif
+
 #if PL_CONFIG_WORLD_CLOCK
 static uint8_t AdjustHourForTimeZone(uint8_t hour, int8_t gmtDelta) {
   int h;
@@ -809,12 +820,15 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #endif /* PL_CONFIG_USE_LED_DIMMING */
 #if PL_CONFIG_USE_FONT
   } else if (McuUtility_strncmp((char*)cmd, "clock font ", sizeof("clock font")-1)==0) {
+    MFONT_Size_e font;
+
     *handled = true;
     p = cmd + sizeof("clock font ")-1;
-    MFONT_ParseFontName(&p, &CLOCK_font);
+    MFONT_ParseFontName(&p, &font);
     if (CLOCK_font==MFONT_SIZE_ERROR) {
-      CLOCK_font = MFONT_SIZE_2x3;
       return ERR_FAILED;
+    } else {
+      SetClockFont(font);
     }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
@@ -1030,6 +1044,16 @@ static void ClockTask(void *pv) {
   CLOCK_TimeOff.offStartTime.Min = CONFIG_CLOCK_DEFAULT_OFF_START_MM;
   CLOCK_TimeOff.offEndTime.Hour = CONFIG_CLOCK_DEFAULT_OFF_END_HH;
   CLOCK_TimeOff.offEndTime.Min = CONFIG_CLOCK_DEFAULT_OFF_END_MM;
+#endif
+#if PL_CONFIG_USE_MININI && PL_CONFIG_USE_FONT
+  unsigned char buf[6], defaultFont[6];
+  const unsigned char *p = buf;
+
+  MFONT_FontToStr(PL_CONFIG_CLOCK_DEFAULT_FONT, defaultFont, sizeof(defaultFont));
+  McuMinINI_ini_gets(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_FONT, (char*)defaultFont, (char*)buf, sizeof(buf), NVMC_MININI_FILE_NAME);
+  MFONT_ParseFontName(&p, &CLOCK_font);
+#else
+  CLOCK_font = PL_CONFIG_CLOCK_DEFAULT_FONT;
 #endif
 
 #if PL_CONFIG_USE_MININI
