@@ -28,7 +28,7 @@
 /* Entry Point */
 ENTRY(Reset_Handler)
 
-HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x0400;
+HEAP_SIZE  = DEFINED(__heap_size__)  ? __heap_size__  : 0x0000;
 STACK_SIZE = DEFINED(__stack_size__) ? __stack_size__ : 0x0400;
 
 /* Specify the memory areas */
@@ -183,6 +183,13 @@ SECTIONS
     __END_BSS = .;
   } > m_data
 
+
+.heap_5 :
+  {
+    . = ALIGN(8);
+   *(.noinit.$SRAM_LOWER.Heap5)
+  } > m_data_2
+
   .heap :
   {
     . = ALIGN(8);
@@ -195,13 +202,13 @@ SECTIONS
     . += HEAP_SIZE;
     __HeapLimit = .;
     __heap_limit = .; /* Add for _sbrk */
-  } > m_data_2
+  } > m_data
 
   .stack :
   {
     . = ALIGN(8);
     . += STACK_SIZE;
-  } > m_data_2
+  } > m_data
 
   /* Initializes stack on the end of block */
   __StackTop   = ORIGIN(m_data_2) + LENGTH(m_data_2);

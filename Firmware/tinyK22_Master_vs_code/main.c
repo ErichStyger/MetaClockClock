@@ -1,44 +1,20 @@
-
 /*
- * Copyright (c) 2013 - 2015, Freescale Semiconductor, Inc.
- * Copyright 2016-2017 NXP
- * All rights reserved.
+ * Copyright (c) 2020, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#include "fsl_device_registers.h"
-
-#include "pin_mux.h"
+#include "application.h"
 #include "clock_config.h"
+#include "pin_mux.h"
 #include "peripherals.h"
 
-#include "board.h"
-#include "app.h"
+int main(void) {
+  /* Init board hardware. */
+  BOARD_InitBootPins();
+  BOARD_InitBootClocks();
+  BOARD_InitBootPeripherals();
 
-/*******************************************************************************
- * Definitions
- ******************************************************************************/
-
-/*******************************************************************************
- * Prototypes
- ******************************************************************************/
-
-/*******************************************************************************
- * Code
- ******************************************************************************/
-/*!
- * @brief Main function
- */
-
-int main(void)
-{
-
-    /* Init board hardware. */
-    BOARD_InitHardware();
-
-    /* Add user custom codes below */
-    while (1)
-    {
-    }
+  APP_Run();
+  return 0;
 }

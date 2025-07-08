@@ -48,21 +48,6 @@ include(${ProjDirPath}/flags.cmake)
 
 include(${ProjDirPath}/config.cmake)
 
-add_executable(${MCUX_SDK_PROJECT_NAME} 
-"${ProjDirPath}/../main.c"
-"${ProjDirPath}/../peripherals.c"
-"${ProjDirPath}/../peripherals.h"
-"${ProjDirPath}/../pin_mux.c"
-"${ProjDirPath}/../pin_mux.h"
-"${ProjDirPath}/../board.h"
-"${ProjDirPath}/../board.c"
-"${ProjDirPath}/../clock_config.h"
-"${ProjDirPath}/../clock_config.c"
-"${ProjDirPath}/../hardware_init.c"
-"${ProjDirPath}/../app.h"
-"${ProjDirPath}/../mcux_config.h"
-)
-
 #######################################################
 # Required for McuLib, to know the target system
 set(
@@ -105,11 +90,22 @@ add_subdirectory(${CLOCKCOMMON_DIR}           ClockCommonLib)
 add_subdirectory(${USBLIB_DIR}                UsbLib)
 
 message(STATUS "Clock common: ${CLOCKCOMMON_DIR}")
-
-
 #######################################################
 
-
+add_executable(${MCUX_SDK_PROJECT_NAME} 
+"${ProjDirPath}/../main.c"
+"${ProjDirPath}/../peripherals.c"
+"${ProjDirPath}/../peripherals.h"
+"${ProjDirPath}/../pin_mux.c"
+"${ProjDirPath}/../pin_mux.h"
+"${ProjDirPath}/../board.h"
+"${ProjDirPath}/../board.c"
+"${ProjDirPath}/../clock_config.h"
+"${ProjDirPath}/../clock_config.c"
+"${ProjDirPath}/../hardware_init.c"
+"${ProjDirPath}/../app.h"
+"${ProjDirPath}/../mcux_config.h"
+)
 
 target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
     ${ProjDirPath}/..
@@ -119,11 +115,21 @@ include(${SdkRootDirPath}/devices/MK22F51212/all_lib_device.cmake)
 
 IF(NOT DEFINED TARGET_LINK_SYSTEM_LIBRARIES)  
     SET(TARGET_LINK_SYSTEM_LIBRARIES "-lm -lc -lgcc -lnosys")  
-ENDIF()  
+ENDIF()
 
 TARGET_LINK_LIBRARIES(${MCUX_SDK_PROJECT_NAME} PRIVATE -Wl,--start-group)
 
 target_link_libraries(${MCUX_SDK_PROJECT_NAME} PRIVATE ${TARGET_LINK_SYSTEM_LIBRARIES})
+
+#######################################################
+target_link_libraries(
+  ${MCUX_SDK_PROJECT_NAME}
+  PUBLIC McuLib
+  PUBLIC ClockCommonLib
+  PUBLIC UsbLib
+)
+#######################################################
+
 
 TARGET_LINK_LIBRARIES(${MCUX_SDK_PROJECT_NAME} PRIVATE -Wl,--end-group)
 

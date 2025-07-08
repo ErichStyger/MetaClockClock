@@ -162,7 +162,7 @@ void APP_Run(void) {
   vQueueAddToRegistry(semNeoUpdate, "semNeoUpdate");
   xSemaphoreGive(semNeoUpdate); /* trigger initial update */
 #endif
-  PL_Init();
+//  PL_Init();
   vTaskStartScheduler();
   for(;;) { /* should not get here */ }
 }
@@ -178,7 +178,7 @@ void __assertion_failed(char *_Expr)  {
     __asm("nop");
   }
 }
-
+#if 0
 void __assert_func(const char *file, int line, const char *func, const char *expr) {
   McuLog_fatal("%s:%d %s() %s", file, line, func, expr);
   McuLog_fatal("Assert failed!");
@@ -187,3 +187,4 @@ void __assert_func(const char *file, int line, const char *func, const char *exp
     __asm("nop");
   }
 }
+#endif
