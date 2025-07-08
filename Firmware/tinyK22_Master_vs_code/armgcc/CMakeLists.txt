@@ -87,6 +87,17 @@ include_directories(
 )
 include_directories(${CLOCKCOMMON_DIR})
 
+include_directories(
+  ${PROJECT_ROOT_DIR}/usb/cdc
+  ${PROJECT_ROOT_DIR}/usb/include
+  ${PROJECT_ROOT_DIR}/usb/osa
+  ${PROJECT_ROOT_DIR}/usb/device/include
+  ${PROJECT_ROOT_DIR}/usb/device/source
+  ${PROJECT_ROOT_DIR}/usb/device/source/khci
+  ${PROJECT_ROOT_DIR}/usb/device/class
+  ${PROJECT_ROOT_DIR}/usb/device/class/cdc
+)
+
 add_compile_options(-include "${PROJECT_ROOT_DIR}/IncludeMcuLibConfig.h" -DUSB_STACK_BM)
 
 add_subdirectory(${MCULIB_DIR}                McuLib)
