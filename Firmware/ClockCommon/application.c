@@ -162,7 +162,7 @@ void APP_Run(void) {
   vQueueAddToRegistry(semNeoUpdate, "semNeoUpdate");
   xSemaphoreGive(semNeoUpdate); /* trigger initial update */
 #endif
-//  PL_Init();
+  PL_Init();
   vTaskStartScheduler();
   for(;;) { /* should not get here */ }
 }
