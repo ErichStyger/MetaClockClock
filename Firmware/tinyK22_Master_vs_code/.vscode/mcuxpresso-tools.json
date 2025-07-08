@@ -1,0 +1,15 @@
+{
+  "version": "25.3",
+  "toolchainPath": "C:/NXP/MCUXpressoIDE_24.12.148/ide/tools",
+  "linkedProjects": [],
+  "trustZoneType": "none",
+  "multicoreType": "none",
+  "projectType": "sdk-freestanding",
+  "sdk": {
+    "version": "25.03.00",
+    "path": "c:\\tmp\\metaclockclock\\MetaClockClock\\Firmware\\sdks\\tinyK22_Master_vs_code_sdk",
+    "boardId": "frdmk22f",
+    "deviceId": "MK22FN512xxx12",
+    "coreId": "core0_MK22FN512xxx12"
+  }
+}
