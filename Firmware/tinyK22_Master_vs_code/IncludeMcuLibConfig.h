@@ -50,9 +50,10 @@ Instructions:
 #define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
 
 /* performance counter: */
-#define configGENERATE_RUN_TIME_STATS_USE_TICKS     (1)
-#define configGET_RUNTIMER_COUNTER_VALUE_FROM_ISR   AppGetRuntimeCounterValueFromISR
-#define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
+#define configGENERATE_RUN_TIME_STATS               (1) /* enable runtime stats */
+#define configGENERATE_RUN_TIME_STATS_USE_TICKS     (0)
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS   AppConfigureTimerForRuntimeStats
+#define portGET_RUN_TIME_COUNTER_VALUE           AppGetRuntimeCounterValueFromISR
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
