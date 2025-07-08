@@ -54,74 +54,6 @@ component:
  * BOARD_InitPeripherals functional group
  **********************************************************************************************************************/
 /***********************************************************************************************************************
- * LPUART0 initialization code
- **********************************************************************************************************************/
-/* clang-format off */
-/* TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
-instance:
-- name: 'LPUART0'
-- type: 'lpuart'
-- mode: 'interrupts'
-- custom_name_enabled: 'false'
-- type_id: 'lpuart_2.2.8'
-- functional_group: 'BOARD_InitPeripherals'
-- peripheral: 'LPUART0'
-- config_sets:
-  - lpuartConfig_t:
-    - lpuartConfig:
-      - clockSource: 'LpuartClock'
-      - lpuartSrcClkFreq: 'ClocksTool_DefaultInit'
-      - baudRate_Bps: '115200'
-      - parityMode: 'kLPUART_ParityDisabled'
-      - dataBitsCount: 'kLPUART_EightDataBits'
-      - isMsb: 'false'
-      - stopBitCount: 'kLPUART_OneStopBit'
-      - enableRxRTS: 'false'
-      - enableTxCTS: 'false'
-      - txCtsSource: 'kLPUART_CtsSourcePin'
-      - txCtsConfig: 'kLPUART_CtsSampleAtStart'
-      - rxIdleType: 'kLPUART_IdleTypeStartBit'
-      - rxIdleConfig: 'kLPUART_IdleCharacter1'
-      - enableTx: 'true'
-      - enableRx: 'true'
-    - quick_selection: 'QuickSelection1'
-  - interruptsCfg:
-    - interrupts: 'kLPUART_TxDataRegEmptyInterruptEnable kLPUART_TransmissionCompleteInterruptEnable kLPUART_RxDataRegFullInterruptEnable kLPUART_RxOverrunInterruptEnable'
-    - interrupt_vectors:
-      - enable_rx_tx_irq: 'true'
-      - interrupt_rx_tx:
-        - IRQn: 'LPUART0_IRQn'
-        - enable_interrrupt: 'enabled'
-        - enable_priority: 'false'
-        - priority: '0'
-        - enable_custom_name: 'false'
-    - quick_selection: 'QuickSelection1'
- * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
-/* clang-format on */
-const lpuart_config_t LPUART0_config = {
-  .baudRate_Bps = 115200UL,
-  .parityMode = kLPUART_ParityDisabled,
-  .dataBitsCount = kLPUART_EightDataBits,
-  .isMsb = false,
-  .stopBitCount = kLPUART_OneStopBit,
-  .enableRxRTS = false,
-  .enableTxCTS = false,
-  .txCtsSource = kLPUART_CtsSourcePin,
-  .txCtsConfig = kLPUART_CtsSampleAtStart,
-  .rxIdleType = kLPUART_IdleTypeStartBit,
-  .rxIdleConfig = kLPUART_IdleCharacter1,
-  .enableTx = true,
-  .enableRx = true
-};
-
-static void LPUART0_init(void) {
-  LPUART_Init(LPUART0_PERIPHERAL, &LPUART0_config, LPUART0_CLOCK_SOURCE);
-  LPUART_EnableInterrupts(LPUART0_PERIPHERAL, kLPUART_TxDataRegEmptyInterruptEnable | kLPUART_TransmissionCompleteInterruptEnable | kLPUART_RxDataRegFullInterruptEnable | kLPUART_RxOverrunInterruptEnable);
-  /* Enable interrupt LPUART0_SERIAL_RX_TX_IRQN request in the NVIC */
-  EnableIRQ(LPUART0_SERIAL_RX_TX_IRQN);
-}
-
-/***********************************************************************************************************************
  * NVIC initialization code
  **********************************************************************************************************************/
 /* clang-format off */
@@ -136,8 +68,7 @@ instance:
 - peripheral: 'NVIC'
 - config_sets:
   - nvic:
-    - interrupt_table:
-      - 0: []
+    - interrupt_table: []
     - interrupts: []
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS **********/
 /* clang-format on */
@@ -152,7 +83,6 @@ static void NVIC_init(void) {
 void BOARD_InitPeripherals(void)
 {
   /* Initialize components */
-  LPUART0_init();
 }
 
 /***********************************************************************************************************************

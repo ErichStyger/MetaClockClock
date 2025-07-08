@@ -301,23 +301,6 @@
          <dcdx_configurations/>
       </dcdx>
       <periphs name="Peripherals" version="15.0" enabled="true" update_project_code="true">
-         <dependencies>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="LPUART Driver is not found in the toolchain/IDE project. The project will not compile!" problem_level="2" source="Peripherals">
-               <feature name="enabled" evaluation="equal">
-                  <data type="Boolean">true</data>
-               </feature>
-            </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="An unsupported version of the LPUART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. The project might not compile correctly." problem_level="1" source="Peripherals">
-               <feature name="version" evaluation="greaterOrEqual">
-                  <data type="Version" maxValue="2.4.1">2.2.8</data>
-               </feature>
-            </dependency>
-            <dependency resourceType="Tool" resourceId="Clocks" description="The Clocks tool is required by the Peripherals tool, but it is disabled." problem_level="2" source="Peripherals">
-               <feature name="enabled" evaluation="equal">
-                  <data>true</data>
-               </feature>
-            </dependency>
-         </dependencies>
          <generated_project_files>
             <file path="board/peripherals.c" update_enabled="true"/>
             <file path="board/peripherals.h" update_enabled="true"/>
@@ -329,25 +312,9 @@
             <functional_group name="BOARD_InitPeripherals" uuid="93c877a6-9f8b-4a3f-8c70-0430afa765cb" called_from_default_init="true" id_prefix="" core="core0">
                <description></description>
                <options/>
-               <dependencies>
-                  <dependency resourceType="ClockOutput" resourceId="LPUARTCLK" description="LPUART clock is inactive." problem_level="2" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="frequency" evaluation="greaterThan">
-                        <data type="Frequency" unit="Hz">0</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART0.uart_tx" description="Signal TX is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-                  <dependency resourceType="PeripheralUnifiedSignal" resourceId="LPUART0.uart_rx" description="Signal RX is not routed." problem_level="1" source="Peripherals:BOARD_InitPeripherals">
-                     <feature name="routed" evaluation="equal">
-                        <data type="Boolean">true</data>
-                     </feature>
-                  </dependency>
-               </dependencies>
+               <dependencies/>
                <instances>
-                  <instance name="LPUART0" uuid="200c1bd1-5ac0-4542-8b5c-65a824678c7b" type="lpuart" type_id="lpuart_2.2.8" mode="interrupts" peripheral="LPUART0" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
+                  <instance name="LPUART0" uuid="200c1bd1-5ac0-4542-8b5c-65a824678c7b" type="lpuart" type_id="lpuart_2.2.8" mode="interrupts" peripheral="LPUART0" enabled="false" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="lpuartConfig_t" quick_selection="QuickSelection1">
                         <struct name="lpuartConfig">
                            <setting name="clockSource" value="LpuartClock"/>
@@ -390,9 +357,7 @@
                   </instance>
                   <instance name="NVIC" uuid="b3fda9fc-3948-4f88-a266-d2fbda29c7fb" type="nvic" type_id="nvic" mode="general" peripheral="NVIC" enabled="true" comment="" custom_name_enabled="false" editing_lock="false">
                      <config_set name="nvic">
-                        <array name="interrupt_table">
-                           <struct name="0"/>
-                        </array>
+                        <array name="interrupt_table"/>
                         <array name="interrupts"/>
                      </config_set>
                   </instance>
