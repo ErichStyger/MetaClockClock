@@ -10,6 +10,7 @@
 #include "peripherals.h"
 
 int main(void) {
+  DisableGlobalIRQ();
   /* Init board hardware. */
   BOARD_InitBootPins();
   BOARD_InitBootClocks();

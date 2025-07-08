@@ -18,8 +18,13 @@
         "set non-stop off"
       ],
       "gdbServerConfigs": {
-        "linkserver": {},
-        "segger": {},
+        "linkserver": {
+          "device": "MK22FN512xxx12"
+        },
+        "segger": {
+          "device": "MK22FN512xxx12",
+          "rtos": "GDBServer/RTOSPlugin_FreeRTOS"
+        },
         "pemicro": {}
       },
       "showDevDebugOutput": "none"

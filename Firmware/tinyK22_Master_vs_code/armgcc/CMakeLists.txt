@@ -60,7 +60,10 @@ set(CLOCKCOMMON_DIR   "${PROJECT_ROOT_DIR}/../ClockCommon")
 set(SDK_DIR           "${PROJECT_ROOT_DIR}/../sdks/tinyK22_Master_vs_code_sdk")
 set(USBLIB_DIR        "${PROJECT_ROOT_DIR}/usb")
 
-include_directories(${PROJECT_ROOT_DIR})
+include_directories(
+  ${PROJECT_ROOT_DIR}
+  ${PROJECT_ROOT_DIR}/board
+)
 include_directories(
     ${SDK_DIR}/CMSIS/core/include
     ${SDK_DIR}/components/serial_manager
@@ -94,21 +97,22 @@ message(STATUS "Clock common: ${CLOCKCOMMON_DIR}")
 
 add_executable(${MCUX_SDK_PROJECT_NAME} 
 "${ProjDirPath}/../main.c"
-"${ProjDirPath}/../peripherals.c"
-"${ProjDirPath}/../peripherals.h"
-"${ProjDirPath}/../pin_mux.c"
-"${ProjDirPath}/../pin_mux.h"
-"${ProjDirPath}/../board.h"
-"${ProjDirPath}/../board.c"
-"${ProjDirPath}/../clock_config.h"
-"${ProjDirPath}/../clock_config.c"
-"${ProjDirPath}/../hardware_init.c"
+"${ProjDirPath}/../board/peripherals.c"
+"${ProjDirPath}/../board/peripherals.h"
+"${ProjDirPath}/../board/pin_mux.c"
+"${ProjDirPath}/../board/pin_mux.h"
+"${ProjDirPath}/../board/board.h"
+"${ProjDirPath}/../board/board.c"
+"${ProjDirPath}/../board/clock_config.h"
+"${ProjDirPath}/../board/clock_config.c"
+"${ProjDirPath}/../board/hardware_init.c"
 "${ProjDirPath}/../app.h"
 "${ProjDirPath}/../mcux_config.h"
 )
 
 target_include_directories(${MCUX_SDK_PROJECT_NAME} PRIVATE
     ${ProjDirPath}/..
+    ${ProjDirPath}/../board
 )
 
 include(${SdkRootDirPath}/devices/MK22F51212/all_lib_device.cmake)
