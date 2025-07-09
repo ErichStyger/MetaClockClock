@@ -132,7 +132,7 @@ static void NeoTask(void *pv) {
   static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[16*1024]; /* placed in in no_init section inside SRAM_UPPER */
 #endif
   static const HeapRegion_t xHeapRegions[] =
-  {
+  { /* addresses need to be in increasing order */
    { &heap_sram_lower[0], sizeof(heap_sram_lower)},
    { &heap_sram_upper[0], sizeof(heap_sram_upper)},
    { NULL, 0 } /* << Terminates the array. */
@@ -179,6 +179,7 @@ void __assertion_failed(char *_Expr)  {
   }
 }
 
+#if 0
 void __assert_func(const char *file, int line, const char *func, const char *expr) {
   McuLog_fatal("%s:%d %s() %s", file, line, func, expr);
   McuLog_fatal("Assert failed!");
@@ -187,3 +188,4 @@ void __assert_func(const char *file, int line, const char *func, const char *exp
     __asm("nop");
   }
 }
+#endif

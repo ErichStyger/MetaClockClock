@@ -1,0 +1,35 @@
+{
+  "version": 7,
+  "cmakeMinimumRequired": {
+    "major": 3
+  },
+  "configurePresets": [
+    {
+      "name": "debug-env",
+      "displayName": "debug-env",
+      "hidden": true,
+      "environment": {
+        "ARMGCC_DIR": "C:/NXP/MCUXpressoIDE_24.12.148/ide/tools",
+        "SdkRootDirPath": "c:/tmp/metaclockclock/MetaClockClock/Firmware/sdks/tinyK22_Master_vs_code_sdk",
+        "POSTPROCESS_UTILITY": "C:/Users/Erich Styger.N0007139/.mcuxpressotools/mcux-fixelf/mcux-fixelf.exe",
+        "MCUX_VENV_PATH": "C:/Users/Erich Styger.N0007139/.mcuxpressotools/.venv/Scripts",
+        "PATH": "$env{MCUX_VENV_PATH}${pathListSep}$penv{PATH}"
+      },
+      "cacheVariables": {}
+    },
+    {
+      "name": "release-env",
+      "displayName": "release-env",
+      "hidden": true,
+      "environment": {
+        "ARMGCC_DIR": "C:/NXP/MCUXpressoIDE_24.12.148/ide/tools",
+        "SdkRootDirPath": "c:/tmp/metaclockclock/MetaClockClock/Firmware/sdks/tinyK22_Master_vs_code_sdk",
+        "POSTPROCESS_UTILITY": "C:/Users/Erich Styger.N0007139/.mcuxpressotools/mcux-fixelf/mcux-fixelf.exe",
+        "MCUX_VENV_PATH": "C:/Users/Erich Styger.N0007139/.mcuxpressotools/.venv/Scripts",
+        "PATH": "$env{MCUX_VENV_PATH}${pathListSep}$penv{PATH}"
+      },
+      "cacheVariables": {}
+    }
+  ],
+  "buildPresets": []
+}

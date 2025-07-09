@@ -1,0 +1,62 @@
+{
+  "version": 7,
+  "cmakeMinimumRequired": {
+    "major": 3
+  },
+  "configurePresets": [
+    {
+      "name": "debug",
+      "displayName": "debug",
+      "generator": "Ninja",
+      "binaryDir": "${fileDir}/${presetName}",
+      "toolchainFile": "$env{SdkRootDirPath}/tools/cmake_toolchain_files/armgcc.cmake",
+      "inherits": "debug-env",
+      "cacheVariables": {
+        "POSTPROCESS_UTILITY": "$env{POSTPROCESS_UTILITY}",
+        "LIBRARY_TYPE": "NEWLIB",
+        "LANGUAGE": "C",
+        "DEBUG_CONSOLE": "UART",
+        "CMAKE_BUILD_TYPE": "debug",
+        "SdkRootDirPath": "$env{SdkRootDirPath}",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{binaryDir}",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{binaryDir}",
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{binaryDir}",
+        "DEBUG_CONSOLE_CONFIG": "-DSDK_DEBUGCONSOLE"
+      }
+    },
+    {
+      "name": "release",
+      "displayName": "release",
+      "generator": "Ninja",
+      "binaryDir": "${fileDir}/${presetName}",
+      "toolchainFile": "$env{SdkRootDirPath}/tools/cmake_toolchain_files/armgcc.cmake",
+      "inherits": "release-env",
+      "cacheVariables": {
+        "POSTPROCESS_UTILITY": "$env{POSTPROCESS_UTILITY}",
+        "LIBRARY_TYPE": "NEWLIB",
+        "LANGUAGE": "C",
+        "DEBUG_CONSOLE": "NONE",
+        "CMAKE_BUILD_TYPE": "release",
+        "SdkRootDirPath": "$env{SdkRootDirPath}",
+        "CMAKE_RUNTIME_OUTPUT_DIRECTORY": "$env{binaryDir}",
+        "CMAKE_LIBRARY_OUTPUT_DIRECTORY": "$env{binaryDir}",
+        "CMAKE_ARCHIVE_OUTPUT_DIRECTORY": "$env{binaryDir}"
+      }
+    }
+  ],
+  "buildPresets": [
+    {
+      "name": "debug",
+      "displayName": "debug",
+      "configurePreset": "debug"
+    },
+    {
+      "name": "release",
+      "displayName": "release",
+      "configurePreset": "release"
+    }
+  ],
+  "include": [
+    "mcux_include.json"
+  ]
+}

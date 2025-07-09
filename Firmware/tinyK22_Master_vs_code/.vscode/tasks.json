@@ -1,0 +1,42 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "type": "cmake",
+      "label": "CMake: build",
+      "command": "build",
+      "preset": "debug",
+      "targets": [
+        "all"
+      ],
+      "group": {
+        "kind": "build",
+        "isDefault": true
+      },
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "CMake template build task"
+    },
+    {
+      "type": "cmake",
+      "label": "CMake: clean",
+      "command": "clean",
+      "preset": "debug",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "CMake template clean task"
+    },
+    {
+      "type": "cmake",
+      "label": "CMake: configure",
+      "command": "configure",
+      "preset": "debug",
+      "problemMatcher": [
+        "$gcc"
+      ],
+      "detail": "CMake template configure task"
+    }
+  ]
+}

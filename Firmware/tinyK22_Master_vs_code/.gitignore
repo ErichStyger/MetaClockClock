@@ -1,0 +1,5 @@
+/__repo__/
+/armgcc/debug/
+/armgcc/CMakeCache.txt
+/armgcc/CMakeFiles/
+/board/*.bak
