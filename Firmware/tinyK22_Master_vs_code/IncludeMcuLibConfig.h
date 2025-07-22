@@ -36,24 +36,25 @@ Instructions:
 #define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K22 is a Kinetis */
 #define McuLib_CONFIG_CPU_VARIANT        McuLib_CONFIG_CPU_VARIANT_NXP_K22FN
 /* ------------------- RTOS ---------------------------*/
-#define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
-#define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
-#define configTOTAL_HEAP_SIZE                (63*1024)
-#define configUSE_HEAP_SECTION_NAME          (1)
-#define configHEAP_SECTION_NAME_STRING       ".bss.$SRAM_LOWER.FreeRTOS"
-#define configQUEUE_REGISTRY_SIZE            (70)
-#define configMINIMAL_STACK_SIZE             (200/sizeof(StackType_t))
-#define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
-#define configUSE_TIMERS                     (1)
-#define INCLUDE_xTimerPendFunctionCall       (1)
+#define McuLib_CONFIG_SDK_USE_FREERTOS          (1)
+#define configUSE_HEAP_SCHEME                   (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
+#define configTOTAL_HEAP_SIZE                   (63*1024)
+#define configUSE_HEAP_SECTION_NAME             (1)
+#define configHEAP_SECTION_NAME_STRING          ".bss.$SRAM_LOWER.FreeRTOS"
+#define configQUEUE_REGISTRY_SIZE               (70)
+#define configMINIMAL_STACK_SIZE                (200/sizeof(StackType_t))
+#define configTIMER_TASK_STACK_DEPTH            (400/sizeof(StackType_t))
+#define configUSE_TIMERS                        (1)
+#define INCLUDE_xTimerPendFunctionCall          (1)
 #define configSYSTICK_USE_LOW_POWER_TIMER       (0)
 #define configSYSTICK_LOW_POWER_TIMER_CLOCK_HZ  (CLOCK_GetFreq(kCLOCK_LpoClk))
+#define configUSE_RUNTIME_COUNTER_ARRAY         (1) /* default 1, set to zero for cortex-debug extension */
 
 /* performance counter: */
 #define configGENERATE_RUN_TIME_STATS               (1) /* enable runtime stats */
 #define configGENERATE_RUN_TIME_STATS_USE_TICKS     (0)
-#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS   AppConfigureTimerForRuntimeStats
-#define portGET_RUN_TIME_COUNTER_VALUE           AppGetRuntimeCounterValueFromISR
+#define portCONFIGURE_TIMER_FOR_RUN_TIME_STATS      AppConfigureTimerForRuntimeStats
+#define portGET_RUN_TIME_COUNTER_VALUE              AppGetRuntimeCounterValueFromISR
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
 #define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
