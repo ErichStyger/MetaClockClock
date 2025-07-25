@@ -486,7 +486,7 @@ static const MClockChar2x3_t clockCharSpace2x3 =  /* <space> */
 
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
 typedef struct MClockChar3x5_t {
-  MClock_t digit[5][3]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
+  MClock_t digit[5][3]; /* a digit is built by 5 (vertical) and 3 (horizontal) clocks */
 } MClockChar3x5_t;
 
 /* larger digits (3x5) */
@@ -509,6 +509,14 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [4][2]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
     [1].digit = {
+#if 0
+      /* old version with using 2 rows
+           ^
+          /|
+           |
+           |
+           |
+      */
         [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [0][1]={.hands={{.angle=225, .enabled=true },{.angle=180, .enabled=true }}},
         [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
@@ -524,6 +532,23 @@ static const MClockChar3x5_t clockDigits3x5[10] = {
         [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
         [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+#else /* new version using 3 rows */
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][1]={.hands={{.angle=225, .enabled=true },{.angle= 90, .enabled=true }}},
+        [0][2]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
+        [1][0]={.hands={{.angle=45 , .enabled=true },{.angle= 45, .enabled=true }}},
+        [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true}}},
+        [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][2]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true}}},
+#endif
     },
     [2].digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
@@ -1860,7 +1885,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mfont", (unsigned char*)"Group of matrix font commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
-  McuShell_SendHelpStr((unsigned char*)"  text <f> <xy> <txt>", (unsigned char*)"Write text with font (e.g. 2x3) at position\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  text <f> <x> <y> <txt>", (unsigned char*)"Write text with font (e.g. 2x3) at position\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
