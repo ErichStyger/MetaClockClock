@@ -14,13 +14,12 @@
 #if PL_CONFIG_IS_ANALOG_CLOCK
   /* number of steps for a full round */
   #if PL_CONFIG_USE_VIRTUAL_STEPPER
-    #define STEPPER_CLOCK_360_STEPS   (360) /* number of steps for 360 degrees */
+    #define STEPPER_CLOCK_360_STEPS       (360)  /* number of steps for 360 degrees */
+    #define STEPPER_TIME_360_DEGREE_MS    (3000)  /* time for a full round, needs to match the physical stepper motors on LPC boards */
   #else
-    #define STEPPER_CLOCK_360_STEPS   (4320) /* number of steps for 360 degrees */
+    #define STEPPER_CLOCK_360_STEPS       (4320)  /* number of steps for 360 degrees */
+    #define STEPPER_TIME_360_DEGREE_MS    (3000)  /* time for a full round */
   #endif
-
-  /* time for a full round */
-  #define STEPPER_TIME_360_DEGREE_MS       (3000)
 
   /* period needed for a single step in microseconds */
   #define STEPPER_TIME_STEP_US             ((STEPPER_TIME_360_DEGREE_MS*1000U)/STEPPER_CLOCK_360_STEPS)
@@ -40,7 +39,8 @@
     /*!< 1: use FreeRTOS Heap (default), 0: use stdlib malloc() and free() */
 #endif
 
-#define STEPPER_CONFIG_USE_FREERTOS_TIMER (1 && STEPPER_TIME_STEP_US>=1000) /* using FreeRTOS timer if it would fit the frequency (below 1 kHz) */
+#define STEPPER_CONFIG_USE_FREERTOS_TIMER (1 && STEPPER_TIME_STEP_US>=1000 && !PL_CONFIG_USE_VIRTUAL_STEPPER)
+  /*!< using FreeRTOS timer if it would fit the frequency (equal or below 1 kHz). Note for virtual (LED) steppers 1 ms resolution of FreeRTOS timer is not good enough to match the LPC845 steppers */
 
 #ifndef STEPPER_CONFIG_USE_FREERTOS_TIMER
   #define STEPPER_CONFIG_USE_FREERTOS_TIMER   (1 && McuLib_CONFIG_SDK_USE_FREERTOS)
