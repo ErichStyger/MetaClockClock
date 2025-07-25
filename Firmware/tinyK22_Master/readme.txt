@@ -2,6 +2,7 @@ TODO:
 - no logs on USB CDC?
 - if intermezzo takes longer: time minute is skipped?
 - Intermezzo 17,21,19,20 too fast not in sync with hands? All with relative moves?
+- clock on/off should be faster
   
 
 If intermezzo stopped or not running: clear pixels (but not every time)!
