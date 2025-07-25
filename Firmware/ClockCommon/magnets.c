@@ -93,6 +93,17 @@ bool MAG_IsTriggered(MAG_MagSensor_e sensor) {
   return McuGPIO_IsLow(MAG_MagSensor[sensor]);
 }
 
+static uint8_t MAG_GetValues(void) {
+  uint8_t val = 0;
+  uint8_t bit = 1;
+  for(int i=0; i<MAG_NOF_MAG; i++, bit<<=1) {
+    if (MAG_IsTriggered(i)) {
+      val |= bit;
+    }
+  }
+  return val;
+}
+
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   unsigned char buf[64];
   unsigned char status[16];
@@ -129,6 +140,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mag", (unsigned char*)"Group of magnet/hall sensor commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  get", (unsigned char*)"Get the magnet status as hexadecimal number\r\n", io->stdOut);
 #if PL_CONFIG_USE_NVMC
   McuShell_SendHelpStr((unsigned char*)"  mag enable|disable", (unsigned char*)"Enable magnets in NVMC settings\r\n", io->stdOut);
 #endif
@@ -136,6 +148,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 }
 
 uint8_t MAG_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io) {
+  uint8_t buf[8];
 #if PL_CONFIG_USE_NVMC
   uint32_t flags;
   uint8_t res;
@@ -147,6 +160,13 @@ uint8_t MAG_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "mag status")==0)) {
     *handled = TRUE;
     return PrintStatus(io);
+  } else if (McuUtility_strcmp((char*)cmd, "mag get")==0) {
+    *handled = TRUE;
+    buf[0] = '\0';
+    McuUtility_strcatNum8Hex(buf, sizeof(buf), MAG_GetValues());
+    McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+    McuShell_SendStr((unsigned char*)buf, io->stdOut);
+    return ERR_OK;
 #if PL_CONFIG_USE_NVMC
   } else if (McuUtility_strcmp((char*)cmd, "mag enable")==0) {
     *handled = TRUE;
