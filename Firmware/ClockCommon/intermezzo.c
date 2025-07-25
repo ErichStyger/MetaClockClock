@@ -1218,13 +1218,13 @@ typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
 static const Intermezzofp intermezzos[] = /* list of intermezzos */
 {
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
-    Intermezzo0,
-    Intermezzo1,
-    Intermezzo2,
-    Intermezzo3,
-    Intermezzo4,
-    Intermezzo5,
-    Intermezzo6,
+    Intermezzo0, /* 17 sec */
+    Intermezzo1, /* 19 sec */
+    Intermezzo2, /* 32 sec */
+    Intermezzo3, /* 27 sec */
+    Intermezzo4, /* 41 sec */
+    Intermezzo5, /* 37 sec */
+    Intermezzo6, /* 44 sec */
     Intermezzo7,
     Intermezzo8,
     Intermezzo9,
