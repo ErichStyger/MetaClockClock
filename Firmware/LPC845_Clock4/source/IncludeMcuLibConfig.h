@@ -73,7 +73,7 @@ Instructions:
 #define McuShellUart_CONFIG_UART                      McuShellUart_CONFIG_UART_NONE
 /* -------------------------------------------------*/
 /* RTT */
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (150)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (96)
 #define McuRTT_CONFIG_BLOCKING_SEND                   (1)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
@@ -105,5 +105,6 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485                (1)
+#define McuUart485_CONFIG_USE_UART_DEVICE           (0) /* USART0 */
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */
