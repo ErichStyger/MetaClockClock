@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding= "UTF-8" ?>
-<configuration name="LPC845" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_11 http://mcuxpresso.nxp.com/XSD/mex_configuration_11.xsd" uuid="6e8357a3-fb9c-4e71-9373-f7aba8f84626" version="11" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_11" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+<configuration name="LPC845" xsi:schemaLocation="http://mcuxpresso.nxp.com/XSD/mex_configuration_17 http://mcuxpresso.nxp.com/XSD/mex_configuration_17.xsd" uuid="6e8357a3-fb9c-4e71-9373-f7aba8f84626" version="17" xmlns="http://mcuxpresso.nxp.com/XSD/mex_configuration_17" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
    <common>
       <processor>LPC845</processor>
       <package>LPC845M301JBD48</package>
@@ -12,19 +12,18 @@
    </common>
    <preferences>
       <validate_boot_init_only>true</validate_boot_init_only>
-      <generate_extended_information>false</generate_extended_information>
       <generate_code_modified_registers_only>false</generate_code_modified_registers_only>
       <update_include_paths>true</update_include_paths>
       <generate_registers_defines>false</generate_registers_defines>
    </preferences>
    <tools>
-      <pins name="Pins" version="11.0" enabled="true" update_project_code="true">
+      <pins name="Pins" version="17.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/boards/pin_mux.c" update_enabled="true"/>
             <file path="board/boards/pin_mux.h" update_enabled="true"/>
          </generated_project_files>
          <pins_profile>
-            <processor_version>11.0.1</processor_version>
+            <processor_version>24.12.10</processor_version>
             <pin_labels>
                <pin_label pin_num="11" pin_signal="PIO1_0/CAPT_X1" label="M2_STEP" identifier="M2_STEP"/>
                <pin_label pin_num="14" pin_signal="PIO1_1/CAPT_X2" label="MAG_M0" identifier="MAG_M0"/>
@@ -65,7 +64,7 @@
                   <enableClock>true</enableClock>
                </options>
                <dependencies>
-                  <dependency resourceType="Peripheral" resourceId="SWD" description="Peripheral SWD is not initialized" problem_level="1" source="Pins:BOARD_InitSWD_DEBUGPins">
+                  <dependency resourceType="Peripheral" resourceId="SWD" description="Peripheral SWD signals are routed in the Pins Tool, but the peripheral is not initialized in the Peripherals Tool." problem_level="1" source="Pins:BOARD_InitSWD_DEBUGPins">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -295,7 +294,7 @@
                   <enableClock>true</enableClock>
                </options>
                <dependencies>
-                  <dependency resourceType="Peripheral" resourceId="USART0" description="Peripheral USART0 is not initialized" problem_level="1" source="Pins:BOARD_InitRS485">
+                  <dependency resourceType="Peripheral" resourceId="USART0" description="Peripheral USART0 signals are routed in the Pins Tool, but the peripheral is not initialized in the Peripherals Tool." problem_level="1" source="Pins:BOARD_InitRS485">
                      <feature name="initialized" evaluation="equal">
                         <data>true</data>
                      </feature>
@@ -312,24 +311,20 @@
                   </dependency>
                </dependencies>
                <pins>
-                  <pin peripheral="USART0" signal="RTS" pin_num="23" pin_signal="PIO1_4/CAPT_X5">
-                     <pin_features>
-                        <pin_feature name="direction" value="OUTPUT"/>
-                     </pin_features>
-                  </pin>
+                  <pin peripheral="USART0" signal="RTS" pin_num="23" pin_signal="PIO1_4/CAPT_X5"/>
                   <pin peripheral="USART0" signal="TXD" pin_num="22" pin_signal="PIO0_15"/>
                   <pin peripheral="USART0" signal="RXD" pin_num="24" pin_signal="PIO0_1/ACMP_I2/CLKIN"/>
                </pins>
             </function>
          </functions_list>
       </pins>
-      <clocks name="Clocks" version="9.0" enabled="true" update_project_code="true">
+      <clocks name="Clocks" version="15.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/boards/clock_config.c" update_enabled="true"/>
             <file path="board/boards/clock_config.h" update_enabled="true"/>
          </generated_project_files>
          <clocks_profile>
-            <processor_version>11.0.1</processor_version>
+            <processor_version>24.12.10</processor_version>
          </clocks_profile>
          <clock_configurations>
             <clock_configuration name="BOARD_BootClockFRO18M" id_prefix="" prefix_user_defined="false">
@@ -500,25 +495,13 @@
          </dcdx_profile>
          <dcdx_configurations/>
       </dcdx>
-      <periphs name="Peripherals" version="10.0" enabled="true" update_project_code="true">
-         <dependencies>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="LPUART Driver not found in the toolchain/IDE project. Project will not compile!" problem_level="2" source="Peripherals">
-               <feature name="enabled" evaluation="equal">
-                  <data type="Boolean">true</data>
-               </feature>
-            </dependency>
-            <dependency resourceType="SWComponent" resourceId="platform.drivers.lpuart" description="Unsupported version of the LPUART Driver in the toolchain/IDE project. Required: ${required_value}, actual: ${actual_value}. Project might not compile correctly." problem_level="1" source="Peripherals">
-               <feature name="version" evaluation="greaterOrEqual">
-                  <data type="Version">2.2.8</data>
-               </feature>
-            </dependency>
-         </dependencies>
+      <periphs name="Peripherals" version="15.0" enabled="true" update_project_code="true">
          <generated_project_files>
             <file path="board/boards/peripherals.c" update_enabled="true"/>
             <file path="board/boards/peripherals.h" update_enabled="true"/>
          </generated_project_files>
          <peripherals_profile>
-            <processor_version>10.0.0</processor_version>
+            <processor_version>24.12.10</processor_version>
          </peripherals_profile>
          <functional_groups>
             <functional_group name="BOARD_InitPeripherals" uuid="51f71830-e1e0-435f-8867-a1437732eb04" called_from_default_init="true" id_prefix="" core="core0">
@@ -533,6 +516,7 @@
                <config_set_global name="global_system_definitions">
                   <setting name="user_definitions" value=""/>
                   <setting name="user_includes" value=""/>
+                  <setting name="global_init" value=""/>
                </config_set_global>
             </component>
             <component name="msg" uuid="94279220-fd16-4e9d-b0a0-133bc45e00ff" type_id="msg_6e2baaf3b97dbeef01c0043275f9a0e7">
@@ -549,6 +533,9 @@
             </component>
             <component name="generic_enet" uuid="7ec0821c-e8a2-448f-9267-7f65395e10ca" type_id="generic_enet_74db5c914f0ddbe47d86af40cb77a619">
                <config_set_global name="global_enet"/>
+            </component>
+            <component name="gpio_adapter_common" uuid="c7b21bba-de71-46d0-a881-e60ca1191ac3" type_id="gpio_adapter_common">
+               <config_set_global name="global_gpio_adapter_common" quick_selection="default"/>
             </component>
          </components>
       </periphs>
