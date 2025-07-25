@@ -3,6 +3,12 @@ readme.txt
 
 Clock project with the NXP LPC845.
 
+Issues:
+- Board with ID 0x26: triggering MAG3 also pulls down MAG2?
+- Hint: only connect RTT if debugger is paused
+- With -Os, hardfault in MinINI code (works with -O1)
+- rs sendcmd 0x26 mag status returns random pin status. Ok with mag get or executed locally
+
 ----------------------------------------------------------------------------------------------------------
 Board bring-up:
 - Resistance 5V-GND: ~100k
