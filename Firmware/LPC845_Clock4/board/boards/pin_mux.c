@@ -7,11 +7,11 @@
 /*
  * TEXT BELOW IS USED AS SETTING FOR TOOLS *************************************
 !!GlobalInfo
-product: Pins v11.0
+product: Pins v17.0
 processor: LPC845
 package_id: LPC845M301JBD48
 mcu_data: ksdk2_0
-processor_version: 11.0.1
+processor_version: 24.12.10
 board: LPC845BREAKOUT
 pin_labels:
 - {pin_num: '11', pin_signal: PIO1_0/CAPT_X1, label: M2_STEP, identifier: M2_STEP}
@@ -278,33 +278,33 @@ void BOARD_InitMotorPins(void)
     /* Initialize GPIO functionality on pin PIO0_4 (pin 6)  */
     GPIO_PinInit(BOARD_INITMOTORPINS_M2_DIR_GPIO, BOARD_INITMOTORPINS_M2_DIR_PORT, BOARD_INITMOTORPINS_M2_DIR_PIN, &M2_DIR_config);
 
-    gpio_pin_config_t gpio0_pin0_6 = {
+    gpio_pin_config_t M5_DIR_config = {
         .pinDirection = kGPIO_DigitalOutput,
         .outputLogic = 0U,
     };
-    /* Initialize GPIO functionality on pin PIO0_6 (pin )  */
-    GPIO_PinInit(GPIO, 0U, 6U, &gpio0_pin0_6);
+    /* Initialize GPIO functionality on pin PIO0_6 (pin 34)  */
+    GPIO_PinInit(BOARD_INITMOTORPINS_M5_DIR_GPIO, BOARD_INITMOTORPINS_M5_DIR_PORT, BOARD_INITMOTORPINS_M5_DIR_PIN, &M5_DIR_config);
 
-    gpio_pin_config_t gpio0_pin0_7 = {
+    gpio_pin_config_t M5_STEP_config = {
         .pinDirection = kGPIO_DigitalOutput,
         .outputLogic = 0U,
     };
-    /* Initialize GPIO functionality on pin PIO0_7 (pin )  */
-    GPIO_PinInit(GPIO, 0U, 7U, &gpio0_pin0_7);
+    /* Initialize GPIO functionality on pin PIO0_7 (pin 33)  */
+    GPIO_PinInit(BOARD_INITMOTORPINS_M5_STEP_GPIO, BOARD_INITMOTORPINS_M5_STEP_PORT, BOARD_INITMOTORPINS_M5_STEP_PIN, &M5_STEP_config);
 
-    gpio_pin_config_t gpio0_pin0_8 = {
+    gpio_pin_config_t M6_DIR_config = {
         .pinDirection = kGPIO_DigitalOutput,
         .outputLogic = 0U,
     };
-    /* Initialize GPIO functionality on pin PIO0_8 (pin )  */
-    GPIO_PinInit(GPIO, 0U, 8U, &gpio0_pin0_8);
+    /* Initialize GPIO functionality on pin PIO0_8 (pin 26)  */
+    GPIO_PinInit(BOARD_INITMOTORPINS_M6_DIR_GPIO, BOARD_INITMOTORPINS_M6_DIR_PORT, BOARD_INITMOTORPINS_M6_DIR_PIN, &M6_DIR_config);
 
-    gpio_pin_config_t gpio0_pin0_9 = {
+    gpio_pin_config_t M6_STEP_config = {
         .pinDirection = kGPIO_DigitalOutput,
         .outputLogic = 0U,
     };
-    /* Initialize GPIO functionality on pin PIO0_9 (pin )  */
-    GPIO_PinInit(GPIO, 0U, 9U, &gpio0_pin0_9);
+    /* Initialize GPIO functionality on pin PIO0_9 (pin 25)  */
+    GPIO_PinInit(BOARD_INITMOTORPINS_M6_STEP_GPIO, BOARD_INITMOTORPINS_M6_STEP_PORT, BOARD_INITMOTORPINS_M6_STEP_PIN, &M6_STEP_config);
 
     gpio_pin_config_t M0_STEP_config = {
         .pinDirection = kGPIO_DigitalOutput,
@@ -341,19 +341,19 @@ void BOARD_InitMotorPins(void)
     /* Initialize GPIO functionality on pin PIO0_28 (pin 7)  */
     GPIO_PinInit(BOARD_INITMOTORPINS_M2_STEP_GPIO, BOARD_INITMOTORPINS_M2_STEP_PORT, BOARD_INITMOTORPINS_M2_STEP_PIN, &M2_STEP_config);
 
-    gpio_pin_config_t gpio1_pin1_5 = {
+    gpio_pin_config_t M7_DIR_config = {
         .pinDirection = kGPIO_DigitalOutput,
         .outputLogic = 0U,
     };
-    /* Initialize GPIO functionality on pin PIO1_5 (pin )  */
-    GPIO_PinInit(GPIO, 1U, 5U, &gpio1_pin1_5);
+    /* Initialize GPIO functionality on pin PIO1_5 (pin 27)  */
+    GPIO_PinInit(BOARD_INITMOTORPINS_M7_DIR_GPIO, BOARD_INITMOTORPINS_M7_DIR_PORT, BOARD_INITMOTORPINS_M7_DIR_PIN, &M7_DIR_config);
 
-    gpio_pin_config_t gpio1_pin1_6 = {
+    gpio_pin_config_t M7_STEP_config = {
         .pinDirection = kGPIO_DigitalOutput,
         .outputLogic = 0U,
     };
-    /* Initialize GPIO functionality on pin PIO1_6 (pin )  */
-    GPIO_PinInit(GPIO, 1U, 6U, &gpio1_pin1_6);
+    /* Initialize GPIO functionality on pin PIO1_6 (pin 28)  */
+    GPIO_PinInit(BOARD_INITMOTORPINS_M7_STEP_GPIO, BOARD_INITMOTORPINS_M7_STEP_PORT, BOARD_INITMOTORPINS_M7_STEP_PIN, &M7_STEP_config);
 
     gpio_pin_config_t M4_STEP_config = {
         .pinDirection = kGPIO_DigitalOutput,
@@ -386,7 +386,7 @@ void BOARD_InitMotorPins(void)
 BOARD_InitRS485:
 - options: {callFromInitBoot: 'true', coreID: core0, enableClock: 'true'}
 - pin_list:
-  - {pin_num: '23', peripheral: USART0, signal: RTS, pin_signal: PIO1_4/CAPT_X5, direction: OUTPUT}
+  - {pin_num: '23', peripheral: USART0, signal: RTS, pin_signal: PIO1_4/CAPT_X5}
   - {pin_num: '22', peripheral: USART0, signal: TXD, pin_signal: PIO0_15}
   - {pin_num: '24', peripheral: USART0, signal: RXD, pin_signal: PIO0_1/ACMP_I2/CLKIN}
  * BE CAREFUL MODIFYING THIS COMMENT - IT IS YAML SETTINGS FOR TOOLS ***********

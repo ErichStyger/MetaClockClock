@@ -137,6 +137,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M0_DIR_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M0_DIR_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M0_DIR_GPIO_PIN_MASK (1U << 9U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M0_DIR_PORT 1U                  /*!<@brief PORT device index: 1 */
 #define BOARD_INITMOTORPINS_M0_DIR_PIN 9U                   /*!<@brief PORT pin number */
@@ -148,6 +149,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M1_STEP_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M1_STEP_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M1_STEP_GPIO_PIN_MASK (1U << 8U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M1_STEP_PORT 1U                  /*!<@brief PORT device index: 1 */
 #define BOARD_INITMOTORPINS_M1_STEP_PIN 8U                   /*!<@brief PORT pin number */
@@ -159,6 +161,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M1_DIR_GPIO GPIO                 /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M1_DIR_INIT_GPIO_VALUE 0U        /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M1_DIR_GPIO_PIN_MASK (1U << 13U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M1_DIR_PORT 0U                   /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M1_DIR_PIN 13U                   /*!<@brief PORT pin number */
@@ -170,6 +173,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M0_STEP_GPIO GPIO                 /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M0_STEP_INIT_GPIO_VALUE 0U        /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M0_STEP_GPIO_PIN_MASK (1U << 12U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M0_STEP_PORT 0U                   /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M0_STEP_PIN 12U                   /*!<@brief PORT pin number */
@@ -181,6 +185,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M2_DIR_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M2_DIR_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M2_DIR_GPIO_PIN_MASK (1U << 4U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M2_DIR_PORT 0U                  /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M2_DIR_PIN 4U                   /*!<@brief PORT pin number */
@@ -192,6 +197,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M2_STEP_GPIO GPIO                 /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M2_STEP_INIT_GPIO_VALUE 0U        /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M2_STEP_GPIO_PIN_MASK (1U << 28U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M2_STEP_PORT 0U                   /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M2_STEP_PIN 28U                   /*!<@brief PORT pin number */
@@ -203,6 +209,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M3_STEP_GPIO GPIO                 /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M3_STEP_INIT_GPIO_VALUE 0U        /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M3_STEP_GPIO_PIN_MASK (1U << 26U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M3_STEP_PORT 0U                   /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M3_STEP_PIN 26U                   /*!<@brief PORT pin number */
@@ -214,6 +221,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M3_DIR_GPIO GPIO                 /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M3_DIR_INIT_GPIO_VALUE 0U        /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M3_DIR_GPIO_PIN_MASK (1U << 27U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M3_DIR_PORT 0U                   /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M3_DIR_PIN 27U                   /*!<@brief PORT pin number */
@@ -225,6 +233,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M4_DIR_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M4_DIR_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M4_DIR_GPIO_PIN_MASK (1U << 0U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M4_DIR_PORT 0U                  /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M4_DIR_PIN 0U                   /*!<@brief PORT pin number */
@@ -236,6 +245,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M4_STEP_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M4_STEP_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M4_STEP_GPIO_PIN_MASK (1U << 7U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M4_STEP_PORT 1U                  /*!<@brief PORT device index: 1 */
 #define BOARD_INITMOTORPINS_M4_STEP_PIN 7U                   /*!<@brief PORT pin number */
@@ -247,6 +257,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M5_DIR_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M5_DIR_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M5_DIR_GPIO_PIN_MASK (1U << 6U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M5_DIR_PORT 0U                  /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M5_DIR_PIN 6U                   /*!<@brief PORT pin number */
@@ -258,6 +269,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M5_STEP_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M5_STEP_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M5_STEP_GPIO_PIN_MASK (1U << 7U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M5_STEP_PORT 0U                  /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M5_STEP_PIN 7U                   /*!<@brief PORT pin number */
@@ -269,6 +281,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M7_STEP_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M7_STEP_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M7_STEP_GPIO_PIN_MASK (1U << 6U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M7_STEP_PORT 1U                  /*!<@brief PORT device index: 1 */
 #define BOARD_INITMOTORPINS_M7_STEP_PIN 6U                   /*!<@brief PORT pin number */
@@ -280,6 +293,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M7_DIR_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M7_DIR_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M7_DIR_GPIO_PIN_MASK (1U << 5U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M7_DIR_PORT 1U                  /*!<@brief PORT device index: 1 */
 #define BOARD_INITMOTORPINS_M7_DIR_PIN 5U                   /*!<@brief PORT pin number */
@@ -291,6 +305,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M6_DIR_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M6_DIR_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M6_DIR_GPIO_PIN_MASK (1U << 8U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M6_DIR_PORT 0U                  /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M6_DIR_PIN 8U                   /*!<@brief PORT pin number */
@@ -302,6 +317,7 @@ void BOARD_InitMagPins(void); /* Function assigned for the Cortex-M0P */
 
 /* Symbols to be used with GPIO driver */
 #define BOARD_INITMOTORPINS_M6_STEP_GPIO GPIO                /*!<@brief GPIO peripheral base pointer */
+#define BOARD_INITMOTORPINS_M6_STEP_INIT_GPIO_VALUE 0U       /*!<@brief GPIO output initial state */
 #define BOARD_INITMOTORPINS_M6_STEP_GPIO_PIN_MASK (1U << 9U) /*!<@brief GPIO pin mask */
 #define BOARD_INITMOTORPINS_M6_STEP_PORT 0U                  /*!<@brief PORT device index: 0 */
 #define BOARD_INITMOTORPINS_M6_STEP_PIN 9U                   /*!<@brief PORT pin number */
