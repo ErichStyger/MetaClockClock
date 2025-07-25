@@ -1171,33 +1171,36 @@ void MATRIX_DrawRectangle(int x, int y, int w, int h) {
 #endif /* PL_CONFIG_IS_MASTER */
 
 #if PL_CONFIG_USE_SHELL && PL_CONFIG_USE_STEPPER
-static uint8_t PrintStepperStatus(const McuShell_StdIOType *io) {
+static void PrintSingleStepperStatus(int x, int y, int z, const McuShell_StdIOType *io) {
   uint8_t buf[128];
   uint8_t statusStr[16];
+  STEPPER_Handle_t stepper;
+  uint8_t addr;
 
+  stepper = MATRIX_GetStepper(x, y, z);
+  addr = MATRIX_GetAddress(x, y, z);
+  buf[0] = '\0';
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"addr:0x");
+  McuUtility_strcatNum8Hex(buf, sizeof(buf), addr);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", Stepper ");
+  STEPPER_StrCatStatus(stepper, buf, sizeof(buf));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+
+  McuUtility_strcpy(statusStr, sizeof(statusStr), (unsigned char*)"  M[");
+  McuUtility_strcatNum8u(statusStr, sizeof(statusStr), x);
+  McuUtility_chcat(statusStr, sizeof(statusStr), ',');
+  McuUtility_strcatNum8u(statusStr, sizeof(statusStr), y);
+  McuUtility_chcat(statusStr, sizeof(statusStr), ',');
+  McuUtility_strcatNum8u(statusStr, sizeof(statusStr), z);
+  McuUtility_strcat(statusStr, sizeof(statusStr), (unsigned char*)"]");
+  McuShell_SendStatusStr(statusStr, buf, io->stdOut);
+}
+
+static uint8_t PrintStepperStatus(const McuShell_StdIOType *io) {
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-        STEPPER_Handle_t stepper;
-        uint8_t addr;
-
-        stepper = MATRIX_GetStepper(x, y, z);
-        addr = MATRIX_GetAddress(x, y, z);
-        buf[0] = '\0';
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"addr:0x");
-        McuUtility_strcatNum8Hex(buf, sizeof(buf), addr);
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", Stepper ");
-        STEPPER_StrCatStatus(stepper, buf, sizeof(buf));
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-
-        McuUtility_strcpy(statusStr, sizeof(statusStr), (unsigned char*)"  M[");
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), x);
-        McuUtility_chcat(statusStr, sizeof(statusStr), ',');
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), y);
-        McuUtility_chcat(statusStr, sizeof(statusStr), ',');
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), z);
-        McuUtility_strcat(statusStr, sizeof(statusStr), (unsigned char*)"]");
-        McuShell_SendStatusStr(statusStr, buf, io->stdOut);
+        PrintSingleStepperStatus(x, y, z, io);
       }
     }
   } /* for */
@@ -1206,52 +1209,35 @@ static uint8_t PrintStepperStatus(const McuShell_StdIOType *io) {
 #endif
 
 #if PL_CONFIG_USE_SHELL && PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_STEPPER
-static uint8_t PrintRingStatus(const McuShell_StdIOType *io) {
+static void PrintSingleRingStatus(int x, int y, int z, const McuShell_StdIOType *io) {
   uint8_t buf[128];
   uint8_t statusStr[16];
 
+  buf[0] = '\0';
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"Ring ");
+  NEOSR_StrCatRingStatus(MATRIX_GetLedRingDevice(x, y, z), buf, sizeof(buf));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", Hand ");
+  NEOSR_StrCatHandStatus(MATRIX_GetLedRingDevice(x, y, z), buf, sizeof(buf));
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+
+  McuUtility_strcpy(statusStr, sizeof(statusStr), (unsigned char*)"  R[");
+  McuUtility_strcatNum8u(statusStr, sizeof(statusStr), x);
+  McuUtility_chcat(statusStr, sizeof(statusStr), ',');
+  McuUtility_strcatNum8u(statusStr, sizeof(statusStr), y);
+  McuUtility_chcat(statusStr, sizeof(statusStr), ',');
+  McuUtility_strcatNum8u(statusStr, sizeof(statusStr), z);
+  McuUtility_strcat(statusStr, sizeof(statusStr), (unsigned char*)"]");
+  McuShell_SendStatusStr(statusStr, buf, io->stdOut);
+}
+
+static uint8_t PrintRingStatus(const McuShell_StdIOType *io) {
   for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
     for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-
-        buf[0] = '\0';
-        McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"Ring ");
-        NEOSR_StrCatRingStatus(MATRIX_GetLedRingDevice(x, y, z), buf, sizeof(buf));
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-
-        McuUtility_strcpy(statusStr, sizeof(statusStr), (unsigned char*)"  R[");
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), x);
-        McuUtility_chcat(statusStr, sizeof(statusStr), ',');
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), y);
-        McuUtility_chcat(statusStr, sizeof(statusStr), ',');
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), z);
-        McuUtility_strcat(statusStr, sizeof(statusStr), (unsigned char*)"]");
-        McuShell_SendStatusStr(statusStr, buf, io->stdOut);
+        PrintSingleRingStatus(x, y, z, io);
       }
     }
   } /* for */
-
-  for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
-    for(int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
-      for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
-
-        buf[0] = '\0';
-        McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"Hand ");
-        NEOSR_StrCatHandStatus(MATRIX_GetLedRingDevice(x, y, z), buf, sizeof(buf));
-        McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
-
-        McuUtility_strcpy(statusStr, sizeof(statusStr), (unsigned char*)"  H[");
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), x);
-        McuUtility_chcat(statusStr, sizeof(statusStr), ',');
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), y);
-        McuUtility_chcat(statusStr, sizeof(statusStr), ',');
-        McuUtility_strcatNum8u(statusStr, sizeof(statusStr), z);
-        McuUtility_strcat(statusStr, sizeof(statusStr), (unsigned char*)"]");
-        McuShell_SendStatusStr(statusStr, buf, io->stdOut);
-      }
-    }
-  } /* for */
-
   return ERR_OK;
 }
 #endif
@@ -1403,10 +1389,10 @@ void MATRIX_EnableDisableHandsAll(bool enable) {
 #endif
 
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
-  McuShell_SendHelpStr((unsigned char*)"matrix", (unsigned char*)"Group of matrix commands\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"matrix", (unsigned char*)"Group of matrix commands. <xyz> for example 3 2 0\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_USE_STEPPER
-  McuShell_SendHelpStr((unsigned char*)"  stepper status", (unsigned char*)"Print stepper status information\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  stepper status [xyz]", (unsigned char*)"Print all stepper status information, or for a single coordinate\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  test", (unsigned char*)"Test the stepper on the board\r\n", io->stdOut);
@@ -1510,14 +1496,33 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     *handled = true;
     return PrintStatus(io);
 #if PL_CONFIG_USE_STEPPER
-  } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "matrix stepper status")==0)) {
+  } else if (McuUtility_strcmp((char*)cmd, "matrix stepper status")==0) {
     *handled = true;
     PrintStepperStatus(io);
   #if PL_CONFIG_USE_LED_RING
     PrintRingStatus(io);
   #endif
     return ERR_OK;
-#endif
+  } else if (McuUtility_strncmp((char*)cmd, "matrix stepper status ", sizeof("matrix stepper status ")-1)==0) {
+    int32_t x, y, z;
+
+    x = y = z = 0;
+    *handled = true;
+    p = cmd+sizeof("matrix stepper status ")-1;
+    if (   McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+        && McuUtility_xatoi(&p, &z)==ERR_OK && z>=0 && z<MATRIX_NOF_STEPPERS_Z
+       )
+    {
+      PrintSingleStepperStatus(x, y, z, io);
+    #if PL_CONFIG_USE_LED_RING
+      PrintSingleRingStatus(x, y, z, io);
+    #endif
+      return ERR_OK;
+    } else {
+      return ERR_FAILED;
+    }
+#endif /* PL_CONFIG_USE_STEPPER */
 
 #if PL_CONFIG_IS_ANALOG_CLOCK
   } else if (McuUtility_strncmp((char*)cmd, "matrix hour ", sizeof("matrix hour ")-1)==0) {
