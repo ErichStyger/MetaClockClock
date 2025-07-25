@@ -33,25 +33,25 @@ bool BLEMSG_HandleMessage(void) {
       switch(msg.u.button) {
       case 1: /* button '1' */
       #if PL_CONFIG_USE_CLOCK
-        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix he all on");
+        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"clock park toggle");
       #elif PL_CONFIG_USE_LED_PIXEL
       #endif
         break;
       case 2: /* button '2' */
       #if PL_CONFIG_USE_CLOCK
-        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix he all off");
+        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"intermezzo toggle");
       #elif PL_CONFIG_USE_LED_PIXEL
       #endif
         break;
       case 3: /* button '3' */
       #if PL_CONFIG_USE_CLOCK
-        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix he all on");
+        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"");
       #elif PL_CONFIG_USE_LED_PIXEL
       #endif
         break;
       case 4: /* button '4' */
       #if PL_CONFIG_USE_CLOCK
-        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix he all off");
+        McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"");
       #elif PL_CONFIG_USE_LED_PIXEL
       #endif
         break;
@@ -85,7 +85,7 @@ bool BLEMSG_HandleMessage(void) {
       } /* switch */
     } else if (msg.type==BLE_MSG_TYPE_COLOR_PICKER) {
     #if PL_CONFIG_USE_CLOCK
-      McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix hand rgb all 0x");
+      McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix hc all 0x");
       McuUtility_strcatNum24Hex(cmd, sizeof(cmd), msg.u.color);
     #elif PL_CONFIG_USE_LED_PIXEL
       McuUtility_strcpy(cmd, sizeof(cmd), (uint8_t*)"matrix sendcmd neo set all 0x");
