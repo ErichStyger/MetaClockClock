@@ -1,4 +1,8 @@
 TODO:
+- no logs on USB CDC?
+- if intermezzo takes longer: time minute is skipped?
+- Intermezzo 17,21,19,20 too fast not in sync with hands? All with relative moves?
+  
 
 If intermezzo stopped or not running: clear pixels (but not every time)!
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
