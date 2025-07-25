@@ -130,6 +130,26 @@
   #include "esp_time.h"
 #endif
 
+#if McuLib_CONFIG_CPU_IS_LPC && McuLib_CONFIG_CPU_VARIANT==McuLib_CONFIG_CPU_VARIANT_NXP_LPC845
+static void setFlashWaitStates(uint8_t nofWaits) {
+  /* Configure the FLASHCFG with the FLASHTIM (Flash memory access time).
+   * Latest NXP SDK provides the function IAP_ConfigAccessFlashTime() to do a similar thing.
+   * By default after reset, the LPC845 sets it to 0x2 which is 3 system clock access time.
+   * NOTE: for higher core speeds, e.g. for 30 MHz FRO a zero wait might create a HardFault: use 1 instead
+   */
+  uint32_t val;
+
+  val = (FLASH_CTRL->FLASHCFG)&~FLASH_CTRL_FLASHCFG_FLASHTIM_MASK; /* do not touch the other bits! */
+  switch(nofWaits) {
+    default:
+    case 0: val |= 0x0; break;  /* 1 system clock access time */
+    case 1: val |= 0x1; break;  /* 2 system clock access time */
+    case 2: val |= 0x2; break;  /* 3 system clock access time */
+  }
+  FLASH_CTRL->FLASHCFG = val; /* write back settings */
+}
+#endif
+
 void PL_InitFromTask(void) {
   /* call here things which need interrupts enabled */
   /* the clock time/date gets initialized in the clock task */
@@ -137,6 +157,9 @@ void PL_InitFromTask(void) {
 
 void PL_Init(void) {
   /* SDK */
+#if McuLib_CONFIG_CPU_IS_LPC && McuLib_CONFIG_CPU_VARIANT==McuLib_CONFIG_CPU_VARIANT_NXP_LPC845
+  setFlashWaitStates(0);
+#endif
 #if McuLib_CONFIG_CPU_IS_LPC  /* LPC845-BRK */
   GPIO_PortInit(GPIO, 0); /* ungate the clocks for GPIO_0 (PIO0_19): used LED */
   GPIO_PortInit(GPIO, 1); /* ungate the clocks for GPIO_1, used by motor driver signals */
