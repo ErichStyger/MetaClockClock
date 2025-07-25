@@ -1255,33 +1255,33 @@ static void ClockTask(void *pv) {
     }
 #endif
     if (CLOCK_ClockIsOn) { /* show time */
+      (void)McuTimeDate_GetTimeDate(&time, NULL);
       if (doImmediateClockUpdate) { /* if not immediate update: sync on beginning of minute */
-        McuTimeDate_GetTimeDate(&time, &date);
-        CLOCK_ShowTimeDate(&time, &date);
         doImmediateClockUpdate = false;
-      } else {
-        res = McuTimeDate_GetTimeDate(&time, NULL);
-        if (time.Sec>=55) { /* sync on start of the minute */
-          McuLog_trace("Sync on full minute");
-          do {
-            res = McuTimeDate_GetTimeDate(&time, NULL);
-            if (time.Sec==0) {
-              break; /* leave loop */
-            }
-            vTaskDelay(pdMS_TO_TICKS(200));
-          } while(res==ERR_OK);
-          res = McuTimeDate_GetTimeDate(&time, &date);
-        #if PL_CONFIG_USE_NEO_PIXEL_HW
-          ShowSeconds(&time);
-        #endif
+        if (time.Sec<=40) { /* do only update right now if we have enough time: will do a sync after 55 secs below anyway */
           CLOCK_ShowTimeDate(&time, &date);
-        #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
-          lastClockUpdateTickCount = xTaskGetTickCount();
-          intermezzoShown = false;
-        #endif
-          McuLog_info("finished showing clock");
-        } /* if close to minute */
-      } /* immediate udpate or not */
+        }
+      }
+      if (time.Sec>=55) { /* sync on start of the minute */
+        McuLog_trace("Sync on full minute");
+        do {
+          (void)McuTimeDate_GetTimeDate(&time, NULL);
+          if (time.Sec==0) {
+            break; /* leave loop */
+          }
+          vTaskDelay(pdMS_TO_TICKS(200));
+        } while(res==ERR_OK);
+        res = McuTimeDate_GetTimeDate(&time, &date);
+      #if PL_CONFIG_USE_NEO_PIXEL_HW
+        ShowSeconds(&time);
+      #endif
+        CLOCK_ShowTimeDate(&time, &date);
+      #if PL_CONFIG_USE_INTERMEZZO /* show intermezzo? */
+        lastClockUpdateTickCount = xTaskGetTickCount();
+        intermezzoShown = false;
+      #endif
+        McuLog_info("finished showing clock");
+      } /* if close to minute */
     } /* if clock is on */
   } /* for(;;) */
 }
