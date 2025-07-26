@@ -384,7 +384,7 @@ uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
   #endif
     currTicks = xTaskGetTickCount();
     if (pdMS_TO_TICKS(currTicks-startTicks)>timeoutMs) {
-      McuLog_error("Timeout: %d ms");
+      McuLog_error("Timeout: %d ms", timeoutMs);
       return ERR_BUSY;
     }
   } /* for which breaks or returns */
