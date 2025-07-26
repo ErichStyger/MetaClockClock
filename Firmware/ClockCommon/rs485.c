@@ -21,6 +21,7 @@
   #include "watchdog.h"
 #endif
 #include "stepper.h"
+#include "StepperBoard.h"
 
 typedef enum RS485_Response_e {
   RS485_RESPONSE_CONTINUE, /* continue scanning and parsing */
@@ -29,7 +30,9 @@ typedef enum RS485_Response_e {
   RS485_RESPONSE_TIMEOUT, /* timeout */
 } RS485_Response_e;
 
-static bool RS485_DoLogging = false; /* if traffic on the bus shall be reported on the shell */
+#if McuLog_CONFIG_IS_ENABLED
+  static bool RS485_DoLogging = false; /* if traffic on the bus shall be reported on the shell */
+#endif
 static SemaphoreHandle_t RS485_stdioMutex; /* mutex to protect access to standard I/O */
 
 uint8_t RS485_GetAddress(void) {
@@ -361,9 +364,11 @@ uint8_t RS485_SendCommand(uint8_t dstAddr, const unsigned char *cmd, int32_t tim
   if (xSemaphoreTakeRecursive(RS485_stdioMutex, portMAX_DELAY)==pdPASS) { /* take mutex */
     for(;;) { /* breaks */
       McuUart485_ClearResponseQueue(); /* clear up if there is something pending */
+#if McuLog_CONFIG_IS_ENABLED
       if (RS485_DoLogging) {
         McuLog_trace("Tx: %s", buf);
       }
+#endif
       RS485_SendStr(buf);
       RS485_SendStr((unsigned char*)"\n");
       if (dstAddr==RS485_BROADCAST_ADDRESS) {
@@ -402,7 +407,9 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcatNum8Hex(buf, sizeof(buf), RS485_GetAddress());
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  addr", buf, io->stdOut);
+#if McuLog_CONFIG_IS_ENABLED
   McuShell_SendStatusStr((unsigned char*)"  log", RS485_DoLogging?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
+#endif
   return ERR_OK;
 }
 
@@ -414,7 +421,9 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
   McuShell_SendHelpStr((unsigned char*)"  send <text>", (unsigned char*)"Send a text to the RS-485 bus\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  sendcmd <addr> <cmd>", (unsigned char*)"Send a shell command to the RS-485 address and check response\r\n", io->stdOut);
+#if McuLog_CONFIG_IS_ENABLED
   McuShell_SendHelpStr((unsigned char*)"  log on|off", (unsigned char*)"Log RS-485 bus activity to McuLog\r\n", io->stdOut);
+#endif
   return ERR_OK;
 }
 
@@ -428,6 +437,7 @@ uint8_t RS485_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "rs status")==0)) {
     *handled = TRUE;
     return PrintStatus(io);
+#if McuLog_CONFIG_IS_ENABLED
   } else if (McuUtility_strncmp((char*)cmd, "rs log ", sizeof("rs log ")-1)==0) {
     *handled = TRUE;
     p = cmd + sizeof("rs log ")-1;
@@ -439,6 +449,7 @@ uint8_t RS485_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       return ERR_OK;
     }
     return ERR_FAILED;
+#endif
 #if PL_CONFIG_USE_NVMC
   } else if (McuUtility_strncmp((char*)cmd, "rs addr ", sizeof("rs addr ")-1)==0) {
     *handled = true;
@@ -549,9 +560,11 @@ static void RS485Task(void *pv) {
       srcAddr = RS485_ILLEGAL_ADDRESS;
       dstAddr = RS485_ILLEGAL_ADDRESS;
       if (cmdBuf[0]=='@' && strlen((char*)cmdBuf)>sizeof("@dd ss cc ")-1) { /* have a valid message? */
+#if McuLog_CONFIG_IS_ENABLED
         if (RS485_DoLogging) {
           McuLog_trace("Rx: %s", cmdBuf);
         }
+#endif
         reply = false; /* default */
         res = CheckHeader(cmdBuf, &startCmd, &srcAddr, &dstAddr);
         if (res == ERR_CRC) { /* wrong crc */
@@ -566,7 +579,7 @@ static void RS485Task(void *pv) {
           } else if (McuUtility_strcmp((char*)startCmd, (char*)" cmd idle")==0) {
             reply = true;
 #if PL_CONFIG_USE_STEPPER
-            if (STEPPER_IsIdle(NULL)) {
+            if (STEPBOARD_IsIdle(STEPBOARD_GetBoard())) {
               res = ERR_OK;  /* ERR_OK if board is idle */
             } else {
               res = ERR_FAILED; /* not idle */
