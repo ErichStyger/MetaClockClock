@@ -73,7 +73,7 @@ Instructions:
 #define McuShellUart_CONFIG_UART                      McuShellUart_CONFIG_UART_NONE
 /* -------------------------------------------------*/
 /* RTT */
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (96)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (64)
 #define McuRTT_CONFIG_BLOCKING_SEND                   (1)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
@@ -88,7 +88,7 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER                 (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (0)
+#define McuLog_CONFIG_IS_ENABLED                      (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
