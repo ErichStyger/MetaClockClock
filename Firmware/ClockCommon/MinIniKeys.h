@@ -15,13 +15,14 @@
 
 #if PL_CONFIG_USE_CLOCK
   #define NVMC_MININI_SECTION_CLOCK             "Clock"
-  #define NVMC_MININI_KEY_CLOCK_ON                  "on"          /* bool, 0: on, 1: off */
-  #define NVMC_MININI_KEY_CLOCK_ON_OFF              "onoff"       /* bool, 0: on/off disabled, 1: on/off enabled */
-  #define NVMC_MININI_KEY_CLOCK_OFF_START_HH        "offStartHH"  /* off start hour, e.g. 15 */
-  #define NVMC_MININI_KEY_CLOCK_OFF_START_MM        "offStartMM"  /* off start minute, e.g. 0 */
-  #define NVMC_MININI_KEY_CLOCK_OFF_END_HH          "offEndHH"    /* off end hour, e.g. 5 */
-  #define NVMC_MININI_KEY_CLOCK_OFF_END_MM          "offEndMM"    /* off end minute, e.g. 15 */
-  #define NVMC_MININI_KEY_CLOCK_FONT                "font"         /* "2x3" or "3x5" */
+  #define NVMC_MININI_KEY_CLOCK_ON                  "on"              /* bool, 0: on, 1: off */
+  #define NVMC_MININI_KEY_CLOCK_ON_OFF              "onoff"           /* bool, 0: on/off disabled, 1: on/off enabled */
+  #define NVMC_MININI_KEY_CLOCK_OFF_START_HH        "offStartHH"      /* off start hour, e.g. 15 */
+  #define NVMC_MININI_KEY_CLOCK_OFF_START_MM        "offStartMM"      /* off start minute, e.g. 0 */
+  #define NVMC_MININI_KEY_CLOCK_OFF_END_HH          "offEndHH"        /* off end hour, e.g. 5 */
+  #define NVMC_MININI_KEY_CLOCK_OFF_END_MM          "offEndMM"        /* off end minute, e.g. 15 */
+  #define NVMC_MININI_KEY_CLOCK_FONT                "font"            /* "2x3" or "3x5" */
+  #define NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR   "randomHandColor" /* bool, 0: on, 1: off */
 #endif
 
 #if PL_CONFIG_USE_INTERMEZZO
