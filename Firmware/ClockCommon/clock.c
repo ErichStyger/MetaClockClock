@@ -93,12 +93,7 @@ static bool CLOCK_ClockIsParked = false;
 #endif
 #if PL_CONFIG_USE_LED_RING
   static uint32_t CLOCK_HandColor = PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR;
-  static bool CLOCK_doRandomHandColor =
-  #if PL_CONFIG_CLOCK_RANDOM_COLOR_ON
-      true;
-  #else
-      false;
-  #endif
+  static bool CLOCK_doRandomHandColor = false;
 #endif
 #if PL_CONFIG_USE_LED_DIMMING
   static uint8_t CLOCK_HandBrightness = 0xff; /* max */
@@ -162,6 +157,17 @@ static TaskHandle_t clockTaskHndl;
 #if 0 /* not implemented yet */
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
 #endif
+
+static void SetDoRandomHandColor(bool enable) {
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR, enable, NVMC_MININI_FILE_NAME);
+#endif
+  CLOCK_doRandomHandColor = enable;
+}
+
+static bool GetDoRandomHandColor(void) {
+  return CLOCK_doRandomHandColor;
+}
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
 static uint8_t SetClock_OnOff(bool onOff) {
@@ -261,7 +267,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_LED_RING
-  if (CLOCK_doRandomHandColor) {
+  if (GetDoRandomHandColor()) {
     int32_t r, g, b;
     do {
       r = McuUtility_random(0, 128); /* limit range to avoid excessive current */
@@ -618,7 +624,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", brightness 0x");
   McuUtility_strcatNum8Hex(buf, sizeof(buf), CLOCK_HandBrightness);
 #endif
-  McuUtility_strcat(buf, sizeof(buf), CLOCK_doRandomHandColor?(unsigned char*)", random on":(unsigned char*)", random off");
+  McuUtility_strcat(buf, sizeof(buf), GetDoRandomHandColor()?(unsigned char*)", random on":(unsigned char*)", random off");
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  hand", buf, io->stdOut);
 #endif
@@ -773,10 +779,10 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 #if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strcmp((char*)cmd, "clock hand rgb random on")==0) {
     *handled = true;
-    CLOCK_doRandomHandColor = true;
+    SetDoRandomHandColor(true);
   } else if (McuUtility_strcmp((char*)cmd, "clock hand rgb random off")==0) {
     *handled = true;
-    CLOCK_doRandomHandColor= false;
+    SetDoRandomHandColor(false);
 #endif
 #if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strncmp((char*)cmd, "clock hand rgb ", sizeof("clock hand rgb ")-1)==0) {
@@ -1062,6 +1068,11 @@ static void ClockTask(void *pv) {
   CLOCK_ClockIsOn = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_ON, PL_CONFIG_CLOCK_ON_BY_DEFAULT, NVMC_MININI_FILE_NAME);
 #else
   CLOCK_ClockIsOn = PL_CONFIG_CLOCK_ON_BY_DEFAULT;
+#endif
+#if PL_CONFIG_USE_MININI
+  CLOCK_doRandomHandColor = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR, PL_CONFIG_CLOCK_RANDOM_COLOR_ON, NVMC_MININI_FILE_NAME);
+#else
+  CLOCK_doRandomHandColor = PL_CONFIG_CLOCK_RANDOM_COLOR_ON;
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   Intermezzo_InitSettings();
