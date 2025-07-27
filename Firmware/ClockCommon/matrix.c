@@ -1244,7 +1244,7 @@ static uint8_t PrintRingStatus(const McuShell_StdIOType *io) {
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
-  uint8_t buf[32];
+  uint8_t buf[64];
 
   McuShell_SendStatusStr((unsigned char*)"matrix", (unsigned char*)"Matrix settings\r\n", io->stdOut);
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"x*y*z: ");
@@ -1255,6 +1255,16 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcatNum8u(buf, sizeof(buf), MATRIX_NOF_STEPPERS_Z);
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  stepper", buf, io->stdOut);
+#if PL_CONFIG_USE_X12_STEPPER
+  McuGPIO_Handle_t gpio = McuX12_017_GetResetGPIOHandle(x12Steppers[0].x12device);
+  if (gpio!=NULL) {
+    McuGPIO_GetPinStatusString(gpio, buf, sizeof(buf));
+  } else {
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"NULL");
+  }
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  reset", buf, io->stdOut);
+#endif
 #if PL_CONFIG_IS_MASTER
   McuUtility_Num8uToStr(buf, sizeof(buf), MATRIX_GetDefaultDelay());
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
