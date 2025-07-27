@@ -1,8 +1,8 @@
 TODO:
 - no logs on USB CDC?
 - if intermezzo takes longer: time minute is skipped?
-- Intermezzo 17,21,19,20 too fast not in sync with hands? All with relative moves?
-- clock on/off should be faster
+- Intermezzo 17,21,19,20 too fast not in sync with hands? All with relative moves? Problem with calculation errors using PL_CONFIG_USE_VIRTUAL_STEPPER? Disabled for now in intermezzo.
+- issue with LPC board 0x26: alle 4 steppers seems to clack/jump sometimes. Replace drivers?
   
 
 If intermezzo stopped or not running: clear pixels (but not every time)!
