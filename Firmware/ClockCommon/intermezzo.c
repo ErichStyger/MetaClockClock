@@ -88,10 +88,24 @@ static void Intermezzo1(void) {
 #endif
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+#if 0
   MPOS_SetAngleZ0Z1All(0, 180);
+#else
+  MPOS_SetAngleZ0Z1(4, 1, 0, 180);
+  MPOS_SetAngleZ0Z1(5, 1, 0, 180);
+  MPOS_SetAngleZ0Z1(6, 1, 0, 180);
+  MPOS_SetAngleZ0Z1(7, 1, 0, 180);
+#endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
+#if 1
+  MPOS_SetAngleZ0Z1(4, 1, 180, 0);
+  MPOS_SetAngleZ0Z1(5, 1, 180, 0);
+  MPOS_SetAngleZ0Z1(6, 1, 180, 0);
+  MPOS_SetAngleZ0Z1(7, 1, 180, 0);
+#else
   MPOS_SetAngleZ0Z1All(180, 0);
+#endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -1234,7 +1248,7 @@ static const Intermezzofp intermezzos[] = /* list of intermezzos */
     Intermezzo13,
     Intermezzo14,
     Intermezzo15,
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
     Intermezzo16,
     Intermezzo17,
     Intermezzo18,
