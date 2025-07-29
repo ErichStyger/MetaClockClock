@@ -1,16 +1,18 @@
 TODO:
-- no logs on USB CDC?
-- if intermezzo takes longer: time minute is skipped?
 - Intermezzo 17,21,19,20 too fast not in sync with hands? All with relative moves? Problem with calculation errors using PL_CONFIG_USE_VIRTUAL_STEPPER? Disabled for now in intermezzo.
 - issue with LPC board 0x26: alle 4 steppers seems to clack/jump sometimes. Replace drivers?
-  
+  MATRIX_SendToRemoteQueueExecuteAndWait(false);  <<= false fixed it?
+   ==> problems are the RS-485 interrupts on the LPC845, causing the stepper motor timer to interrupt or delay?
+     Unclear why it only showed up on this board?
+   ==> the 100 Ohm termination resistor on the last board seems to cause this. Termination resistor was not enabled on the tinyK22 master.
+   Setting/enabling it did not improve, but removing (unjumpering the solder jumper) on the last board let the problem disappear.
+   Experimented with different values, but a 300 Ohm resistor instead of the 100 Ohm solved the issue too. Not clear why it had such an effect.
 
-If intermezzo stopped or not running: clear pixels (but not every time)!
+- If intermezzo stopped or not running: clear pixels (but not every time)!
 #if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
   } else {
     clearUnusedPixel(); /*clear the unused pixels in the background */
 #endif
-
 
 
 readme.txt
