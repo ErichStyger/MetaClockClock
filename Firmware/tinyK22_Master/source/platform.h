@@ -18,10 +18,10 @@
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3
 #elif 1 /* V2: 60 billion lights with LPC and WS2812B */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_60B
+  #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* enable or disable RGB functions */
   #define PL_CONFIG_USE_NEO_PIXEL_HW                (1) /* we drive the NeoPixels directly with hardware pins */
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
   #define PL_CONFIG_USE_VIRTUAL_STEPPER             (1) /* LED rings are driven by virtual stepper motors */
-  #define PL_CONFIG_USE_EXTENDED_HANDS              (0) /* using extended hand */
 #elif 0 /* V3: modular round clock version on canvas */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_MOD
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
