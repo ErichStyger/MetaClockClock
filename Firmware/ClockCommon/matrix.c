@@ -464,7 +464,7 @@ static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_
 
 #if PL_CONFIG_USE_RS485
 static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
-  /* example command: "@14 03 63 cmd matrix q 0 0 0 a 90 2 cc,0 0 1 a 180 4 cw" */
+  /* example command generated: "@14 03 63 cmd matrix q 0 0 0 a 90 2 cc,0 0 1 a 180 4 cw" */
   uint8_t buf[McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE];
   uint8_t resBoards;
 #if PL_CONFIG_USE_NEO_PIXEL_HW
@@ -1399,7 +1399,7 @@ void MATRIX_EnableDisableHandsAll(bool enable) {
 #endif
 
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
-  McuShell_SendHelpStr((unsigned char*)"matrix", (unsigned char*)"Group of matrix commands. <xyz> for example 3 2 0\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"matrix", (unsigned char*)"Group of matrix commands.\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_USE_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  stepper status [xyz]", (unsigned char*)"Print all stepper status information, or for a single coordinate\r\n", io->stdOut);
@@ -1445,7 +1445,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
 
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<xyz>: coordinate, separated by space, e.g. 0 0 1\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<md>: mode (cc, cw, sh), lowercase mode letter is with acceleration control for start/stop, e.g. Cw\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<md>: mode (cc, cw, sh), lowercase mode letter is with acceleration control for\r\nstart/stop, otherwise e.g Cw or CW\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<d>: delay, 0 is no delay\r\n", io->stdOut);
 #endif
@@ -1461,7 +1461,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  r <xyz> <s> <d> <md>", (unsigned char*)"Relative step move (comma separated)\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  a <xyz> <s> <d> <md>", (unsigned char*)"Absolute step move (comma separated)\r\n", io->stdOut);
 #endif
-  McuShell_SendHelpStr((unsigned char*)"  q <xyz> <cmd>", (unsigned char*)"Queue a 'r' or 'a' command, e.g. 'matrix q 0 0 0 r 90 8 cc', (comma separated)\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  q <xyz> <cmd>", (unsigned char*)"Queue a 'r' or 'a' command, e.g. 'matrix q 0 0 0 r 90 8 cc,0 0 1 a 45 0 CC', (comma separated)\r\n", io->stdOut);
 #endif /* PL_CONFIG_USE_STEPPER */
   McuShell_SendHelpStr((unsigned char*)"  exq", (unsigned char*)"Execute commands in queues\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
