@@ -337,7 +337,7 @@ static void Timer_Init(void) {
   SCTIMER_SetupCounterLimitAction(SCT0, kSCTIMER_Counter_L, eventNumberOutput);
   SCTIMER_SetCallback(SCT0, SCTIMER_Handler0, eventNumberOutput);
   SCTIMER_EnableInterrupts(SCT0, (1<<eventNumberOutput));
-  NVIC_SetPriority(SCT0_IRQn, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+1); /* less urgent than RS-485 Rx interrupt! */
+  NVIC_SetPriority(SCT0_IRQn, 0); /* Higher or equal the prio of the RS-458, otherwise movement get affected by RS-485 traffic! */
   EnableIRQ(SCT0_IRQn); /* Enable at the NVIC */
 }
 #elif McuLib_CONFIG_CPU_IS_KINETIS
@@ -347,7 +347,6 @@ static void Timer_Init(void) {
   PIT_GetDefaultConfig(&config);
   config.enableRunInDebug = false;
   PIT_Init(PIT_BASEADDR, &config);
-  /* note: the LPC is running on 200us, but the K22 is a bit faster, so running slower */
   PIT_SetTimerPeriod(PIT_BASEADDR, PIT_CHANNEL, USEC_TO_COUNT(STEPPER_TIME_STEP_US, PIT_SOURCE_CLOCK));
   PIT_EnableInterrupts(PIT_BASEADDR, PIT_CHANNEL, kPIT_TimerInterruptEnable);
   NVIC_SetPriority(PIT_IRQ_ID, configLIBRARY_MAX_SYSCALL_INTERRUPT_PRIORITY+1); /* not 0, in order not to interrupt the DMA? Set below the RS485-UART */

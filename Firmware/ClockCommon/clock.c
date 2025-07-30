@@ -158,16 +158,20 @@ static TaskHandle_t clockTaskHndl;
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
 #endif
 
+#if PL_CONFIG_USE_LED_RING
 static void SetDoRandomHandColor(bool enable) {
 #if PL_CONFIG_USE_MININI
   McuMinINI_ini_putl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR, enable, NVMC_MININI_FILE_NAME);
 #endif
   CLOCK_doRandomHandColor = enable;
 }
+#endif
 
+#if PL_CONFIG_USE_LED_RING
 static bool GetDoRandomHandColor(void) {
   return CLOCK_doRandomHandColor;
 }
+#endif
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
 static uint8_t SetClock_OnOff(bool onOff) {
@@ -1069,10 +1073,12 @@ static void ClockTask(void *pv) {
 #else
   CLOCK_ClockIsOn = PL_CONFIG_CLOCK_ON_BY_DEFAULT;
 #endif
+#if PL_CONFIG_USE_LED_RING
 #if PL_CONFIG_USE_MININI
   CLOCK_doRandomHandColor = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR, PL_CONFIG_CLOCK_RANDOM_COLOR_ON, NVMC_MININI_FILE_NAME);
 #else
   CLOCK_doRandomHandColor = PL_CONFIG_CLOCK_RANDOM_COLOR_ON;
+#endif
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
   Intermezzo_InitSettings();
