@@ -1274,7 +1274,7 @@ static void ClockTask(void *pv) {
     }
 #endif
     if (CLOCK_ClockIsOn) { /* show time */
-      (void)McuTimeDate_GetTimeDate(&time, NULL);
+      (void)McuTimeDate_GetTimeDate(&time, &date);
       if (doImmediateClockUpdate) { /* if not immediate update: sync on beginning of minute */
         doImmediateClockUpdate = false;
         if (time.Sec<=40) { /* do only update right now if we have enough time: will do a sync after 55 secs below anyway */
