@@ -16,5 +16,8 @@ int main(void) {
   BOARD_InitBootPeripherals();
 
   APP_Run();
+  for(;;) {
+    __asm("nop");
+  }
   return 0;
 }
