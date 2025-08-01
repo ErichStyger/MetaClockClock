@@ -240,7 +240,9 @@ void SHELL_SendChar(unsigned char ch) {
 }
 
 void SHELL_SendStringToIO(const unsigned char *str, McuShell_ConstStdIOType *io) {
-  McuShell_SendStr(str, io->stdOut);
+  if (io!=NULL) {
+    McuShell_SendStr(str, io->stdOut);
+  }
 }
 
 void SHELL_SendString(const unsigned char *str) {
