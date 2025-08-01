@@ -86,7 +86,10 @@ include_directories(
   ${PROJECT_ROOT_DIR}/usb/device/class/cdc
 )
 
-add_compile_options(-include "${PROJECT_ROOT_DIR}/IncludeMcuLibConfig.h" -DUSB_STACK_BM)
+add_compile_options(
+  -include "${PROJECT_ROOT_DIR}/IncludeMcuLibConfig.h"
+  -DUSB_STACK_BM
+)
 
 add_subdirectory(${MCULIB_DIR}                McuLib)
 add_subdirectory(${CLOCKCOMMON_DIR}           ClockCommonLib)
@@ -106,7 +109,6 @@ add_executable(${MCUX_SDK_PROJECT_NAME}
 "${ProjDirPath}/../board/clock_config.h"
 "${ProjDirPath}/../board/clock_config.c"
 "${ProjDirPath}/../board/hardware_init.c"
-"${ProjDirPath}/../app.h"
 "${ProjDirPath}/../mcux_config.h"
 )
 
