@@ -804,7 +804,7 @@ uint8_t MATRIX_ExecuteRemoteQueueAndWait(bool wait) {
   }
   if (wait) {
     MATRIX_Delay(500); /* give the clocks some time to start executing */
-    if (MATRIX_WaitForIdle(30000)!=ERR_OK) {
+    if (MATRIX_WaitForIdle(50000)!=ERR_OK) {
       failed = true;
     }
   }
