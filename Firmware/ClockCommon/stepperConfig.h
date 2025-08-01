@@ -15,7 +15,7 @@
   /* number of steps for a full round */
   #if PL_CONFIG_USE_VIRTUAL_STEPPER
     #define STEPPER_CLOCK_360_STEPS       (360)  /* number of steps for 360 degrees */
-    #define STEPPER_TIME_360_DEGREE_MS    (2500)  /* time for a full round, needs to match the physical stepper motors on LPC boards */
+    #define STEPPER_TIME_360_DEGREE_MS    (3000)  /* time for a full round, needs to match the physical stepper motors on LPC boards */
   #else
     #define STEPPER_CLOCK_360_STEPS       (4320)  /* number of steps for 360 degrees */
     #define STEPPER_TIME_360_DEGREE_MS    (3000)  /* time for a full round */
