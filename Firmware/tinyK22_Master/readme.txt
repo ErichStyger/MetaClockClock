@@ -1,4 +1,9 @@
 TODO:
+- HardFault on tinyk22
+	demo clap
+	demo square rotate
+	matrix hour 12
+
 - Intermezzo 17,21,19,20 too fast not in sync with hands? All with relative moves? Problem with calculation errors using PL_CONFIG_USE_VIRTUAL_STEPPER? Disabled for now in intermezzo.
 - issue with LPC board 0x26: alle 4 steppers seems to clack/jump sometimes. Replace drivers?
   MATRIX_SendToRemoteQueueExecuteAndWait(false);  <<= false fixed it?
