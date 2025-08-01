@@ -486,7 +486,7 @@ static void Intermezzo15(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true); /* queue commands */
 }
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 /* map of 'circles', limited for now to 10x10 quadrants. Same numbers correspond to the radius */
 static const int circleMap[10][10] = {
     {0, 1, 2, 3, 4, 5, 6, 7, 8, 9},
@@ -611,7 +611,7 @@ static void BuildCircles(void) {
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 static void Intermezzo16(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
@@ -624,7 +624,7 @@ static void Intermezzo16(void) {
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 static void Intermezzo17(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CCW);
@@ -637,7 +637,7 @@ static void Intermezzo17(void) {
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 static void Intermezzo18(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CCW, STEPPER_MOVE_MODE_CW);
@@ -650,7 +650,7 @@ static void Intermezzo18(void) {
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 static void Intermezzo19(void) {
   BuildCircles();
   MPOS_SetMoveModeZ0Z1All(STEPPER_MOVE_MODE_CW, STEPPER_MOVE_MODE_CW);
@@ -659,7 +659,7 @@ static void Intermezzo19(void) {
 }
 #endif /* PL_CONFIG_USE_RELATIVE_MOVES */
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 static void Intermezzo20(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -706,7 +706,7 @@ static void IntermezzoTime(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
-#if PL_CONFIG_USE_RELATIVE_MOVES
+#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
 static void IntermezzoHalfHalf(void) {
   /* rotate left half CW, right half CCW */
 #if PL_CONFIG_USE_EXTENDED_HANDS
