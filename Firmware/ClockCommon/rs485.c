@@ -291,23 +291,24 @@ static RS485_Response_e WaitForResponse(int32_t timeoutMs, uint8_t fromAddr, Mcu
   CMD_ParserState_e state = CMD_PARSER_INIT;
 
   for(;;) { /* returns */
-    /* read response text and write into buffer or to console */
-    static unsigned char lineBuffer[512]; /* enough for a line of text coming back from the bus */
+    if (rsIO!=NULL && shellIO!=NULL) { /* only do it if we have valid handles */
+      /* read response text and write into buffer or to console */
+      static unsigned char lineBuffer[512]; /* enough for a line of text coming back from the bus */
 
-    lineBuffer[0] = '\0'; /* initialize buffer */
-    do {
-      rsIO->stdIn(&ch);
-      if (ch!='\0') {
-        McuUtility_chcat(lineBuffer, sizeof(lineBuffer), ch);
-        if (ch=='\n') {
-          if (lineBuffer[0]!='@') { /* do not send things like OK or NOK messages from bus */
-            SHELL_SendStringToIO(lineBuffer, shellIO);
+      lineBuffer[0] = '\0'; /* initialize buffer */
+      do {
+        rsIO->stdIn(&ch);
+        if (ch!='\0') {
+          McuUtility_chcat(lineBuffer, sizeof(lineBuffer), ch);
+          if (ch=='\n') {
+            if (lineBuffer[0]!='@') { /* do not send things like OK or NOK messages from bus */
+              SHELL_SendStringToIO(lineBuffer, shellIO);
+            }
+            lineBuffer[0] = '\0'; /* reset buffer */
           }
-          lineBuffer[0] = '\0'; /* reset buffer */
         }
-      }
-    } while(ch!='\0');
-
+      } while(ch!='\0');
+    }
     ch = McuUart485_GetResponseQueueChar();
     if (ch!='\0') {
       resp = Scan(&state, ch, buf, sizeof(buf), fromAddr);
@@ -513,6 +514,7 @@ static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, u
       }
       expected_crc = CalcMsgCrc(msg);
       if (crc!=expected_crc) {
+        McuLog_error("CRC error, msg `%s`, expected 0x%x", msg, expected_crc);
         if (dstAddr!=RS485_BROADCAST_ADDRESS) { /* only send back error if it was not a broadcast */
           McuUtility_strcpy(buf, sizeof(buf), (uint8_t*)"CRC_ERR 0x");
           McuUtility_strcatNum8Hex(buf, sizeof(buf), RS485_GetAddress());
