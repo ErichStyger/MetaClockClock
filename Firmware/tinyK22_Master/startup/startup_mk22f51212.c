@@ -486,7 +486,7 @@ void ResetISR(void) {
 #endif
 
     // Reenable interrupts
-    __asm volatile ("cpsie i");
+//    __asm volatile ("cpsie i");
 
 #if defined (__REDLIB__)
     // Call the Redlib library, which in turn calls main()
