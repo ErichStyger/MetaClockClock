@@ -1445,7 +1445,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
 
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<xyz>: coordinate, separated by space, e.g. 0 0 1\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<md>: mode (cc, cw, sh), lowercase mode letter is with acceleration control for\r\nstart/stop, otherwise e.g Cw or CW\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<md>: mode (cc, cw, sh), lowercase mode letter is with acceleration control for start/stop, otherwise e.g Cw or CW\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)"<d>: delay, 0 is no delay\r\n", io->stdOut);
 #endif
