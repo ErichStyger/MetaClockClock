@@ -21,7 +21,9 @@
 #if PL_CONFIG_USE_CLOCK
   #include "clock.h"
 #endif
-#include "mfont.h"
+#if PL_CONFIG_USE_FONT
+  #include "mfont.h"
+#endif
 #include "StepperBoard.h"
 #include "NeoPixel.h"
 #include "McuLog.h"
@@ -998,6 +1000,59 @@ static void DEMO_Nxp(void) {
 }
 #endif
 
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
+static void fade(bool out) {
+  uint32_t color, c;
+  uint8_t brightness;
+  int curr;
+
+  MATRIX_GetHandColorBrightness(&color, &brightness);
+  if (out) {
+    curr = 0xff;
+  } else {
+    curr = 0x00;
+  }
+  do {
+    c = NEO_BrightnessFactorColor(color, curr);
+    MHAND_SetHandColorAll(c);
+    MATRIX_RequestRgbUpdate();
+    if (out) {
+      curr--;
+    } else {
+      curr++;
+    }
+    vTaskDelay(pdMS_TO_TICKS(15));
+  } while(curr>=0 && curr<=0xff);
+}
+
+static void fadingText(const char *text) {
+  fade(true);
+  MFONT_PrintString((unsigned char*)text, 0, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  fade(false);
+}
+
+static void DemoFont3x5(void) {
+  uint32_t color;
+  uint8_t brightness;
+  MATRIX_GetHandColorBrightness(&color, &brightness); /* get current values */
+
+
+  fadingText("    ");
+  fadingText("01234");
+  fadingText("4567");
+  fadingText("89AB");
+  fadingText("CDEF");
+  fadingText("GHIJ");
+  fadingText("KLMN");
+  fadingText("OPQR");
+  fadingText("STUV");
+  fadingText("WXYZ");
+  fadingText("%-+~");
+  fadingText("    ");
+}
+#endif
+
 static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
 #if PL_CONFIG_USE_FONT
@@ -1331,6 +1386,9 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  weather <weather>", (unsigned char*)"Show weather: sunny, cloudy, rainy, icy\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  game of life", (unsigned char*)"Conway's Game of Life\r\n", io->stdOut);
 #endif
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
+  McuShell_SendHelpStr((unsigned char*)"  font 3x5", (unsigned char*)"Font 3x5 demo\r\n", io->stdOut);
+#endif
 #if PL_CONFIG_USE_LED_PIXEL
   McuShell_SendHelpStr((unsigned char*)"  on|off", (unsigned char*)"Enable or disable the Sm(Art)Wall demo mode\r\n", io->stdOut);
 #endif
@@ -1497,6 +1555,17 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     #endif
     return DemoRandomHandsColor();
 #endif /* !PL_CONFIG_USE_LED_PIXEL */
+#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
+  } else if (McuUtility_strcmp((char*)cmd, "demo font 3x5")==0) {
+    *handled = TRUE;
+    #if PL_CONFIG_USE_CLOCK
+    if (CheckIfClockIsOn(io)!=ERR_OK) {
+      return ERR_FAILED;
+    }
+    #endif
+    DemoFont3x5();
+    return ERR_OK;
+#endif
 #elif PL_CONFIG_USE_LED_PIXEL
   } else if (McuUtility_strcmp((char*)cmd, "demo on")==0) {
     *handled = TRUE;
