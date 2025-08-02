@@ -1324,11 +1324,11 @@ static const MClockChar3x5_t clockCharZ3x5 =
 static const MClockChar3x5_t clockCharDegree3x5 =
 { /* ° */
     .digit = {
-        [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
-        [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
+        [0][0]={.hands={{.angle=200, .enabled=true },{.angle= 70, .enabled=true }}},
+        [0][1]={.hands={{.angle=290, .enabled=true },{.angle=160, .enabled=true }}},
         [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-        [1][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
-        [1][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
+        [1][0]={.hands={{.angle=340, .enabled=true },{.angle=110, .enabled=true }}},
+        [1][1]={.hands={{.angle=250, .enabled=true },{.angle= 20, .enabled=true }}},
         [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
@@ -1341,6 +1341,49 @@ static const MClockChar3x5_t clockCharDegree3x5 =
         [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     }
 };
+
+static const MClockChar3x5_t clockCharPlus3x5 =
+{ /* + */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][1]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+        [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true}}},
+        [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [2][2]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+        [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
+static const MClockChar3x5_t clockCharMinus3x5 =
+{ /* - */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true}}},
+        [2][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+        [2][2]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
 
 static const MClockChar3x5_t clockCharPercent3x5 =
 {
@@ -1718,6 +1761,8 @@ static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
         case 176: /* '°' */
         case MFONT_CHAR_DEGREE: desc = &clockCharDegree3x5; break;
         case '%': desc = &clockCharPercent3x5; break;
+        case '-': desc = &clockCharMinus3x5; break;
+        case '+': desc = &clockCharPlus3x5; break;
         default: desc = NULL; break;
       }
     }
