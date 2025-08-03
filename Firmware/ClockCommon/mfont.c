@@ -1384,6 +1384,89 @@ static const MClockChar3x5_t clockCharMinus3x5 =
     }
 };
 
+static const MClockChar3x5_t clockCharDot3x5 =
+{ /* . */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=false}}},
+        [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
+static const MClockChar3x5_t clockCharColon3x5 =
+{ /* : */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=false}}},
+        [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=false}}},
+        [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
+static const MClockChar3x5_t clockCharExclamation3x5 =
+{ /* J */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [0][1]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true}}},
+        [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][1]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true}}},
+        [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
+static const MClockChar3x5_t clockCharQuestion3x5 =
+{ /* ! */
+    .digit = {
+        [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
+        [0][1]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+        [0][2]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
+        [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+        [1][1]={.hands={{.angle=225, .enabled=true },{.angle= 90, .enabled=true }}},
+        [1][2]={.hands={{.angle=  0, .enabled=true },{.angle=270, .enabled=true }}},
+        [2][0]={.hands={{.angle= 45, .enabled=true },{.angle= 90, .enabled=true }}},
+        [2][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
+        [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true}}},
+        [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
 
 static const MClockChar3x5_t clockCharPercent3x5 =
 {
@@ -1656,6 +1739,31 @@ static const MClockChar4x5_t clockDigits4x5[10] = {
         [4][3]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
 };
+
+static const MClockChar4x5_t clockCharSpace4x5 =  /* " " */
+{ .digit = {
+    [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [3][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [4][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [4][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  }
+};
 #endif
 
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
@@ -1763,6 +1871,10 @@ static void PrintString3x5(const unsigned char *str, int xPos, int yPos) {
         case '%': desc = &clockCharPercent3x5; break;
         case '-': desc = &clockCharMinus3x5; break;
         case '+': desc = &clockCharPlus3x5; break;
+        case '.': desc = &clockCharDot3x5; break;
+        case ':': desc = &clockCharColon3x5; break;
+        case '!': desc = &clockCharExclamation3x5; break;
+        case '?': desc = &clockCharQuestion3x5; break;
         default: desc = NULL; break;
       }
     }
@@ -1784,7 +1896,11 @@ static void PrintString4x5(const unsigned char *str, int xPos, int yPos) {
     if (*str>='0' && *str<='9') {
       desc = &clockDigits4x5[*str-'0'];
     } else {
-      /* only digits have been implemented */
+      switch(*str) {
+        case ' ': desc = &clockCharSpace4x5; break;
+        default: desc = NULL; break;
+      }
+
     }
     if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_4x5 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_4x5) {
       DrawChar4x5(desc, xPos, yPos);

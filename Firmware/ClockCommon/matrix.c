@@ -163,8 +163,12 @@ NEOSR_Handle_t MATRIX_GetLedRingDevice(int32_t x, int32_t y, uint8_t z) {
 
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
 void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness) {
-  *pColor = MATRIX_LedHandColor;
-  *pBrightness = MATRIX_LedHandBrightness;
+  if (pColor!=NULL) {
+    *pColor = MATRIX_LedHandColor;
+  }
+  if (pBrightness!=NULL) {
+    *pBrightness = MATRIX_LedHandBrightness;
+  }
 }
 #endif
 

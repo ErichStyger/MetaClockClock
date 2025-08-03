@@ -1025,31 +1025,59 @@ static void fade(bool out) {
   } while(curr>=0 && curr<=0xff);
 }
 
-static void fadingText(const char *text) {
-  fade(true);
-  MFONT_PrintString((unsigned char*)text, 0, 0, MFONT_SIZE_3x5);
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+static void fadeIn(void) {
   fade(false);
 }
 
+static void fadeOut(void) {
+  fade(true);
+}
+
+
+static void fadingText(const char *text, uint8_t xpos) {
+  fadeOut();
+  MFONT_PrintString((unsigned char*)text, xpos, 0, MFONT_SIZE_3x5);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  fadeIn();
+}
+
 static void DemoFont3x5(void) {
-  uint32_t color;
-  uint8_t brightness;
-  MATRIX_GetHandColorBrightness(&color, &brightness); /* get current values */
+  fadingText("    ", 0);
+  fadingText("0123", 0);
+  fadingText("4567", 0);
+  fadingText("89AB", 0);
+  fadingText("CDEF", 0);
+  fadingText("GHIJ", 0);
+  fadingText("KLMN", 0);
+  fadingText("OPQR", 0);
+  fadingText("STUV", 0);
+  fadingText("WXYZ", 0);
+  fadingText("%-+~", 0);
+  fadingText(".:!?", 0);
+  fadingText("    ", 0);
+}
 
+static const char *monthStr3[] =
+{
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"
+};
 
-  fadingText("    ");
-  fadingText("01234");
-  fadingText("4567");
-  fadingText("89AB");
-  fadingText("CDEF");
-  fadingText("GHIJ");
-  fadingText("KLMN");
-  fadingText("OPQR");
-  fadingText("STUV");
-  fadingText("WXYZ");
-  fadingText("%-+~");
-  fadingText("    ");
+static void DemoDate3x5(void) {
+  DATEREC date;
+  unsigned char buf[5];
+
+  fadingText("    ", 0);
+  McuTimeDate_GetDate(&date);
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf, sizeof(buf), date.Day, '0', 2);
+  McuUtility_chcat(buf, sizeof(buf), '.');
+  fadingText((char*)buf, 2);
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)monthStr3[date.Month-1]);
+  McuUtility_chcat(buf, sizeof(buf), '.');
+  fadingText((char*)buf, 0);
+  McuUtility_Num16uToStr(buf, sizeof(buf), date.Year);
+  fadingText((char*)buf, 0);
+  fadingText("    ", 0);
 }
 #endif
 
@@ -1388,6 +1416,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
 #if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
   McuShell_SendHelpStr((unsigned char*)"  font 3x5", (unsigned char*)"Font 3x5 demo\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  date 3x5", (unsigned char*)"Date 3x5 demo\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_LED_PIXEL
   McuShell_SendHelpStr((unsigned char*)"  on|off", (unsigned char*)"Enable or disable the Sm(Art)Wall demo mode\r\n", io->stdOut);
@@ -1564,6 +1593,15 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     }
     #endif
     DemoFont3x5();
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "demo date 3x5")==0) {
+    *handled = TRUE;
+    #if PL_CONFIG_USE_CLOCK
+    if (CheckIfClockIsOn(io)!=ERR_OK) {
+      return ERR_FAILED;
+    }
+    #endif
+    DemoDate3x5();
     return ERR_OK;
 #endif
 #elif PL_CONFIG_USE_LED_PIXEL
