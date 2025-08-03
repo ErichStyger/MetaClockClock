@@ -94,6 +94,7 @@ static bool CLOCK_ClockIsParked = false;
 #if PL_CONFIG_USE_LED_RING
   static uint32_t CLOCK_HandColor = PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR;
   static bool CLOCK_doRandomHandColor = false;
+  static bool CLOCK_doFadingHands = false;
 #endif
 #if PL_CONFIG_USE_LED_DIMMING
   static uint8_t CLOCK_HandBrightness = 0xff; /* max */
@@ -170,6 +171,21 @@ static void SetDoRandomHandColor(bool enable) {
 #if PL_CONFIG_USE_LED_RING
 static bool GetDoRandomHandColor(void) {
   return CLOCK_doRandomHandColor;
+}
+#endif
+
+#if PL_CONFIG_USE_LED_RING
+static void SetDoFadingHands(bool enable) {
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_FADING_HANDS, enable, NVMC_MININI_FILE_NAME);
+#endif
+  CLOCK_doFadingHands = enable;
+}
+#endif
+
+#if PL_CONFIG_USE_LED_RING
+static bool GetDoFadingHands(void) {
+  return CLOCK_doFadingHands;
 }
 #endif
 
@@ -257,7 +273,39 @@ static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
 }
 #endif /* PL_CONFIG_USE_STEPPER */
 
+static void clock_fade(bool out, uint32_t color) {
+  uint32_t c;
+  int curr;
+
+  if (out) {
+    curr = 0xff;
+  } else {
+    curr = 0x00;
+  }
+  do {
+    c = NEO_BrightnessFactorColor(color, curr);
+    MHAND_SetHandColorAll(c);
+    MATRIX_RequestRgbUpdate();
+    if (out) {
+      curr--;
+    } else {
+      curr++;
+    }
+    vTaskDelay(pdMS_TO_TICKS(15));
+  } while(curr>=0 && curr<=0xff);
+}
+
+static void clock_fadeIn(uint32_t color) {
+  clock_fade(false, color);
+}
+
+static void clock_fadeOut(uint32_t color) {
+  clock_fade(true, color);
+}
+
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
+  uint32_t color;
+
   McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
 
 #if PL_CONFIG_USE_LED_CLOCK
@@ -280,7 +328,10 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
       CLOCK_HandColor = NEO_COMBINE_RGB(r, g, b);
     } while (CLOCK_HandColor<20 || (r+g+b)>200); /* just making sure it is not too dimm or too bright */
   }
-  MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
+  color = NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
+  MHAND_SetHandColorAll(color);
+#else
+  MATRIX_GetHandColorBrightness(&color, NULL);
 #endif
   buf[0] = '\0';
   if (CLOCK_ClockIs24h) {
@@ -293,11 +344,17 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   }
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Min, '0', 2);
+  if (CLOCK_doFadingHands) {
+    clock_fadeOut(color);
+  }
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
 #else
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
 #endif
+  if (CLOCK_doFadingHands) {
+    clock_fadeIn(color);
+  }
   if (res!=ERR_OK) {
     McuLog_error("Failed showing time");
   }
@@ -629,6 +686,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcatNum8Hex(buf, sizeof(buf), CLOCK_HandBrightness);
 #endif
   McuUtility_strcat(buf, sizeof(buf), GetDoRandomHandColor()?(unsigned char*)", random on":(unsigned char*)", random off");
+  McuUtility_strcat(buf, sizeof(buf), GetDoFadingHands()?(unsigned char*)", fading on":(unsigned char*)", fading off");
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  hand", buf, io->stdOut);
 #endif
@@ -669,6 +727,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_LED_RING
   McuShell_SendHelpStr((unsigned char*)"  hand rgb random on|off", (unsigned char*)"Set hand random color mode\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  hand rgb <rgb>", (unsigned char*)"Set hand color\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  hand fading on|off", (unsigned char*)"Set hand fading on or off\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   McuShell_SendHelpStr((unsigned char*)"  seconds on|off", (unsigned char*)"Show seconds\r\n", io->stdOut);
@@ -787,6 +846,14 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
   } else if (McuUtility_strcmp((char*)cmd, "clock hand rgb random off")==0) {
     *handled = true;
     SetDoRandomHandColor(false);
+#endif
+#if PL_CONFIG_USE_LED_RING
+  } else if (McuUtility_strcmp((char*)cmd, "clock hand fading on")==0) {
+    *handled = true;
+    SetDoFadingHands(true);
+  } else if (McuUtility_strcmp((char*)cmd, "clock hand fading off")==0) {
+    *handled = true;
+    SetDoFadingHands(false);
 #endif
 #if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strncmp((char*)cmd, "clock hand rgb ", sizeof("clock hand rgb ")-1)==0) {
@@ -1078,6 +1145,13 @@ static void ClockTask(void *pv) {
   CLOCK_doRandomHandColor = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR, PL_CONFIG_CLOCK_RANDOM_COLOR_ON, NVMC_MININI_FILE_NAME);
 #else
   CLOCK_doRandomHandColor = PL_CONFIG_CLOCK_RANDOM_COLOR_ON;
+#endif
+#endif
+#if PL_CONFIG_USE_LED_RING
+#if PL_CONFIG_USE_MININI
+  CLOCK_doFadingHands = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_FADING_HANDS, false, NVMC_MININI_FILE_NAME);
+#else
+  CLOCK_doFadingHands = false;
 #endif
 #endif
 #if PL_CONFIG_USE_INTERMEZZO
