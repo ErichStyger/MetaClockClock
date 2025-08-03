@@ -126,5 +126,3 @@ void MHAND_Set2ndHandColorAll(uint32_t color) {
 }
 #endif
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
-
-
