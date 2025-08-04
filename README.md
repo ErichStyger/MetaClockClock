@@ -5,7 +5,6 @@ The idea is to use many 'clocks' to display information with text, digits and co
 - with or without RGB LEDs
 
 ![Temperature](/Hardware/images/1946.jpg?raw=true "60 clock version with time")
-![Temperature](/Hardware/images/Temperature.jpg?raw=true "Temperature display")
 
 Please check out as well the https://github.com/ErichStyger/MetaClockClock/wiki pages.
 
