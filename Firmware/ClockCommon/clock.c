@@ -396,7 +396,7 @@ static void CLOCK_ButtonMenu(uint32_t notification) {
     if (CLOCK_GetClockIsOn()) {
       CLOCK_ClockIsOn = false; /* disable clock */
     }
-    McuTimeDate_GetTimeDate(&time, &date);
+    McuTimeDate_GetTimeDateAdjustDST(&time, &date);
     CLOCK_ShowTimeDate(&time, &date);
     seconds = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
     currDigit = 3;
@@ -982,7 +982,7 @@ static void ShowSeconds(const TIMEREC *time) {
 }
 #endif
 
-static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint8_t (*getterTimeDate)(TIMEREC *time, DATEREC *date), uint32_t updatePeriodMinutes) {
+static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePeriodMinutes) {
   /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every 'updatePeriodMinutes' */
   TickType_t tickCount = xTaskGetTickCount();
   TIMEREC time;
@@ -1294,7 +1294,7 @@ static void ClockTask(void *pv) {
   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
     /* ----------------------------------------------------------------------------------*/
-    UpdateTimeDate(&lastTimeDateUpdatTickCount, McuTimeDate_GetTimeDate, CLOCK_CONFIG_UPDATE_SW_RTC_FROM_HW_RTC_PERIOD_MINUTES);
+    UpdateTimeDate(&lastTimeDateUpdatTickCount, CLOCK_CONFIG_UPDATE_SW_RTC_FROM_HW_RTC_PERIOD_MINUTES);
   #if PL_CONFIG_USE_INTERMEZZO
     /* ----------------------------------------------------------------------------------*/
     /* Intermezzo */
@@ -1313,7 +1313,7 @@ static void ClockTask(void *pv) {
     /* ----------------------------------------------------------------------------------*/
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
     if (CLOCK_TimeOff.isTimeOnOffEnabled) {
-      res = McuTimeDate_GetTimeDate(&time, NULL);
+      res = McuTimeDate_GetTimeDateAdjustDST(&time, &date);
       if (res==ERR_OK) {
         uint32_t offStartMinutes = CLOCK_TimeOff.offStartTime.Hour*60 + CLOCK_TimeOff.offStartTime.Min;
         uint32_t offEndMinutes = CLOCK_TimeOff.offEndTime.Hour*60 + CLOCK_TimeOff.offEndTime.Min;
@@ -1364,7 +1364,7 @@ static void ClockTask(void *pv) {
           }
           vTaskDelay(pdMS_TO_TICKS(200));
         } while(res==ERR_OK);
-        res = McuTimeDate_GetTimeDate(&time, &date);
+        res = McuTimeDate_GetTimeDateAdjustDST(&time, &date);
       #if PL_CONFIG_USE_NEO_PIXEL_HW
         ShowSeconds(&time);
       #endif
