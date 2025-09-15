@@ -92,12 +92,14 @@ void McuRTOS_vApplicationMallocFailedHook(void)
 void McuRTOS_vApplicationTickHook(void)
 {
   /* Hook called for every RTOS tick. */
-  static int cntr = 0;
-
-  cntr++;
-  if (cntr==McuTimeout_TICK_PERIOD_MS) {
+#if configTICK_RATE_HZ!=1000
+  #error "assuming 1 kHz or 1 ms below"
+#endif
+  static int timeoutCntrMs = 0;
+  timeoutCntrMs++;
+  if (timeoutCntrMs>=McuTimeout_TICK_PERIOD_MS) {
     McuTimeout_AddTick();
-    cntr = 0;
+    timeoutCntrMs = 0;
   }
 }
 
