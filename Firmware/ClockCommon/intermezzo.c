@@ -46,10 +46,24 @@ static uint8_t IntermezzoFadeSec = (STEPPER_TIME_FULL_RANGE_MS/2000);  /* this i
 static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 #endif
 
+#define RTC_OFFSET_TEMPERATURE_DEFAULT   (-40)
+static int8_t rtcOffsetTemperature = RTC_OFFSET_TEMPERATURE_DEFAULT; /* deci-celsius */
+
 static void Intermezzo_SetIsOn(bool onOff) {
   IntermezzoOn = onOff;
 #if PL_CONFIG_USE_MININI
   McuMinINI_ini_putl(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_INTERMEZZO_ON, onOff, NVMC_MININI_FILE_NAME);
+#endif
+}
+
+static int8_t GetRtcOffsetTemperature_dC(void) {
+  return rtcOffsetTemperature; /* deci-celsius */
+}
+
+static void SetRtcOffsetTemperature(int offset_dC) {
+  rtcOffsetTemperature = offset_dC;
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_RTC_TEMP_OFFSET, offset_dC, NVMC_MININI_FILE_NAME);
 #endif
 }
 
@@ -58,6 +72,11 @@ void Intermezzo_InitSettings(void) {
   IntermezzoOn = McuMinINI_ini_getbool(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_INTERMEZZO_ON, PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT, NVMC_MININI_FILE_NAME);
 #else
   IntermezzoOn = PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT;
+#endif
+#if PL_CONFIG_USE_MININI
+  rtcOffsetTemperature = McuMinINI_ini_getl(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_RTC_TEMP_OFFSET, RTC_OFFSET_TEMPERATURE_DEFAULT, NVMC_MININI_FILE_NAME);
+#else
+  rtcOffsetTemperature = RTC_OFFSET_TEMPERATURE_DEFAULT;
 #endif
 }
 
@@ -789,7 +808,7 @@ static void IntermezzoTemperature(void) {
   if (res!=ERR_OK) {
     return ;
   }
-  temperature -= 4.0; /* offset */
+  temperature += 0.1f*GetRtcOffsetTemperature_dC(); /* offset */
   buf[0] = '\0';
   McuUtility_strcatNumFloat(buf, sizeof(buf), temperature, 0);
   McuUtility_chcat(buf, sizeof(buf), MFONT_CHAR_DEGREE);
@@ -1327,6 +1346,11 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"  fade", buf, io->stdOut);
   #endif
 
+  buf[0] = '\0';
+  McuUtility_strcatNum8s(buf, sizeof(buf), GetRtcOffsetTemperature_dC());
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" dC offset\r\n");
+  McuShell_SendStatusStr((unsigned char*)"  rtc temp", buf, io->stdOut);
+
   return ERR_OK;
 }
 #endif
@@ -1343,6 +1367,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  <nr>", (unsigned char*)"Play Intermezzo (0-", io->stdOut);
   McuShell_SendNum32u(NOF_INTERMEZZOS-1, io->stdOut);
   McuShell_SendStr((unsigned char*)")\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  rtc temp offset <dC>", (unsigned char*)"Set RTC temperature offset in deci-Celsius\r\n", io->stdOut);
   return ERR_OK;
 }
 #endif
@@ -1402,6 +1427,17 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     p = cmd + sizeof("intermezzo ")-1;
     if (McuUtility_ScanDecimal8uNumber(&p, &nr)==ERR_OK && nr<NOF_INTERMEZZOS) {
       intermezzos[nr]();
+      return ERR_OK;
+    } else {
+      return ERR_FAILED;
+    }
+  } else if (McuUtility_strncmp((char*)cmd, "intermezzo rtc temp offset ", sizeof("intermezzo rtc temp offset ")-1)==0) {
+    int8_t offset;
+
+    *handled = TRUE;
+    p = cmd + sizeof("intermezzo rtc temp offset ")-1;
+    if (McuUtility_ScanDecimal8sNumber(&p, &offset)==ERR_OK) {
+      SetRtcOffsetTemperature(offset);
       return ERR_OK;
     } else {
       return ERR_FAILED;

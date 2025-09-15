@@ -28,7 +28,8 @@
 
 #if PL_CONFIG_USE_INTERMEZZO
 #define NVMC_MININI_SECTION_INTERMEZZO          "Intermezzo"
-  #define NVMC_MININI_KEY_INTERMEZZO_ON             "on"       /* bool, 0: off, 1: on */
+  #define NVMC_MININI_KEY_INTERMEZZO_ON             "on"              /* bool, 0: off, 1: on */
+  #define NVMC_MININI_KEY_RTC_TEMP_OFFSET           "rtcTempOffset"   /* integer, temperature offset in deci-celcius degree */
 #endif
 
 #endif /* MININIKEYS_H_ */
