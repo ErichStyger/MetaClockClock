@@ -33,7 +33,6 @@
   #include "fsl_flash.h"
   #endif
 #endif
-#include "matrix.h"
 #if PL_CONFIG_USE_WDT
   #include "watchdog.h"
 #endif
@@ -46,12 +45,15 @@
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
   #include "circleClock.h"
 #endif
-#include "StepperBoard.h"
 #include "application.h"
 #include "McuLog.h"
-#include "matrixposition.h"
-#include "matrixhand.h"
-#include "matrixring.h"
+#if PL_CONFIG_USE_MATRIX
+  #include "StepperBoard.h"
+  #include "matrix.h"
+  #include "matrixposition.h"
+  #include "matrixhand.h"
+  #include "matrixring.h"
+#endif
 #include "McuLog.h"
 #if PL_CONFIG_USE_FONT
   #include "mfont.h"
@@ -258,7 +260,7 @@ static uint8_t AdjustHourForTimeZone(uint8_t hour, int8_t gmtDelta) {
 }
 #endif
 
-#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
+#if !PL_CONFIG_IS_SPLIT_FLAP && PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
 static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
   #define CLOCK_DEFAULT_DELAY  (5)
   STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
@@ -271,8 +273,9 @@ static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
   STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_HH), angleHour, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
   STEPPER_MoveClockDegreeAbs(STEPBOARD_GetStepper(board, x, y, STEPPER_HAND_MM), angleMinute, STEPPER_MOVE_MODE_CW, CLOCK_DEFAULT_DELAY, true, true);
 }
-#endif /* PL_CONFIG_USE_STEPPER */
+#endif
 
+#if PL_CONFIG_USE_NEO_PIXEL_HW
 static void clock_fade(bool out, uint32_t color) {
   uint32_t c;
   int curr;
@@ -302,9 +305,10 @@ static void clock_fadeIn(uint32_t color) {
 static void clock_fadeOut(uint32_t color) {
   clock_fade(true, color);
 }
+#endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
-  uint32_t color;
+  uint8_t buf[8];
 
   McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
 
@@ -313,12 +317,14 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   return;
 #endif
 
-#if PL_CONFIG_IS_ANALOG_CLOCK && PL_CONFIG_USE_FONT
-  uint8_t buf[8], res;
+#if PL_CONFIG_USE_MATRIX
+  uint8_t res;
 
   MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_LED_RING
+  uint32_t color;
+
   if (GetDoRandomHandColor()) {
     int32_t r, g, b;
     do {
@@ -333,6 +339,8 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 #else
   MATRIX_GetHandColorBrightness(&color, NULL);
 #endif
+#endif /* PL_CONFIG_USE_MATRIX */
+
   buf[0] = '\0';
   if (CLOCK_ClockIs24h) {
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Hour, '0', 2);
@@ -344,6 +352,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   }
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Min, '0', 2);
+#if PL_CONFIG_USE_MATRIX
   if (CLOCK_doFadingHands) {
     clock_fadeOut(color);
   }
@@ -359,6 +368,10 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     McuLog_error("Failed showing time");
   }
 #endif /* PL_CONFIG_USE_FONT */
+
+#if PL_CONFIG_IS_SPLIT_FLAP
+  STEPPER_ShowLocalString(buf);
+#endif
 
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
   MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
@@ -621,26 +634,29 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   const unsigned char *clock_type = (unsigned char*)"\r\n";
 
   McuShell_SendStatusStr((unsigned char*)"clock", (unsigned char*)"Clock settings\r\n", io->stdOut);
-
-#if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
-  clock_type = (unsigned char*)"Clock 8x3\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
-  clock_type = (unsigned char*)"Clock 12x5 60 Billion Lights\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
-  clock_type = (unsigned char*)"Clock 12x5 Modular\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_16x9_ALEXIS
-  clock_type = (unsigned char*)"Clock 16x9 Alexis\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
-  clock_type = (unsigned char*)"SmartWall 8x5\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
-  clock_type = (unsigned char*)"Clock 8x3 V4\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
-  clock_type = (unsigned char*)"Circular Clock 1x12\r\n";
-#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
-  clock_type = (unsigned char*)"SmartWall 16x5\r\n";
+#if PL_CONFIG_USE_MATRIX
+  #if PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3
+    clock_type = (unsigned char*)"Clock 8x3\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
+    clock_type = (unsigned char*)"Clock 12x5 60 Billion Lights\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
+    clock_type = (unsigned char*)"Clock 12x5 Modular\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_16x9_ALEXIS
+    clock_type = (unsigned char*)"Clock 16x9 Alexis\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_8x5
+    clock_type = (unsigned char*)"SmartWall 8x5\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_8x3_V4
+    clock_type = (unsigned char*)"Clock 8x3 V4\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+    clock_type = (unsigned char*)"Circular Clock 1x12\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_SMARTWALL_16x5
+    clock_type = (unsigned char*)"SmartWall 16x5\r\n";
+  #else
+    #error "unknown"
+    clock_type = (unsigned char*)"unknown\r\n";
+  #endif
 #else
-  #error "unknown"
-  clock_type = (unsigned char*)"unknown\r\n";
+  clock_type = (unsigned char*)"split-flap\r\n";
 #endif
   McuShell_SendStatusStr((unsigned char*)"  type", clock_type, io->stdOut);
 
@@ -994,7 +1010,7 @@ static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePerio
     unsigned char timeBuf[16];
     uint32_t oldSWRTC, newSWRTC;
 
-    McuTimeDate_GetTimeDate(&time, &date); /* get current SW RTC values */
+    McuTimeDate_GetTimeDate(&time, &date); /* get current SW RTC values, not using DST for this */
     oldSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0); /* remember the value we had */
     timeBuf[0] = '\0';
     McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
@@ -1003,7 +1019,7 @@ static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePerio
     if (res!=ERR_OK) {
       McuLog_error("Failed updating RTC from external RTC");
     } else {
-      McuTimeDate_GetTimeDate(&time, &date); /* what is te new time now? */
+      McuTimeDate_GetTimeDate(&time, &date); /* what is the new time now? */
       newSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
       timeBuf[0] = '\0';
       McuTimeDate_AddTimeString(timeBuf, sizeof(timeBuf), &time, (unsigned char*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
@@ -1131,7 +1147,7 @@ static void ClockTask(void *pv) {
   MFONT_FontToStr(PL_CONFIG_CLOCK_DEFAULT_FONT, defaultFont, sizeof(defaultFont));
   McuMinINI_ini_gets(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_FONT, (char*)defaultFont, (char*)buf, sizeof(buf), NVMC_MININI_FILE_NAME);
   MFONT_ParseFontName(&p, &CLOCK_font);
-#else
+#elif PL_CONFIG_USE_FONT
   CLOCK_font = PL_CONFIG_CLOCK_DEFAULT_FONT;
 #endif
 
@@ -1348,7 +1364,7 @@ static void ClockTask(void *pv) {
     }
 #endif
     if (CLOCK_ClockIsOn) { /* show time */
-      (void)McuTimeDate_GetTimeDate(&time, &date);
+      (void)McuTimeDate_GetTimeDateAdjustDST(&time, &date);
       if (doImmediateClockUpdate) { /* if not immediate update: sync on beginning of minute */
         doImmediateClockUpdate = false;
         if (time.Sec<=40) { /* do only update right now if we have enough time: will do a sync after 55 secs below anyway */
@@ -1358,7 +1374,7 @@ static void ClockTask(void *pv) {
       if (time.Sec>=55) { /* sync on start of the minute */
         McuLog_trace("Sync on full minute");
         do {
-          (void)McuTimeDate_GetTimeDate(&time, NULL);
+          (void)McuTimeDate_GetTimeDateAdjustDST(&time, &date);
           if (time.Sec==0) {
             break; /* leave loop */
           }
