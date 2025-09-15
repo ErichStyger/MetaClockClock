@@ -1,4 +1,59 @@
 TODO:
+- intermezzo temperature from RTC: use offset to compensate temperature
+- on/off time: add settings for week days
+- Special modes:
+6:00 Einschalten
+
+6:00-10:00 Uhr Block
+Normalfunktion Uhr (13min) 
+                flow wechsel zu Temperatur (1min) 
+                flow wechsel zu Datum (1min)
+                flow wechsel zurück zur Normalfunktion Uhr
+
+10:00-10:30 Pausen Block
+                flow (7 min)
+                wechsel zu Uhr (1min)
+                wechsel zu Temperatur (1min)
+                wechsel zu Datum (1min)
+
+10:30-12:00 Uhr Block
+Normalfunktion Uhr (13min) 
+                flow wechsel zu Temperatur (1min) 
+                flow wechsel zu Datum (1min)
+                flow wechsel zurück zur Normalfunktion Uhr
+
+12:00-13:00 Mittags Block
+                flow (7 min)
+                wechsel zu Uhr (1min)
+                wechsel zu Temperatur (1min)
+                wechsel zu Datum (1min)
+
+13:00-15:00 Uhr Block
+Normalfunktion Uhr (13min) 
+                flow wechsel zu Temperatur (1min) 
+                flow wechsel zu Datum (1min)
+                flow wechsel zurück zur Normalfunktion Uhr
+
+15:00-15:30 Pausen Block
+                flow (7 min)
+                wechsel zu Uhr (1min)
+                wechsel zu Temperatur (1min)
+                wechsel zu Datum (1min)
+
+15:30-22:00 Uhr Block
+Normalfunktion Uhr (13min) 
+                flow wechsel zu Temperatur (1min) 
+                flow wechsel zu Datum (1min)
+                flow wechsel zurück zur Normalfunktion Uhr
+
+22:00 Ausschalten
+
+***flow: wellenartiges intermezzo, wie hier https://youtu.be/0pdKkobyyyI ab Minute
+
+ 
+
+
+
 - HardFault on tinyk22
 	demo clap
 	demo square rotate
