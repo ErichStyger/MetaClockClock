@@ -770,6 +770,7 @@ static uint8_t MATRIX_CheckRemoteLastError(void) {
         if (res==ERR_OK) { /* no error */
           boardHasError[i] = false;
         } else { /* send command again! */
+          McuLog_trace("Failed checking lastError (addr 0x%02x), resend `matrix exeq` command", addr);
           boardHasError[i] = true;
           (void)RS485_SendCommand(addr, (unsigned char*)"matrix exq", 1000, 1, NULL, NULL); /* execute the queue */
         }
