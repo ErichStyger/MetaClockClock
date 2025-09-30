@@ -1234,53 +1234,67 @@ static void Intermezzo4(void) {
 }
 
 #endif
+
 typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
-static const Intermezzofp intermezzos[] = /* list of intermezzos */
-{
-#if PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
-    Intermezzo0, /* 17 sec */
-    Intermezzo1, /* 19 sec */
-    Intermezzo2, /* 32 sec */
-    Intermezzo3, /* 27 sec */
-    Intermezzo4, /* 41 sec */
-    Intermezzo5, /* 37 sec */
-    Intermezzo6, /* 44 sec */
-    Intermezzo7,
-    Intermezzo8,
-    Intermezzo9,
-    Intermezzo10,
-    Intermezzo11,
-    Intermezzo12,
-    Intermezzo13,
-    Intermezzo14,
-    Intermezzo15,
-#if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
-    Intermezzo16,
-    Intermezzo17,
-    Intermezzo18,
-    Intermezzo19,
-    Intermezzo20,
-    IntermezzoHalfHalf,
-#endif /* PL_CONFIG_USE_RELATIVE_MOVES */
-    IntermezzoTime,
-    IntermezzoRandomHands,
-    IntermezzoRandomHandsAllOn,
-    IntermezzoTemperature,
-    IntermezzoRectangles,
-    IntermezzoRectangles2,
-    IntermezzoRectangles3,
-#if PL_CONFIG_HAS_CIRCLE_CLOCK
-    IntermezzoCircleCircle,
-    IntermezzoCircleRays,
+
+typedef struct {
+  Intermezzofp fp; /* intermezzo code */
+  const char *text; /* description text */
+} IntermezzoDesc_t;
+
+static const IntermezzoDesc_t intermezzos[] = {
+#if   PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12 \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
+  {.fp=Intermezzo0,                 .text="L to not"},
+  {.fp=Intermezzo1,                 .text="I clap straight"},
+  {.fp=Intermezzo2,                 .text="I rotate"},
+  {.fp=Intermezzo3,                 .text="Balance to 12"},
+  {.fp=Intermezzo4,                 .text="V rotate down"},
 #endif
-#elif PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_SMARTWALL_16x5
-	Intermezzo0,
-	Intermezzo1,
-	Intermezzo2,
-	Intermezzo3,
-	Intermezzo4,
+#if   PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_60B \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_12x5_MOD \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS \
+   || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
+  {.fp=Intermezzo5,                 .text="12 falling down to 6"},
+  {.fp=Intermezzo6,                 .text="6 gradually rotating"},
+  {.fp=Intermezzo7,                 .text="12 falling down and rotate"},
+  {.fp=Intermezzo8,                 .text="stars and squares"},
+  {.fp=Intermezzo9,                 .text="12 to 6 to 12"},
+  {.fp=Intermezzo10,                .text="15 to 6 to 12"},
+  {.fp=Intermezzo11,                .text="lines rotating to 12"},
+  {.fp=Intermezzo12,                .text="line building from left"},
+  {.fp=Intermezzo13,                .text="line building from the top"},
+  {.fp=Intermezzo14,                .text="6 with clapping right"},
+  {.fp=Intermezzo15,                .text="rotating clock lines"},
+  #if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
+  {.fp=Intermezzo16,                .text=""},
+  {.fp=Intermezzo17,                .text=""},
+  {.fp=Intermezzo18,                .text=""},
+  {.fp=Intermezzo19,                .text=""},
+  {.fp=Intermezzo20,                .text=""},
+  {.fp=IntermezzoHalfHalf,          .text="Half-Half"},
+  #endif
+  {.fp=IntermezzoTime,              .text="Current time on each clock"},
+  {.fp=IntermezzoRandomHands,       .text="Random hands"},
+  {.fp=IntermezzoRandomHandsAllOn,  .text="Random hands colored"},
+  {.fp=IntermezzoTemperature,       .text="Temperature"},
+  {.fp=IntermezzoRectangles,        .text="Nested horizontal rectangles"},
+  {.fp=IntermezzoRectangles2,       .text="Nested dual rectangles"},
+  {.fp=IntermezzoRectangles3,       .text="Left to right rectangles"},
+  #if PL_CONFIG_HAS_CIRCLE_CLOCK
+  {.fp=IntermezzoCircleCircle,      .text="Circle circle"},
+      {.fp=IntermezzoCircleRays,    .text="Circle rays"},
+  #endif
 #endif
 };
+
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
 
 void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown) {
@@ -1296,7 +1310,7 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
       /* exclude center clock from Intermezzos */
       CC_EnableCenterClock(false);
 #endif
-      intermezzos[intermezzo]();
+      intermezzos[intermezzo].fp();
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
       /* exclude center clock from Intermezzos */
       CC_EnableCenterClock(true);
@@ -1315,7 +1329,7 @@ void INTERMEZZO_PlaySpecific(uint8_t nr) {
   if(nr > NOF_INTERMEZZOS) {
     nr = 0;
   }
-  intermezzos[nr]();
+  intermezzos[nr].fp();
 }
 
 bool INTERMEZZO_IsOn(void){
@@ -1348,7 +1362,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 
   buf[0] = '\0';
   McuUtility_strcatNum8s(buf, sizeof(buf), GetRtcOffsetTemperature_dC());
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" dC offset\r\n");
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" deci-C offset\r\n");
   McuShell_SendStatusStr((unsigned char*)"  rtc temp", buf, io->stdOut);
 
   return ERR_OK;
@@ -1367,6 +1381,15 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  <nr>", (unsigned char*)"Play Intermezzo (0-", io->stdOut);
   McuShell_SendNum32u(NOF_INTERMEZZOS-1, io->stdOut);
   McuShell_SendStr((unsigned char*)")\r\n", io->stdOut);
+  for(int i=0; i<NOF_INTERMEZZOS; i++) {
+    unsigned char buf[48];
+
+    McuUtility_Num16uToStr(buf, sizeof(buf), i);
+    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)": ");
+    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)intermezzos[i].text);
+    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)"\r\n");
+    McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)buf, io->stdOut);
+  }
   McuShell_SendHelpStr((unsigned char*)"  rtc temp offset <dC>", (unsigned char*)"Set RTC temperature offset in deci-Celsius\r\n", io->stdOut);
   return ERR_OK;
 }
@@ -1420,17 +1443,6 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
 	  return ERR_FAILED;
 	}
   #endif
-  } else if (McuUtility_strncmp((char*)cmd, "intermezzo ", sizeof("intermezzo ")-1)==0) {
-    uint8_t nr;
-
-    *handled = TRUE;
-    p = cmd + sizeof("intermezzo ")-1;
-    if (McuUtility_ScanDecimal8uNumber(&p, &nr)==ERR_OK && nr<NOF_INTERMEZZOS) {
-      intermezzos[nr]();
-      return ERR_OK;
-    } else {
-      return ERR_FAILED;
-    }
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo rtc temp offset ", sizeof("intermezzo rtc temp offset ")-1)==0) {
     int8_t offset;
 
@@ -1438,6 +1450,17 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     p = cmd + sizeof("intermezzo rtc temp offset ")-1;
     if (McuUtility_ScanDecimal8sNumber(&p, &offset)==ERR_OK) {
       SetRtcOffsetTemperature(offset);
+      return ERR_OK;
+    } else {
+      return ERR_FAILED;
+    }
+  } else if (McuUtility_strncmp((char*)cmd, "intermezzo ", sizeof("intermezzo ")-1)==0) {
+    uint8_t nr;
+
+    *handled = TRUE;
+    p = cmd + sizeof("intermezzo ")-1;
+    if (McuUtility_ScanDecimal8uNumber(&p, &nr)==ERR_OK && nr<NOF_INTERMEZZOS) {
+      intermezzos[nr].fp();
       return ERR_OK;
     } else {
       return ERR_FAILED;
