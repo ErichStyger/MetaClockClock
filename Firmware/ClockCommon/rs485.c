@@ -491,7 +491,6 @@ static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, u
   const unsigned char *p;
   uint8_t dstAddr, srcAddr;
   uint8_t expected_crc, crc, res;
-  unsigned char buf[42];
 
   /* init with defaults in case of error */
   *sourceAddr = RS485_BROADCAST_ADDRESS;
@@ -514,17 +513,26 @@ static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, u
       }
       expected_crc = CalcMsgCrc(msg);
       if (crc!=expected_crc) {
-        McuLog_error("CRC error, msg `%s`, expected 0x%x", msg, expected_crc);
-        if (dstAddr!=RS485_BROADCAST_ADDRESS) { /* only send back error if it was not a broadcast */
-          McuUtility_strcpy(buf, sizeof(buf), (uint8_t*)"CRC_ERR 0x");
-          McuUtility_strcatNum8Hex(buf, sizeof(buf), RS485_GetAddress());
-          McuUtility_strcat(buf, sizeof(buf), (uint8_t*)": 0x");
+        McuLog_error("CRC error, msg `%s`, crc %02x, exp %02x", msg, crc, expected_crc);
+#if 0 /* \todo Do NOT simply write to the bus. Instead, store the error and implement a comment on the server to get the  last error message */
+        if (dstAddr!=RS485_BROADCAST_ADDRESS) { /* only send back error if not a broadcast: otherwise everyone will send back and cause collisions */
+          unsigned char buf[64];
+          McuUtility_strcpy(buf, sizeof(buf), (uint8_t*)"CRC_ERR ");
+          McuUtility_strcatNum8Hex(buf, sizeof(buf), *sourceAddr);
+          McuUtility_strcat(buf, sizeof(buf), (uint8_t*)"->");
+          McuUtility_strcatNum8Hex(buf, sizeof(buf), *destinationAddr);
+          McuUtility_strcat(buf, sizeof(buf), (uint8_t*)": crc ");
           McuUtility_strcatNum8Hex(buf, sizeof(buf), crc);
-          McuUtility_strcat(buf, sizeof(buf), (uint8_t*)" expected 0x");
+          McuUtility_strcat(buf, sizeof(buf), (uint8_t*)" exp ");
           McuUtility_strcatNum8Hex(buf, sizeof(buf), expected_crc);
+          while(*p!='\0') {
+            McuUtility_chcat(buf, sizeof(buf), *p);
+            p++;
+          }
           McuUtility_chcat(buf, sizeof(buf), '\n');
-          McuShell_SendStr(buf, RS485_stdio.stdErr);
+          McuShell_SendStr(buf, RS485_stdio.stdErr); /* send back information on bus */
         }
+#endif
         return ERR_CRC;
       }
       *startCmd = p;
