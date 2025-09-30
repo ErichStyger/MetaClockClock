@@ -89,6 +89,7 @@ Instructions:
 /* -------------------------------------------------*/
 /* McuLog */
 #define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_DEFAULT_LEVEL                   (McuLog_DEBUG)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
