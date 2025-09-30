@@ -21,6 +21,7 @@
   #define NVMC_MININI_KEY_CLOCK_OFF_START_MM        "offStartMM"      /* off start minute, e.g. 0 */
   #define NVMC_MININI_KEY_CLOCK_OFF_END_HH          "offEndHH"        /* off end hour, e.g. 5 */
   #define NVMC_MININI_KEY_CLOCK_OFF_END_MM          "offEndMM"        /* off end minute, e.g. 15 */
+  #define NVMC_MININI_KEY_CLOCK_OFF_DAYS            "offDays"         /* off days as bitset, with bit 0 (0x1) as Sunday, bit 1 Monday, ... */
   #define NVMC_MININI_KEY_CLOCK_FONT                "font"            /* "2x3" or "3x5" */
   #define NVMC_MININI_KEY_CLOCK_RANDOM_HAND_COLOR   "randomHandColor" /* bool, 0: on, 1: off */
   #define NVMC_MININI_KEY_CLOCK_FADING_HANDS        "fadingHands"     /* bool, 0: on, 1: off */

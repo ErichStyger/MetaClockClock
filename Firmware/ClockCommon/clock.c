@@ -118,6 +118,7 @@ static bool CLOCK_ClockIsParked = false;
     TIMEREC offStartTime;
     TIMEREC offEndTime;
     bool offIsActive; /* if clock is off because of off-time */
+    uint8_t offDays; /* bit set, with 0x1 as Sunday, 0x2 as Monday, 0x4 as Tuesday ... */
   } CLOCK_TimeOff =
   {
       .isTimeOnOffEnabled = CONFIG_CLOCK_DEFAULT_ON_OFF,
@@ -160,6 +161,21 @@ static TaskHandle_t clockTaskHndl;
 #if 0 /* not implemented yet */
 static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
 #endif
+
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+static void SetOffDays(uint8 dayBits) { /* 0x1: Sunday, 0x2: Monday, ... */
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_OFF_DAYS, dayBits, NVMC_MININI_FILE_NAME);
+#endif
+  CLOCK_TimeOff.offDays = dayBits;
+}
+#endif /* PL_CONFIG_USE_CLOCK_TIME_OFF */
+
+#if PL_CONFIG_USE_CLOCK_TIME_OFF
+static uint8_t GetOffDays(void) { /* 0x1: Sunday, 0x2: Monday, ... */
+  return CLOCK_TimeOff.offDays;
+}
+#endif /* PL_CONFIG_USE_CLOCK_TIME_OFF */
 
 #if PL_CONFIG_USE_LED_RING
 static void SetDoRandomHandColor(bool enable) {
@@ -630,7 +646,7 @@ static void ShowTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   uint8_t res = ERR_OK;
-  uint8_t buf[64];
+  uint8_t buf[96];
   const unsigned char *clock_type = (unsigned char*)"\r\n";
 
   McuShell_SendStatusStr((unsigned char*)"clock", (unsigned char*)"Clock settings\r\n", io->stdOut);
@@ -681,9 +697,13 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   } else {
     McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"no, off: ");
   }
-  McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offStartTime, (uint8_t*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"off-day bits 0x");
+  McuUtility_strcatNum8Hex(buf, sizeof(buf), GetOffDays());
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" (Sunday:0x1), ");
+
+  McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offStartTime, (uint8_t*)McuTimeDate_CONFIG_HH_MM_TIME_FORMAT_STR);
   McuUtility_chcat(buf, sizeof(buf), '-');
-  McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offEndTime, (uint8_t*)McuTimeDate_CONFIG_DEFAULT_TIME_FORMAT_STR);
+  McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offEndTime, (uint8_t*)McuTimeDate_CONFIG_HH_MM_TIME_FORMAT_STR);
   McuUtility_strcat(buf, sizeof(buf), CLOCK_TimeOff.offIsActive?(unsigned char*)", off is active\r\n":(unsigned char*)", off not active\r\n");
   McuShell_SendStatusStr((unsigned char*)"  on/off", buf, io->stdOut);
 #endif
@@ -734,6 +754,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  onoff on|off", (unsigned char*)"Enable time based automatic on/off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  offstart <time>", (unsigned char*)"on/off start time\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  offend <time>", (unsigned char*)"on/off end time\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  offdays <bits>", (unsigned char*)"Set days off, Sunday bit 0, Monday bit 1, etc\r\n", io->stdOut);
 #endif
   McuShell_SendHelpStr((unsigned char*)"  24h on|off", (unsigned char*)"Show time in 24h (17:35) or 12h (5:35) format\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  park on|off|toggle", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
@@ -823,6 +844,18 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       return ERR_FAILED;
     }
     return SetClock_OffEnd(&time);
+  } else if (McuUtility_strncmp((char*)cmd, "clock offdays ", sizeof("clock offdays ")-1)==0) {
+    int32_t bits;
+    *handled = TRUE;
+    p = cmd + sizeof("clock offdays ")-1;
+    if (McuUtility_xatoi(&p, &bits)!=ERR_OK) {
+      return ERR_FAILED;
+    }
+    if (bits<0 || bits>0b1111111) {
+      return ERR_RANGE; /* only bits 0 to 6. Bit 0 is Sunday, bit 1 is Monday and so on */
+    }
+    SetOffDays(bits);
+    return ERR_OK;
 #endif
   } else if (McuUtility_strcmp((char*)cmd, "clock 24h on")==0) {
     *handled = true;
