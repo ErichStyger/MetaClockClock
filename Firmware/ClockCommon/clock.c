@@ -355,7 +355,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   }
   color = NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
   MHAND_SetHandColorAll(color);
-#else
+#elif PL_CONFIG_USE_LED_RING
   MATRIX_GetHandColorBrightness(&color, NULL);
 #endif
 #endif /* PL_CONFIG_USE_MATRIX */
@@ -371,18 +371,22 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   }
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Min, '0', 2);
-#if PL_CONFIG_USE_MATRIX
+#if PL_CONFIG_USE_FONT
+  #if PL_CONFIG_USE_LED_RING
   if (CLOCK_doFadingHands) {
     clock_fadeOut(color);
   }
+  #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
 #else
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
 #endif
+  #if PL_CONFIG_USE_LED_RING
   if (CLOCK_doFadingHands) {
     clock_fadeIn(color);
   }
+  #endif
   if (res!=ERR_OK) {
     McuLog_error("Failed showing time");
   }

@@ -30,6 +30,9 @@
   #include "minIni/McuMinINI.h"
   #include "MinIniKeys.h"
 #endif
+#if PL_CONFIG_USE_SHT31
+  #include "McuSHT31.h"
+#endif
 
 static bool IntermezzoOn = /* if intermezzos are on by default or not */
 #if PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT
@@ -806,7 +809,8 @@ static void IntermezzoTemperature(void) {
   (void)MATRIX_SetMoveDelayZ0Z1All(3, 3);
   res = McuExtRTC_GetTemperature(&temperature);
   if (res!=ERR_OK) {
-    return ;
+    McuLog_error("failed reading RTC temperature sensor");
+    return;
   }
   temperature += 0.1f*GetRtcOffsetTemperature_dC(); /* offset */
   buf[0] = '\0';
@@ -819,6 +823,36 @@ static void IntermezzoTemperature(void) {
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
 #endif
 }
+
+#if PL_CONFIG_USE_SHT31
+static void IntermezzoHumidity(void) {
+  uint8_t res;
+  uint8_t buf[8];
+  float temperature, humidity;
+
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  (void)MATRIX_SetMoveDelayZ0Z1All(3, 3);
+  res = McuSHT31_ReadTempHum(&temperature, &humidity);
+  if (res!=ERR_OK) {
+    McuLog_error("failed reading SHT31 sensor");
+    return;
+  }
+  buf[0] = '\0';
+  McuUtility_strcatNumFloat(buf, sizeof(buf), humidity, 0);
+  McuUtility_chcat(buf, sizeof(buf), MFONT_CHAR_DEGREE);
+  McuUtility_chcat(buf, sizeof(buf), '%');
+#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, true, true);
+#elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
+#endif
+}
+#endif /* PL_CONFIG_USE_SHT31 */
 
 static void DrawNestedRectangles(int xPos, int yPos, int width, int height) {
   int x, y, w, h;
@@ -878,19 +912,12 @@ static void IntermezzoRectangles3(void) {
   }
 }
 
-static void IntermezzoCharText(const char *txt, uint8_t xPos, bool clearTxtFirst) {
-  MFONT_Size_e font;
+static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
 #if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
-  font = MFONT_SIZE_3x5;
-#elif MATRIX_NOF_STEPPERS_X>=4*2 && MATRIX_NOF_STEPPERS_Y>=3
-  font = MFONT_SIZE_2x3;
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5);
 #else
-  #error "not supported"
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_2x3);
 #endif
-  if (clearTxtFirst) {
-    MFONT_PrintString((unsigned char*)"    ", 0, 0, font);
-  }
-  MFONT_PrintString((unsigned char*)txt, xPos, 0, font);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -901,7 +928,7 @@ static void IntermezzoHSLU(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-  IntermezzoCharText("HSLU", 0, false);
+  IntermezzoCharTextLarge("HSLU", 0);
 }
 
 static void IntermezzoCSEM(void) {
@@ -911,7 +938,7 @@ static void IntermezzoCSEM(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-  IntermezzoCharText("CSEM", 0, false);
+  IntermezzoCharTextLarge("CSEM", 0);
 }
 
 static void IntermezzoHey(void) {
@@ -921,16 +948,17 @@ static void IntermezzoHey(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-  IntermezzoCharText("HEY!", 0, false);
+  IntermezzoCharTextLarge("HEY!", 0);
 }
 
-static void IntermezzoDate(void) {
+const char *monthStr3[] =
+{
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
+};
+
+static void IntermezzoDateBig(void) {
   DATEREC date;
   unsigned char buf[5];
-  const char *monthStr3[] =
-  {
-      "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"
-  };
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
@@ -941,11 +969,36 @@ static void IntermezzoDate(void) {
   buf[0] = '\0';
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), date.Day, '0', 2);
   McuUtility_chcat(buf, sizeof(buf), '.');
-  IntermezzoCharText((char*)buf, 2, true);
+  MFONT_PositionAllToClear();
+  IntermezzoCharTextLarge((char*)buf, 2);
   McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)monthStr3[date.Month-1]);
-  IntermezzoCharText((char*)buf, 2, true);
+  MFONT_PositionAllToClear();
+  IntermezzoCharTextLarge((char*)buf, 2);
   McuUtility_Num16uToStr(buf, sizeof(buf), date.Year);
-  IntermezzoCharText((char*)buf, 0, false);
+  IntermezzoCharTextLarge((char*)buf, 0);
+}
+
+static void IntermezzoDateSmall(void) {
+  DATEREC date;
+  unsigned char buf[8];
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  McuTimeDate_GetDate(&date);
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf, sizeof(buf), date.Day, '0', 2);
+  McuUtility_chcat(buf, sizeof(buf), '.');
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)monthStr3[date.Month-1]);
+  MFONT_PositionAllToClear();
+  MFONT_PrintString((unsigned char*)buf, 0, 1, MFONT_SIZE_2x3);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  McuUtility_Num16uToStr(buf, sizeof(buf), date.Year);
+  MFONT_PositionAllToClear();
+  MFONT_PrintString((unsigned char*)buf, 2, 1, MFONT_SIZE_2x3);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
@@ -1332,9 +1385,9 @@ static const IntermezzoDesc_t intermezzos[] = {
    || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3_V4 \
    || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_16x9_ALEXIS \
    || PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CIRCULAR_CLOCK_1x12
-  {.fp=Intermezzo5,                 .text="12 falling down to 6"},
+  {.fp=Intermezzo5,                 .text="12 falling to 6"},
   {.fp=Intermezzo6,                 .text="6 gradually rotating"},
-  {.fp=Intermezzo7,                 .text="12 falling down and rotate"},
+  {.fp=Intermezzo7,                 .text="12 falling and rotate"},
   {.fp=Intermezzo8,                 .text="stars and squares"},
   {.fp=Intermezzo9,                 .text="12 to 6 to 12"},
   {.fp=Intermezzo10,                .text="15 to 6 to 12"},
@@ -1355,14 +1408,18 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoRandomHands,       .text="Random hands"},
   {.fp=IntermezzoRandomHandsAllOn,  .text="Random hands colored"},
   {.fp=IntermezzoTemperature,       .text="Temperature"},
+#if PL_CONFIG_USE_SHT31
+  {.fp=IntermezzoHumidity,           .text="Humidity"},
+#endif
   {.fp=IntermezzoRectangles,        .text="Nested horizontal rectangles"},
   {.fp=IntermezzoRectangles2,       .text="Nested dual rectangles"},
   {.fp=IntermezzoRectangles3,       .text="Left to right rectangles"},
   #if PL_CONFIG_HAS_CIRCLE_CLOCK
   {.fp=IntermezzoCircleCircle,      .text="Circle circle"},
-      {.fp=IntermezzoCircleRays,    .text="Circle rays"},
+  {.fp=IntermezzoCircleRays,        .text="Circle rays"},
   #endif
-  {.fp=IntermezzoDate,              .text="Current date"},
+  {.fp=IntermezzoDateBig,           .text="Current date big font"},
+  {.fp=IntermezzoDateSmall,         .text="Current date small font"},
   {.fp=IntermezzoHSLU,              .text="HSLU"},
   {.fp=IntermezzoCSEM,              .text="CSEM"},
   {.fp=IntermezzoHey,               .text="HEY!"},
