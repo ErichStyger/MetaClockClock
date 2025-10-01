@@ -16,7 +16,9 @@
 #include "McuTimeDate.h"
 #include "McuLog.h"
 #include "NeoPixel.h"
-#include "mfont.h"
+#if PL_CONFIG_USE_FONT
+  #include "mfont.h"
+#endif
 #include <math.h>
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
   #include "circleClock.h"
@@ -795,6 +797,7 @@ static void IntermezzoRandomHands(void) {
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
+#if PL_CONFIG_USE_FONT
 static void IntermezzoTemperature(void) {
   float temperature;
   uint8_t res;
@@ -823,8 +826,9 @@ static void IntermezzoTemperature(void) {
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
 #endif
 }
+#endif
 
-#if PL_CONFIG_USE_SHT31
+#if PL_CONFIG_USE_SHT31 && PL_CONFIG_USE_FONT
 static void IntermezzoHumidity(void) {
   uint8_t res;
   uint8_t buf[8];
@@ -912,6 +916,7 @@ static void IntermezzoRectangles3(void) {
   }
 }
 
+#if PL_CONFIG_USE_FONT
 static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
 #if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5);
@@ -920,7 +925,9 @@ static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
 #endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
+#endif
 
+#if PL_CONFIG_USE_FONT
 static void IntermezzoHSLU(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -930,7 +937,9 @@ static void IntermezzoHSLU(void) {
 #endif
   IntermezzoCharTextLarge("HSLU", 0);
 }
+#endif
 
+#if PL_CONFIG_USE_FONT
 static void IntermezzoCSEM(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -940,7 +949,9 @@ static void IntermezzoCSEM(void) {
 #endif
   IntermezzoCharTextLarge("CSEM", 0);
 }
+#endif
 
+#if PL_CONFIG_USE_FONT
 static void IntermezzoHey(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
@@ -950,8 +961,10 @@ static void IntermezzoHey(void) {
 #endif
   IntermezzoCharTextLarge("HEY!", 0);
 }
+#endif
 
-const char *monthStr3[] =
+#if PL_CONFIG_USE_FONT
+static const char *monthStr3[] =
 {
     "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"
 };
@@ -1000,6 +1013,7 @@ static void IntermezzoDateSmall(void) {
   MFONT_PrintString((unsigned char*)buf, 2, 1, MFONT_SIZE_2x3);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
+#endif /* PL_CONFIG_USE_FONT */
 
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
 static void IntermezzoCircleCircle(void) {
@@ -1407,8 +1421,10 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoTime,              .text="Current time on each clock"},
   {.fp=IntermezzoRandomHands,       .text="Random hands"},
   {.fp=IntermezzoRandomHandsAllOn,  .text="Random hands colored"},
+#if PL_CONFIG_USE_FONT
   {.fp=IntermezzoTemperature,       .text="Temperature"},
-#if PL_CONFIG_USE_SHT31
+#endif
+#if PL_CONFIG_USE_SHT31 && PL_CONFIG_USE_FONT
   {.fp=IntermezzoHumidity,           .text="Humidity"},
 #endif
   {.fp=IntermezzoRectangles,        .text="Nested horizontal rectangles"},
@@ -1418,11 +1434,13 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoCircleCircle,      .text="Circle circle"},
   {.fp=IntermezzoCircleRays,        .text="Circle rays"},
   #endif
+#if PL_CONFIG_USE_FONT
   {.fp=IntermezzoDateBig,           .text="Current date big font"},
   {.fp=IntermezzoDateSmall,         .text="Current date small font"},
   {.fp=IntermezzoHSLU,              .text="HSLU"},
   {.fp=IntermezzoCSEM,              .text="CSEM"},
   {.fp=IntermezzoHey,               .text="HEY!"},
+#endif /* PL_CONFIG_USE_FONT */
 #endif
 };
 

@@ -337,8 +337,6 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
 #endif
 
 #if PL_CONFIG_USE_MATRIX
-  uint8_t res;
-
   MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_LED_RING
@@ -377,6 +375,8 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     clock_fadeOut(color);
   }
   #endif
+  uint8_t res;
+
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
 #else
