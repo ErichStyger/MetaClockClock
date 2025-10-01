@@ -878,6 +878,35 @@ static void IntermezzoRectangles3(void) {
   }
 }
 
+static void Intermezzo4CharText(const char *txt) {
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+#if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
+  MFONT_PrintString((unsigned char*)txt, 0, 0, MFONT_SIZE_3x5);
+#elif MATRIX_NOF_STEPPERS_X>=4*2 && MATRIX_NOF_STEPPERS_Y>=3
+  MFONT_PrintString((unsigned char*)txt, 0, 0, MFONT_SIZE_2x3);
+#else
+  #error "not supported"
+#endif
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void IntermezzoHSLU(void) {
+  Intermezzo4CharText("HSLU");
+}
+
+static void IntermezzoCSEM(void) {
+  Intermezzo4CharText("CSEM");
+}
+
+static void IntermezzoHey(void) {
+  Intermezzo4CharText("HEY!");
+}
+
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
 static void IntermezzoCircleCircle(void) {
   CC_DrawCircle();
@@ -1292,6 +1321,9 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoCircleCircle,      .text="Circle circle"},
       {.fp=IntermezzoCircleRays,    .text="Circle rays"},
   #endif
+  {.fp=IntermezzoHSLU,              .text="HSLU"},
+  {.fp=IntermezzoCSEM,              .text="CSEM"},
+  {.fp=IntermezzoHey,               .text="HEY!"},
 #endif
 };
 
