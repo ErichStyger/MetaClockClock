@@ -1,6 +1,4 @@
 TODO:
-- intermezzo temperature from RTC: use offset to compensate temperature
-- on/off time: add settings for week days
 - Special modes:
 6:00 Einschalten
 
