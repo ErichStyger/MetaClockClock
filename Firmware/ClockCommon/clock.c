@@ -1,6 +1,6 @@
 /*
- * Copyright (c) 2019, 2020, Erich Styger
-  *
+ * Copyright (c) 2019-2025, Erich Styger
+ *
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
@@ -108,11 +108,13 @@ static bool CLOCK_ClockIsParked = false;
 #endif /* PL_CONFIG_IS_CLOCK_CLOCK */
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
-  #define CONFIG_CLOCK_DEFAULT_ON_OFF         (true)
+  /* default values for off-hours */
+  #define CONFIG_CLOCK_DEFAULT_ON_OFF         (false)
   #define CONFIG_CLOCK_DEFAULT_OFF_START_HH   (15)
   #define CONFIG_CLOCK_DEFAULT_OFF_START_MM   (0)
   #define CONFIG_CLOCK_DEFAULT_OFF_END_HH     (7)
   #define CONFIG_CLOCK_DEFAULT_OFF_END_MM     (15)
+  #define CONFIG_CLOCK_DEFAULT_OFF_DAYS       (0) /* no off days. Bit 0 would be Sunday */
   static struct CLOCK_TimeOff {
     bool isTimeOnOffEnabled; /* if range for automatically turning on and off is enabled */
     TIMEREC offStartTime;
@@ -127,6 +129,7 @@ static bool CLOCK_ClockIsParked = false;
       .offEndTime.Hour = CONFIG_CLOCK_DEFAULT_OFF_END_HH,
       .offEndTime.Min = CONFIG_CLOCK_DEFAULT_OFF_END_MM,
       .offIsActive = false,
+      .offDays = CONFIG_CLOCK_DEFAULT_OFF_DAYS,
   };
 #endif
 
@@ -692,19 +695,16 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"  clock", CLOCK_GetClockIsOn()?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
   McuShell_SendStatusStr((unsigned char*)"  parked", CLOCK_ClockIsParked?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
-  if (CLOCK_TimeOff.isTimeOnOffEnabled) {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"yes, off: ");
-  } else {
-    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"no, off: ");
-  }
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"off-day bits 0x");
+  McuUtility_strcpy(buf, sizeof(buf), CLOCK_TimeOff.isTimeOnOffEnabled?(unsigned char*)"enabled:yes, ":(unsigned char*)"enabled:no, ");
+  McuUtility_strcat(buf, sizeof(buf), CLOCK_TimeOff.offIsActive?(unsigned char*)"off is active":(unsigned char*)"off not active");
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)", off-day bits 0x");
   McuUtility_strcatNum8Hex(buf, sizeof(buf), GetOffDays());
-  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" (Sunday:0x1), ");
 
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"; off-hours ");
   McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offStartTime, (uint8_t*)McuTimeDate_CONFIG_HH_MM_TIME_FORMAT_STR);
   McuUtility_chcat(buf, sizeof(buf), '-');
   McuTimeDate_AddTimeString(buf, sizeof(buf), &CLOCK_TimeOff.offEndTime, (uint8_t*)McuTimeDate_CONFIG_HH_MM_TIME_FORMAT_STR);
-  McuUtility_strcat(buf, sizeof(buf), CLOCK_TimeOff.offIsActive?(unsigned char*)", off is active\r\n":(unsigned char*)", off not active\r\n");
+  McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  on/off", buf, io->stdOut);
 #endif
 #if 0 /* not implemented yet */
@@ -754,7 +754,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  onoff on|off", (unsigned char*)"Enable time based automatic on/off\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  offstart <time>", (unsigned char*)"on/off start time\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  offend <time>", (unsigned char*)"on/off end time\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  offdays <bits>", (unsigned char*)"Set days off, Sunday bit 0, Monday bit 1, etc\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  offdays <bits>", (unsigned char*)"Set days off, Sun 0b1, Mon 0b10, Tue 0b100 ...\r\n", io->stdOut);
 #endif
   McuShell_SendHelpStr((unsigned char*)"  24h on|off", (unsigned char*)"Show time in 24h (17:35) or 12h (5:35) format\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  park on|off|toggle", (unsigned char*)"Turns clock off and moves to park position, ready to power off\r\n", io->stdOut);
@@ -1166,12 +1166,14 @@ static void ClockTask(void *pv) {
   CLOCK_TimeOff.offStartTime.Min = McuMinINI_ini_getl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_OFF_START_MM, CONFIG_CLOCK_DEFAULT_OFF_START_MM, NVMC_MININI_FILE_NAME);
   CLOCK_TimeOff.offEndTime.Hour = McuMinINI_ini_getl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_OFF_END_HH, CONFIG_CLOCK_DEFAULT_OFF_END_HH, NVMC_MININI_FILE_NAME);
   CLOCK_TimeOff.offEndTime.Min = McuMinINI_ini_getl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_OFF_END_MM, CONFIG_CLOCK_DEFAULT_OFF_END_MM, NVMC_MININI_FILE_NAME);
-#else
+  CLOCK_TimeOff.offDays = McuMinINI_ini_getl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_OFF_DAYS, CONFIG_CLOCK_DEFAULT_OFF_DAYS, NVMC_MININI_FILE_NAME);
+  #else
   CLOCK_TimeOff.isTimeOnOffEnabled = CONFIG_CLOCK_DEFAULT_ON_OFF;
   CLOCK_TimeOff.offStartTime.Hour = CONFIG_CLOCK_DEFAULT_OFF_START_HH;
   CLOCK_TimeOff.offStartTime.Min = CONFIG_CLOCK_DEFAULT_OFF_START_MM;
   CLOCK_TimeOff.offEndTime.Hour = CONFIG_CLOCK_DEFAULT_OFF_END_HH;
   CLOCK_TimeOff.offEndTime.Min = CONFIG_CLOCK_DEFAULT_OFF_END_MM;
+  CLOCK_TimeOff.offDays = CONFIG_CLOCK_DEFAULT_OFF_DAYS;
 #endif
 #if PL_CONFIG_USE_MININI && PL_CONFIG_USE_FONT
   unsigned char buf[6], defaultFont[6];
@@ -1364,34 +1366,60 @@ static void ClockTask(void *pv) {
     if (CLOCK_TimeOff.isTimeOnOffEnabled) {
       res = McuTimeDate_GetTimeDateAdjustDST(&time, &date);
       if (res==ERR_OK) {
-        uint32_t offStartMinutes = CLOCK_TimeOff.offStartTime.Hour*60 + CLOCK_TimeOff.offStartTime.Min;
-        uint32_t offEndMinutes = CLOCK_TimeOff.offEndTime.Hour*60 + CLOCK_TimeOff.offEndTime.Min;
-        uint32_t currMinutes = time.Hour*60 + time.Min;
+        typedef enum {
+          On_Off_Action_Nothing,
+          On_Off_Action_Day_Turn_Off, /* turn off clock on days marked as off-days. This takes precedence over off-hours */
+          On_Off_Action_Hour_Turn_On,
+          On_Off_Action_Hour_Turn_Off,
+        } On_Off_Action_e;
+        On_Off_Action_e action = On_Off_Action_Nothing;
+        bool isOffDay = (GetOffDays()&(1<<McuUtility_WeekDay(date.Year, date.Month, date.Day))); /* McuUtility_WeekDay() gives 0 for Sunday, 1, Monday, ... */
 
-        if (offStartMinutes <= offEndMinutes) { /* e.g. 10:00 - 11:30 */
-          if (CLOCK_ClockIsOn && !CLOCK_TimeOff.offIsActive && currMinutes>=offStartMinutes && currMinutes<=offEndMinutes) {
-            /* clock is on, and we are in the off time range */
-            McuLog_info("Off-time: turning clock off");
-            CLOCK_TimeOff.offIsActive = true;
-            CLOCK_On(CLOCK_MODE_OFF);
-          } else if (!CLOCK_ClockIsOn && CLOCK_TimeOff.offIsActive && (currMinutes<offStartMinutes || currMinutes>offEndMinutes)) {
-            /* clock is off, and we are in the on time range */
-            McuLog_info("Off-time: turning clock on");
+        /* check if we have an off-day */
+        if (isOffDay) {
+          if (CLOCK_ClockIsOn) { /* we are in an off-day, and clock is on -> turn it off */
+            action = On_Off_Action_Day_Turn_Off;
+          }
+        } else {
+          /* otherwise, check the hour settings */
+          uint32_t offStartMinutes = CLOCK_TimeOff.offStartTime.Hour*60 + CLOCK_TimeOff.offStartTime.Min;
+          uint32_t offEndMinutes = CLOCK_TimeOff.offEndTime.Hour*60 + CLOCK_TimeOff.offEndTime.Min;
+          uint32_t currMinutes = time.Hour*60 + time.Min;
+
+          if (offStartMinutes <= offEndMinutes) { /* e.g. 10:00 - 11:30 */
+            if (CLOCK_ClockIsOn && !CLOCK_TimeOff.offIsActive && currMinutes>=offStartMinutes && currMinutes<=offEndMinutes) {
+              /* clock is on, and we are in the off time range */
+              action = On_Off_Action_Hour_Turn_Off;
+            } else if (!CLOCK_ClockIsOn && CLOCK_TimeOff.offIsActive && (currMinutes<offStartMinutes || currMinutes>offEndMinutes)) {
+              /* clock is off, and we are in the on time range */
+              action = On_Off_Action_Hour_Turn_On;
+            }
+          } else { /* e.g. 19:00 - 03:00 */
+            if (CLOCK_ClockIsOn && !CLOCK_TimeOff.offIsActive && (currMinutes>=offStartMinutes || currMinutes<=offEndMinutes)) {
+              /* clock is on, and we are in the off time range */
+              action = On_Off_Action_Hour_Turn_Off;
+            } else if (!CLOCK_ClockIsOn && CLOCK_TimeOff.offIsActive && (currMinutes>offEndMinutes && currMinutes<offStartMinutes)) {
+              /* clock is off, and we are in the on time range */
+              action = On_Off_Action_Hour_Turn_On;
+            }
+          }
+        }
+        /* perform action */
+        switch(action) {
+          case On_Off_Action_Hour_Turn_On:
+            McuLog_info("Off-time/date: turning clock on");
             CLOCK_TimeOff.offIsActive = false;
             CLOCK_On(CLOCK_MODE_ON);
-          }
-        } else { /* e.g. 19:00 - 03:00 */
-          if (CLOCK_ClockIsOn && !CLOCK_TimeOff.offIsActive && (currMinutes>=offStartMinutes || currMinutes<=offEndMinutes)) {
-            /* clock is on, and we are in the off time range */
-            McuLog_info("Off-time: turning clock off");
+            break;
+          case On_Off_Action_Day_Turn_Off:
+          case On_Off_Action_Hour_Turn_Off:
+            McuLog_info("Off-time/date: turning clock off");
             CLOCK_TimeOff.offIsActive = true;
             CLOCK_On(CLOCK_MODE_OFF);
-          } else if (!CLOCK_ClockIsOn && CLOCK_TimeOff.offIsActive && (currMinutes>offEndMinutes && currMinutes<offStartMinutes)) {
-            /* clock is off, and we are in the on time range */
-            McuLog_info("Off-time: turning clock on");
-            CLOCK_TimeOff.offIsActive = false;
-            CLOCK_On(CLOCK_MODE_ON);
-          }
+            break;
+          case On_Off_Action_Nothing:
+          default:
+            break;
         }
       }
     }
