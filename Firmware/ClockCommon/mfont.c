@@ -482,6 +482,63 @@ static const MClockChar2x3_t clockCharSpace2x3 =  /* <space> */
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   }
 };
+
+static const MClockChar2x3_t clockCharComma2x3 =  /* ',' */
+{ .digit = {
+    [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  }
+};
+
+static const MClockChar2x3_t clockCharDot2x3 =  /* '.' */
+{ .digit = {
+    [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  }
+};
+
+static const MClockChar2x3_t clockCharColon2x3 =  /* ':' */
+{ .digit = {
+    [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  }
+};
+
+static const MClockChar2x3_t clockCharSemicolon2x3 =  /* ';' */
+{ .digit = {
+    [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  }
+};
+
+static const MClockChar2x3_t clockCharExclamation2x3 =  /* '!' */
+{ .digit = {
+    [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  }
+};
+
+
 #endif /* MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3 */
 
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
@@ -1921,7 +1978,6 @@ static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
       desc = &clockDigits2x3[*str-'0'];
     } else {
       switch(*str) {
-        case ' ': desc = &clockCharSpace2x3; break;
         case 'A': desc = &clockCharA2x3; break;
         case 'b': desc = &clockCharb2x3; break;
         case 'B': desc = &clockCharB2x3; break;
@@ -1956,7 +2012,16 @@ static void PrintString2x3(const unsigned char *str, int xPos, int yPos) {
         case 176: /* '°' */
         case MFONT_CHAR_DEGREE: desc = &clockCharDegree2x3; break;
         case '%': desc = &clockCharPercent2x3; break;
-        default: desc = NULL; break;
+        case ',': desc = &clockCharComma2x3; break;
+        case '.': desc = &clockCharDot2x3; break;
+        case ':': desc = &clockCharColon2x3; break;
+        case ';': desc = &clockCharSemicolon2x3; break;
+        case '!': desc = &clockCharExclamation2x3; break;
+
+        case ' ':
+        default:
+          desc = &clockCharSpace2x3; break;
+          break;
       }
     }
     if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_2x3 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_2x3) {
@@ -2011,6 +2076,13 @@ void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xS
   } /* switch */
 }
 
+void MFONT_PositionAllToClear(void) {
+  MPOS_SetAngleAll(MPOS_ANGLE_HIDE); /* move to 'hide' position all by default */
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(false); /* turn all off, they will be turned on while writing the font */
+#endif
+}
+
 #if PL_CONFIG_IS_MASTER
 uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait) {
   int xSize, ySize;
@@ -2062,6 +2134,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"mfont", (unsigned char*)"Group of matrix font commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
+  McuShell_SendHelpStr((unsigned char*)"  clear all", (unsigned char*)"Clear all the text area\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  text <f> <x> <y> <txt>", (unsigned char*)"Write text with font (e.g. 2x3) at given position\r\n", io->stdOut);
 #endif
   return ERR_OK;
@@ -2077,6 +2150,10 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     *handled = true;
     return PrintStatus(io);
 #if PL_CONFIG_IS_MASTER
+  } else if (McuUtility_strcmp((char*)cmd, "mfont clear all")==0) {
+    *handled = true;
+    MFONT_PositionAllToClear();
+    return MATRIX_SendToRemoteQueueExecuteAndWait(true);
   } else if (McuUtility_strncmp((char*)cmd, "mfont text ", sizeof("mfont text ")-1)==0) {
     const unsigned char *p;
     uint8_t xPos, yPos;

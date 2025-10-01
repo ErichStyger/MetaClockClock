@@ -42,6 +42,11 @@ void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
 
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font);
 
+/*!
+ * \brief Move all hands to the 'clear' or disabled position (at 225 degrees) with LED off
+ */
+void MFONT_PositionAllToClear(void);
+
 uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait);
 
 uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
