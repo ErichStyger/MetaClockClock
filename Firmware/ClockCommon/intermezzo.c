@@ -878,33 +878,74 @@ static void IntermezzoRectangles3(void) {
   }
 }
 
-static void Intermezzo4CharText(const char *txt) {
+static void IntermezzoCharText(const char *txt, uint8_t xPos, bool clearTxtFirst) {
+  MFONT_Size_e font;
+#if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
+  font = MFONT_SIZE_3x5;
+#elif MATRIX_NOF_STEPPERS_X>=4*2 && MATRIX_NOF_STEPPERS_Y>=3
+  font = MFONT_SIZE_2x3;
+#else
+  #error "not supported"
+#endif
+  if (clearTxtFirst) {
+    MFONT_PrintString((unsigned char*)"    ", 0, 0, font);
+  }
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, font);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+
+static void IntermezzoHSLU(void) {
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
-#if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
-  MFONT_PrintString((unsigned char*)txt, 0, 0, MFONT_SIZE_3x5);
-#elif MATRIX_NOF_STEPPERS_X>=4*2 && MATRIX_NOF_STEPPERS_Y>=3
-  MFONT_PrintString((unsigned char*)txt, 0, 0, MFONT_SIZE_2x3);
-#else
-  #error "not supported"
-#endif
-  MATRIX_SendToRemoteQueueExecuteAndWait(true);
-}
-
-static void IntermezzoHSLU(void) {
-  Intermezzo4CharText("HSLU");
+  IntermezzoCharText("HSLU", 0, false);
 }
 
 static void IntermezzoCSEM(void) {
-  Intermezzo4CharText("CSEM");
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  IntermezzoCharText("CSEM", 0, false);
 }
 
 static void IntermezzoHey(void) {
-  Intermezzo4CharText("HEY!");
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  IntermezzoCharText("HEY!", 0, false);
+}
+
+static void IntermezzoDate(void) {
+  DATEREC date;
+  unsigned char buf[5];
+  const char *monthStr3[] =
+  {
+      "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"
+  };
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  McuTimeDate_GetDate(&date);
+  buf[0] = '\0';
+  McuUtility_strcatNum16uFormatted(buf, sizeof(buf), date.Day, '0', 2);
+  McuUtility_chcat(buf, sizeof(buf), '.');
+  IntermezzoCharText((char*)buf, 2, true);
+  McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)monthStr3[date.Month-1]);
+  IntermezzoCharText((char*)buf, 2, true);
+  McuUtility_Num16uToStr(buf, sizeof(buf), date.Year);
+  IntermezzoCharText((char*)buf, 0, false);
 }
 
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
@@ -1321,6 +1362,7 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoCircleCircle,      .text="Circle circle"},
       {.fp=IntermezzoCircleRays,    .text="Circle rays"},
   #endif
+  {.fp=IntermezzoDate,              .text="Current date"},
   {.fp=IntermezzoHSLU,              .text="HSLU"},
   {.fp=IntermezzoCSEM,              .text="CSEM"},
   {.fp=IntermezzoHey,               .text="HEY!"},
