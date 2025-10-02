@@ -36,7 +36,7 @@ typedef struct MATRIX_Matrix_t {
 
 extern MATRIX_Matrix_t matrix; /* map of current matrix */
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
   void MATRIX_IlluminateHands(void);
 
   void MATRIX_GetHandColorBrightness(uint32_t *pColor, uint8_t *pBrightness);

@@ -294,7 +294,7 @@ static void SetTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
 }
 #endif
 
-#if PL_CONFIG_USE_NEO_PIXEL_HW
+#if PL_CONFIG_USE_LED_RING
 static void clock_fade(bool out, uint32_t color) {
   uint32_t c;
   int curr;

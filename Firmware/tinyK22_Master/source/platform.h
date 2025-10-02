@@ -16,7 +16,7 @@
 /* assign matrix configuration used, only needed for master: */
 #if 0   /* V1: original meta clock with 24 clocks */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3
-#elif 1 /* V2: 60 billion lights with LPC and WS2812B */
+#elif 0 /* V2: 60 billion lights with LPC and WS2812B */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_60B
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* enable or disable RGB functions */
   #define PL_CONFIG_USE_NEO_PIXEL_HW                (1) /* we drive the NeoPixels directly with hardware pins */
@@ -58,7 +58,7 @@
 #elif 0 /* Alexis clock */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_ESP32_UART        (1) /* using the 'ESP32' UART for the shell */
-#elif 0 /* initial Sm(A)rtWall project by Leoni Etter */
+#elif 0 /* \todo initial Sm(A)rtWall project by Leoni Etter */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_8x5
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
@@ -103,27 +103,18 @@
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
-  #define PL_CONFIG_USE_EXTENDED_HANDS              (0) /* using extended hand */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
   #define PL_CONFIG_USE_RS485                       (1)
-#elif 1 /* Cornelius 6x12 matrix */
+#elif 0 /* \todo Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
-  #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
-  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
-  #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
-#elif 1 /* Cornelius 8x15 matrix */
+#elif 1 /* \todo Cornelius 8x15 matrix */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_15x8
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
-  #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
-  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
-  #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
 #else
   #error
 #endif

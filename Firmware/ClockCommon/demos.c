@@ -1000,7 +1000,7 @@ static void DEMO_Nxp(void) {
 }
 #endif
 
-#if PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_FONT && PL_CONFIG_USE_LED_RING
 static void fade(bool out) {
   uint32_t color, c;
   uint8_t brightness;
@@ -1024,7 +1024,9 @@ static void fade(bool out) {
     vTaskDelay(pdMS_TO_TICKS(15));
   } while(curr>=0 && curr<=0xff);
 }
+#endif
 
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_USE_FONT
 static void fadeIn(void) {
   fade(false);
 }
@@ -1032,15 +1034,22 @@ static void fadeIn(void) {
 static void fadeOut(void) {
   fade(true);
 }
+#endif /* PL_CONFIG_USE_LED_RING */
 
-
+#if PL_CONFIG_USE_FONT && PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
 static void fadingText(const char *text, uint8_t xpos) {
+#if PL_CONFIG_USE_LED_RING
   fadeOut();
+#endif
   MFONT_PrintString((unsigned char*)text, xpos, 0, MFONT_SIZE_3x5);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
+#if PL_CONFIG_USE_LED_RING
   fadeIn();
+#endif
 }
+#endif /* #if PL_CONFIG_USE_FONT */
 
+#if PL_CONFIG_USE_FONT && PL_CONFIG_IS_MASTER && MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5 && PL_CONFIG_USE_FONT
 static void DemoFont3x5(void) {
   fadingText("    ", 0);
   fadingText("0123", 0);
