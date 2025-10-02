@@ -58,14 +58,6 @@
 #elif 0 /* Alexis clock */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_ESP32_UART        (1) /* using the 'ESP32' UART for the shell */
-#elif 0 /* \todo initial Sm(A)rtWall project by Leoni Etter */
-  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_8x5
-  #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_DEMOS             (0) /* no demos as they are for dual shaft motors */
-  #define PL_CONFIG_USE_INTERMEZZO        (0) /* only implemented for dual shaft motors */
-  #define PL_CONFIG_USE_CLOCK             (0) /* only implemented for dual shaft motors */
-  #define PL_CONFIG_USE_FONT              (0) /* only implemented for dual shaft motors */
-  #define PL_CONFIG_USE_LED_PIXEL         (1) /* 'moving' pixels */
 #elif 0 /* second Sm(A)rtWall project by Livio Stadelmann */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_16x5
   #define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */

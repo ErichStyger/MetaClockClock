@@ -34,11 +34,10 @@
 #define PL_MATRIX_ID_CLOCK_12x5_60B       (2)  /* McuOneEclipse '60 billion lights' configuration: LPC845 boards (4 clocks), total 60 clocks, with RGB ring controlled by tinyK22 */
 #define PL_MATRIX_ID_CLOCK_12x5_MOD       (3)  /* 60 'modular' clock configuration */
 #define PL_MATRIX_ID_CLOCK_16x9_ALEXIS    (4)  /* 16x9 matrix by Alexis */
-#define PL_MATRIX_ID_SMARTWALL_8x5        (5)  /* Sm(A)rtwall with 5 boards with 8 pixels each stacked up */
-#define PL_MATRIX_ID_CLOCK_8x3_V4         (6)  /* 24 clocks using the round modular boards */
-#define PL_MATRIX_ID_CIRCULAR_CLOCK_1x12  (7)  /* Circular clock with 12 clocks */
-#define PL_MATRIX_ID_SMARTWALL_16x5       (8)  /* Sm(A)rtwall with 5 boards with 16 pixels each stacked up */
-#define PL_MATRIX_ID_CLOCK_12x6           (9)  /* Cornelius: 12x6 clock */
-#define PL_MATRIX_ID_CLOCK_15x8           (10) /* Cornelius: 15x8 clock */
+#define PL_MATRIX_ID_CLOCK_8x3_V4         (5)  /* 24 clocks using the round modular boards */
+#define PL_MATRIX_ID_CIRCULAR_CLOCK_1x12  (6)  /* Circular clock with 12 clocks */
+#define PL_MATRIX_ID_SMARTWALL_16x5       (7)  /* Sm(A)rtwall with 5 boards with 16 pixels each stacked up */
+#define PL_MATRIX_ID_CLOCK_12x6           (8)  /* Cornelius: 12x6 clock */
+#define PL_MATRIX_ID_CLOCK_15x8           (9)  /* Cornelius: 15x8 clock */
 
 #endif /* PLATFORM_ID_H_ */
