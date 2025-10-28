@@ -1,0 +1,12 @@
+### Footprint positions - created on 2025-10-28T09:59:03+0100 ###
+### Printed by KiCad version 9.0.5
+## Unit = mm, Angle = deg.
+## Side : top
+# Ref     Val         Package                                      PosX       PosY       Rot  Side
+J3        Conn_01x03  JST_XH_B3B-XH-AM_1x03_P2.50mm_Vertical    62.9700    60.0000   90.0000  top
+J5        Conn_01x04  JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical     55.8500    67.2000  -90.0000  top
+J6        Conn_01x04  JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical     60.6700    10.0000  180.0000  top
+J7        Conn_01x04  JST_XH_B4B-XH-A_1x04_P2.50mm_Vertical     53.2700    19.7000    0.0000  top
+Logo1     HSLU-DNP    Hochschule_Luzern_New                      8.7888    50.2811    0.0000  top
+U1        VID28-XX    VID28-XX_DownMount                        34.0700    55.1400    0.0000  top
+## End

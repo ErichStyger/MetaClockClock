@@ -1,0 +1,15 @@
+### Footprint positions - created on 2025-10-28T09:59:03+0100 ###
+### Printed by KiCad version 9.0.5
+## Unit = mm, Angle = deg.
+## Side : bottom
+# Ref     Val         Package                               PosX       PosY       Rot  Side
+C1        100nF       C_0603_1608Metric                  70.1300    35.9600    0.0000  bottom
+C2        100nF       C_0603_1608Metric                  60.0900    35.9600    0.0000  bottom
+FID1      Fiducial    Fiducial_1mm_Mask2mm               15.2700    68.2000    0.0000  bottom
+FID2      Fiducial    Fiducial_1mm_Mask2mm               29.3700     3.5000    0.0000  bottom
+FID3      Fiducial    Fiducial_1mm_Mask2mm               79.3700    42.5000    0.0000  bottom
+J1        Conn_01x03  PinHeader_1x03_P2.54mm_Vertical    43.9100    78.5600   90.0000  bottom
+J2        Conn_01x03  PinHeader_1x03_P2.54mm_Vertical    43.9120     1.2700   90.0000  bottom
+U2        AH3572      SOT-23_2T                          70.1700    39.4100    0.0000  bottom
+U3        AH3572      SOT-23_2T                          60.3500    39.3700    0.0000  bottom
+## End
