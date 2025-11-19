@@ -1454,7 +1454,7 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
     tickCount = xTaskGetTickCount();
     if (tickCount-lastClockUpdateTickCount > pdMS_TO_TICKS(IntermezzoDelaySec*1000)) { /* after a delay: start intermezzo */
       intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
-      McuLog_info("Intermezzo: starting %d", intermezzo);
+      McuLog_info("Intermezzo: starting #%d `%s`", intermezzo, intermezzos[intermezzo].text);
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
       /* exclude center clock from Intermezzos */
       CC_EnableCenterClock(false);
