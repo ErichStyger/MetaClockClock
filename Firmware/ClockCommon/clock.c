@@ -329,8 +329,11 @@ static void clock_fadeOut(uint32_t color) {
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   uint8_t buf[8];
 
-  McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
-
+  if (date!=NULL) {
+    McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
+  } else {
+    McuLog_info("Time: %02d:%02d", time->Hour, time->Min);
+  }
 #if PL_CONFIG_USE_LED_CLOCK
   LedClock_ShowTimeDate(time, date);
   return;
@@ -626,29 +629,28 @@ void CLOCK_On(CLOCK_Mode_e mode) {
   }
 }
 
-#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-
+static void ShowTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
 #if PL_CONFIG_IS_SPLIT_FLAP
-static void ShowTime(uint8_t hour, uint8_t minute) {
   uint8_t buf[16];
 
   buf[0] = '\0';
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), minute, '0', 2);
   STEPPER_ShowLocalString(buf);
-}
-#endif
-
-#if PL_CONFIG_IS_CLOCK_CLOCK
-static void ShowTime(int32_t x, int32_t y, uint8_t hour, uint8_t minute) {
+#elif PL_CONFIG_IS_CLOCK_CLOCK
+  TIMEREC t;
+  t.Hour = hour;
+  t.Min = minute;
+  t.Sec = 0;
+  t.Sec100 = 0;
+  CLOCK_ShowTimeDate(&t, NULL);
+#else
   STEPBOARD_Handle_t board = STEPBOARD_GetBoard();
 
   SetTime(x, y, hour, minute);
   STEPBOARD_MoveAndWait(board, 5);
-}
 #endif
-
-#endif /* PL_CONFIG_USE_STEPPER */
+}
 
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintStatus(const McuShell_StdIOType *io) {
@@ -782,18 +784,12 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_FONT
   McuShell_SendHelpStr((unsigned char*)"  font <f>", (unsigned char*)"Set clock font, e.g. 2x3\r\n", io->stdOut);
 #endif
-#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
-#if PL_CONFIG_IS_SPLIT_FLAP
-  McuShell_SendHelpStr((unsigned char*)"  time <time>", (unsigned char*)"Show time\r\n", io->stdOut);
-#endif
-#if PL_CONFIG_IS_CLOCK_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  time <x> <y> <time>", (unsigned char*)"Show time on clock at coordinate (x,y)\r\n", io->stdOut);
-#endif
-#endif
 #if PL_CONFIG_WORLD_CLOCK
   McuShell_SendHelpStr((unsigned char*)"  clocks", (unsigned char*)"[0,0] London    [1,0] New York\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"",         (unsigned char*)"[0,1] Beijing   [1,1] Lucerne\r\n", io->stdOut);
 #endif
+  McuShell_SendHelpStr((unsigned char*)"  countdown <time>", (unsigned char*)"Run countdown for a time\r\n", io->stdOut);
   return ERR_OK;
 }
 #endif
@@ -976,17 +972,12 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     }
     return ERR_FAILED;
 #endif
-#if PL_CONFIG_IS_CLIENT && PL_CONFIG_USE_STEPPER
   } else if (McuUtility_strncmp((char*)cmd, "clock time ", sizeof("clock time ")-1)==0) {
     uint8_t hour, minute, second, hsec;
+    int32_t x, y;
 
     *handled = TRUE;
     p = cmd + sizeof("clock time ")-1;
-    #if PL_CONFIG_IS_SPLIT_FLAP
-    if (McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK) {
-      ShowTime(hour, minute);
-    #elif PL_CONFIG_IS_CLOCK_CLOCK
-    int32_t x, y;
     if (
            McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
         && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
@@ -994,12 +985,35 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
        )
     {
       ShowTime(x, y, hour, minute);
-    #endif
     } else {
       return ERR_FAILED;
     }
     return ERR_OK;
-#endif /* PL_CONFIG_USE_STEPPER */
+
+#if 0
+  } else if (McuUtility_strncmp((char*)cmd, "clock countdown ", sizeof("clock countdown ")-1)==0) {
+      uint8_t hour, minute, second, hsec;
+
+      *handled = TRUE;
+      p = cmd + sizeof("clock countdown ")-1;
+      #if PL_CONFIG_IS_SPLIT_FLAP
+      if (McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK) {
+        ShowTime(hour, minute);
+      #elif PL_CONFIG_IS_CLOCK_CLOCK
+      int32_t x, y;
+      if (
+             McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
+          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+          && McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK
+         )
+      {
+        ShowTime(x, y, hour, minute);
+      #endif
+      } else {
+        return ERR_FAILED;
+      }
+      return ERR_OK;
+#endif
   }
   return ERR_OK;
 }
