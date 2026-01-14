@@ -1518,6 +1518,19 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 }
 #endif
 
+static uint8_t listIntermezzos(const McuShell_StdIOType *io) {
+  for(int i=0; i<NOF_INTERMEZZOS; i++) {
+    unsigned char buf[48];
+
+    McuUtility_Num16uToStr(buf, sizeof(buf), i);
+    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)": ");
+    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)intermezzos[i].text);
+    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)"\r\n");
+    McuShell_SendStr((unsigned char*)buf, io->stdOut);
+  }
+  return ERR_OK;
+}
+
 #if PL_CONFIG_USE_SHELL
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"intermezzo", (unsigned char*)"Group of intermezzo commands\r\n", io->stdOut);
@@ -1530,15 +1543,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  <nr>", (unsigned char*)"Play Intermezzo (0-", io->stdOut);
   McuShell_SendNum32u(NOF_INTERMEZZOS-1, io->stdOut);
   McuShell_SendStr((unsigned char*)")\r\n", io->stdOut);
-  for(int i=0; i<NOF_INTERMEZZOS; i++) {
-    unsigned char buf[48];
-
-    McuUtility_Num16uToStr(buf, sizeof(buf), i);
-    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)": ");
-    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)intermezzos[i].text);
-    McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)"\r\n");
-    McuShell_SendHelpStr((unsigned char*)"", (unsigned char*)buf, io->stdOut);
-  }
+  McuShell_SendHelpStr((unsigned char*)"  list", (unsigned char*)"List intermezzos\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  rtc temp offset <dC>", (unsigned char*)"Set RTC temperature offset in deci-Celsius\r\n", io->stdOut);
   return ERR_OK;
 }
@@ -1603,6 +1608,9 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     } else {
       return ERR_FAILED;
     }
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo list")==0) {
+    *handled = true;
+    return listIntermezzos(io);
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo ", sizeof("intermezzo ")-1)==0) {
     uint8_t nr;
 
