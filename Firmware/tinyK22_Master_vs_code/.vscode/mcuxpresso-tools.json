@@ -6,8 +6,8 @@
   "multicoreType": "none",
   "projectType": "sdk-freestanding",
   "sdk": {
-    "version": "25.03.00",
-    "path": "c:\\tmp\\metaclockclock\\MetaClockClock\\Firmware\\sdks\\tinyK22_Master_vs_code_sdk",
+    "version": "25.06.00",
+    "path": "C:\\tmp\\tinyClock\\sdks\\frdm_k22f_blank_sdk",
     "boardId": "frdmk22f",
     "deviceId": "MK22FN512xxx12",
     "coreId": "core0_MK22FN512xxx12"
