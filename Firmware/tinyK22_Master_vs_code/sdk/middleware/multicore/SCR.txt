@@ -1,0 +1,8 @@
+Name: mcux-sdk-middleware-multicore
+Version: 25.06.00
+Outgoing License: BSD-3-Clause
+License File: LICENSE
+Format: source code
+Description: Multicore SDK.
+Location: https://github.com/nxp-mcuxpresso/mcux-sdk-middleware-multicore
+Origin: NXP (BSD-3-Clause)

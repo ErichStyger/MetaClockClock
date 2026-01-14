@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<VIF xmlns="http://usb.org/VendorInfoFile.xsd">
+  <VIF_Specification>3.17</VIF_Specification>
+  <VIF_App>
+    <Vendor>Ellisys</Vendor>
+    <Name>Ellisys USB Explorer 350 Examiner</Name>
+    <Version>3.1.8098.23433</Version>
+  </VIF_App>
+  <Vendor_Name>NXP</Vendor_Name>
+  <Model_Part_Number></Model_Part_Number>
+  <Product_Revision></Product_Revision>
+  <TID></TID>
+  <VIF_Product_Type value="0">Port</VIF_Product_Type>
+  <Certification_Type value="0">End Product</Certification_Type>
+  <Product />
+  <Component>
+    <Port_Label></Port_Label>
+    <Connector_Type value="2">Type-C</Connector_Type>
+    <USB4_Supported value="false" />
+    <USB_PD_Support value="true" />
+    <PD_Port_Type value="2">Provider / Consumer</PD_Port_Type>
+    <Type_C_State_Machine value="0">Source</Type_C_State_Machine>
+    <Port_Battery_Powered value="false" />
+    <BC_1_2_Support value="0">None</BC_1_2_Support>
+    <PD_Spec_Revision_Major value="3" />
+    <PD_Spec_Revision_Minor value="0" />
+    <PD_Spec_Version_Major value="2" />
+    <PD_Spec_Version_Minor value="0" />
+    <PD_Specification_Revision value="2">v3.0</PD_Specification_Revision>
+    <SOP_Capable value="true" />
+    <SOP_P_Capable value="false" />
+    <SOP_PP_Capable value="false" />
+    <SOP_P_Debug_Capable value="false" />
+    <SOP_PP_Debug_Capable value="false" />
+    <Manufacturer_Info_Supported_Port value="true" />
+    <Manufacturer_Info_VID_Port value="8137">0x1FC9</Manufacturer_Info_VID_Port>
+    <Manufacturer_Info_PID_Port value="256">0x0100</Manufacturer_Info_PID_Port>
+    <USB_Comms_Capable value="false" />
+    <DR_Swap_To_DFP_Supported value="true" />
+    <DR_Swap_To_UFP_Supported value="true" />
+    <Unconstrained_Power value="true" />
+    <VCONN_Swap_To_On_Supported value="true" />
+    <VCONN_Swap_To_Off_Supported value="true" />
+    <Responds_To_Discov_SOP_UFP value="true" />
+    <Responds_To_Discov_SOP_DFP value="true" />
+    <Attempts_Discov_SOP value="false" />
+    <Power_Interruption_Available value="0">No Interruption Possible</Power_Interruption_Available>
+    <Chunking_Implemented_SOP value="true" />
+    <Data_Reset_Supported value="false" />
+    <Enter_USB_Supported value="false" />
+    <Unchunked_Extended_Messages_Supported value="true" />
+    <Security_Msgs_Supported_SOP value="false" />
+    <Num_Fixed_Batteries value="0" />
+    <Num_Swappable_Battery_Slots value="0" />
+    <ID_Header_Connector_Type_SOP value="2">USB Type-C Receptacle</ID_Header_Connector_Type_SOP>
+    <Type_C_Can_Act_As_Host value="false" />
+    <Type_C_Can_Act_As_Device value="false" />
+    <Type_C_Supports_Audio_Accessory value="false" />
+    <Type_C_Is_VCONN_Powered_Accessory value="false" />
+    <Type_C_Is_Debug_Target_SRC value="false" />
+    <Captive_Cable value="false" />
+    <Captive_Cable_Is_eMarked value="false" />
+    <RP_Value value="2">3A @ 5V</RP_Value>
+    <Type_C_Port_On_Hub value="false" />
+    <Type_C_Power_Source value="2">Both</Type_C_Power_Source>
+    <Type_C_Sources_VCONN value="true" />
+    <Type_C_Is_Alt_Mode_Controller value="false" />
+    <PD_Power_As_Source value="18000">18 W</PD_Power_As_Source>
+    <EPR_Supported_As_Src value="false" />
+    <USB_Suspend_May_Be_Cleared value="true" />
+    <Sends_Pings value="false" />
+    <FR_Swap_Type_C_Current_Capability_As_Initial_Sink value="0">FR_Swap not supported</FR_Swap_Type_C_Current_Capability_As_Initial_Sink>
+    <Master_Port value="false" />
+    <Num_Src_PDOs value="2" />
+    <PD_OC_Protection value="false" />
+    <SrcPdoList>
+      <SrcPDO>
+        <Src_PDO_Supply_Type value="0">Fixed</Src_PDO_Supply_Type>
+        <Src_PDO_Peak_Current value="0">100% IOC</Src_PDO_Peak_Current>
+        <Src_PDO_Voltage value="100">5 V</Src_PDO_Voltage>
+        <Src_PDO_Max_Current value="300">3 A</Src_PDO_Max_Current>
+        <Src_PD_OCP_OC_Debounce value="0">0 s</Src_PD_OCP_OC_Debounce>
+        <Src_PD_OCP_OC_Threshold value="0">0 A</Src_PD_OCP_OC_Threshold>
+      </SrcPDO>
+      <SrcPDO>
+        <Src_PDO_Supply_Type value="0">Fixed</Src_PDO_Supply_Type>
+        <Src_PDO_Peak_Current value="0">100% IOC</Src_PDO_Peak_Current>
+        <Src_PDO_Voltage value="180">9 V</Src_PDO_Voltage>
+        <Src_PDO_Max_Current value="200">2 A</Src_PDO_Max_Current>
+        <Src_PD_OCP_OC_Debounce value="0">0 s</Src_PD_OCP_OC_Debounce>
+        <Src_PD_OCP_OC_Threshold value="0">0 A</Src_PD_OCP_OC_Threshold>
+      </SrcPDO>
+    </SrcPdoList>
+    <PD_Power_As_Sink value="18000">18 W</PD_Power_As_Sink>
+    <EPR_Supported_As_Snk value="false" />
+    <No_USB_Suspend_May_Be_Set value="true" />
+    <GiveBack_May_Be_Set value="false" />
+    <Higher_Capability_Set value="true" />
+    <FR_Swap_Reqd_Type_C_Current_As_Initial_Source value="0">FR_Swap not supported</FR_Swap_Reqd_Type_C_Current_As_Initial_Source>
+    <Num_Snk_PDOs value="2" />
+    <SnkPdoList>
+      <SnkPDO>
+        <Snk_PDO_Supply_Type value="0">Fixed</Snk_PDO_Supply_Type>
+        <Snk_PDO_Voltage value="100">5 V</Snk_PDO_Voltage>
+        <Snk_PDO_Op_Current value="300">3 A</Snk_PDO_Op_Current>
+      </SnkPDO>
+      <SnkPDO>
+        <Snk_PDO_Supply_Type value="0">Fixed</Snk_PDO_Supply_Type>
+        <Snk_PDO_Voltage value="180">9 V</Snk_PDO_Voltage>
+        <Snk_PDO_Op_Current value="200">2 A</Snk_PDO_Op_Current>
+      </SnkPDO>
+    </SnkPdoList>
+    <Accepts_PR_Swap_As_Src value="true" />
+    <Accepts_PR_Swap_As_Snk value="true" />
+    <Requests_PR_Swap_As_Src value="false" />
+    <Requests_PR_Swap_As_Snk value="false" />
+    <FR_Swap_Supported_As_Initial_Sink value="false" />
+    <XID_SOP value="0" />
+    <Data_Capable_As_USB_Host_SOP value="false" />
+    <Data_Capable_As_USB_Device_SOP value="false" />
+    <Product_Type_UFP_SOP value="0">Undefined</Product_Type_UFP_SOP>
+    <Product_Type_DFP_SOP value="0">Undefined</Product_Type_DFP_SOP>
+    <DFP_VDO_Port_Number value="0" />
+    <Modal_Operation_Supported_SOP value="true" />
+    <USB_VID_SOP value="8137">0x1FC9</USB_VID_SOP>
+    <PID_SOP value="256">0x0100</PID_SOP>
+    <bcdDevice_SOP value="256">0x0100</bcdDevice_SOP>
+    <SVID_Fixed_SOP value="true" />
+    <Num_SVIDs_Min_SOP value="1" />
+    <Num_SVIDs_Max_SOP value="1" />
+    <SOPSVIDList>
+      <SOPSVID>
+        <SVID_SOP value="8137">0x1FC9</SVID_SOP>
+        <SVID_Modes_Fixed_SOP value="true" />
+        <SVID_Num_Modes_Min_SOP value="1" />
+        <SVID_Num_Modes_Max_SOP value="1" />
+        <SOPSVIDModeList>
+          <SOPSVIDMode>
+            <SVID_Mode_Enter_SOP value="true" />
+            <SVID_Mode_Recog_Mask_SOP value="4294967295">0xFFFFFFFF</SVID_Mode_Recog_Mask_SOP>
+            <SVID_Mode_Recog_Value_SOP value="1">0x00000001</SVID_Mode_Recog_Value_SOP>
+          </SOPSVIDMode>
+        </SOPSVIDModeList>
+      </SOPSVID>
+    </SOPSVIDList>
+    <Product_Total_Source_Power_mW value="0">0 W</Product_Total_Source_Power_mW>
+    <Port_Source_Power_Type value="0">Assured</Port_Source_Power_Type>
+    <Type_C_Supports_DP_Alt_Mode_as_DFP_D value="false" />
+    <Type_C_Supports_DP_Alt_Mode_as_UFP_D value="false" />
+  </Component>
+</VIF>

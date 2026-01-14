@@ -1,0 +1,64 @@
+{
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "spdxVersion": "SPDX-2.3",
+  "creationInfo": {
+    "created": "2025-05-26T09:15:51Z",
+    "creators": [
+      "Organization: NXP"
+    ],
+    "licenseListVersion": "3.20"
+  },
+  "name": "mcux-sdk-middleware-multicore-v25.06.00",
+  "dataLicense": "CC0-1.0",
+  "documentNamespace": "https://nxp.com/spdx/69f16361-a14f-4d03-b89d-0d638adbf40b",
+  "packages": [
+    {
+      "SPDXID": "SPDXRef-package-69f16361-a14f-4d03-b89d-0d638adbf40b",
+      "name": "mcux-sdk-middleware-multicore",
+      "versionInfo": "v25.06.00",
+      "licenseConcluded": "(BSD-3-Clause)",
+      "licenseDeclared": "(BSD-3-Clause)",
+      "downloadLocation": "https://github.com/nxp-mcuxpresso/mcux-sdk-middleware-multicore",
+      "originator": "Organization: NXP",
+      "supplier": "NOASSERTION",
+      "externalRefs": [],
+      "filesAnalyzed": false
+    },
+    {
+      "SPDXID": "SPDXRef-package-9ea1d2e9-251b-42e5-9e6d-2f4a76f429d0",
+      "name": "openamp",
+      "versionInfo": "2020.01",
+      "licenseConcluded": "BSD-3-Clause",
+      "licenseDeclared": "BSD-3-Clause",
+      "homepage": "https://github.com/OpenAMP/open-amp",
+      "downloadLocation": "NOASSERTION",
+      "originator": "Organization: opensuse",
+      "supplier": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceLocator": "pkg:rpm/opensuse/openamp@2020.01-1.2?arch=aarch64",
+          "referenceType": "purl"
+        },
+        {
+          "referenceCategory": "OTHER",
+          "referenceLocator": "afc3e4d9-d830-4712-ba9f-cefd7b1e8300",
+          "referenceType": "BlackDuck-ComponentOrigin"
+        }
+      ],
+      "filesAnalyzed": false
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relationshipType": "DESCRIBES",
+      "relatedSpdxElement": "SPDXRef-package-69f16361-a14f-4d03-b89d-0d638adbf40b"
+    },
+    {
+      "spdxElementId": "SPDXRef-package-69f16361-a14f-4d03-b89d-0d638adbf40b",
+      "relationshipType": "CONTAINS",
+      "relatedSpdxElement": "SPDXRef-package-9ea1d2e9-251b-42e5-9e6d-2f4a76f429d0"
+    }
+  ]
+}

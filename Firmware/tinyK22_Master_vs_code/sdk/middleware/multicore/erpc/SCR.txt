@@ -1,0 +1,78 @@
+Release Name: eRPC
+Release Version: 1.14.0
+Package License: BSD-3-Clause
+
+the_bus_pirate          Name: The Bus Pirate
+                        Version: NA
+                        Outgoing License: Open Source - CC0 (Public Domain
+                        Dedication License)
+                        License File: http://code.google.com/p/the-bus-pirate/
+                        Format: source code
+                        Description: OS independent serial interface
+                        Location:
+                        erpc_c/port/erpc_serial.h,
+                        erpc_c/port/erpc_serial.cpp
+                        Origin: Community
+                        Url: http://code.google.com/p/the-bus-pirate/
+
+cpp_template            Name: CPP Template
+                        Version: NA
+                        Outgoing License: Open Source - MIT
+                        License File:
+                        erpcgen/src/cpptemplate/LICENSE.txt
+                        Format: source code
+                        Description: CPP Template
+                        Location: erpcgen/src/cpptemplate
+                        Origin: Ryan Ginstrom & Martinho Fernandes
+
+cpp_option_parser       Name: C++ option-parser
+                        Version: NA
+                        Outgoing License: Brad Appleton's license
+                        License File: http://www.bradapp.com/ftp/src/libs/C++/Options.tar.gz
+                        , see README file
+                        Format: Plain Text
+                        Description: C++ option-parser
+                        Location: erpcgen/src/options.cpp
+                        Origin: Brad Appleton bradapp@enteract.com
+                        Url: http://www.bradapp.com/ftp/src/libs/C++/Options.html
+
+kconfig_scripts         Name: A flexible Python 2/3 Kconfig implementation and library
+                        Version: NA
+                        Outgoing License: ISC
+                        License File: https://github.com/ulfalizer/Kconfiglib/blob/master/LICENSE.txt
+                        Format: source code
+                        Description: A flexible Python 2/3 Kconfig implementation and library
+                        Location: scripts/kconfig/kconfiglib.py,
+                        scripts/kconfig/guiconfig.py, scripts/kconfig/menuconfig.py
+                        Origin: Ulf Magnusson
+                        Url: https://github.com/ulfalizer/Kconfiglib
+
+hardenconfig_script     Name: Zephyr RTOS scripts
+                        Version: 3.6
+                        Outgoing License: Apache 2.0
+                        License File: https://github.com/zephyrproject-rtos/zephyr/blob/main/LICENSE
+                        Format: source code
+                        Description: Zephyr RTOS scripts
+                        Location: scripts/kconfig/hardenconfig.py
+                        Origin: Intel Corporation
+                        Url: https://github.com/zephyrproject-rtos/zephyr
+
+kconfigfunctions_script Name: Zephyr RTOS scripts
+                        Version: 3.6
+                        Outgoing License: Apache 2.0
+                        License File: https://github.com/zephyrproject-rtos/zephyr/blob/main/LICENSE
+                        Format: source code
+                        Description: Zephyr RTOS scripts
+                        Location: scripts/kconfig/kconfigfunctions.py
+                        Origin: Nordic Semiconductor ASA, Linaro
+                        Url: https://github.com/zephyrproject-rtos/zephyr
+
+lint_script             Name: Zephyr RTOS scripts
+                        Version: 3.6
+                        Outgoing License: Apache 2.0
+                        License File: https://github.com/zephyrproject-rtos/zephyr/blob/main/LICENSE
+                        Format: source code
+                        Description: Zephyr RTOS scripts
+                        Location: scripts/kconfig/lint.py
+                        Origin: Nordic Semiconductor ASA
+                        Url: https://github.com/zephyrproject-rtos/zephyr

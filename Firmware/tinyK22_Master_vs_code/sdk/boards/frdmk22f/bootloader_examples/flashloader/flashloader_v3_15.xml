@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ksdk:examples xmlns:ksdk="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd manifest.xsd">
+  <externalDefinitions>
+    <definition extID="core0_MK22FN512xxx12"/>
+    <definition extID="platform.drivers.clock.MK22F51212"/>
+    <definition extID="CMSIS_Include_core_cm.MK22F51212"/>
+    <definition extID="device.MK22F51212_CMSIS.MK22F51212"/>
+    <definition extID="platform.drivers.common.MK22F51212"/>
+    <definition extID="platform.drivers.crc.MK22F51212"/>
+    <definition extID="platform.drivers.dspi.MK22F51212"/>
+    <definition extID="platform.drivers.flash.MK22F51212"/>
+    <definition extID="platform.drivers.gpio.MK22F51212"/>
+    <definition extID="platform.drivers.i2c.MK22F51212"/>
+    <definition extID="platform.drivers.lpuart.MK22F51212"/>
+    <definition extID="platform.drivers.port.MK22F51212"/>
+    <definition extID="platform.drivers.smc.MK22F51212"/>
+    <definition extID="platform.drivers.uart.MK22F51212"/>
+    <definition extID="platform.utilities.misc_utilities.MK22F51212"/>
+    <definition extID="component.lists.MK22F51212"/>
+    <definition extID="utility.str.MK22F51212"/>
+    <definition extID="utility.debug_console_lite.MK22F51212"/>
+    <definition extID="component.uart_adapter.MK22F51212"/>
+    <definition extID="component.osa_template_config.MK22F51212"/>
+    <definition extID="component.osa.MK22F51212"/>
+    <definition extID="component.osa_bm.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.bootsources.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.bootsources_kinetis.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.src_startup.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.postaction.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.src_bm_usb.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.usb.device.controller.driver.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.usb.common_header.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.usb.device.stack.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.usb.device.hid.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.usb.device.msd.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.usb.device_controller_khci.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.drv_microseconds.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.MK22F51212_startup.MK22F51212"/>
+    <definition extID="middleware.mcu-boot.MK22F51212_sources.MK22F51212"/>
+    <definition extID="iar"/>
+    <definition extID="mdk"/>
+    <definition extID="armgcc"/>
+    <definition extID="mcuxpresso"/>
+    <definition extID="com.nxp.mcuxpresso"/>
+  </externalDefinitions>
+  <example id="frdmk22f_flashloader" name="flashloader" device_core="core0_MK22FN512xxx12" dependency="platform.drivers.clock.MK22F51212 CMSIS_Include_core_cm.MK22F51212 device.MK22F51212_CMSIS.MK22F51212 platform.drivers.common.MK22F51212 platform.drivers.crc.MK22F51212 platform.drivers.dspi.MK22F51212 platform.drivers.flash.MK22F51212 platform.drivers.gpio.MK22F51212 platform.drivers.i2c.MK22F51212 platform.drivers.lpuart.MK22F51212 platform.drivers.port.MK22F51212 platform.drivers.smc.MK22F51212 platform.drivers.uart.MK22F51212 platform.utilities.misc_utilities.MK22F51212 component.lists.MK22F51212 utility.str.MK22F51212 utility.debug_console_lite.MK22F51212 component.uart_adapter.MK22F51212 component.osa_template_config.MK22F51212 component.osa.MK22F51212 component.osa_bm.MK22F51212 middleware.mcu-boot.bootsources.MK22F51212 middleware.mcu-boot.bootsources_kinetis.MK22F51212 middleware.mcu-boot.src_startup.MK22F51212 middleware.mcu-boot.postaction.MK22F51212 middleware.mcu-boot.src_bm_usb.MK22F51212 middleware.mcu-boot.usb.device.controller.driver.MK22F51212 middleware.mcu-boot.usb.common_header.MK22F51212 middleware.mcu-boot.usb.device.stack.MK22F51212 middleware.mcu-boot.usb.device.hid.MK22F51212 middleware.mcu-boot.usb.device.msd.MK22F51212 middleware.mcu-boot.usb.device_controller_khci.MK22F51212 middleware.mcu-boot.drv_microseconds.MK22F51212 middleware.mcu-boot.MK22F51212_startup.MK22F51212 middleware.mcu-boot.MK22F51212_sources.MK22F51212" category="bootloader_examples">
+    <projects>
+      <project type="com.crt.advproject.projecttype.exe" nature="org.eclipse.cdt.core.cnature"/>
+    </projects>
+    <toolchainSettings>
+      <toolchainSetting id_refs="com.nxp.mcuxpresso">
+        <buildSteps>
+          <postBuildStep>arm-none-eabi-objcopy -I elf32-littlearm -O binary ${ProjName}.axf ${ProjName}.bin ; python ../source/create_fl_image_mcux.py ${ProjName}.axf ${ProjName}.bin flashloader_image.c ; mkdir -p ../../${ProjName}_loader/Release/ ; cp flashloader_image.c ../../${ProjName}_loader/Release/ ; mkdir -p ../../${ProjName}_loader/Debug/ ; cp flashloader_image.c ../../${ProjName}_loader/Debug/</postBuildStep>
+        </buildSteps>
+        <option id="gnu.c.compiler.option.preprocessor.def.symbols" type="stringList">
+          <value>MCUXPRESSO_SDK</value>
+          <value>__SEMIHOST_HARDFAULT_DISABLE=1</value>
+          <value>CPU_MK22FN512VLH12</value>
+          <value>BL_TARGET_RAM</value>
+          <value>FRDM_K22F</value>
+          <value>USB_STACK_BM</value>
+          <value>FSL_OSA_BM_TIMER_CONFIG=FSL_OSA_BM_TIMER_NONE</value>
+          <value>PINT_USE_SIMPLE_CALLBACK=1</value>
+          <value>SDK_DEBUGCONSOLE=1</value>
+          <value>MK22F51212_SERIES</value>
+          <value>OSA_USED</value>
+          <value>USE_RTOS=0</value>
+        </option>
+        <option id="com.crt.advproject.gas.fpu" type="enum">
+          <value>com.crt.advproject.gas.fpu.fpv4.hard</value>
+        </option>
+        <option id="com.crt.advproject.gcc.exe.release.option.optimization.level" type="enum">
+          <value>gnu.c.optimization.level.size</value>
+        </option>
+        <option id="gnu.c.compiler.option.optimization.flags" type="string">
+          <value>-fno-common</value>
+        </option>
+        <option id="com.crt.advproject.c.misc.dialect" type="enum">
+          <value>com.crt.advproject.misc.dialect.gnu99</value>
+        </option>
+        <option id="com.crt.advproject.gcc.fpu" type="enum">
+          <value>com.crt.advproject.gcc.fpu.fpv4.hard</value>
+        </option>
+        <option id="com.crt.advproject.gcc.exe.debug.option.debugging.level" type="enum">
+          <value>gnu.c.debugging.level.default</value>
+        </option>
+        <option id="com.crt.advproject.gcc.exe.debug.option.optimization.level" type="enum">
+          <value>gnu.c.optimization.level.size</value>
+        </option>
+        <option id="gnu.c.compiler.option.misc.other" type="string">
+          <value>-c -ffunction-sections -fdata-sections -fno-builtin</value>
+        </option>
+        <option id="gnu.c.compiler.option.warnings.allwarn" type="boolean">
+          <value>false</value>
+        </option>
+        <option id="gnu.c.compiler.option.warnings.toerrors" type="boolean">
+          <value>false</value>
+        </option>
+        <option id="gnu.c.link.option.nostdlibs" type="boolean">
+          <value>true</value>
+        </option>
+        <option id="com.crt.advproject.link.fpu" type="enum">
+          <value>com.crt.advproject.link.fpu.fpv4.hard</value>
+        </option>
+        <option id="com.crt.advproject.gas.hdrlib" type="enum">
+          <value>com.crt.advproject.gas.hdrlib.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.gas.specs" type="enum">
+          <value>com.crt.advproject.gas.specs.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.gcc.hdrlib" type="enum">
+          <value>com.crt.advproject.gcc.hdrlib.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.gcc.specs" type="enum">
+          <value>com.crt.advproject.gcc.specs.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.link.gcc.hdrlib" type="enum">
+          <value>com.crt.advproject.gcc.link.hdrlib.newlibnano.none</value>
+        </option>
+        <option id="gnu.c.link.option.other" type="stringList">
+          <value>-no-warn-rwx-segments</value>
+          <value>--gc-sections</value>
+          <value>--no-warn-rwx-segments</value>
+          <value>-Map=${BuildArtifactFileBaseName}.map</value>
+        </option>
+        <option id="gnu.c.link.option.group" type="boolean">
+          <value>true</value>
+        </option>
+        <option id="com.crt.advproject.link.script" type="string">
+          <value>MK22FN512xxx12_ram_flashloader.ld</value>
+        </option>
+        <option id="com.crt.advproject.link.scriptdir" type="string">
+          <value>${ProjDirPath}/mcu_bootloader</value>
+        </option>
+      </toolchainSetting>
+    </toolchainSettings>
+    <include_paths>
+      <include_path path="." project_relative_path="source" type="c_include"/>
+      <include_path path="." project_relative_path="board" type="c_include"/>
+      <include_path path="." project_relative_path="source" type="asm_include"/>
+    </include_paths>
+    <source path="iar" project_relative_path="./" type="workspace" toolchain="iar">
+      <files mask="flashloader.ewd"/>
+      <files mask="flashloader.ewp"/>
+      <files mask="flashloader.eww"/>
+    </source>
+    <source path="mdk" project_relative_path="./" type="workspace" toolchain="mdk">
+      <files mask="flashloader.uvoptx"/>
+      <files mask="flashloader.uvprojx"/>
+      <files mask="flashloader.uvmpw"/>
+    </source>
+    <source path="armgcc" project_relative_path="./" type="workspace" toolchain="armgcc">
+      <files mask="build_all.bat"/>
+      <files mask="build_all.sh"/>
+      <files mask="clean.bat"/>
+      <files mask="clean.sh"/>
+      <files mask="CMakeLists.txt"/>
+      <files mask="flags.cmake"/>
+      <files mask="config.cmake"/>
+      <files mask="build_release.bat"/>
+      <files mask="build_release.sh"/>
+      <files mask="build_debug.bat"/>
+      <files mask="build_debug.sh"/>
+    </source>
+    <source path="../../../../devices/MK22F51212" project_relative_path="./" type="workspace" toolchain="armgcc">
+      <files mask="all_lib_device.cmake"/>
+    </source>
+    <source path="." project_relative_path="source" type="script">
+      <files mask="create_flashloader_image.bat"/>
+      <files mask="create_fl_image.py"/>
+      <files mask="elf.py"/>
+      <files mask="create_fl_image_mdk.py"/>
+      <files mask="create_fl_image_mcux.py"/>
+    </source>
+    <source path="." project_relative_path="source" type="src">
+      <files mask="pin_mux.c"/>
+      <files mask="clock_config.c"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include">
+      <files mask="pin_mux.h"/>
+      <files mask="clock_config.h"/>
+    </source>
+    <source path="." project_relative_path="board" type="c_include">
+      <files mask="board.h"/>
+    </source>
+    <source path="." project_relative_path="board" type="src">
+      <files mask="board.c"/>
+    </source>
+    <source path="mcux" project_relative_path="mcu_bootloader" type="linker" toolchain="mcuxpresso">
+      <files mask="MK22FN512xxx12_ram_flashloader.ld"/>
+    </source>
+    <source path="iar" project_relative_path="MK22F51212/iar" type="linker" toolchain="iar">
+      <files mask="MK22FN512xxx12_ram_flashloader.icf"/>
+    </source>
+    <source path="mdk" project_relative_path="MK22F51212/mdk" type="linker" toolchain="mdk">
+      <files mask="MK22FN512xxx12_ram_flashloader.scf"/>
+    </source>
+    <source path="armgcc" project_relative_path="MK22F51212/armgcc" type="linker" toolchain="armgcc">
+      <files mask="MK22FN512xxx12_ram_flashloader.ld"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include" config="true">
+      <files mask="fsl_os_abstraction_config.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_preinclude">
+      <files mask="mcux_config.h"/>
+    </source>
+  </example>
+</ksdk:examples>

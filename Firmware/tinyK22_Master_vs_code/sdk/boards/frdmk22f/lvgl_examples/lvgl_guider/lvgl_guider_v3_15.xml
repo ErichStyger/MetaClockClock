@@ -1,0 +1,260 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ksdk:examples xmlns:ksdk="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://nxp.com/ksdk/2.0/ksdk_manifest_v3.0.xsd manifest.xsd">
+  <externalDefinitions>
+    <definition extID="core0_MK22FN512xxx12"/>
+    <definition extID="platform.drivers.clock.MK22F51212"/>
+    <definition extID="CMSIS_Include_core_cm.MK22F51212"/>
+    <definition extID="CMSIS_Driver_Include.I2C.MK22F51212"/>
+    <definition extID="CMSIS_Driver_Include.SPI.MK22F51212"/>
+    <definition extID="device.MK22F51212_CMSIS.MK22F51212"/>
+    <definition extID="device.MK22F51212_system.MK22F51212"/>
+    <definition extID="device.MK22F51212_startup.MK22F51212"/>
+    <definition extID="RTE_Device.MK22F51212"/>
+    <definition extID="platform.drivers.common.MK22F51212"/>
+    <definition extID="platform.drivers.dmamux.MK22F51212"/>
+    <definition extID="platform.drivers.dspi_edma.MK22F51212"/>
+    <definition extID="platform.drivers.dspi.MK22F51212"/>
+    <definition extID="platform.drivers.edma.MK22F51212"/>
+    <definition extID="platform.drivers.gpio.MK22F51212"/>
+    <definition extID="platform.drivers.i2c_edma.MK22F51212"/>
+    <definition extID="platform.drivers.i2c.MK22F51212"/>
+    <definition extID="platform.drivers.lpuart.MK22F51212"/>
+    <definition extID="platform.drivers.port.MK22F51212"/>
+    <definition extID="platform.drivers.smc.MK22F51212"/>
+    <definition extID="platform.drivers.uart.MK22F51212"/>
+    <definition extID="platform.drivers.i2c_cmsis.MK22F51212"/>
+    <definition extID="platform.drivers.dspi_cmsis.MK22F51212"/>
+    <definition extID="platform.utilities.assert_lite.MK22F51212"/>
+    <definition extID="platform.utilities.misc_utilities.MK22F51212"/>
+    <definition extID="utility.str.MK22F51212"/>
+    <definition extID="utility.debug_console_lite.MK22F51212"/>
+    <definition extID="component.uart_adapter.MK22F51212"/>
+    <definition extID="driver.ft6x06.MK22F51212"/>
+    <definition extID="driver.ili9341.MK22F51212"/>
+    <definition extID="middleware.lvgl.MK22F51212"/>
+    <definition extID="middleware.lvgl.template.MK22F51212"/>
+    <definition extID="middleware.freertos-kernel.MK22F51212"/>
+    <definition extID="middleware.freertos-kernel.heap_4.MK22F51212"/>
+    <definition extID="middleware.freertos-kernel.extension.MK22F51212"/>
+    <definition extID="middleware.freertos-kernel.config.MK22F51212"/>
+    <definition extID="iar"/>
+    <definition extID="mdk"/>
+    <definition extID="armgcc"/>
+    <definition extID="mcuxpresso"/>
+    <definition extID="com.nxp.mcuxpresso"/>
+  </externalDefinitions>
+  <example id="frdmk22f_lvgl_guider" name="lvgl_guider" device_core="core0_MK22FN512xxx12" dependency="platform.drivers.clock.MK22F51212 CMSIS_Include_core_cm.MK22F51212 CMSIS_Driver_Include.I2C.MK22F51212 CMSIS_Driver_Include.SPI.MK22F51212 device.MK22F51212_CMSIS.MK22F51212 device.MK22F51212_system.MK22F51212 device.MK22F51212_startup.MK22F51212 RTE_Device.MK22F51212 platform.drivers.common.MK22F51212 platform.drivers.dmamux.MK22F51212 platform.drivers.dspi_edma.MK22F51212 platform.drivers.dspi.MK22F51212 platform.drivers.edma.MK22F51212 platform.drivers.gpio.MK22F51212 platform.drivers.i2c_edma.MK22F51212 platform.drivers.i2c.MK22F51212 platform.drivers.lpuart.MK22F51212 platform.drivers.port.MK22F51212 platform.drivers.smc.MK22F51212 platform.drivers.uart.MK22F51212 platform.drivers.i2c_cmsis.MK22F51212 platform.drivers.dspi_cmsis.MK22F51212 platform.utilities.assert_lite.MK22F51212 platform.utilities.misc_utilities.MK22F51212 utility.str.MK22F51212 utility.debug_console_lite.MK22F51212 component.uart_adapter.MK22F51212 driver.ft6x06.MK22F51212 driver.ili9341.MK22F51212 middleware.lvgl.MK22F51212 middleware.lvgl.template.MK22F51212 middleware.freertos-kernel.MK22F51212 middleware.freertos-kernel.heap_4.MK22F51212 middleware.freertos-kernel.extension.MK22F51212 middleware.freertos-kernel.config.MK22F51212" category="lvgl_examples">
+    <projects>
+      <project type="com.crt.advproject.projecttype.exe" nature="org.eclipse.cdt.core.ccnature"/>
+    </projects>
+    <toolchainSettings>
+      <toolchainSetting id_refs="com.nxp.mcuxpresso">
+        <option id="gnu.c.compiler.option.preprocessor.def.symbols" type="stringList">
+          <value>MCUXPRESSO_SDK</value>
+          <value>CPU_MK22FN512VLH12</value>
+          <value>SDK_DEBUGCONSOLE=1</value>
+          <value>MCUX_META_BUILD</value>
+          <value>MK22F51212_SERIES</value>
+          <value>LV_CONF_INCLUDE_SIMPLE=1</value>
+          <value>SDK_OS_FREE_RTOS</value>
+        </option>
+        <option id="gnu.cpp.compiler.option.preprocessor.def" type="stringList">
+          <value>MCUXPRESSO_SDK</value>
+          <value>CPU_MK22FN512VLH12</value>
+          <value>SDK_DEBUGCONSOLE=1</value>
+          <value>MCUX_META_BUILD</value>
+          <value>MK22F51212_SERIES</value>
+          <value>LV_CONF_INCLUDE_SIMPLE=1</value>
+          <value>SDK_OS_FREE_RTOS</value>
+        </option>
+        <option id="com.crt.advproject.gas.hdrlib" type="enum">
+          <value>com.crt.advproject.gas.hdrlib.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.gas.specs" type="enum">
+          <value>com.crt.advproject.gas.specs.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.gcc.hdrlib" type="enum">
+          <value>com.crt.advproject.gcc.hdrlib.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.gcc.specs" type="enum">
+          <value>com.crt.advproject.gcc.specs.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.cpp.hdrlib" type="enum">
+          <value>com.crt.advproject.cpp.hdrlib.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.cpp.specs" type="enum">
+          <value>com.crt.advproject.cpp.specs.newlibnano</value>
+        </option>
+        <option id="com.crt.advproject.link.cpp.hdrlib" type="enum">
+          <value>com.crt.advproject.cpp.link.hdrlib.newlibnano.nohost</value>
+        </option>
+        <option id="com.crt.advproject.link.cpp.fpu" type="enum">
+          <value>com.crt.advproject.link.cpp.fpu.fpv4.hard</value>
+        </option>
+        <option id="gnu.cpp.link.option.nostdlibs" type="boolean">
+          <value>true</value>
+        </option>
+        <option id="com.crt.advproject.link.memory.heapAndStack.cpp" type="string">
+          <value>&amp;Heap:SRAM_LOWER;Post Data;Default&amp;Stack:SRAM_LOWER;End;Default</value>
+        </option>
+        <option id="gnu.cpp.link.option.other" type="stringList">
+          <value>-no-warn-rwx-segments</value>
+        </option>
+        <option id="gnu.c.link.option.group" type="boolean">
+          <value>true</value>
+        </option>
+        <option id="com.crt.advproject.gas.fpu" type="enum">
+          <value>com.crt.advproject.gas.fpu.fpv4.hard</value>
+        </option>
+        <option id="com.crt.advproject.gcc.fpu" type="enum">
+          <value>com.crt.advproject.gcc.fpu.fpv4.hard</value>
+        </option>
+        <option id="gnu.c.compiler.option.optimization.flags" type="string">
+          <value>-fno-common</value>
+        </option>
+        <option id="com.crt.advproject.c.misc.dialect" type="enum">
+          <value>com.crt.advproject.misc.dialect.gnu99</value>
+        </option>
+        <option id="gnu.c.compiler.option.misc.other" type="string">
+          <value>-c -ffunction-sections -fdata-sections -fno-builtin -Wno-format -fms-extensions</value>
+        </option>
+        <option id="com.crt.advproject.cpp.fpu" type="enum">
+          <value>com.crt.advproject.cpp.fpu.fpv4.hard</value>
+        </option>
+        <option id="gnu.cpp.compiler.option.optimization.flags" type="string">
+          <value>-fno-common</value>
+        </option>
+        <option id="com.crt.advproject.cpp.misc.dialect" type="enum">
+          <value>com.crt.advproject.misc.dialect.gnupp11</value>
+        </option>
+        <option id="gnu.cpp.compiler.option.other.other" type="string">
+          <value>-c -ffunction-sections -fdata-sections -fno-builtin -fno-rtti -fno-exceptions -Wno-format -fms-extensions</value>
+        </option>
+        <option id="gnu.cpp.compiler.option.warnings.toerrors" type="boolean">
+          <value>false</value>
+        </option>
+      </toolchainSetting>
+    </toolchainSettings>
+    <include_paths>
+      <include_path path="." project_relative_path="source" type="c_include"/>
+      <include_path path="generated" project_relative_path="generated" type="c_include"/>
+      <include_path path="custom" project_relative_path="custom" type="c_include"/>
+      <include_path path="generated/guider_customer_fonts" project_relative_path="generated/guider_customer_fonts" type="c_include"/>
+      <include_path path="." project_relative_path="board" type="c_include"/>
+      <include_path path="." project_relative_path="source" type="asm_include"/>
+    </include_paths>
+    <source path="iar" project_relative_path="./" type="workspace" toolchain="iar">
+      <files mask="lvgl_guider.ewd"/>
+      <files mask="lvgl_guider.ewp"/>
+      <files mask="lvgl_guider.eww"/>
+    </source>
+    <source path="mdk" project_relative_path="./" type="workspace" toolchain="mdk">
+      <files mask="lvgl_guider.uvoptx"/>
+      <files mask="lvgl_guider.uvprojx"/>
+      <files mask="lvgl_guider.uvmpw"/>
+    </source>
+    <source path="armgcc" project_relative_path="./" type="workspace" toolchain="armgcc">
+      <files mask="build_all.bat"/>
+      <files mask="build_all.sh"/>
+      <files mask="clean.bat"/>
+      <files mask="clean.sh"/>
+      <files mask="CMakeLists.txt"/>
+      <files mask="flags.cmake"/>
+      <files mask="config.cmake"/>
+      <files mask="build_debug.bat"/>
+      <files mask="build_debug.sh"/>
+      <files mask="build_release.bat"/>
+      <files mask="build_release.sh"/>
+    </source>
+    <source path="../../../../devices/MK22F51212" project_relative_path="./" type="workspace" toolchain="armgcc">
+      <files mask="all_lib_device.cmake"/>
+    </source>
+    <source path="." project_relative_path="source" type="src">
+      <files mask="lvgl_guider.c"/>
+    </source>
+    <source path="generated/guider_customer_fonts" project_relative_path="generated/guider_customer_fonts" type="c_include">
+      <files mask="guider_customer_fonts.h"/>
+    </source>
+    <source path="generated" project_relative_path="generated" type="src">
+      <files mask="gui_guider.c"/>
+      <files mask="events_init.c"/>
+      <files mask="setup_scr_screen.c"/>
+      <files mask="widgets_init.c"/>
+    </source>
+    <source path="generated" project_relative_path="generated" type="c_include">
+      <files mask="gui_guider.h"/>
+      <files mask="events_init.h"/>
+      <files mask="widgets_init.h"/>
+    </source>
+    <source path="custom" project_relative_path="custom" type="src">
+      <files mask="custom.c"/>
+    </source>
+    <source path="custom" project_relative_path="custom" type="c_include">
+      <files mask="custom.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include">
+      <files mask="lv_conf_ext.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="src">
+      <files mask="lvgl_demo_utils.c"/>
+      <files mask="lvgl_freertos.c"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include">
+      <files mask="lvgl_demo_utils.h"/>
+      <files mask="lvgl_freertos.h"/>
+      <files mask="FreeRTOSConfig_frag.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="src">
+      <files mask="pin_mux.c"/>
+      <files mask="hardware_init.c"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include">
+      <files mask="pin_mux.h"/>
+      <files mask="app.h"/>
+    </source>
+    <source path="." project_relative_path="board" type="c_include">
+      <files mask="board.h"/>
+      <files mask="clock_config.h"/>
+    </source>
+    <source path="." project_relative_path="board" type="src">
+      <files mask="board.c"/>
+      <files mask="clock_config.c"/>
+    </source>
+    <source path="iar" project_relative_path="MK22F51212/iar" type="linker" toolchain="iar">
+      <files mask="MK22FN512xxx12_flash.icf"/>
+    </source>
+    <source path="armgcc" project_relative_path="MK22F51212/armgcc" type="linker" toolchain="armgcc">
+      <files mask="MK22FN512xxx12_flash.ld"/>
+    </source>
+    <source path="mdk" project_relative_path="MK22F51212/mdk" type="linker" toolchain="mdk">
+      <files mask="MK22FN512xxx12_flash.scf"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include" config="true">
+      <files mask="lv_conf.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include">
+      <files mask="lvgl_support.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="src" config="true">
+      <files mask="lvgl_support.c"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include" config="true">
+      <files mask="RTE_Device.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_include" config="true">
+      <files mask="FreeRTOSConfig_Gen.h"/>
+    </source>
+    <source path="." project_relative_path="source" type="c_preinclude">
+      <files mask="mcux_config.h"/>
+    </source>
+    <source path="." project_relative_path="doc" type="doc">
+      <files mask="readme.md"/>
+    </source>
+    <source path="." project_relative_path="doc" type="doc">
+      <files mask="lvgl_examples_readme.md"/>
+    </source>
+    <source path="." project_relative_path="doc" type="doc">
+      <files mask="examples_shared_readme.md"/>
+    </source>
+  </example>
+</ksdk:examples>

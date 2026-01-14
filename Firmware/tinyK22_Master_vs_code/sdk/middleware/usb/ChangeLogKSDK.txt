@@ -1,0 +1,334 @@
+/*!
+@page middleware_log Middleware Change Log
+
+@section USB USB stack for MCUXpresso SDK
+  The current version of USB stack is 2.12.0.
+  - 2.12.0
+    - Bug fixes:
+      - Fix the dependency issue to meet NPW of CONFIG tool.
+      - Fix disk mount issue for host_msd_fatfs during testing throughput.
+    - Improvement:
+      - Improve performance of example dev_cdc_ecm_nic.
+      - Pass mandatory and required rules for MSG on Coverity system.
+      - Add USB markdown documentation.
+    - New features and demos:
+      - Support eUSB functionality on RT700 including repeater mode and native mode.
+      - Enable USB device CDC ECM example: dev_cdc_ecm_nic_bm, dev_cdc_ecm_nic_freertos, dev_cdc_ecm_nic_lite_bm.
+  - 2.11.0
+    - Improvement:
+      - Support USB for KConfig Configuration System and CMake Build System.
+      - Enable cache maintentance on i.MX RT 4-digit series and mimxrt700evk.
+      - Split usb audio cases for LPC54xxx series with others.
+  - 2.10.1
+    - Improvement:
+      - Host cdc ECM
+        - Add link state detection in DHCP and DNS processing.
+        - Unify and simplify application processing log.
+        - Add static IP supporting.
+      - Update USB device controller drivers to support Zephyr.
+      - Upadte default USB OR register settings to pass USB certification/compliance. 
+    - Bug fixes:
+      - update device echi driver to fix the issue that EPCOMPLERE bit is not cleared after transfer is canceled.
+      - update usb host hub class to fix the wrong hub descriptor class code.
+  - 2.10.0
+    - New features and demos:
+      - Implement the USB Host ECM.
+        - Add new USB host example: usb_host_cdc_ecm
+      - Add one new USB host audio example: usb_host_audio_unified.
+      - eUSB support on EHCI.
+      - Add L1 LPM low power feature on EHCI for device and host.
+    - Improvement:
+      - Enable cache maintenance in the usb_host_msd_fatfs, usb_device_msc_disk and usb_device_msc_ramdisk examples on the RT1040-EVK, RT1050-EVKB, RT1060-EVKC and RT1170-EVKB platforms.
+      - Improve Host VNIC to be more compatible with other USB devices.
+      - Add USB_DEVICE_CONFIG_SOF_NOTIFICATION for device stack.
+      - Clear the pending FR_Swap during initialization to prevent the FR_Swap from affecting the later PD negotiation.
+    - Bug fixes:
+      - Fix on IP3511 driver that SETUP bit is cleared by mistake.
+      - Fix on IP3516 driver that cannot do multiple ISO endpoints transfers at the same time.
+      - Fix on IP3516 driver that the Token Done interrupt is cleared but the last completed transfer is not processed.
+      - Fix on IP3516 driver that the transfer will continue when receiving a short packet.
+      - Fix on host audio class driver that entities cannot be distinguished between recorder and speaker.
+  - 2.9.1
+    - Improvement:
+      - Update EHCI controller driver for basic support of eUSB. 
+      - Replace the hard code in audio cases with macro.
+      - Uniform the Chapter9 for device lite cases.
+  - 2.9.0
+    - Improvement:
+      - Change ROOT2 as enabled by default in device stack.
+      - Implement independent frequency adjustment for speaker and recorder of composite audio unified demos.
+      - Fix vulnerability for host stack. CVE number: CVE-2023-38749
+      - Delete deprecated enet driver function for enet adapter.
+  - 2.8.4
+    - Improvement:
+      - Add the new netc adatper for the new netc driver.
+      - Fix issues for USB device dfu and usb device msc when enable the macro USB_DEVICE_CONFIG_RETURN_VALUE_CHECK.
+      - Change the header file including order for usb.h header.
+      - Update the USB host audio class driver to fix the wrong output log.
+      - Add the workaround on dev_hid_mouse_bm case for the errata TN00071.
+      - Enable ROOT2 macro in USB device stack.
+      - Use an unified definiton for the base address of RTxxxx platforms.
+  - 2.8.3
+    - Improvement:
+      - Update the EHCI controller driver to support the address convert for TCM.
+      - Update the USB host EHCI controller driver to make sure the mutual exclusion access under multiple tasks' environment.
+  - 2.8.2
+    - Improvement:
+      - Fix noise issue of UAC 3.1, UAC 5.1, UAC 7.1 on usb audio speaker demo.
+      - Fix the issue that incorrect PC behavior when ejecting USB MSC devices.
+      - Update the EHCI controller driver to support RW610 that does not reply on PHY driver, especially for low power feature.
+      - Update the USB_HostHelperParseAlternateSetting to fix the wrong interface parse.
+      - Update dev_composite_hid_audio_unified_bm demo to suppport independent mute/unmute and volume control.
+  - 2.8.1
+    - Improvement:
+      - update USB audio demos to use audio component (components/audio).
+      - Add the checking of function call return value.
+      - Add audio multiple channels demo (usb_device_composite_audio_multi_ch_unified) on RT600 audio board.
+      - Fix audio noise on sync mode and improve overflow/underflow checking method.
+      - Support UAC 3.1, 5.1 and 7.1 on audio speaker demo.
+      - Set USB device CDC demo not to depend on DTR setting from host.
+      - Support MCUX toolchain on some RTxxxx platforms.
+  - 2.8.0
+    - Improvement:
+      - Fix the USB device stack vulnerability issues.
+      - Update the audio PLL and FRO adjustment codes for audio examples in RTxxx, LPC54xxx and LPC55xxx.
+      - Improve the USB PD AMS collision avoidance.
+      - Improve IP3511 controller driver's dedicated ram allocation.
+      - Change the USB_DATA_ALIGN_SIZE to 4 because the controller driver uses the dedicated RAM to do memcpy.
+    - New features:
+      - Enable USB host audio recorder demo for mutilple boards.
+  - 2.7.0
+    - Improvement:
+      - Use new feeback solution and low latency playback for usb device speaker demo and unified demos. Add underflow and overflow protection.
+      - Optimize hard code for usb audio demos.
+      - Update Unconstrained Power field in the Sink Capabilities Message according to the external power state.
+      - Fix CVE-2021-38258 and CVE-2021-38260
+    - New features:
+      - Enable USB host video demo for mutilple boards.
+      - Enable USB device MTP demo for mutilple boards.
+      - Add PPS message to usb pd stack.
+  - 2.6.1
+    - Improvement:
+      - rename sdcard as disk for all of sdcard demos. For ramdisk demos, they are not changed.
+      - add wrapper for all of disk demos to support emmc.
+  - 2.6.0
+    - Improvement:
+      - Added more ufi event to support dynamic sdcard capacity.
+      - Passed MISRA-2012 mandatory and required rules.
+        - Except rule 17.2 in host hub and otg stack.
+        - Except rule 5.1, rule 5.4, rule 21.1 and rule 21.2.
+      - Re-implemented USB components and supported NPW.
+      - Improved IP3511 controller driver's cancelling transfer function.
+      - Enabled the audio2.0 defaultly for device audio demos.
+      - Enabled the host audio2.0 function in host audio class driver and host audio speaker demo.
+    - New features:
+      - enable two USB controllers in one USB host mouse demo which named as host_hid_mouse_dual.
+      - enable UAC 5.1 for usb device audio speaker demo. 
+  - 2.5.0
+    - Improvement:
+      - Integrated sdk components (OSA, Timer, GPIO and serial_manager) to USB stack and demos.
+      - Improved the ip3511 driver throughput.
+      - Improved audio initialization codes after SDK audio drivers update.
+      - Improved auido to support the audio2.0 in win10.
+      - Add one "enumeration fail" callback event to host stack.
+  - 2.4.2
+    - Improvement:
+      - Put the USB controller data and transfer buffer to noncache section, removed the setting that sets the whole ocram and sdram as noncached.
+      - Separated composite audio examples' channel,sample rate,format parameters from commom macro to in dedicated macro and out dedicated macro.
+      - replaced USB_PrepareData with USB_AudioRecorderGetBuffer.
+  - 2.4.1
+    - New features:
+      - Added enumeration fail callback to host stack when the attached device's enumeration failed.
+  - 2.4.0
+    - Improvement:
+      - Device Charger Detection (DCD) software architecture was refactored.
+    - New features:
+      - Enabled Device Charger Detection (DCD) on RT1060.
+      - Enabled Device Charger Detection on RT600.
+      - Enabled host battery charger function on RT600.
+  - 2.3.0
+    - New features:
+      - Added host video camera support.
+        example: usb_host_video_camera
+      - Added a new device example.
+        example: usb_device_composite_cdc_hid_audio_unified
+  - 2.2.0
+    - New features:
+      - Added device DFU support. 
+      - Supported OM13790DOCK on LPCXpresso54018.
+      - Added multiple logical unit support in msc class driver, updated usb_device_lba_information_struct_t to support this.
+      - Supported multiple transfers for host ISO on IP3516HS.
+    - Bug fixes:
+      - Fixed device ip3511 prime data length than maxpacket size issue.
+      - Initialized interval attribute in usb_device_endpoint_struct_t/usb_device_endpoint_init_struct_t.
+      - Removed unnecessary header file in device CDC class driver, removed unnecessary usb_echo, and added DEBUG macro for necessary usb_echo in device CDC class driver.
+      - Fixed device IP3511HS unfinished interrupt transfer missing issue.
+  - 2.1.0
+    - New features:
+      - Added host RNDIS support. 
+        example: lwip_dhcp_usb
+      - Enabled USB 3.0 support on device stack.
+      - Power Delivery feature:
+        Added OM13790HOST support;
+        Added auto policy feature;
+        Printed e-marked cable information; 
+  - 2.0.1
+    - Bug fixes:
+      - Fixed some USB issues:
+        Fixed MSC CV test failed in MSC examples.
+      - Changed audio codec interfaces.
+
+  - 2.0.0
+    - New features:
+      - PTN5110N support.
+    - Bug fix:
+      - Added some comments, fixed some minor USB issues.
+
+  - 1.9.0
+    - New features:
+      - Examples:
+        - usb_pd_alt_mode_dp_host
+
+  - 1.8.2
+    - Updated license.
+
+  - 1.8.1
+    - Bug fix:
+      - Verified some hardware issues, support aruba_flashless.
+
+  - 1.8.0
+    - New features:
+      - Examples:
+        - usb_device_composite_cdc_vcom_cdc_vcom
+        - usb_device_composite_hid_audio_unified
+        - usb_pd_sink_battery
+        - Changed usb_pd_battery to usb_pd_charger_battery.
+    - Bug fix:
+      - Code clean up, removed some irrelevant code.
+
+  - 1.7.0
+    - New features:
+      - USB PD stack support.
+
+    - Examples:
+      - usb_pd
+      - usb_pd_battery
+      - usb_pd_source_charger
+
+  - 1.6.3
+    - Bug fix:
+      -IP3511_HS driver control transfer sequence issue, enabled 3511 ip cv test.
+
+  - 1.6.2
+    - New features:
+      - Multi instance support.
+
+  - 1.6.1
+    - New features:
+    - Changed the struct variable address method for device_video_virtual_camera and host_phdc_manager.
+
+  - 1.6.0
+    - New features:
+      - Supported Device Charger Detect feature on usb_device_hid_mouse.
+
+  - 1.5.0
+    - New features:
+      - Supported controllers
+        - OHCI (Full Speed, Host mode)
+        - IP3516 (High Speed, Host mode)
+        - IP3511 (High Speed, Device mode)
+
+      - Examples:
+        - usb_lpm_device_hid_mouse
+        - usb_lpm_device_hid_mouse_lite
+        - usb_lpm_host_hid_mouse
+
+  - 1.4.0
+    - New features:
+      - Examples:
+        - usb_device_hid_mouse/freertos_static
+        - usb_suspend_resume_device_hid_mouse_lite
+
+  - 1.3.0
+    - New features:
+      - Supported roles
+        - OTG
+
+      - Supported classes
+        - CDC RNDIS
+
+      - Examples
+        - usb_otg_hid_mouse
+        - usb_device_cdc_vnic
+        - usb_suspend_resume_device_hid_mouse
+        - usb_suspend_resume_host_hid_mouse
+
+  - 1.2.0
+    - New features:
+      - Supported controllers
+        - LPC IP3511 (Full Speed, Device mode)
+
+  - 1.1.0
+    - Bug fix:
+      - Fixed some issues in USB certification.
+      - Changed VID and Manufacturer string to NXP.
+
+    - New features:
+      - Supported classes
+        - Pinter
+
+      - Examples:
+        - usb_device_composite_cdc_msc_sdcard
+        - usb_device_printer_virtual_plain_text
+        - usb_host_printer_plain_text
+
+  - 1.0.1
+    - Bug fix:
+      - Improved the efficiency of device audio speaker by changing the transfer mode from interrupt to DMA, thus providing the ability to eliminate the periodic noise.
+
+  - 1.0.0
+    - New features:
+      - Supported roles
+        - Device
+        - Host
+
+      - Supported controllers:
+        - KHCI (Full Speed)
+        - EHCI (High Speed)
+
+      - Supported classes:
+        - AUDIO
+        - CCID
+        - CDC
+        - HID
+        - MSC
+        - PHDC
+        - VIDEO
+
+      - Examples:
+        - usb_device_audio_generator
+        - usb_device_audio_speaker
+        - usb_device_ccid_smart_card
+        - usb_device_cdc_vcom
+        - usb_device_cdc_vnic
+        - usb_device_composite_cdc_msc
+        - usb_device_composite_hid_audio
+        - usb_device_composite_hid_mouse_hid_keyboard
+        - usb_device_hid_generic
+        - usb_device_hid_mouse
+        - usb_device_msc_ramdisk
+        - usb_device_msc_sdcard
+        - usb_device_phdc_weighscale
+        - usb_device_video_flexio_ov7670
+        - usb_device_video_virtual_camera
+        - usb_host_audio_speaker
+        - usb_host_cdc
+        - usb_host_hid_generic
+        - usb_host_hid_mouse
+        - usb_host_hid_mouse_keyboard
+        - usb_host_msd_command
+        - usb_host_msd_fatfs
+        - usb_host_phdc_manager
+        - usb_keyboard2mouse
+        - usb_pin_detect_hid_mouse
+*/

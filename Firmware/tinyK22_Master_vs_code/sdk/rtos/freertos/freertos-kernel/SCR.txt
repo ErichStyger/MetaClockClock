@@ -1,0 +1,12 @@
+NXP Software Content Register
+
+Package: FreeRTOS kernel
+Version: 11.1.0
+Outgoing License: MIT
+License File: LICENSE.md
+Type of Content: source code, header files
+Description: Open source RTOS kernel for small devices
+Location: https://github.com/nxp-mcuxpresso/FreeRTOS-Kernel
+Origin:
+      Amazon (MIT) - https://github.com/FreeRTOS/FreeRTOS-Kernel
+      NXP (MIT)

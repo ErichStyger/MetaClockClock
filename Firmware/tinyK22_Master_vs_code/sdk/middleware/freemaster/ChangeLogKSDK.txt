@@ -1,0 +1,70 @@
+/*!
+@page middleware_log Middleware Change Log
+
+@section fmstr FreeMASTER Communication Driver
+  Visit https://www.nxp.com/freemaster for more information.
+  Reach out for a support at https://community.nxp.com/community/freemaster.
+  
+  - 3.0.0
+    - Initial version of FreeMASTER driver reworked from a standalone package to MCUXpresso SDK middleware.
+    - This driver version supports new version V4 of FreeMASTER serial communication protocol.
+    - Supports UART, LPUART, USART, MINIUSART, FlexCAN, USB-CDC and JTAG/BDM communication.
+    - Initial version was tested with the following boards: evkmimxrt1060, frdmk64f, frdmke15z, 
+      frdmkl28z, lpcxpresso54628 lpcxpresso55s69, lpcxpresso845max and twrk64f120m.
+    - Use with FreeMASTER PC Host tool version 2.5 or later.
+
+  - 3.0.1
+    - FreeMASTER driver extended to support wide range of Kinetis, LPC and i.MX-RT platforms.
+    - Low-level communication drivers also available for few non-SDK NXP platforms like S12Z, S32x and more.
+    - Use with FreeMASTER PC Host tool version 3.0 or later.
+
+  - 3.0.2
+    - FreeMASTER driver support of DSC56F800EX and S12 platforms extended.
+    - Removed dependency on C99 compiler features.
+    - Use with FreeMASTER PC Host tool version 3.0.2 or later.
+
+  - 3.0.3
+    - General update for SDK 2.9.0
+    - fmstr_any demo added to selected platforms - use with MCUXpresso SDK and FreeMASTER peripheral configuration tool.
+    - New example.pmp project file embedded into application flash storage.
+    - USB-CDC implementation fixed, new JTAG EOnCE communication interface added to DSC 56F800E family.
+    - Use with FreeMASTER PC Host tool version 3.0.3 or later. Version 3.1.x is recommended.
+
+  - 3.0.4
+    - Fixed component dependency logic of FreeMASTER driver. 
+    - Use with FreeMASTER PC Host tool version 3.1.x
+
+  - 3.0.5
+    - General update for SDK 2.11 and 2.12
+    - New TCP and UDP support with lwIP stack
+    - New communication over Segger RTT interface
+    - Add fmstr_net and fmstr_wifi examples for selected i.MX-RT platforms
+    - Add fmstr_rtt example for selected platforms
+    - Fixed negative recorder threshold trigger processing
+
+  - 3.0.6
+    - General update for SDK 2.13
+    - Use of new Ethernet MDIO driver concept.
+    - Support of ENET and NETC Ethernet modules in the fmstr_net example application.
+
+  - 3.0.7
+    - General update for SDK 2.14
+
+  - 3.0.8
+    - General update for SDK v24.12.00
+    - Documentation updated for online publishing.
+    - License changed to NXP LA_OPT_Online Code Hosting NXP_Software_License
+    - Misra issues cleanup
+
+  - 3.0.9
+    - General update for SDK v25.03.00
+    - CMake files related to SDK moved to mcux/ subfolder
+    - Zephyr support added for Serial, CAN, RTT interfaces
+    - Zephyr shell and logging over FreeMASTER pipe
+
+  - 3.0.10
+    - General update for SDK v25.06.00
+    - Support for CAN-FD interface in both MCUX SDK and Zephyr
+    - Standardized SBOM component file added
+
+*/
