@@ -103,6 +103,7 @@
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
+  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP (0) /* temporary only for testing, to be removed */
 #else
   #error
 #endif

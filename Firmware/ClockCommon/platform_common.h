@@ -183,6 +183,9 @@
 #ifndef PL_CONFIG_USE_MOTOR_ON_OFF
   #define PL_CONFIG_USE_MOTOR_ON_OFF    (0) /* using hardware to turn off/on the stepper motors to reduce power */
 #endif
+#ifndef PL_CONFIG_USE_MOTOR_ON_AT_STARTUP
+  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP (1) /* 1: turn on motors at startup in the clock task by default; 0: do turn motors on */
+#endif
 #ifndef PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
   #define PL_CONFIG_USE_MOTOR_ON_OFF_AUTO  (0 && PL_CONFIG_USE_MOTOR_ON_OFF) /* turn motors on only during timer run */
 #endif
@@ -291,7 +294,6 @@
 #ifndef PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR
   #define PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR (0x00ff00)
 #endif
-
 
 #ifndef PL_CONFIG_CLOCK_RANDOM_COLOR_ON
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON  (0) /* if clock hand random color is enabled by default */

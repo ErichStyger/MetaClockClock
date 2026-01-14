@@ -1165,11 +1165,9 @@ static void ClockTask(void *pv) {
     McuUtility_randomSetSeed(seed);
   }
 #endif
-#if PL_CONFIG_IS_CLOCK_CLOCK
-#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF /* turn on motors */
+#if PL_CONFIG_IS_CLOCK_CLOCK && PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF && PL_CONFIG_USE_MOTOR_ON_AT_STARTUP /* turn on motors */
   (void)SHELL_ParseCommandIO((const unsigned char *)"matrix motor on", NULL, true);
 #endif
-#endif /* PL_CONFIG_IS_CLOCK_CLOCK */
 #if PL_CONFIG_IS_SPLIT_FLAP
 #if PL_CONFIG_IS_SPLIT_FLAP && PL_CONFIG_CLOCK_ZERO_STEPPER
   (void)SHELL_ParseCommandIO((const unsigned char*)"stepper zero all", NULL, false);
