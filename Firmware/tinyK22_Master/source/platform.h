@@ -83,7 +83,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0x00FF00)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0xff)
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
+  #define PL_CONFIG_USE_LED_RING                    (1) /* if have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
   #define PL_CONFIG_USE_BLE                         (0) /* Adafruit module not mounted on board */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (0) /* clock on by default */
@@ -94,7 +94,7 @@
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* has RGB functionality */
-  #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* if have LED rings */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
@@ -102,7 +102,8 @@
 #elif 1 /* \todo Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* if we have LED rings */
+  #define PL_CONFIG_USE_BLE                         (0) /* Adafruit module mounted on board */
   #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP (0) /* temporary only for testing, to be removed */
 #else
   #error
