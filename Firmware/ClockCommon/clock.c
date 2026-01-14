@@ -107,6 +107,11 @@ static bool CLOCK_ClockIsParked = false;
 #endif
 #endif /* PL_CONFIG_IS_CLOCK_CLOCK */
 
+static struct CLOCK_CountDown {
+  bool isOn;
+  TIMEREC counter;
+} CLOCK_CountDown = {.isOn=false};
+
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
   /* default values for off-hours */
   #define CONFIG_CLOCK_DEFAULT_ON_OFF         (false)
@@ -791,7 +796,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  clocks", (unsigned char*)"[0,0] London    [1,0] New York\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"",         (unsigned char*)"[0,1] Beijing   [1,1] Lucerne\r\n", io->stdOut);
 #endif
-  McuShell_SendHelpStr((unsigned char*)"  countdown <time>", (unsigned char*)"Run countdown for a time\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  countdown on|off|<time>", (unsigned char*)"Run countdown timer\r\n", io->stdOut);
   return ERR_OK;
 }
 #endif
@@ -991,31 +996,33 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
       return ERR_FAILED;
     }
     return ERR_OK;
-
-#if 0
+  } else if (McuUtility_strcmp((char*)cmd, "clock countdown on")==0) {
+    *handled = true;
+    CLOCK_CountDown.isOn = true;
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "clock countdown off")==0) {
+    *handled = true;
+    CLOCK_CountDown.isOn = false;
+    return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "clock countdown ", sizeof("clock countdown ")-1)==0) {
       uint8_t hour, minute, second, hsec;
 
-      *handled = TRUE;
+      *handled = true;
+      if (CLOCK_GetClockIsOn()) {
+        McuShell_SendStr((unsigned char*)"clock is on, disable it first with \"clock off\"\r\n", io->stdErr);
+        return ERR_FAILED;
+      }
       p = cmd + sizeof("clock countdown ")-1;
-      #if PL_CONFIG_IS_SPLIT_FLAP
       if (McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK) {
-        ShowTime(hour, minute);
-      #elif PL_CONFIG_IS_CLOCK_CLOCK
-      int32_t x, y;
-      if (
-             McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
-          && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
-          && McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK
-         )
-      {
-        ShowTime(x, y, hour, minute);
-      #endif
+        CLOCK_CountDown.counter.Hour = hour;
+        CLOCK_CountDown.counter.Min = minute;
+        CLOCK_CountDown.counter.Sec = second;
+        CLOCK_CountDown.counter.Sec100 = hsec;
+        return ERR_OK;
       } else {
         return ERR_FAILED;
       }
       return ERR_OK;
-#endif
   }
   return ERR_OK;
 }
