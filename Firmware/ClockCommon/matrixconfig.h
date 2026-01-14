@@ -258,6 +258,7 @@ extern const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPER
 typedef struct MATRIX_BoardList_t {
   uint8_t addr;  /* RS-485 address of the board */
   bool cmdSent;  /* if command has been sent or not to the board */
+  bool disabled; /* ability to disable a clock in the matrix; default false */
 } MATRIX_BoardList_t;
 
 extern MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS];
