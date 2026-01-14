@@ -16,7 +16,7 @@
 /* assign matrix configuration used, only needed for master: */
 #if 0   /* V1: original meta clock with 24 clocks */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3
-#elif 0 /* V2: 60 billion lights with LPC and WS2812B */
+#elif 0 /* V2: 60 billion lights with LPC and WS2812B, now at CSEM in oak enclosure */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_60B
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* enable or disable RGB functions */
   #define PL_CONFIG_USE_NEO_PIXEL_HW                (1) /* we drive the NeoPixels directly with hardware pins */
@@ -29,13 +29,13 @@
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
-  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* if clock mode is on by default */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (0) /* if clock mode is on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
   #define PL_CONFIG_CLOCK_DEFAULT_FONT              MFONT_SIZE_3x5
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
+#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* has RGB functionality */
@@ -90,7 +90,7 @@
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* intermezzos on by default */
   /* below things are not supported yet for this clock */
   #define PL_CONFIG_USE_FONT                        (0)
-#elif 1 /* Cornelius 8x3 matrix, without LED rings, with tinyK22 plus Adafruit BLE module */
+#elif 0 /* Cornelius 8x3 matrix, without LED rings, with tinyK22 plus Adafruit BLE module */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* has RGB functionality */
@@ -99,12 +99,8 @@
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
   #define PL_CONFIG_USE_RS485                       (1)
-#elif 0 /* \todo Cornelius 6x12 matrix */
-  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_12x6
-  #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
-#elif 1 /* \todo Cornelius 8x15 matrix */
-  #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_15x8
+#elif 1 /* \todo Cornelius 6x12 matrix */
+  #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
 #else
