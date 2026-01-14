@@ -3,7 +3,7 @@ IF(NOT DEFINED FPU)
 ENDIF()  
 
 IF(NOT DEFINED SPECS)  
-    SET(SPECS "--specs=nosys.specs")  
+    SET(SPECS "--specs=nano.specs --specs=nosys.specs")  
 ENDIF()  
 
 IF(NOT DEFINED DEBUG_CONSOLE_CONFIG)  
@@ -15,6 +15,7 @@ SET(CMAKE_ASM_FLAGS_DEBUG " \
     -D__STARTUP_CLEAR_BSS \
     -DMCUXPRESSO_SDK \
     -DCPU_MK22FN512VLH12 \
+    -DMK22F51212_SERIES \
     -g \
     -mthumb \
     -mcpu=cortex-m4 \
@@ -25,6 +26,7 @@ SET(CMAKE_ASM_FLAGS_RELEASE " \
     -D__STARTUP_CLEAR_BSS \
     -DMCUXPRESSO_SDK \
     -DCPU_MK22FN512VLH12 \
+    -DMK22F51212_SERIES \
     -mthumb \
     -mcpu=cortex-m4 \
     ${FPU} \
@@ -33,14 +35,15 @@ SET(CMAKE_C_FLAGS_DEBUG " \
     ${CMAKE_C_FLAGS_DEBUG} \
     -include ${ProjDirPath}/../mcux_config.h \
     -DDEBUG \
+    -D__STARTUP_CLEAR_BSS \
     -DFRDM_K22F \
     -DFREEDOM \
     -DMCUX_META_BUILD \
     -DMCUXPRESSO_SDK \
     -DCPU_MK22FN512VLH12 \
+    -DMK22F51212_SERIES \
     -g \
     -O0 \
-    --specs=nano.specs \
     -Wall \
     -fno-common \
     -ffunction-sections \
@@ -57,13 +60,14 @@ SET(CMAKE_C_FLAGS_RELEASE " \
     ${CMAKE_C_FLAGS_RELEASE} \
     -include ${ProjDirPath}/../mcux_config.h \
     -DNDEBUG \
+    -D__STARTUP_CLEAR_BSS \
     -DFRDM_K22F \
     -DFREEDOM \
     -DMCUX_META_BUILD \
     -DMCUXPRESSO_SDK \
     -DCPU_MK22FN512VLH12 \
+    -DMK22F51212_SERIES \
     -Os \
-    --specs=nano.specs \
     -Wall \
     -fno-common \
     -ffunction-sections \
@@ -82,9 +86,9 @@ SET(CMAKE_CXX_FLAGS_DEBUG " \
     -DMCUX_META_BUILD \
     -DMCUXPRESSO_SDK \
     -DCPU_MK22FN512VLH12 \
+    -DMK22F51212_SERIES \
     -g \
     -O0 \
-    --specs=nano.specs \
     -Wall \
     -fno-common \
     -ffunction-sections \
@@ -104,8 +108,8 @@ SET(CMAKE_CXX_FLAGS_RELEASE " \
     -DMCUX_META_BUILD \
     -DMCUXPRESSO_SDK \
     -DCPU_MK22FN512VLH12 \
+    -DMK22F51212_SERIES \
     -Os \
-    --specs=nano.specs \
     -Wall \
     -fno-common \
     -ffunction-sections \
