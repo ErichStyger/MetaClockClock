@@ -72,6 +72,13 @@ void MATRIX_Delay(int32_t ms);
 
 uint8_t MATRIX_GetAddress(int32_t x, int32_t y, int32_t z);
 
+/*!
+ * \brief Decide if a board with a given address is disabled.
+ * \param addr RS-485 address of board.
+ * \return true if board is disabled or not found, false otherwise.
+ */
+bool MATRIX_BoardWithAddressIsDisabled(uint8_t addr);
+
 uint8_t MATRIX_MoveAllto12(int32_t timeoutMs, const McuShell_StdIOType *io);
 
 uint8_t MATRIX_MoveAllToStartPosition(int32_t timeoutMs, const McuShell_StdIOType *io);

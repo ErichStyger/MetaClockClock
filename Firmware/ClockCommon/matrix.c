@@ -178,6 +178,15 @@ NEO_PixelColor MATRIX_GetHandColorAdjusted(void) {
 }
 #endif
 
+bool MATRIX_BoardWithAddressIsDisabled(uint8_t addr) {
+  for(int i=0; i<MATRIX_NOF_BOARDS; i++) {
+    if (MATRIX_BoardList[i].addr==addr) {
+      return MATRIX_BoardList[i].disabled;
+    }
+  } /* for */
+  return true; /* board not found, assuming it is disabled */
+}
+
 #if PL_CONFIG_USE_RS485 && PL_CONFIG_IS_MASTER
 void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
   uint8_t res;
@@ -192,6 +201,10 @@ void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
       }
     } /* for */
   } else {
+    if (MATRIX_BoardWithAddressIsDisabled(toAddr)) {
+      McuLog_trace("board with address %d is disabled", toAddr);
+      return;
+    }
     res = RS485_SendCommand(toAddr, cmd, 1000, 1, NULL, NULL);
     if (res!=ERR_OK) {
       McuLog_error("failed sending command '%s' to %d", cmd, toAddr);
@@ -2228,7 +2241,6 @@ void MATRIX_TimerCallback(void) {
 #endif
 
 #if 0 /* go through all boards and update steps */
-
   for(int x = 0; x<MATRIX_NOF_STEPPERS_X; x++) {
 	  for(int y = 0; y<MATRIX_NOF_STEPPERS_Y; y++) {
 		  for(int z = 0; z<MATRIX_NOF_STEPPERS_Z; z++) { /* go through all motors */
