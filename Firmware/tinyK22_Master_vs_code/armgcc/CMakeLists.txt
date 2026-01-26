@@ -57,7 +57,7 @@ set(
 set(PROJECT_ROOT_DIR  "${CMAKE_CURRENT_SOURCE_DIR}/..")
 set(MCULIB_DIR        "${PROJECT_ROOT_DIR}/../McuLib")
 set(CLOCKCOMMON_DIR   "${PROJECT_ROOT_DIR}/../ClockCommon")
-set(SDK_DIR           "${PROJECT_ROOT_DIR}/../sdks/tinyK22_Master_vs_code_sdk")
+set(SDK_DIR           "${PROJECT_ROOT_DIR}/skd")
 set(USBLIB_DIR        "${PROJECT_ROOT_DIR}/usb")
 
 include_directories(
