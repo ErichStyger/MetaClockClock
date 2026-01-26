@@ -178,6 +178,7 @@ NEO_PixelColor MATRIX_GetHandColorAdjusted(void) {
 }
 #endif
 
+#if PL_CONFIG_IS_MASTER
 bool MATRIX_BoardWithAddressIsDisabled(uint8_t addr) {
   for(int i=0; i<MATRIX_NOF_BOARDS; i++) {
     if (MATRIX_BoardList[i].addr==addr) {
@@ -186,6 +187,7 @@ bool MATRIX_BoardWithAddressIsDisabled(uint8_t addr) {
   } /* for */
   return true; /* board not found, assuming it is disabled */
 }
+#endif /* PL_CONFIG_IS_MASTER */
 
 #if PL_CONFIG_USE_RS485 && PL_CONFIG_IS_MASTER
 void MATRIX_SendCmdToBoard(uint8_t toAddr, unsigned char *cmd) {
