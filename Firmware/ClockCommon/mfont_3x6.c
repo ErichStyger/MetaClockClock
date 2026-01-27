@@ -6,9 +6,6 @@
 
 #include "platform.h"
 #if PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6
-#include <stdint.h>
-#include <stdbool.h>
-#include "McuUtility.h"
 #include "mfont.h"
 #include "matrix.h"
 #include "matrixposition.h"

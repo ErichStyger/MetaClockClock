@@ -58,11 +58,14 @@ void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xS
 /* parse a font name string and return its handle */
 void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
 
-/* print a string with a 3x6 font at a position */
+/* print a string with a 3x5 font at a position */
 void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos);
 
 /* print a string with a 3x6 font at a position */
 void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos);
+
+/* print a string with a 4x5 font at a position */
+void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos);
 
 /* print a string using a font at a position */
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font);
