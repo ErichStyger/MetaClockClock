@@ -11,8 +11,6 @@
 #include "matrixposition.h"
 #include "matrixhand.h"
 
-
-#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
 typedef struct MClockChar4x5_t {
   MClock_t digit[MFONT_SIZE_Y_4x5][MFONT_SIZE_X_4x5]; /* a digit is built by 4 (vertical) and 5 (horizontal) clocks */
 } MClockChar4x5_t;
@@ -265,7 +263,6 @@ static const MClockChar4x5_t clockCharSpace4x5 =  /* " " */
     [4][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   }
 };
-#endif
 
 void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<MFONT_SIZE_Y_4x5; y++) { /* every clock row */
