@@ -2118,6 +2118,9 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
   McuShell_SendStr((unsigned char*)"3x5 ", io->stdOut);
 #endif
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6
+  McuShell_SendStr((unsigned char*)"3x6 ", io->stdOut);
+#endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
   McuShell_SendStr((unsigned char*)"4x5 ", io->stdOut);
 #endif
@@ -2188,6 +2191,7 @@ void MFONT_FontToStr(MFONT_Size_e font, unsigned char *buf, size_t bufSize) {
   switch(font) {
     case MFONT_SIZE_2x3: McuUtility_strcpy(buf, bufSize, (unsigned char*)"2x3"); break;
     case MFONT_SIZE_3x5: McuUtility_strcpy(buf, bufSize, (unsigned char*)"3x5"); break;
+    case MFONT_SIZE_3x6: McuUtility_strcpy(buf, bufSize, (unsigned char*)"3x6"); break;
     case MFONT_SIZE_4x5: McuUtility_strcpy(buf, bufSize, (unsigned char*)"4x5"); break;
     case MFONT_SIZE_ERROR:
     default: McuUtility_strcpy(buf, bufSize, (unsigned char*)"ERROR"); break;
@@ -2200,6 +2204,9 @@ void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font) {
     *p += sizeof("2x3")-1;
   } else if (McuUtility_strncmp((char*)*p, "3x5", sizeof("3x5")-1)==0) {
     *font = MFONT_SIZE_3x5;
+    *p += sizeof("3x5")-1;
+  } else if (McuUtility_strncmp((char*)*p, "3x6", sizeof("3x6")-1)==0) {
+    *font = MFONT_SIZE_3x6;
     *p += sizeof("3x5")-1;
   } else if (McuUtility_strncmp((char*)*p, "4x5", sizeof("4x5")-1)==0) {
     *font = MFONT_SIZE_4x5;
