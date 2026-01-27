@@ -14,18 +14,6 @@
 #include "matrixposition.h"
 #include "matrixhand.h"
 
-typedef struct MHand_t {
-  int16_t angle; /* absolute angle for clock hand position */
-  bool enabled;  /* if hand is enabled or not */
-#if PL_CONFIG_USE_EXTENDED_HANDS
-  bool enabled2nd;
-#endif
-} MHand_t;
-
-typedef struct MClock_t {
-  MHand_t hands[2]; /* each clock has two hands */
-} MClock_t;
-
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
 typedef struct MClockChar2x3_t {
   MClock_t digit[3][2]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
@@ -1957,7 +1945,6 @@ static void PrintString4x5(const unsigned char *str, int xPos, int yPos) {
         case ' ': desc = &clockCharSpace4x5; break;
         default: desc = NULL; break;
       }
-
     }
     if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_4x5 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_4x5) {
       DrawChar4x5(desc, xPos, yPos);
@@ -2046,6 +2033,12 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
     return;
   }
 #endif
+#if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6
+  if (font==MFONT_SIZE_3x6) {
+    MFONT_PrintString3x6(str, xPos, yPos);
+    return;
+  }
+#endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
   if (font==MFONT_SIZE_4x5) {
     PrintString4x5(str, xPos, yPos);
@@ -2064,6 +2057,10 @@ void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xS
     case MFONT_SIZE_3x5:
       *xSize = len*MFONT_SIZE_X_3x5;
       *ySize = MFONT_SIZE_Y_3x5;
+      break;
+    case MFONT_SIZE_3x6:
+      *xSize = len*MFONT_SIZE_X_3x6;
+      *ySize = MFONT_SIZE_Y_3x6;
       break;
     case MFONT_SIZE_4x5:
       *xSize = len*MFONT_SIZE_X_4x5;
