@@ -39,11 +39,11 @@ typedef struct MClock_t {
 #define MFONT_SIZE_X_3x5   3  /* number of columns needed */
 #define MFONT_SIZE_Y_3x5   5  /* number of rows needed */
 
-#define MFONT_SIZE_X_4x5   4  /* number of columns needed */
-#define MFONT_SIZE_Y_4x5   5  /* number of rows needed */
-
 #define MFONT_SIZE_X_3x6   3  /* number of columns needed */
 #define MFONT_SIZE_Y_3x6   6  /* number of rows needed */
+
+#define MFONT_SIZE_X_4x5   4  /* number of columns needed */
+#define MFONT_SIZE_Y_4x5   5  /* number of rows needed */
 
 /* special character support */
 #define MFONT_CHAR_DEGREE  '~' /* placeholder, need to use a 8bit ASCII code */
@@ -57,6 +57,9 @@ void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xS
 
 /* parse a font name string and return its handle */
 void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
+
+/* print a string with a 3x6 font at a position */
+void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos);
 
 /* print a string with a 3x6 font at a position */
 void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos);

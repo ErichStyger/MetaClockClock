@@ -15,10 +15,10 @@
 #include "matrixhand.h"
 
 typedef struct MClockChar3x6_t {
-  MClock_t digit[6][3]; /* a digit is built by 6 (vertical) and 3 (horizontal) clocks */
+  MClock_t digit[MFONT_SIZE_Y_3x6][MFONT_SIZE_X_3x6]; /* a digit is built by 6 (vertical) and 3 (horizontal) clocks */
 } MClockChar3x6_t;
 
-/* larger digits (3x5) */
+/* larger digits (3x6) */
 static const MClockChar3x6_t clockDigits3x6[10] = {
     [0].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
