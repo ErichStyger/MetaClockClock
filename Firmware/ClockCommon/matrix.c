@@ -1515,7 +1515,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   uint8_t d;
   int32_t v;
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   uint8_t r, g, b;
 #endif
 
