@@ -70,47 +70,41 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_06=0x21,
   BOARD_ADDR_07=0x20,
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_MOD
-  BOARD_ADDR_00=0x45, /* column 1+2, top board */
-  BOARD_ADDR_01=0x46,
-  BOARD_ADDR_02=0x47,
-  BOARD_ADDR_03=0x48,
-  BOARD_ADDR_04=0x49,
+  BOARD_ADDR_01=0x01, /* column 1+2, top board left board x/y [0][0] */
+  BOARD_ADDR_02=0x02,
+  BOARD_ADDR_03=0x03,
+  BOARD_ADDR_04=0x04,
+  BOARD_ADDR_05=0x05,
 
-  BOARD_ADDR_05=0x4A, /* column 3+4, top board */
-  BOARD_ADDR_06=0x4B,
-  BOARD_ADDR_07=0x4C,
-  BOARD_ADDR_08=0x4D,
-  BOARD_ADDR_09=0x4E,
+  BOARD_ADDR_10=0x10, /* column 3+4, top board */
+  BOARD_ADDR_11=0x11,
+  BOARD_ADDR_12=0x12,
+  BOARD_ADDR_13=0x13,
+  BOARD_ADDR_14=0x14,
 
-  BOARD_ADDR_10=0x53, /* column 5+6, top row */
-  BOARD_ADDR_11=0x52,
-  BOARD_ADDR_12=0x51,
-  BOARD_ADDR_13=0x50,
-  BOARD_ADDR_14=0x4F,
+  BOARD_ADDR_20=0x20, /* column 5+6, top row */
+  BOARD_ADDR_21=0x21,
+  BOARD_ADDR_22=0x22,
+  BOARD_ADDR_23=0x23,
+  BOARD_ADDR_24=0x24,
 
-  BOARD_ADDR_15=0x40, /* column 7+8, top row */
-  BOARD_ADDR_16=0x41,
-  BOARD_ADDR_17=0x42,
-  BOARD_ADDR_18=0x43,
-  BOARD_ADDR_19=0x44,
+  BOARD_ADDR_30=0x30, /* column 7+8, top row */
+  BOARD_ADDR_31=0x31,
+  BOARD_ADDR_32=0x32,
+  BOARD_ADDR_33=0x33,
+  BOARD_ADDR_34=0x34,
 
-  BOARD_ADDR_20=0x59, /* column 9, top row (single clocks) */
-  BOARD_ADDR_21=0x5A,
-  BOARD_ADDR_22=0x5B,
-  BOARD_ADDR_23=0x5C,
-  BOARD_ADDR_24=0x5D,
+  BOARD_ADDR_40=0x40, /* column 9, top row (single clocks) */
+  BOARD_ADDR_41=0x41,
+  BOARD_ADDR_42=0x42,
+  BOARD_ADDR_43=0x43,
+  BOARD_ADDR_44=0x44,
 
-  BOARD_ADDR_25=0x54, /* column 19, top row (single clocks) */
-  BOARD_ADDR_26=0x55,
-  BOARD_ADDR_27=0x56,
-  BOARD_ADDR_28=0x57,
-  BOARD_ADDR_29=0x58,
-
-  BOARD_ADDR_30=0x66, BOARD_ADDR_37=0x67, /* column 11+12, (single, dual clocks) */
-  BOARD_ADDR_31=0x65,
-  BOARD_ADDR_32=0x64,
-  BOARD_ADDR_33=0x63, BOARD_ADDR_34=0x62,
-  BOARD_ADDR_35=0x61, BOARD_ADDR_36=0x60,
+  BOARD_ADDR_50=0x50, /* column 19, top row (single clocks) */
+  BOARD_ADDR_51=0x51,
+  BOARD_ADDR_52=0x52,
+  BOARD_ADDR_53=0x53,
+  BOARD_ADDR_54=0x54,
 
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
   BOARD_ADDR_00=0x20, /* first column, top board */
