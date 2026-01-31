@@ -55,7 +55,7 @@ static void SmartWallDemoTask(void *pv) {
 }
 
 #else /* We are not an LED Pixel project (Sm(Art)Wall) */
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
 static void DEMO_LedDemo0(void) {
   MRING_EnableRingAll(true);
   MRING_SetRingColorAll(2, 0, 0);
@@ -81,7 +81,7 @@ static void DEMO_LedDemo0(void) {
 }
 #endif /* PL_CONFIG_USE_NEO_PIXEL_HW */
 
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
 typedef struct weather_ring_t {
   bool enabled;
   uint8_t r, g, b;
@@ -291,7 +291,7 @@ static void DEMO_ShowWeather(const weather_clock_t weather[3][3]) {
 }
 #endif
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
 static NEO_PixelColor Rainbow(int32_t numOfSteps, int32_t step) {
   float r = 0.0;
   float g = 0.0;
@@ -342,7 +342,7 @@ static NEO_PixelColor Rainbow(int32_t numOfSteps, int32_t step) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
 static void DEMO_LedDemo1(void) {
   uint8_t rowStartStep[MATRIX_NOF_STEPPERS_Y]; /* rainbow color starting values */
   NEO_PixelColor color;
@@ -383,7 +383,7 @@ static void DEMO_LedDemo1(void) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
 /* ------------------ PONG Game ------------------------------- */
 typedef struct {
   uint8_t r, g, b;
@@ -604,7 +604,7 @@ static void DEMO_LedPong(void) {
 }
 #endif /* PL_MATRIX_CONFIG_IS_RGB */
 
-#if PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB && !PL_CONFIG_HAS_CIRCLE_CLOCK
+#if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_LED_RING && !PL_CONFIG_HAS_CIRCLE_CLOCK
 static void evolve_univ(bool univ[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y], bool *changed) {
   /* see https://rosettacode.org/wiki/Conway%27s_Game_of_Life#C */
   unsigned newar[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y];
@@ -1239,7 +1239,7 @@ static uint8_t DemoRandomRingColor(void) {
   MRING_EnableRingAll(false);
   MHAND_HandEnableAll(true);
   return ERR_OK;
-#elif PL_MATRIX_CONFIG_IS_RGB
+#elif PL_CONFIG_USE_LED_RING
   uint8_t res;
 
   MHAND_HandEnableAll(false);
@@ -1418,7 +1418,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  led 0", (unsigned char*)"LED color demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  led 1", (unsigned char*)"LED rainbow demo\r\n", io->stdOut);
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK && !PL_CONFIG_USE_LED_PIXEL
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK && !PL_CONFIG_USE_LED_PIXEL
   McuShell_SendHelpStr((unsigned char*)"  pong", (unsigned char*)"pong demo\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  weather <weather>", (unsigned char*)"Show weather: sunny, cloudy, rainy, icy\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  game of life", (unsigned char*)"Conway's Game of Life\r\n", io->stdOut);
@@ -1531,7 +1531,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     return ERR_OK;
   #endif
 #endif /* PL_CONFIG_IS_MASTER */
-#if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
+#if PL_CONFIG_USE_LED_RING && PL_CONFIG_IS_MASTER && !PL_CONFIG_HAS_CIRCLE_CLOCK
   } else if (McuUtility_strcmp((char*)cmd, "demo weather sunny")==0) {
     *handled = TRUE;
     DEMO_ShowWeather(weather_sunny);
@@ -1557,7 +1557,7 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
     DEMO_GameOfLife();
     return ERR_OK;
 #endif
-#if PL_MATRIX_CONFIG_IS_RGB
+#if PL_CONFIG_USE_LED_RING
   } else if (McuUtility_strcmp((char*)cmd, "demo led 0")==0) {
     *handled = TRUE;
     if (CheckIfClockIsOn(io)!=ERR_OK) {
