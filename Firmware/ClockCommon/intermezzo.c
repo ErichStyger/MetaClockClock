@@ -43,12 +43,12 @@ static bool IntermezzoOn = /* if intermezzos are on by default or not */
     false;
 #endif
 #if PL_CONFIG_USE_LED_PIXEL
-static uint8_t IntermezzoDelaySec = 0; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 2 secs to build the time */
-static uint8_t IntermezzoFadeSec = (STEPPER_TIME_FULL_RANGE_MS/2000);  /* this is the fading-time of color changes between intermezzos */
-#define INTERMEZZO_BG_BRIGHTNESS 	(20)	/* Brightness of the intermezzo background color */
-#define INTERMEZZO_FONT_BRIGHTNESS 	(100)	/* Brightness of the intermezzo font color */
+  static uint8_t IntermezzoDelaySec = 0; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 2 secs to build the time */
+  static uint8_t IntermezzoFadeSec = (STEPPER_TIME_FULL_RANGE_MS/2000);  /* this is the fading-time of color changes between intermezzos */
+  #define INTERMEZZO_BG_BRIGHTNESS 	(20)	/* Brightness of the intermezzo background color */
+  #define INTERMEZZO_FONT_BRIGHTNESS 	(100)	/* Brightness of the intermezzo font color */
 #else
-static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
+  static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 #endif
 
 #define RTC_OFFSET_TEMPERATURE_DEFAULT   (-40)
@@ -1454,6 +1454,42 @@ static const IntermezzoDesc_t intermezzos[] = {
 
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
 
+static struct {
+  uint32_t disabled[2]; /* bits of intermezzo disabled: 1<<0 is for #0, 1<<1 for #1 and so on, max 64 intermezzos supported */
+} IntermezzoDisabled = {.disabled[0]=0, .disabled[1]=0};
+
+static bool Intermezzo_getDisabled(uint8_t idx) {
+  if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
+    return false; /* error case, cannot support that number of intermezzos, assuming it is not disabled */
+  }
+  bool isDisabled = IntermezzoDisabled.disabled[idx/sizeof(IntermezzoDisabled.disabled[0]*8)] & (1<<(idx%sizeof(IntermezzoDisabled.disabled[0]*8)));
+  return isDisabled;
+}
+
+void Intermezzo_setDisabled(uint8_t idx) {
+  if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
+    return; /* error case */
+  }
+  IntermezzoDisabled.disabled[idx/sizeof(IntermezzoDisabled.disabled[0]*8)] |= (1<<(idx%sizeof(IntermezzoDisabled.disabled[0]*8)));
+}
+
+void Intermezzo_clearDisabled(uint8_t idx) {
+  if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
+    return; /* error case */
+  }
+  IntermezzoDisabled.disabled[idx/sizeof(IntermezzoDisabled.disabled[0]*8)] &= ~(1<<(idx%sizeof(IntermezzoDisabled.disabled[0]*8)));
+}
+
+static void Intermezzo_printDisabled(const McuShell_StdIOType *io) {
+  for(int i=0; i<sizeof(IntermezzoDisabled.disabled[0]*8); i++) {
+    if (Intermezzo_getDisabled(i)) {
+      McuShell_SendNum16u(i, io->stdOut);
+      McuShell_SendStr((unsigned char*)" ", io->stdOut);
+    }
+  }
+}
+
+
 void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown) {
   TickType_t tickCount;
   uint8_t intermezzo;
@@ -1553,6 +1589,9 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendStr((unsigned char*)")\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  list", (unsigned char*)"List intermezzos\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  rtc temp offset <dC>", (unsigned char*)"Set RTC temperature offset in deci-Celsius\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  disabled print", (unsigned char*)"Print disabled intermezzos\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  disabled set <idx>", (unsigned char*)"Set an intermezzo number as disabled\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  disabled clear <idx>", (unsigned char*)"Enable a disabled intermezzo number\r\n", io->stdOut);
   return ERR_OK;
 }
 #endif
@@ -1622,7 +1661,7 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo ", sizeof("intermezzo ")-1)==0) {
     uint8_t nr;
 
-    *handled = TRUE;
+    *handled = true;
     p = cmd + sizeof("intermezzo ")-1;
     if (McuUtility_ScanDecimal8uNumber(&p, &nr)==ERR_OK && nr<NOF_INTERMEZZOS) {
       intermezzos[nr].fp();
@@ -1630,6 +1669,10 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     } else {
       return ERR_FAILED;
     }
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo disable print")==0) {
+    *handled = true;
+    Intermezzo_printDisabled(io);
+    return ERR_OK;
   }
   return ERR_OK;
 }
