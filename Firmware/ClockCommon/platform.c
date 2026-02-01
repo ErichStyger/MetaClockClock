@@ -180,6 +180,7 @@ void PL_Init(void) {
   McuWait_Init();
   McuArmTools_Init();
   McuUtility_Init();
+#if PL_CONFIG_IS_MASTER /* intialize random seed and using rand() only on master to save ~200 bytes of RAM */
   { /* different random seed for each board with using the UID of the device */
     McuArmTools_UID uid;
     uint32_t seed;
@@ -190,6 +191,7 @@ void PL_Init(void) {
     seed = (uid.id[0]<<24)|(uid.id[0]<<16)|(uid.id[0]<<8)|uid.id[0];
     McuUtility_randomSetSeed(seed); /* set new random seed */
   }
+#endif
   McuLED_Init();
   McuGPIO_Init();
 #if PL_CONFIG_USE_RTT

@@ -27,7 +27,8 @@
 #elif 1 /* V3: modular round clock version on canvas: to be extended to a 72 clock */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_MOD
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING                    (0) /* we do have LED rings */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* if we do have LED rings */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (PL_CONFIG_USE_LED_RING)
   #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (0) /* if clock mode is on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* if intermezzo is on by default */
@@ -39,7 +40,7 @@
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* has RGB functionality */
-  #define PL_CONFIG_USE_LED_RING                    (1) /* we do have LED rings */
+  #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* we do have LED rings */
   #define PL_CONFIG_USE_EXTENDED_HANDS              (0) /* using extended hand */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
@@ -61,6 +62,7 @@
 #elif 0 /* second Sm(A)rtWall project by Livio Stadelmann */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_SMARTWALL_16x5
   #define PL_MATRIX_CONFIG_IS_RGB         (1) /* has RGB functionality */
+  #define PL_CONFIG_USE_LED_RING          (PL_MATRIX_CONFIG_IS_RGB) /* we do have LED rings */
   #define PL_CONFIG_USE_LED_PIXEL         (1 && PL_CONFIG_USE_NEO_PIXEL_HW) /* 'moving' pixels */
   #define PL_CONFIG_USE_NEO_PIXEL_HW      (1) /* we drive the NeoPixels directly by hardware */
   #define PL_CONFIG_USE_MOTOR_ON_OFF      (0) /* has motor on/off hardware */
@@ -83,7 +85,8 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0x00FF00)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0xff)
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING                    (1) /* if have LED rings */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* has RGB functionality */
+  #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if have LED rings */
   #define PL_CONFIG_CHECK_LAST_ERROR                (0) /* not check for cmd errors to improve speed */
   #define PL_CONFIG_USE_BLE                         (0) /* Adafruit module not mounted on board */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (0) /* clock on by default */
@@ -94,7 +97,7 @@
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* has RGB functionality */
-  #define PL_CONFIG_USE_LED_RING                    (0) /* if have LED rings */
+  #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if have LED rings */
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
@@ -102,7 +105,8 @@
 #elif 1 /* \todo Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_CONFIG_USE_LED_RING                    (0) /* if we have LED rings */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* if has RGB functionality */
+  #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if we have LED rings */
   #define PL_CONFIG_USE_BLE                         (0) /* Adafruit module mounted on board */
   #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP (0) /* temporary only for testing, to be removed */
 #else

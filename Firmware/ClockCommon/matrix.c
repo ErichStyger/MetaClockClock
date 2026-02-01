@@ -1393,12 +1393,13 @@ static uint8_t ParseMatrixCommand(const unsigned char **cmd, int32_t *xp, int32_
 #endif
 
 #if PL_MATRIX_CONFIG_IS_RGB
-void MATRIX_RequestRgbUpdate(void) {
+uint8_t MATRIX_RequestRgbUpdate(void) {
   /* request LED update either locally or remote */
 #if PL_CONFIG_USE_NEO_PIXEL_HW /* update locally attached NeoPixels */
   APP_RequestUpdateLEDs();
+  return ERR_OK;
 #elif PL_CONFIG_USE_RS485 /* send over RS-485 */
-  (void)MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no not need to wait */
+  return MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no not need to wait */
 #endif
 }
 #endif
@@ -1483,11 +1484,13 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #endif
   McuShell_SendHelpStr((unsigned char*)"  q <xyz> <cmd>", (unsigned char*)"Queue a 'r' or 'a' command, e.g. 'matrix q 0 0 0 r 90 8 cc,0 0 1 a 45 0 CC', (comma separated)\r\n", io->stdOut);
 #endif /* PL_CONFIG_USE_STEPPER */
+#if PL_CONFIG_USE_STEPPER
   McuShell_SendHelpStr((unsigned char*)"  exq", (unsigned char*)"Execute commands in queues\r\n", io->stdOut);
+#endif
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  lastError", (unsigned char*)"Check remotes for last error\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  waitidle", (unsigned char*)"Check remotes for idle state\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  sendcmd <cmd>", (unsigned char*)"Send a command to all boards\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  sendcmd <cmd>", (unsigned char*)"Send a command to all boards, e.g. matrix sendcmd matrix exq\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <val>", (unsigned char*)"Set default movement delay (0-127) \r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_X12_STEPPER

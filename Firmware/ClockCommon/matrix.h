@@ -113,7 +113,7 @@ void MATRIX_SetIgnoreCallback(MATRIX_IgnoreCallbackFct fct);
 void MATRIX_EnableStepper(void *dev);
 void MATRIX_DisableStepper(void *dev);
 
-void MATRIX_RequestRgbUpdate(void);
+uint8_t MATRIX_RequestRgbUpdate(void);
 
 void MATRIX_Init(void);
 

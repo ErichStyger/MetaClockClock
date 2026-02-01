@@ -22,6 +22,7 @@
 #define PL_CONFIG_USE_EXTENDED_HANDS    (0) /* if using dual/extended hand */
 #define PL_CONFIG_USE_MAG_SENSOR        (0) /* if using magnets */
 #define PL_CONFIG_USE_MOTOR_ON_OFF      (1) /* has motor on/off hardware */
+#define PL_CONFIG_USE_RTT               (1) /* disabled to save memory */
 
 #include "platform_common.h"
 

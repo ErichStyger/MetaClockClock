@@ -266,6 +266,27 @@ void SHELL_SendString(const unsigned char *str) {
   }
 }
 
+static void Dummy_StdIOReadChar(uint8_t *c) {
+  *c = '\0'; /* no character present */
+}
+
+static void Dummy_StdIOSendChar(uint8_t ch) {
+}
+
+static bool Dummy_StdIOKeyPressed(void) {
+  return false;
+}
+
+McuShell_ConstStdIOType Dummy_stdio = {
+    .stdIn = (McuShell_StdIO_In_FctType)Dummy_StdIOReadChar,
+    .stdOut = (McuShell_StdIO_OutErr_FctType)Dummy_StdIOSendChar,
+    .stdErr = (McuShell_StdIO_OutErr_FctType)Dummy_StdIOSendChar,
+    .keyPressed = Dummy_StdIOKeyPressed, /* if input is not empty */
+  #if McuShell_CONFIG_ECHO_ENABLED
+    .echoEnabled = false,
+  #endif
+  };
+
 uint8_t SHELL_ParseCommandIO(const unsigned char *command, McuShell_ConstStdIOType *io, bool silent) {
   if (io==NULL) { /* use a default */
 #if PL_CONFIG_USE_SHELL_UART
@@ -275,7 +296,7 @@ uint8_t SHELL_ParseCommandIO(const unsigned char *command, McuShell_ConstStdIOTy
 #elif PL_CONFIG_USE_RTT
     io = &McuRTT_stdio;
 #else
-  #error "no shell std IO?"
+    io = &Dummy_stdio;
 #endif
   }
   return McuShell_ParseWithCommandTableExt(command, io, CmdParserTable, silent);

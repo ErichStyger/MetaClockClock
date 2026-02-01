@@ -26,7 +26,6 @@ Instructions:
 
 #ifndef INCLUDEMCULIBCONFIG_H_
 #define INCLUDEMCULIBCONFIG_H_
-
 #define SIM_UIDH       /* FIX: SDK does not define this one, but should be! See https://mcuoneclipse.com/2020/11/30/getting-a-96bit-unique-id-for-each-kinetis-device-using-mcuxpresso-sdk/ */
 
 /* ------------------- SDK/Library ---------------------------*/
@@ -43,8 +42,8 @@ Instructions:
 #define configHEAP_SECTION_NAME_STRING       ".bss.$SRAM_LOWER.FreeRTOS"
 #define configQUEUE_REGISTRY_SIZE            (0)
 #define configMINIMAL_STACK_SIZE             (128/sizeof(StackType_t))
-#define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
-#define configUSE_TIMERS                     (1)
+#define configTIMER_TASK_STACK_DEPTH         (300/sizeof(StackType_t))
+#define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
 #define configMAX_TASK_NAME_LEN              (4)
 
@@ -60,10 +59,10 @@ Instructions:
 #define configCONFIGURE_TIMER_FOR_RUNTIME_STATS     AppConfigureTimerForRuntimeStats
 /* -------------------------------------------------*/
 /* Segger SystemViewer: */
-#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS (0)
-#define SYSVIEW_APP_NAME                     "K02 LedStepper"
-#define SYSVIEW_DEVICE_NAME                  "NXP K02FN128"
-#define McuSystemView_CONFIG_RTT_BUFFER_SIZE (512)
+#define configUSE_SEGGER_SYSTEM_VIEWER_HOOKS        (0)
+#define SYSVIEW_APP_NAME                            "K02 LedStepper"
+#define SYSVIEW_DEVICE_NAME                         "NXP K02FN128"
+#define McuSystemView_CONFIG_RTT_BUFFER_SIZE        (512)
 #define McuSystemView_CONFIG_GENERATE_QUEUE_EVENTS  (0) /* to reduce messages */
 /* -------------------------------------------------*/
 /* Percepio Tracealyzer */
@@ -73,8 +72,8 @@ Instructions:
 /* Shell */
 #define McuShell_CONFIG_PROJECT_NAME_STRING           "K02 LedStepper"
 #define McuShell_CONFIG_MULTI_CMD_ENABLED             (0)
-#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (256/4)
-#define McuShell_CONFIG_MULTI_CMD_SIZE                (200/4) /* max size of each command */
+#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE     (200) /* need to be large as we receive large commands over RS-485 */
+#define McuShell_CONFIG_MULTI_CMD_SIZE                (200) /* max size of each command */
 #define McuShellUart_CONFIG_UART                      McuShellUart_CONFIG_UART_NONE
 /* -------------------------------------------------*/
 /* RTT */
@@ -93,13 +92,13 @@ Instructions:
 #define McuX12_017_CONFIG_QUAD_DRIVER                 (1)  /* using quad driver */
 /* -------------------------------------------------*/
 /* McuLog */
-#define McuLog_CONFIG_IS_ENABLED                      (1)
+#define McuLog_CONFIG_IS_ENABLED                      (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
 #define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
 /* ---------------------------------------------------------------------------------------*/
 /* MinINI */
-#define McuFlash_CONFIG_IS_ENABLED					(1)
+#define McuFlash_CONFIG_IS_ENABLED					        (1)
 #define McuMinINI_CONFIG_FS                         (McuMinINI_CONFIG_FS_TYPE_FLASH_FS)
 #define McuMinINI_CONFIG_FLASH_NVM_ADDR_START       ((0+128*1024)-McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE)
 #define McuMinINI_CONFIG_FLASH_NVM_BLOCK_SIZE       (0x800)
@@ -111,9 +110,9 @@ Instructions:
 #define McuFlash_CONFIG_IS_ENABLED                  (1)
 /* -------------------------------------------------*/
 /* McuUart485 */
-#define McuUart485_CONFIG_USE_RS_485      (1)
+#define McuUart485_CONFIG_USE_RS_485                (1)
 
-#define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED  (0) /* hook for testing LP_MODE_SELECTED==LP_MODE_STOP with PL_CONFIG_USE_LOW_POWER */
-#define McuUart485_CONFIG_UART_ISR_HOOK_NAME     App_RsUartHook
+#define McuUart485_CONFIG_UART_ISR_HOOK_ENABLED     (0) /* hook for testing LP_MODE_SELECTED==LP_MODE_STOP with PL_CONFIG_USE_LOW_POWER */
+#define McuUart485_CONFIG_UART_ISR_HOOK_NAME        App_RsUartHook
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */

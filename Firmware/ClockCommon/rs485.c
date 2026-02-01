@@ -542,14 +542,39 @@ static uint8_t CheckHeader(unsigned char *msg, const unsigned char **startCmd, u
   return ERR_FAILED;
 }
 
+static void sendOkNokResponse(uint8_t srcAddr, uint8_t dstAddr, uint8_t res) {
+  uint8_t buf[32];
+  uint8_t crc;
+  unsigned char hex;
+
+  /* send response back to sender */
+  if (dstAddr!=RS485_BROADCAST_ADDRESS) { /* normal message, send response. For broadcasts it is up to the caller to check the last error */
+    McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"@");
+    McuUtility_strcatNum8Hex(buf, sizeof(buf), srcAddr);
+    McuUtility_chcat(buf, sizeof(buf), ' ');
+    McuUtility_strcatNum8Hex(buf, sizeof(buf), RS485_GetAddress());
+    McuUtility_chcat(buf, sizeof(buf), ' ');
+    McuUtility_strcatNum8Hex(buf, sizeof(buf), 0); /* dummy crc, will be replaced later */
+    if (res==ERR_OK) {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" OK");
+    } else {
+      McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" NOK");
+    }
+    crc = CalcMsgCrc(buf);
+    hex = (char)((crc>>4) & 0x0F);
+    buf[sizeof("@dd ss ")-1] = (char)(hex + ((hex <= 9) ? '0' : ('A'-10)));
+    hex = (char)(crc & 0x0F);
+    buf[sizeof("@dd ss c")-1] = (char)(hex + ((hex <= 9) ? '0' : ('A'-10)));
+    McuUtility_chcat(buf, sizeof(buf), '\n');
+    RS485_SendStr(buf);
+  }
+}
+
 static void RS485Task(void *pv) {
   static uint8_t cmdBuf[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* command line and text from the RS-485 bus */
   const unsigned char *startCmd;
   uint8_t srcAddr, dstAddr;
-  uint8_t res, crc;
-  uint8_t buf[32];
-  unsigned char hex;
-  bool reply;
+  uint8_t res;
   static uint8_t lastError = ERR_OK;
 
   (void)pv; /* not used */
@@ -566,7 +591,6 @@ static void RS485Task(void *pv) {
     #endif
     }
     if (McuShell_ReadCommandLine(cmdBuf, sizeof(cmdBuf), &RS485Parse_stdio)==ERR_OK) {
-      reply = false;
       srcAddr = RS485_ILLEGAL_ADDRESS;
       dstAddr = RS485_ILLEGAL_ADDRESS;
       if (cmdBuf[0]=='@' && strlen((char*)cmdBuf)>sizeof("@dd ss cc ")-1) { /* have a valid message? */
@@ -575,19 +599,17 @@ static void RS485Task(void *pv) {
           McuLog_trace("Rx: %s", cmdBuf);
         }
 #endif
-        reply = false; /* default */
         res = CheckHeader(cmdBuf, &startCmd, &srcAddr, &dstAddr);
         if (res == ERR_CRC) { /* wrong crc */
           lastError = ERR_CRC;
-          reply = true;
+          sendOkNokResponse(srcAddr, dstAddr, res);
         } else if (res==ERR_OK) { /* header was ok */
           res = ERR_FAILED; /* set default return value */
           if (McuUtility_strcmp((char*)startCmd, (char*)" cmd lastError")==0) {
-            reply = true;
             res = lastError;  /* report back last error */
+            sendOkNokResponse(srcAddr, dstAddr, res);
             lastError = ERR_OK; /* clear error */
           } else if (McuUtility_strcmp((char*)startCmd, (char*)" cmd idle")==0) {
-            reply = true;
 #if PL_CONFIG_USE_STEPPER
             if (STEPBOARD_IsIdle(STEPBOARD_GetBoard())) {
               res = ERR_OK;  /* ERR_OK if board is idle */
@@ -597,6 +619,7 @@ static void RS485Task(void *pv) {
 #else
             res = ERR_FAILED; /* not idle */
 #endif
+            sendOkNokResponse(srcAddr, dstAddr, res);
           } else if (McuUtility_strncmp((char*)startCmd, " cmd ", sizeof(" cmd ")-1)==0) { /* shell command? */
             McuUart485_ClearResponseQueue(); /* clear any pending response: we are going to parse a new command */
             startCmd += sizeof(" cmd ")-1;
@@ -606,11 +629,11 @@ static void RS485Task(void *pv) {
               res = SHELL_ParseCommandIO(startCmd, &RS485_stdio, true);
             }
             lastError = res; /* remember error status if we get asked later on */
-            reply = true;
+            sendOkNokResponse(srcAddr, dstAddr, res);
           } else if (McuUtility_strcmp((char*)startCmd, (char*)" OK")==0) {
-            reply = false;
+            /* do nothing */
           } else if (McuUtility_strcmp((char*)startCmd, (char*)" NOK")==0) {
-            reply = false;
+            /* do nothing */
           }
         }
       } else {
@@ -619,27 +642,6 @@ static void RS485Task(void *pv) {
         SHELL_SendString((unsigned char *)cmdBuf); /* \TODO do not send directly to UART: instead, use a stdio which buffers the output */
       }
       cmdBuf[0] = '\0'; /* reset buffer for next iteration */
-      /* send response back to sender */
-      if (reply && dstAddr!=RS485_BROADCAST_ADDRESS) { /* normal message, send response. For broadcasts it is up to the caller to check the last error */
-        McuUtility_strcpy(buf, sizeof(buf), (unsigned char*)"@");
-        McuUtility_strcatNum8Hex(buf, sizeof(buf), srcAddr);
-        McuUtility_chcat(buf, sizeof(buf), ' ');
-        McuUtility_strcatNum8Hex(buf, sizeof(buf), RS485_GetAddress());
-        McuUtility_chcat(buf, sizeof(buf), ' ');
-        McuUtility_strcatNum8Hex(buf, sizeof(buf), 0); /* dummy crc, will be replaced later */
-        if (res==ERR_OK) {
-          McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" OK");
-        } else {
-          McuUtility_strcat(buf, sizeof(buf), (unsigned char*)" NOK");
-        }
-        crc = CalcMsgCrc(buf);
-        hex = (char)((crc>>4) & 0x0F);
-        buf[sizeof("@dd ss ")-1] = (char)(hex + ((hex <= 9) ? '0' : ('A'-10)));
-        hex = (char)(crc & 0x0F);
-        buf[sizeof("@dd ss c")-1] = (char)(hex + ((hex <= 9) ? '0' : ('A'-10)));
-        McuUtility_chcat(buf, sizeof(buf), '\n');
-        RS485_SendStr(buf);
-      }
     }
   } /* for */
 }

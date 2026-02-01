@@ -107,6 +107,7 @@ rs sendcmd 0x20 matrix help
 Example hand immediate move immediate relativ 'r' at (0,0,0) local coordinate, 180 degree with a delay of 10, clockwise (cw):
 rs sendcmd 0x20 matrix r 0 0 0 180 10 cw
 
+Example: first sending to the queue on the board, then execute the command(s)
 rs sendcmd 0x20 matrix q 0 0 0 r 90 8 cc
 rs sendcmd 0x20 matrix exq
 
@@ -174,4 +175,20 @@ Issues/open points/wish list:
   https://cadlab.io/project/23122/master/files
   https://github.com/RoboticsBrno/RB0004-NeopixelBooster
   https://hackaday.com/2021/01/13/stepping-down-voltage-with-reliability/
+  
+  
+Example log:
+============
+CMD> rs log on
+CMD> McuLog level 0
+CMD> matrix hour 3
+17:15:55,60 TRACE matrix.c:613 Queue enable & move (0x70)
+17:15:55,60 TRACE rs485.c:370 Tx: @70 AA 4A cmd matrix q 0 0 0 a 90 2 cw,0 0 1 a 90 2 cw,1 0 0 a 90 2 cw,1 0 1 a 90 2 cw
+17:15:55,70 TRACE rs485.c:575 Rx: @AA 70 5F OK
+17:15:55,70 TRACE matrix.c:613 Queue enable & move (0x71)
+17:15:55,70 TRACE rs485.c:370 Tx: @71 AA 6F cmd matrix q 0 0 0 a 90 2 cw,0 0 1 a 90 2 cw,1 0 0 a 90 2 cw,1 0 1 a 90 2 cw
+17:15:55,90 TRACE rs485.c:575 Rx: @AA 71 92 OK
+...
+
+  
   
