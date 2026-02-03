@@ -1419,11 +1419,11 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=Intermezzo14,                .text="6 with clapping right"},
   {.fp=Intermezzo15,                .text="rotating clock lines"},
   #if PL_CONFIG_USE_RELATIVE_MOVES && !PL_CONFIG_USE_VIRTUAL_STEPPER /* issue with LED virtual steppers following properly, disabled for now */
-  {.fp=Intermezzo16,                .text=""},
-  {.fp=Intermezzo17,                .text=""},
-  {.fp=Intermezzo18,                .text=""},
-  {.fp=Intermezzo19,                .text=""},
-  {.fp=Intermezzo20,                .text=""},
+  {.fp=Intermezzo16,                .text="circle swirls"},
+  {.fp=Intermezzo17,                .text="circle claps"},
+  {.fp=Intermezzo18,                .text="circle swing"},
+  {.fp=Intermezzo19,                .text="circles rotate"},
+  {.fp=Intermezzo20,                .text="balance left and right"},
   {.fp=IntermezzoHalfHalf,          .text="Half-Half"},
   #endif
   {.fp=IntermezzoTime,              .text="Current time on each clock"},
