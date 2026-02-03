@@ -44,7 +44,7 @@ Instructions:
 #define configQUEUE_REGISTRY_SIZE            (16)
 #define configMINIMAL_STACK_SIZE             (200/sizeof(StackType_t))
 #define configTIMER_TASK_STACK_DEPTH         (400/sizeof(StackType_t))
-#define configUSE_TIMERS                     (1)
+#define configUSE_TIMERS                     (0)
 #define INCLUDE_xTimerPendFunctionCall       (0)
 
 /* low power support: */
@@ -80,7 +80,7 @@ Instructions:
 #define McuRTT_CONFIG_BLOCKING_SEND                   (1)
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (10)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (5)
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (128)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (64)
 #define McuRTT_CONFIG_RTT_MAX_NUM_UP_BUFFERS          (2)
 #define McuRTT_CONFIG_RTT_MAX_NUM_DOWN_BUFFERS        (2)
 /* ------------------- I2C ---------------------------*/
@@ -110,6 +110,6 @@ Instructions:
 #define McuFlash_CONFIG_IS_ENABLED                  (1)
 /* -------------------------------------------------*/
 /* McuUart485 */
-#define McuUart485_CONFIG_USE_RS_485      (1)
+#define McuUart485_CONFIG_USE_RS_485                (1)
 
 #endif /* INCLUDEMCULIBCONFIG_H_ */
