@@ -76,36 +76,35 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_04=0x04,
   BOARD_ADDR_05=0x05,
 
-  BOARD_ADDR_10=0x10, /* column 3+4, top board */
-  BOARD_ADDR_11=0x11,
-  BOARD_ADDR_12=0x12,
-  BOARD_ADDR_13=0x13,
-  BOARD_ADDR_14=0x14,
+  BOARD_ADDR_10=0x11, /* column 3+4, top board */
+  BOARD_ADDR_11=0x12,
+  BOARD_ADDR_12=0x13,
+  BOARD_ADDR_13=0x14,
+  BOARD_ADDR_14=0x15,
 
-  BOARD_ADDR_20=0x20, /* column 5+6, top row */
-  BOARD_ADDR_21=0x21,
-  BOARD_ADDR_22=0x22,
-  BOARD_ADDR_23=0x23,
-  BOARD_ADDR_24=0x24,
+  BOARD_ADDR_20=0x21, /* column 5+6, top row */
+  BOARD_ADDR_21=0x22,
+  BOARD_ADDR_22=0x23,
+  BOARD_ADDR_23=0x24,
+  BOARD_ADDR_24=0x25,
 
-  BOARD_ADDR_30=0x30, /* column 7+8, top row */
-  BOARD_ADDR_31=0x31,
-  BOARD_ADDR_32=0x32,
-  BOARD_ADDR_33=0x33,
-  BOARD_ADDR_34=0x34,
+  BOARD_ADDR_30=0x31, /* column 7+8, top row */
+  BOARD_ADDR_31=0x32,
+  BOARD_ADDR_32=0x33,
+  BOARD_ADDR_33=0x34,
+  BOARD_ADDR_34=0x35,
 
-  BOARD_ADDR_40=0x40, /* column 9, top row (single clocks) */
-  BOARD_ADDR_41=0x41,
-  BOARD_ADDR_42=0x42,
-  BOARD_ADDR_43=0x43,
-  BOARD_ADDR_44=0x44,
+  BOARD_ADDR_40=0x41, /* column 9, top row (single clocks) */
+  BOARD_ADDR_41=0x42,
+  BOARD_ADDR_42=0x43,
+  BOARD_ADDR_43=0x44,
+  BOARD_ADDR_44=0x45,
 
-  BOARD_ADDR_50=0x50, /* column 19, top row (single clocks) */
-  BOARD_ADDR_51=0x51,
-  BOARD_ADDR_52=0x52,
-  BOARD_ADDR_53=0x53,
-  BOARD_ADDR_54=0x54,
-
+  BOARD_ADDR_50=0x51, /* column 19, top row (single clocks) */
+  BOARD_ADDR_51=0x52,
+  BOARD_ADDR_52=0x53,
+  BOARD_ADDR_53=0x54,
+  BOARD_ADDR_54=0x55,
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x5_60B
   BOARD_ADDR_00=0x20, /* first column, top board */
   BOARD_ADDR_01=0x21,
