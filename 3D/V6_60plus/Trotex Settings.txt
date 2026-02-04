@@ -1,0 +1,4 @@
+Trotec laser settings
+3.75 mm PMMA
+black	Pwr   5	speed 2.0	4.0 kHz
+red	Pwr 100 speed 0.6	4.0 kHz
