@@ -24,7 +24,7 @@
   #define PL_CONFIG_USE_VIRTUAL_STEPPER             (1) /* LED rings are driven by virtual stepper motors */
   #define PL_CONFIG_USE_BLE                         (1) /* if using Adafruit BLE module */
   #define PL_CONFIG_USE_SHELL_UART                  (1) /* if using shell UART to K20 */
-#elif 1 /* V3: modular round clock version on canvas: to be extended to a 72 clock */
+#elif 0 /* V3: modular round clock version on canvas: can be extended to a 72 clock version */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_MOD
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (0) /* if we do have LED rings */
