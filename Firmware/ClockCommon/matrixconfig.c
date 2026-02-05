@@ -714,11 +714,11 @@
       [8][4][0]={.addr=BOARD_ADDR_45, .board.x=0, .board.y=0, .board.z=0}, [8][4][1]={.addr=BOARD_ADDR_45, .board.x=0, .board.y=0, .board.z=1},
       [8][5][0]={.addr=BOARD_ADDR_46, .board.x=0, .board.y=0, .board.z=0}, [8][5][1]={.addr=BOARD_ADDR_46, .board.x=0, .board.y=0, .board.z=1},
 
-      [9][0][0]={.addr=BOARD_ADDR_41, .board.x=0, .board.y=0, .board.z=0}, [9][0][1]={.addr=BOARD_ADDR_41, .board.x=0, .board.y=0, .board.z=1},
-      [9][1][0]={.addr=BOARD_ADDR_42, .board.x=0, .board.y=0, .board.z=0}, [9][1][1]={.addr=BOARD_ADDR_42, .board.x=0, .board.y=0, .board.z=1},
-      [9][2][0]={.addr=BOARD_ADDR_43, .board.x=0, .board.y=0, .board.z=0}, [9][2][1]={.addr=BOARD_ADDR_43, .board.x=0, .board.y=0, .board.z=1},
-      [9][3][0]={.addr=BOARD_ADDR_44, .board.x=0, .board.y=0, .board.z=0}, [9][3][1]={.addr=BOARD_ADDR_44, .board.x=0, .board.y=0, .board.z=1},
-      [9][4][0]={.addr=BOARD_ADDR_45, .board.x=0, .board.y=0, .board.z=0}, [9][4][1]={.addr=BOARD_ADDR_45, .board.x=0, .board.y=0, .board.z=1},
+      [9][0][0]={.addr=BOARD_ADDR_41, .board.x=1, .board.y=0, .board.z=0}, [9][0][1]={.addr=BOARD_ADDR_41, .board.x=1, .board.y=0, .board.z=1},
+      [9][1][0]={.addr=BOARD_ADDR_42, .board.x=1, .board.y=0, .board.z=0}, [9][1][1]={.addr=BOARD_ADDR_42, .board.x=1, .board.y=0, .board.z=1},
+      [9][2][0]={.addr=BOARD_ADDR_43, .board.x=1, .board.y=0, .board.z=0}, [9][2][1]={.addr=BOARD_ADDR_43, .board.x=1, .board.y=0, .board.z=1},
+      [9][3][0]={.addr=BOARD_ADDR_44, .board.x=1, .board.y=0, .board.z=0}, [9][3][1]={.addr=BOARD_ADDR_44, .board.x=1, .board.y=0, .board.z=1},
+      [9][4][0]={.addr=BOARD_ADDR_45, .board.x=1, .board.y=0, .board.z=0}, [9][4][1]={.addr=BOARD_ADDR_45, .board.x=1, .board.y=0, .board.z=1},
       [9][5][0]={.addr=BOARD_ADDR_46, .board.x=1, .board.y=0, .board.z=0}, [9][5][1]={.addr=BOARD_ADDR_46, .board.x=1, .board.y=0, .board.z=1},
 
       [10][0][0]={.addr=BOARD_ADDR_51, .board.x=0, .board.y=0, .board.z=0},[10][0][1]={.addr=BOARD_ADDR_51, .board.x=0, .board.y=0, .board.z=1},
@@ -728,11 +728,11 @@
       [10][4][0]={.addr=BOARD_ADDR_55, .board.x=0, .board.y=0, .board.z=0},[10][4][1]={.addr=BOARD_ADDR_55, .board.x=0, .board.y=0, .board.z=1},
       [10][5][0]={.addr=BOARD_ADDR_56, .board.x=0, .board.y=0, .board.z=0},[10][5][1]={.addr=BOARD_ADDR_56, .board.x=0, .board.y=0, .board.z=1},
 
-      [11][0][0]={.addr=BOARD_ADDR_51, .board.x=0, .board.y=0, .board.z=0},[11][0][1]={.addr=BOARD_ADDR_51, .board.x=0, .board.y=0, .board.z=1},
+      [11][0][0]={.addr=BOARD_ADDR_51, .board.x=1, .board.y=0, .board.z=0},[11][0][1]={.addr=BOARD_ADDR_51, .board.x=1, .board.y=0, .board.z=1},
       [11][1][0]={.addr=BOARD_ADDR_52, .board.x=1, .board.y=0, .board.z=0},[11][1][1]={.addr=BOARD_ADDR_52, .board.x=1, .board.y=0, .board.z=1},
       [11][2][0]={.addr=BOARD_ADDR_53, .board.x=1, .board.y=0, .board.z=0},[11][2][1]={.addr=BOARD_ADDR_53, .board.x=1, .board.y=0, .board.z=1},
-      [11][3][0]={.addr=BOARD_ADDR_54, .board.x=0, .board.y=0, .board.z=0},[11][3][1]={.addr=BOARD_ADDR_54, .board.x=0, .board.y=0, .board.z=1},
-      [11][4][0]={.addr=BOARD_ADDR_55, .board.x=0, .board.y=0, .board.z=0},[11][4][1]={.addr=BOARD_ADDR_55, .board.x=0, .board.y=0, .board.z=1},
+      [11][3][0]={.addr=BOARD_ADDR_54, .board.x=1, .board.y=0, .board.z=0},[11][3][1]={.addr=BOARD_ADDR_54, .board.x=1, .board.y=0, .board.z=1},
+      [11][4][0]={.addr=BOARD_ADDR_55, .board.x=1, .board.y=0, .board.z=0},[11][4][1]={.addr=BOARD_ADDR_55, .board.x=1, .board.y=0, .board.z=1},
       [11][5][0]={.addr=BOARD_ADDR_56, .board.x=1, .board.y=0, .board.z=0},[11][5][1]={.addr=BOARD_ADDR_56, .board.x=1, .board.y=0, .board.z=1},
     };
 
