@@ -30,8 +30,8 @@
 #if PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN128 || PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K02FN64
   /* values for a 36 MHz FTM0 clock and a 96 MHz core clock! */
   #define FTM_CH0_TICKS 0x0A /* go high, start bit */
-  #define FTM_CH1_TICKS 0x1A /* data bit, go low for 0 after 0.35us, stay high for 1 */
-  #define FTM_CH2_TICKS 0x33 /* end of 1 bit, go low after 0.9us */
+  #define FTM_CH1_TICKS 0x15 /* data bit, go low for 0 after 0.25us, stay high for 1. */
+  #define FTM_CH2_TICKS 0x33 /* end of 1 bit, go low after 0.9 us */
   #define FTM_OVL_TICKS 0x3C /* end of 1.25 us cycle for a 0 or 1 bit */
 #elif 0 && PL_CONFIG_BOARD_MCU==PL_CONFIG_BOARD_ID_MCU_K22FN512
   /* values for a 48 MHz FTM0 clock and a 96 core clock! */
