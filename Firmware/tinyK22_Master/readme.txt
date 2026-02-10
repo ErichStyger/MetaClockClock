@@ -94,6 +94,8 @@ In terminal with RS-485-2-USB converter (virtual address 0x2):
 @<TO> <FROM> <CRC> <string> 
 (TO, FROM and CRC are two characters in hex)
 @02 05 14 cmd rs status
+@02 01 E6 cmd matrix test
+
 
 @20 02 xx cmd matrix q 0 0 1 a 90 10 sh
 @20 02 xx cmd matrix q 0 0 0 a 270 10 sh
