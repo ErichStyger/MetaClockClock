@@ -13,7 +13,6 @@
 extern "C" {
 #endif
 
-
 typedef enum {
   STEPPER_MOVE_MODE_SHORT,  /* shortest move to position */
   STEPPER_MOVE_MODE_CW,     /* clock-wise move */
