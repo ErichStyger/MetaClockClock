@@ -1462,29 +1462,30 @@ static bool Intermezzo_getDisabled(uint8_t idx) {
   if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
     return false; /* error case, cannot support that number of intermezzos, assuming it is not disabled */
   }
-  bool isDisabled = IntermezzoDisabled.disabled[idx/sizeof(IntermezzoDisabled.disabled[0]*8)] & (1<<(idx%sizeof(IntermezzoDisabled.disabled[0]*8)));
-  return isDisabled;
+  return IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] & (1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
 }
 
 void Intermezzo_setDisabled(uint8_t idx) {
   if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
     return; /* error case */
   }
-  IntermezzoDisabled.disabled[idx/sizeof(IntermezzoDisabled.disabled[0]*8)] |= (1<<(idx%sizeof(IntermezzoDisabled.disabled[0]*8)));
+ IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] |= (1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
 }
 
 void Intermezzo_clearDisabled(uint8_t idx) {
   if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
     return; /* error case */
   }
-  IntermezzoDisabled.disabled[idx/sizeof(IntermezzoDisabled.disabled[0]*8)] &= ~(1<<(idx%sizeof(IntermezzoDisabled.disabled[0]*8)));
+  IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] &= ~(1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
 }
 
 static void Intermezzo_printDisabled(const McuShell_StdIOType *io) {
-  for(int i=0; i<sizeof(IntermezzoDisabled.disabled[0]*8); i++) {
+  for(int i=0; i<sizeof(IntermezzoDisabled.disabled)*8; i++) {
     if (Intermezzo_getDisabled(i)) {
       McuShell_SendNum16u(i, io->stdOut);
       McuShell_SendStr((unsigned char*)" ", io->stdOut);
+      McuShell_SendStr((unsigned char*)intermezzos[i].text, io->stdOut);
+      McuShell_SendStr((unsigned char*)"\r\n", io->stdOut);
     }
   }
 }
@@ -1658,6 +1659,32 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo list")==0) {
     *handled = true;
     return listIntermezzos(io);
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo disabled print")==0) {
+    *handled = true;
+    Intermezzo_printDisabled(io);
+    return ERR_OK;
+  } else if (McuUtility_strncmp((char*)cmd, "intermezzo disabled set ", sizeof("intermezzo disabled set ")-1)==0) {
+    uint8_t idx;
+
+    *handled = true;
+    p = cmd + sizeof("intermezzo disabled set ")-1;
+    if (McuUtility_ScanDecimal8uNumber(&p, &idx)==ERR_OK) {
+      Intermezzo_setDisabled(idx);
+      return ERR_OK;
+    } else {
+      return ERR_FAILED;
+    }
+  } else if (McuUtility_strncmp((char*)cmd, "intermezzo disabled clear ", sizeof("intermezzo disabled clear ")-1)==0) {
+    uint8_t idx;
+
+    *handled = true;
+    p = cmd + sizeof("intermezzo disabled clear ")-1;
+    if (McuUtility_ScanDecimal8uNumber(&p, &idx)==ERR_OK) {
+      Intermezzo_clearDisabled(idx);
+      return ERR_OK;
+    } else {
+      return ERR_FAILED;
+    }
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo ", sizeof("intermezzo ")-1)==0) {
     uint8_t nr;
 
@@ -1669,10 +1696,6 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     } else {
       return ERR_FAILED;
     }
-  } else if (McuUtility_strcmp((char*)cmd, "intermezzo disable print")==0) {
-    *handled = true;
-    Intermezzo_printDisabled(io);
-    return ERR_OK;
   }
   return ERR_OK;
 }
