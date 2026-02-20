@@ -31,6 +31,8 @@
 #define NVMC_MININI_SECTION_INTERMEZZO          "Intermezzo"
   #define NVMC_MININI_KEY_INTERMEZZO_ON             "on"              /* bool, 0: off, 1: on */
   #define NVMC_MININI_KEY_RTC_TEMP_OFFSET           "rtcTempOffset"   /* integer, temperature offset in deci-celcius degree */
+  #define NVMC_MININI_KEY_INTERMEZZO_DISABLED_0     "disabled0"        /* integer, 32bits as bitset 0-31 of disabled intermezzos */
+  #define NVMC_MININI_KEY_INTERMEZZO_DISABLED_1     "disabled1"        /* integer, 32bits as bitset 32-63 of disabled intermezzos */
 #endif
 
 #endif /* MININIKEYS_H_ */

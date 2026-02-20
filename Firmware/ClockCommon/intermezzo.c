@@ -72,19 +72,6 @@ static void SetRtcOffsetTemperature(int offset_dC) {
 #endif
 }
 
-void Intermezzo_InitSettings(void) {
-#if PL_CONFIG_USE_MININI && PL_CONFIG_USE_CLOCK_TIME_OFF
-  IntermezzoOn = McuMinINI_ini_getbool(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_INTERMEZZO_ON, PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT, NVMC_MININI_FILE_NAME);
-#else
-  IntermezzoOn = PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT;
-#endif
-#if PL_CONFIG_USE_MININI
-  rtcOffsetTemperature = McuMinINI_ini_getl(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_RTC_TEMP_OFFSET, RTC_OFFSET_TEMPERATURE_DEFAULT, NVMC_MININI_FILE_NAME);
-#else
-  rtcOffsetTemperature = RTC_OFFSET_TEMPERATURE_DEFAULT;
-#endif
-}
-
 /* #if-directive for all matrix configurations except SmartWall Matrix*/
 /* =============================================================================================================*/
 #if   PL_MATRIX_CONFIGURATION_ID == PL_MATRIX_ID_CLOCK_8x3 \
@@ -1380,7 +1367,7 @@ static void Intermezzo4(void) {
 
 typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
 
-typedef struct {
+typedef struct IntermezzoDesc_t {
   Intermezzofp fp; /* intermezzo code */
   const char *text; /* description text */
 } IntermezzoDesc_t;
@@ -1454,7 +1441,7 @@ static const IntermezzoDesc_t intermezzos[] = {
 
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
 
-static struct {
+static struct _IntermezzoDisabled {
   uint32_t disabled[2]; /* bits of intermezzo disabled: 1<<0 is for #0, 1<<1 for #1 and so on, max 64 intermezzos supported */
 } IntermezzoDisabled = {.disabled[0]=0, .disabled[1]=0};
 
@@ -1465,11 +1452,27 @@ static bool Intermezzo_getDisabled(uint8_t idx) {
   return IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] & (1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
 }
 
+#if PL_CONFIG_USE_MININI
+static const char *GetDisabledMinIniKey(int idx) {
+  const char *key;
+  switch(idx) {
+    case 0: key = NVMC_MININI_KEY_INTERMEZZO_DISABLED_0; break;
+    case 1: key = NVMC_MININI_KEY_INTERMEZZO_DISABLED_1; break;
+    default: key = "invalid";
+  }
+  return key;
+}
+#endif
+
 void Intermezzo_setDisabled(uint8_t idx) {
   if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
     return; /* error case */
   }
- IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] |= (1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
+  int i = idx/(sizeof(IntermezzoDisabled.disabled[0])*8);
+  IntermezzoDisabled.disabled[i] |= (1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_INTERMEZZO, GetDisabledMinIniKey(i), IntermezzoDisabled.disabled[i], NVMC_MININI_FILE_NAME);
+#endif
 }
 
 void Intermezzo_clearDisabled(uint8_t idx) {
@@ -1490,7 +1493,6 @@ static void Intermezzo_printDisabled(const McuShell_StdIOType *io) {
   }
 }
 
-
 void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown) {
   TickType_t tickCount;
   uint8_t intermezzo;
@@ -1498,7 +1500,18 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
   if (IntermezzoOn) {
     tickCount = xTaskGetTickCount();
     if (tickCount-lastClockUpdateTickCount > pdMS_TO_TICKS(IntermezzoDelaySec*1000)) { /* after a delay: start intermezzo */
-      intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
+      #define NOF_MAX_RETRY  (100)
+      int i;
+      for(i=0; i<NOF_MAX_RETRY; i++) { /* try to find a random intermezzo which is not disabled */
+        intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
+        if (!Intermezzo_getDisabled(i)) {
+          break;
+        }
+      }
+      if (i==NOF_MAX_RETRY) {
+        McuLog_info("Intermezzo: unable to find not-disabled intermezzo");
+        return;
+      }
       McuLog_info("Intermezzo: starting #%d `%s`", intermezzo, intermezzos[intermezzo].text);
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
       /* exclude center clock from Intermezzos */
@@ -1570,6 +1583,9 @@ static uint8_t listIntermezzos(const McuShell_StdIOType *io) {
     McuUtility_Num16uToStr(buf, sizeof(buf), i);
     McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)": ");
     McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)intermezzos[i].text);
+    if (Intermezzo_getDisabled(i)) {
+      McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)" (disabled)");
+    }
     McuUtility_strcat(buf, sizeof(buf),  (unsigned char*)"\r\n");
     McuShell_SendStr((unsigned char*)buf, io->stdOut);
   }
@@ -1698,6 +1714,26 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     }
   }
   return ERR_OK;
+}
+
+void Intermezzo_InitSettings(void) {
+#if PL_CONFIG_USE_MININI && PL_CONFIG_USE_CLOCK_TIME_OFF
+  IntermezzoOn = McuMinINI_ini_getbool(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_INTERMEZZO_ON, PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT, NVMC_MININI_FILE_NAME);
+#else
+  IntermezzoOn = PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT;
+#endif
+#if PL_CONFIG_USE_MININI
+  rtcOffsetTemperature = McuMinINI_ini_getl(NVMC_MININI_SECTION_INTERMEZZO, NVMC_MININI_KEY_RTC_TEMP_OFFSET, RTC_OFFSET_TEMPERATURE_DEFAULT, NVMC_MININI_FILE_NAME);
+#else
+  rtcOffsetTemperature = RTC_OFFSET_TEMPERATURE_DEFAULT;
+#endif
+  for(int i=0; i<sizeof(IntermezzoDisabled.disabled)/sizeof(IntermezzoDisabled.disabled[0]); i++) {
+  #if PL_CONFIG_USE_MININI
+    IntermezzoDisabled.disabled[i] = McuMinINI_ini_getl(NVMC_MININI_SECTION_INTERMEZZO, GetDisabledMinIniKey(i), 0, NVMC_MININI_FILE_NAME);
+  #else
+    IntermezzoDisabled.disabled[i] = 0;
+  #endif
+  }
 }
 
 void INTERMEZZO_Init(void) {
