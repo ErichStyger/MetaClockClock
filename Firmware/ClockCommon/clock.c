@@ -986,16 +986,20 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     *handled = TRUE;
     p = cmd + sizeof("clock time ")-1;
     if (
-           McuUtility_xatoi(&p, &x)==ERR_OK && x>=0 && x<MATRIX_NOF_STEPPERS_X
-        && McuUtility_xatoi(&p, &y)==ERR_OK && y>=0 && y<MATRIX_NOF_STEPPERS_Y
+           McuUtility_xatoi(&p, &x)==ERR_OK
+        && McuUtility_xatoi(&p, &y)==ERR_OK
         && McuUtility_ScanTime(&p, &hour, &minute, &second, &hsec)==ERR_OK
        )
     {
+    #if PL_CONFIG_USE_MATRIX
+      if (x<0 || x>=MATRIX_NOF_STEPPERS_X || y<0 || y >= MATRIX_NOF_STEPPERS_Y) {
+        return ERR_RANGE;
+      }
+    #endif
       ShowTime(x, y, hour, minute);
-    } else {
-      return ERR_FAILED;
+      return ERR_OK;
     }
-    return ERR_OK;
+    return ERR_FAILED;
   } else if (McuUtility_strcmp((char*)cmd, "clock countdown on")==0) {
     *handled = true;
     CLOCK_CountDown.isOn = true;
