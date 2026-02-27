@@ -102,13 +102,20 @@
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
   #define PL_CONFIG_USE_RS485                       (1)
-#elif 1 /* \todo Cornelius 6x12 matrix */
+#elif 0 /* Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if we have LED rings */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
-  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP (0) /* temporary only for testing, to be removed */
+  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP         (0) /* temporary only for testing, to be removed */
+#elif 1 /* new 6x13 Matrix with massive Oak wood front */
+  #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_13x6
+  #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */
+  #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if we have LED rings */
+  #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
+  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP         (0) /* temporary only for testing, to be removed */
 #else
   #error
 #endif

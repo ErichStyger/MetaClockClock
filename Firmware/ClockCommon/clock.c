@@ -683,6 +683,8 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
     clock_type = (unsigned char*)"SmartWall 16x5\r\n";
   #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_12x6
     clock_type = (unsigned char*)"Clock 12x6\r\n";
+  #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_13x6
+    clock_type = (unsigned char*)"Clock 13x6\r\n";
   #else
     #error "unknown"
     clock_type = (unsigned char*)"unknown\r\n";

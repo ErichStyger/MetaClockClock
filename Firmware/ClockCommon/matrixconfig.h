@@ -53,6 +53,11 @@
   #define MATRIX_NOF_STEPPERS_X       (12)  /* number of clocks in x (horizontal) direction */
   #define MATRIX_NOF_STEPPERS_Y       (6)   /* number of clocks in y (vertical) direction */
   #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_13x6
+  #define MATRIX_NOF_BOARDS           (39)  /* total number of boards in matrix */
+  #define MATRIX_NOF_STEPPERS_X       (13)  /* number of clocks in x (horizontal) direction */
+  #define MATRIX_NOF_STEPPERS_Y       (6)   /* number of clocks in y (vertical) direction */
+  #define MATRIX_NOF_STEPPERS_Z       (2)   /* number of clocks in z direction */
 #else
   #error "unknown configuration"
 #endif
@@ -228,7 +233,52 @@ typedef enum MATRIX_BOARD_ADDR_e {
   BOARD_ADDR_54=0x54,
   BOARD_ADDR_55=0x55,
   BOARD_ADDR_56=0x56,
+#elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_13x6
+  BOARD_ADDR_01=0x01, /* column 1+2, top board */
+  BOARD_ADDR_02=0x02,
+  BOARD_ADDR_03=0x03,
+  BOARD_ADDR_04=0x04,
+  BOARD_ADDR_05=0x05,
+  BOARD_ADDR_06=0x06,
 
+  BOARD_ADDR_11=0x11, /* column 3+4, top board */
+  BOARD_ADDR_12=0x12,
+  BOARD_ADDR_13=0x13,
+  BOARD_ADDR_14=0x14,
+  BOARD_ADDR_15=0x15,
+  BOARD_ADDR_16=0x16,
+
+  BOARD_ADDR_21=0x21, /* column 5+6, top row */
+  BOARD_ADDR_22=0x22,
+  BOARD_ADDR_23=0x23,
+  BOARD_ADDR_24=0x24,
+  BOARD_ADDR_25=0x25,
+  BOARD_ADDR_26=0x26,
+
+  BOARD_ADDR_31=0x31, /* column 7+8, top row */
+  BOARD_ADDR_32=0x32,
+  BOARD_ADDR_33=0x33,
+  BOARD_ADDR_34=0x34,
+  BOARD_ADDR_35=0x35,
+  BOARD_ADDR_36=0x36,
+
+  BOARD_ADDR_41=0x41, /* column 9+10, top row */
+  BOARD_ADDR_42=0x42,
+  BOARD_ADDR_43=0x43,
+  BOARD_ADDR_44=0x44,
+  BOARD_ADDR_45=0x45,
+  BOARD_ADDR_46=0x46,
+
+  BOARD_ADDR_51=0x51, /* column 11+12, top row */
+  BOARD_ADDR_52=0x52,
+  BOARD_ADDR_53=0x53,
+  BOARD_ADDR_54=0x54,
+  BOARD_ADDR_55=0x55,
+  BOARD_ADDR_56=0x56,
+
+  BOARD_ADDR_61=0x61, /* column 13, top row */
+  BOARD_ADDR_63=0x63, /* column 13, row 3 */
+  BOARD_ADDR_65=0x65, /* column 13, row 5 */
 #else
   #error "unknown board configuration"
 #endif
