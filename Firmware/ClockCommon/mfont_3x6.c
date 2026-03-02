@@ -15,6 +15,10 @@ typedef struct MClockChar3x6_t {
   MClock_t digit[MFONT_SIZE_Y_3x6][MFONT_SIZE_X_3x6]; /* a digit is built by 6 (vertical) and 3 (horizontal) clocks */
 } MClockChar3x6_t;
 
+typedef struct MClockChar1x6_t {
+  MClock_t digit[MFONT_SIZE_Y_3x6][MFONT_SIZE_X_1x6]; /* a narrow character, e.g. space or : */
+} MClockChar1x6_t;
+
 /* larger digits (3x6) */
 static const MClockChar3x6_t clockDigits3x6[10] = {
     [0].digit = {
@@ -219,6 +223,7 @@ static const MClockChar3x6_t clockDigits3x6[10] = {
     },
 };
 
+#if 0 /* not used */
 static const MClockChar3x6_t clockCharSpace3x6 =
 { /* <space> */
     .digit = {
@@ -242,6 +247,43 @@ static const MClockChar3x6_t clockCharSpace3x6 =
         [5][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     }
 };
+#endif
+
+static const MClockChar1x6_t clockCharSpace1x6 = /* narrow space */
+{ /* <space> */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [3][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [4][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [5][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
+static const MClockChar1x6_t clockCharColon1x6 = /* narrow colon */
+{ /* : */
+    .digit = {
+        [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+        [1][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+        [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+        [3][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+        [4][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+        [5][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+    }
+};
+
+static const MClockChar1x6_t clockCharExclamation1x6 = /* narrow exclamation */
+{ /* ! */
+    .digit = {
+        [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+        [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+        [3][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+        [4][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
+        [5][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+    }
+};
 
 static void DrawChar3x6(const MClockChar3x6_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<MFONT_SIZE_Y_3x6; y++) { /* every clock row */
@@ -252,31 +294,53 @@ static void DrawChar3x6(const MClockChar3x6_t *ch, uint8_t xPos, uint8_t yPos) {
       MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
       MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
-    #if PL_CONFIG_USE_EXTENDED_HANDS
-      MHAND_2ndHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
-      MHAND_2ndHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
+    }
+  }
+}
+static void DrawChar1x6(const MClockChar1x6_t *ch, uint8_t xPos, uint8_t yPos) {
+  for(int y=0; y<MFONT_SIZE_Y_1x6; y++) { /* every clock row */
+    for(int x=0; x<MFONT_SIZE_X_1x6; x++) { /* every clock column */
+      MPOS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
+      MPOS_SetMoveModeZ0Z1(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+    #if PL_MATRIX_CONFIG_IS_RGB
+      MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
+      MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
     #endif
     }
   }
 }
 
 void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos) {
-  const MClockChar3x6_t *desc;
+  const MClockChar3x6_t *desc3x6 = NULL;
+  const MClockChar1x6_t *desc1x6 = NULL;
 
   while(*str!='\0') {
-    desc = NULL;
+    desc3x6 = NULL;
+    desc1x6 = NULL;
     if (*str>='0' && *str<='9') {
-      desc = &clockDigits3x6[*str-'0'];
+      desc3x6 = &clockDigits3x6[*str-'0'];
     } else {
       switch(*str) {
-        case ' ': desc = &clockCharSpace3x6; break;
-        default: desc = NULL; break;
+        case ' ': desc1x6 = &clockCharSpace1x6; break;
+        case ':': desc1x6 = &clockCharColon1x6; break;
+        case '!': desc1x6 = &clockCharExclamation1x6; break;
+        default:
+          desc3x6 = NULL;
+          desc1x6 = NULL;
+          break;
       }
     }
-    if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_3x6 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_3x6) {
-      DrawChar3x6(desc, xPos, yPos);
+    if (desc3x6!=NULL) {
+      if (xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_3x6 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_3x6) {
+        DrawChar3x6(desc3x6, xPos, yPos);
+      }
+      xPos += MFONT_SIZE_X_3x6;
+    } else if (desc1x6!=NULL) {
+      if (xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_1x6 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_1x6) {
+        DrawChar1x6(desc1x6, xPos, yPos);
+      }
+      xPos += MFONT_SIZE_X_1x6;
     }
-    xPos += MFONT_SIZE_X_3x6;
     str++;
   }
 }

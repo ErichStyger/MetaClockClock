@@ -39,6 +39,8 @@ typedef struct MClock_t {
 #define MFONT_SIZE_X_3x5   3  /* number of columns needed */
 #define MFONT_SIZE_Y_3x5   5  /* number of rows needed */
 
+#define MFONT_SIZE_X_1x6   1  /* number of columns needed */
+#define MFONT_SIZE_Y_1x6   6  /* number of columns needed */
 #define MFONT_SIZE_X_3x6   3  /* number of columns needed */
 #define MFONT_SIZE_Y_3x6   6  /* number of rows needed */
 
