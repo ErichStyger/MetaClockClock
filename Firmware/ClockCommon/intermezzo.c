@@ -1596,6 +1596,9 @@ static uint8_t listIntermezzos(const McuShell_StdIOType *io) {
 static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"intermezzo", (unsigned char*)"Group of intermezzo commands\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
+  if (NOF_INTERMEZZOS==0) {
+    return ERR_OK;
+  }
   McuShell_SendHelpStr((unsigned char*)"  on|off|toggle", (unsigned char*)"Turn intermezzos on, off or toggle\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  delay <sec>", (unsigned char*)"Intermezzo delay in seconds\r\n", io->stdOut);
   #if PL_CONFIG_USE_LED_PIXEL
@@ -1622,6 +1625,9 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
   } else if ((McuUtility_strcmp((char*)cmd, McuShell_CMD_STATUS)==0) || (McuUtility_strcmp((char*)cmd, "intermezzo status")==0)) {
     *handled = true;
     return PrintStatus(io);
+  }
+  if (NOF_INTERMEZZOS==0) {
+    return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo on")==0) {
     *handled = true;
     Intermezzo_SetIsOn(true);
