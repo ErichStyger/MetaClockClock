@@ -742,42 +742,42 @@
         {.addr=BOARD_ADDR_03, .cmdSent=false},
         {.addr=BOARD_ADDR_04, .cmdSent=false},
         {.addr=BOARD_ADDR_05, .cmdSent=false},
-        {.addr=BOARD_ADDR_06, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_06, .cmdSent=false},
 
         {.addr=BOARD_ADDR_11, .cmdSent=false},
         {.addr=BOARD_ADDR_12, .cmdSent=false},
         {.addr=BOARD_ADDR_13, .cmdSent=false},
         {.addr=BOARD_ADDR_14, .cmdSent=false},
         {.addr=BOARD_ADDR_15, .cmdSent=false},
-        {.addr=BOARD_ADDR_16, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_16, .cmdSent=false},
 
         {.addr=BOARD_ADDR_21, .cmdSent=false},
         {.addr=BOARD_ADDR_22, .cmdSent=false},
         {.addr=BOARD_ADDR_23, .cmdSent=false},
         {.addr=BOARD_ADDR_24, .cmdSent=false},
         {.addr=BOARD_ADDR_25, .cmdSent=false},
-        {.addr=BOARD_ADDR_26, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_26, .cmdSent=false},
 
         {.addr=BOARD_ADDR_31, .cmdSent=false},
         {.addr=BOARD_ADDR_32, .cmdSent=false},
         {.addr=BOARD_ADDR_33, .cmdSent=false},
         {.addr=BOARD_ADDR_34, .cmdSent=false},
         {.addr=BOARD_ADDR_35, .cmdSent=false},
-        {.addr=BOARD_ADDR_36, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_36, .cmdSent=false},
 
         {.addr=BOARD_ADDR_41, .cmdSent=false},
         {.addr=BOARD_ADDR_42, .cmdSent=false},
         {.addr=BOARD_ADDR_43, .cmdSent=false},
         {.addr=BOARD_ADDR_44, .cmdSent=false},
         {.addr=BOARD_ADDR_45, .cmdSent=false},
-        {.addr=BOARD_ADDR_46, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_46, .cmdSent=false},
 
         {.addr=BOARD_ADDR_51, .cmdSent=false},
         {.addr=BOARD_ADDR_52, .cmdSent=false},
         {.addr=BOARD_ADDR_53, .cmdSent=false},
         {.addr=BOARD_ADDR_54, .cmdSent=false},
         {.addr=BOARD_ADDR_55, .cmdSent=false},
-        {.addr=BOARD_ADDR_56, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_56, .cmdSent=false},
   };
 #elif PL_MATRIX_CONFIGURATION_ID==PL_MATRIX_ID_CLOCK_13x6
     const MatrixClock_t clockMatrix[MATRIX_NOF_STEPPERS_X][MATRIX_NOF_STEPPERS_Y][MATRIX_NOF_STEPPERS_Z] = /* information about how the clocks are organized */
@@ -867,12 +867,12 @@
       [11][4][0]={.addr=BOARD_ADDR_55, .board.x=1, .board.y=0, .board.z=0},[11][4][1]={.addr=BOARD_ADDR_55, .board.x=1, .board.y=0, .board.z=1},
       [11][5][0]={.addr=BOARD_ADDR_56, .board.x=1, .board.y=0, .board.z=0},[11][5][1]={.addr=BOARD_ADDR_56, .board.x=1, .board.y=0, .board.z=1},
 
-      [12][0][0]={.addr=BOARD_ADDR_61, .board.x=1, .board.y=0, .board.z=0},
-      [12][1][0]={.addr=BOARD_ADDR_61, .board.x=0, .board.y=0, .board.z=0},
-      [12][2][0]={.addr=BOARD_ADDR_63, .board.x=1, .board.y=0, .board.z=0},
-      [12][3][0]={.addr=BOARD_ADDR_63, .board.x=0, .board.y=0, .board.z=0},
-      [12][4][0]={.addr=BOARD_ADDR_65, .board.x=1, .board.y=0, .board.z=0},
-      [12][5][0]={.addr=BOARD_ADDR_65, .board.x=0, .board.y=0, .board.z=0},
+      [12][0][0]={.addr=BOARD_ADDR_61, .board.x=1, .board.y=0, .board.z=0},[12][0][1]={.addr=BOARD_ADDR_61, .board.x=1, .board.y=0, .board.z=1},
+      [12][1][0]={.addr=BOARD_ADDR_61, .board.x=0, .board.y=0, .board.z=0},[12][1][1]={.addr=BOARD_ADDR_61, .board.x=0, .board.y=0, .board.z=1},
+      [12][2][0]={.addr=BOARD_ADDR_63, .board.x=1, .board.y=0, .board.z=0},[12][2][1]={.addr=BOARD_ADDR_63, .board.x=1, .board.y=0, .board.z=1},
+      [12][3][0]={.addr=BOARD_ADDR_63, .board.x=0, .board.y=0, .board.z=0},[12][3][1]={.addr=BOARD_ADDR_63, .board.x=0, .board.y=0, .board.z=1},
+      [12][4][0]={.addr=BOARD_ADDR_65, .board.x=1, .board.y=0, .board.z=0},[12][4][1]={.addr=BOARD_ADDR_65, .board.x=1, .board.y=0, .board.z=1},
+      [12][5][0]={.addr=BOARD_ADDR_65, .board.x=0, .board.y=0, .board.z=0},[12][5][1]={.addr=BOARD_ADDR_65, .board.x=0, .board.y=0, .board.z=1},
     };
 
     MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
@@ -918,9 +918,9 @@
         {.addr=BOARD_ADDR_55, .cmdSent=false},
         {.addr=BOARD_ADDR_56, .cmdSent=false},
 
-        {.addr=BOARD_ADDR_61, .cmdSent=false, .disabled=true},
-        {.addr=BOARD_ADDR_63, .cmdSent=false, .disabled=true},
-        {.addr=BOARD_ADDR_65, .cmdSent=false, .disabled=true},
+        {.addr=BOARD_ADDR_61, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_63, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_65, .cmdSent=false, .disabled=false},
     };
 #else
   #error "unknown matrix"
