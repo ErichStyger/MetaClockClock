@@ -189,7 +189,7 @@ static const MClockChar3x6_t clockDigits3x6[10] = {
         [2][2]={.hands={{.angle=  0, .enabled=true },{.angle=225, .enabled=true }}},
         [3][0]={.hands={{.angle=180, .enabled=true },{.angle= 45, .enabled=true }}},
         [3][1]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
-        [3][2]={.hands={{.angle=215, .enabled=true },{.angle=180, .enabled=true }}},
+        [3][2]={.hands={{.angle=305, .enabled=true },{.angle=180, .enabled=true }}},
         [4][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
         [4][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
         [4][2]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
