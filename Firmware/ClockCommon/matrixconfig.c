@@ -867,12 +867,12 @@
       [11][4][0]={.addr=BOARD_ADDR_55, .board.x=1, .board.y=0, .board.z=0},[11][4][1]={.addr=BOARD_ADDR_55, .board.x=1, .board.y=0, .board.z=1},
       [11][5][0]={.addr=BOARD_ADDR_56, .board.x=1, .board.y=0, .board.z=0},[11][5][1]={.addr=BOARD_ADDR_56, .board.x=1, .board.y=0, .board.z=1},
 
-      [12][0][0]={.addr=BOARD_ADDR_61, .board.x=0, .board.y=0, .board.z=0},
-      [12][1][0]={.addr=BOARD_ADDR_61, .board.x=1, .board.y=0, .board.z=0},
-      [12][2][0]={.addr=BOARD_ADDR_63, .board.x=0, .board.y=0, .board.z=0},
-      [12][3][0]={.addr=BOARD_ADDR_63, .board.x=1, .board.y=0, .board.z=0},
-      [12][4][0]={.addr=BOARD_ADDR_65, .board.x=0, .board.y=0, .board.z=0},
-      [12][5][0]={.addr=BOARD_ADDR_65, .board.x=1, .board.y=0, .board.z=0},
+      [12][0][0]={.addr=BOARD_ADDR_61, .board.x=1, .board.y=0, .board.z=0},
+      [12][1][0]={.addr=BOARD_ADDR_61, .board.x=0, .board.y=0, .board.z=0},
+      [12][2][0]={.addr=BOARD_ADDR_63, .board.x=1, .board.y=0, .board.z=0},
+      [12][3][0]={.addr=BOARD_ADDR_63, .board.x=0, .board.y=0, .board.z=0},
+      [12][4][0]={.addr=BOARD_ADDR_65, .board.x=1, .board.y=0, .board.z=0},
+      [12][5][0]={.addr=BOARD_ADDR_65, .board.x=0, .board.y=0, .board.z=0},
     };
 
     MATRIX_BoardList_t MATRIX_BoardList[MATRIX_NOF_BOARDS] = {
