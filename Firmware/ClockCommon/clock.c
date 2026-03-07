@@ -376,6 +376,9 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     }
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   }
+  if (CLOCK_font==MFONT_SIZE_3x6 && MATRIX_NOF_STEPPERS_X>=13) { /* add ':', e.g. "12:15" if enough space */
+    McuUtility_chcat(buf, sizeof(buf), ':');
+  }
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Min, '0', 2);
 #if PL_CONFIG_USE_FONT
   #if PL_CONFIG_USE_LED_RING
