@@ -1181,12 +1181,15 @@ static void ClockTask(void *pv) {
 
 #if PL_CONFIG_USE_LED_RING
   /* turn on the hand LEDs */
+  McuLog_info("enabling and setting hand color");
   MHAND_SetHandColorAll(NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff));
 #if PL_CONFIG_USE_LED_DIMMING
   MATRIX_SetHandBrightnessAll(CLOCK_HandBrightness);
 #endif
   /* toggle hands: it could be that only the master has reset, make sure all clocks get the update */
+  McuLog_info("turning all hands off");
   (void)SHELL_ParseCommandIO((const unsigned char *)"matrix he all off", NULL, true);
+  McuLog_info("turning all hands on");
   (void)SHELL_ParseCommandIO((const unsigned char *)"matrix he all on", NULL, true);
 #if PL_CONFIG_USE_NEO_PIXEL_HW
   APP_RequestUpdateLEDs(); /* update LEDs */
