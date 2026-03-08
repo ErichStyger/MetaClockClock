@@ -52,6 +52,10 @@
   static uint8_t MATRIX_DefaultDelay = 2;
 #endif
 
+#if PL_CONFIG_USE_MOTOR_ON_OFF
+  static bool MATRIX_MotorsAreOn = false;
+#endif
+
 #if PL_CONFIG_IS_ANALOG_CLOCK && (PL_CONFIG_USE_NEO_PIXEL_HW || PL_MATRIX_CONFIG_IS_RGB)
   static uint32_t MATRIX_LedHandColor = PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR;
   static uint8_t MATRIX_LedHandBrightness = PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS; /* led brightness, 0-255 */
@@ -1050,6 +1054,7 @@ static uint8_t MATRIX_SetOffsetFrom12(void) {
   if (!STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())) {
     McuLog_trace("turning on motors");
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
+    MATRIX_MotorsAreOn = true;
   }
 #endif
   /* first zero position at current position */
@@ -1100,6 +1105,7 @@ static uint8_t MATRIX_Test(void) {
   /* Test the clock stepper motors. Moves each hand 90 degrees cw four times, then the same thing back ccw */
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
+  MATRIX_MotorsAreOn = true;
 #endif
   for (int y=0; y<MATRIX_NOF_STEPPERS_Y; y++) {
     for(int x=0; x<MATRIX_NOF_STEPPERS_X; x++) {
@@ -1121,6 +1127,7 @@ static uint8_t MATRIX_Test(void) {
   }
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false); /* turn off motors */
+  MATRIX_MotorsAreOn = false;
 #endif
   return ERR_OK;
 }
@@ -1301,12 +1308,16 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)"\r\n");
   McuShell_SendStatusStr((unsigned char*)"  brightness", buf, io->stdOut);
 #endif
-#if PL_CONFIG_USE_MOTOR_ON_OFF && !PL_CONFIG_IS_MASTER
-  McuShell_SendStatusStr((unsigned char*)"  motor on",
-  #if PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
-      STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes (auto)\r\n":(unsigned char*)"no (auto)\r\n", io->stdOut);
+#if PL_CONFIG_USE_MOTOR_ON_OFF
+  #if PL_CONFIG_IS_MASTER
+  McuShell_SendStatusStr((unsigned char*)"  motor on", MATRIX_MotorsAreOn?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
   #else
-      STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+    McuShell_SendStatusStr((unsigned char*)"  motor on",
+    #if PL_CONFIG_USE_MOTOR_ON_OFF_AUTO
+        STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes (auto)\r\n":(unsigned char*)"no (auto)\r\n", io->stdOut);
+    #else
+        STEPBOARD_IsMotorSwitchOn(STEPBOARD_GetBoard())?(unsigned char*)"yes\r\n":(unsigned char*)"no\r\n", io->stdOut);
+    #endif
   #endif
 #endif
   return ERR_OK;
@@ -2115,6 +2126,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
     #else
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
+    MATRIX_MotorsAreOn = true;
     #endif
     return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor off")==0) {
@@ -2123,6 +2135,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
     #else
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
+    MATRIX_MotorsAreOn = false;
     return ERR_OK;
     #endif
 #endif
@@ -2143,6 +2156,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
+    MATRIX_MotorsAreOn = false;
     return ERR_OK;
   #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park off")==0) {
@@ -2151,6 +2165,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
+    MATRIX_MotorsAreOn = true;
     return ERR_OK;
   #endif
 #if PL_CONFIG_IS_MASTER
@@ -3197,9 +3212,11 @@ static void InitSteppers(void) {
 #if 1
   /* disable motors from the start to reduce current */
   STEPBOARD_MotorSwitchOnOff(MATRIX_Boards[0], false);
+  MATRIX_MotorsAreOn = false;
 #else
   /* enable motors from the start */
   STEPBOARD_MotorSwitchOnOff(MATRIX_Boards[0], true);
+  MATRIX_MotorsAreOn = true;
 #endif
 
 #endif /* PL_CONFIG_USE_MOTOR_ON_OFF */
