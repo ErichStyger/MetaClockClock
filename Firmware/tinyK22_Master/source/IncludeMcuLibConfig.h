@@ -36,6 +36,7 @@ Instructions:
 #define McuLib_CONFIG_CPU_IS_KINETIS     (1)  /* K22 is a Kinetis */
 #define McuLib_CONFIG_CPU_VARIANT        McuLib_CONFIG_CPU_VARIANT_NXP_K22FN
 /* ------------------- RTOS ---------------------------*/
+/* #define configINITIAL_TICK_COUNT             0xffff0000 */
 #define McuLib_CONFIG_SDK_USE_FREERTOS       (1)
 #define configUSE_HEAP_SCHEME                (5) /* either 1 (only alloc), 2 (alloc/free), 3 (malloc), 4 (coalesc blocks), 5 (multiple blocks), 6 (newlib) */
 #define configTOTAL_HEAP_SIZE                (63*1024)
