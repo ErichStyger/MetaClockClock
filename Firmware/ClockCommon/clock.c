@@ -90,9 +90,7 @@ static bool CLOCK_ClockIsParked = false;
 #if PL_CONFIG_USE_FONT
   static MFONT_Size_e CLOCK_font = PL_CONFIG_CLOCK_DEFAULT_FONT; /* default font */
 #endif
-#if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
-#endif
+static bool CLOCK_clockHasBorder = true; /* if clock has a border (if using small font) */
 #if PL_CONFIG_USE_LED_RING
   static uint32_t CLOCK_HandColor = PL_CONFIG_CLOCK_DEFAULT_HAND_COLOR;
   static bool CLOCK_doRandomHandColor = false;
@@ -167,8 +165,19 @@ static struct CLOCK_CountDown {
 
 static TaskHandle_t clockTaskHndl;
 #if 0 /* not implemented yet */
-static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
+  static uint8_t CLOCK_UpdatePeriodMinutes = 1; /* by default, update clock every minute */
 #endif
+
+static void SetClockHasBorder(bool on) {
+#if PL_CONFIG_USE_MININI
+  McuMinINI_ini_putl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_HAS_BORDER, on, NVMC_MININI_FILE_NAME);
+#endif
+  CLOCK_clockHasBorder = on;
+}
+
+static bool GetClockHasBorder(void) {
+  return CLOCK_clockHasBorder;
+}
 
 #if PL_CONFIG_USE_CLOCK_TIME_OFF
 static void SetOffDays(uint8 dayBits) { /* 0x1: Sunday, 0x2: Monday, ... */
@@ -376,8 +385,8 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     }
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   }
-  if (CLOCK_font==MFONT_SIZE_3x6 && MATRIX_NOF_STEPPERS_X>=13) { /* add ':', e.g. "12:15" if enough space */
-    McuUtility_chcat(buf, sizeof(buf), ':');
+  if ((CLOCK_font==MFONT_SIZE_3x6||CLOCK_font==MFONT_SIZE_2x3) && MATRIX_NOF_STEPPERS_X>=13) { /* add ':', e.g. "12:15" if enough space */
+    McuUtility_chcat(buf, sizeof(buf), ':'); /* only because that font has a narrow ":" implemented */
   }
   McuUtility_strcatNum16uFormatted(buf, sizeof(buf), time->Min, '0', 2);
 #if PL_CONFIG_USE_FONT
@@ -752,7 +761,7 @@ static uint8_t PrintStatus(const McuShell_StdIOType *io) {
   McuShell_SendStatusStr((unsigned char*)"  second", buf, io->stdOut);
 #endif
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  McuShell_SendStatusStr((unsigned char*)"  border", CLOCK_clockHasBorder?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
+  McuShell_SendStatusStr((unsigned char*)"  border", GetClockHasBorder()?(unsigned char*)"on\r\n":(unsigned char*)"off\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_FONT
   MFONT_FontToStr(CLOCK_font, buf, sizeof(buf));
@@ -976,10 +985,10 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     *handled = true;
     p = cmd + sizeof("clock border ")-1;
     if (McuUtility_strcmp((char*)p, "on")==0) {
-      CLOCK_clockHasBorder = true;
+      SetClockHasBorder(true);
       return ERR_OK;
     } else if (McuUtility_strcmp((char*)p, "off")==0) {
-      CLOCK_clockHasBorder = false;
+      SetClockHasBorder(false);
       return ERR_OK;
     }
     return ERR_FAILED;
@@ -1222,8 +1231,10 @@ static void ClockTask(void *pv) {
 
 #if PL_CONFIG_USE_MININI
   CLOCK_ClockIsOn = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_ON, PL_CONFIG_CLOCK_ON_BY_DEFAULT, NVMC_MININI_FILE_NAME);
+  CLOCK_clockHasBorder = McuMinINI_ini_getbool(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_HAS_BORDER, false, NVMC_MININI_FILE_NAME);
 #else
   CLOCK_ClockIsOn = PL_CONFIG_CLOCK_ON_BY_DEFAULT;
+  CLOCK_clockHasBorder = false;
 #endif
 #if PL_CONFIG_USE_LED_RING
 #if PL_CONFIG_USE_MININI
