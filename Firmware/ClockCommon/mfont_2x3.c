@@ -5,14 +5,15 @@
  */
 
 #include "platform.h"
-#if PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
 #include "mfont.h"
+#if MFONT_2x3_AVAILABLE
 #include "matrix.h"
 #include "matrixposition.h"
 #include "matrixhand.h"
 
 typedef struct MClockChar2x3_t {
   MClock_t digit[MFONT_SIZE_Y_2x3][MFONT_SIZE_X_2x3]; /* a digit is built by 3 (vertical) and 2 (horizontal) clocks */
+  uint8_t width; /* width of character/digit. Max 3, but can be smaller */
 } MClockChar2x3_t;
 
 /* smaller digits with 2x3. Angle of 225 (MPOS_ANGLE_HIDE) is a special one ('disabled') */
@@ -25,6 +26,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [0].width = 2,
     [1].digit = {
         [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [0][1]={.hands={{.angle=225, .enabled=true },{.angle=180, .enabled=true }}},
@@ -33,6 +35,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [1].width = 2,
     [2].digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
@@ -41,6 +44,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
     },
+    [2].width = 2,
     [3].digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
@@ -53,6 +57,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [3].width = 2,
     [4].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
         [0][1]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
@@ -65,6 +70,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [4].width = 2,
     [5].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
@@ -73,6 +79,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [5].width = 2,
     [6].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
@@ -85,6 +92,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [6].width = 2,
     [7].digit = {
         [0][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
@@ -93,6 +101,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
         [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [7].width = 2,
     [8].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
@@ -106,6 +115,7 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
         [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
     },
+    [8].width = 2,
     [9].digit = {
         [0][0]={.hands={{.angle=180, .enabled=true },{.angle= 90, .enabled=true }}},
         [0][1]={.hands={{.angle=270, .enabled=true },{.angle=180, .enabled=true }}},
@@ -117,7 +127,8 @@ static const MClockChar2x3_t clockDigits2x3[10] = {
       #endif
         [2][0]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
         [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
-    }
+    },
+    [9].width = 2,
 };
 
 static const MClockChar2x3_t clockCharDegree2x3 = /* ° */
@@ -128,7 +139,8 @@ static const MClockChar2x3_t clockCharDegree2x3 = /* ° */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharPercent2x3 = /* % */
@@ -139,7 +151,8 @@ static const MClockChar2x3_t clockCharPercent2x3 = /* % */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharA2x3 = /* A */
@@ -150,7 +163,8 @@ static const MClockChar2x3_t clockCharA2x3 = /* A */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=180, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][1]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharB2x3 = /* B */
@@ -161,7 +175,8 @@ static const MClockChar2x3_t clockCharB2x3 = /* B */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharb2x3 = /* b */
@@ -172,7 +187,8 @@ static const MClockChar2x3_t clockCharb2x3 = /* b */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=180, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharC2x3 = /* C */
@@ -183,7 +199,8 @@ static const MClockChar2x3_t clockCharC2x3 = /* C */
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharc2x3 = /* c */
@@ -194,7 +211,8 @@ static const MClockChar2x3_t clockCharc2x3 = /* c */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockChard2x3 = /* d */
@@ -205,7 +223,8 @@ static const MClockChar2x3_t clockChard2x3 = /* d */
     [1][1]={.hands={{.angle=  0, .enabled= true},{.angle=180, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharD2x3 = /* D */
@@ -216,7 +235,8 @@ static const MClockChar2x3_t clockCharD2x3 = /* D */
     [1][1]={.hands={{.angle=330, .enabled= true},{.angle=210, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 60, .enabled= true}}},
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharE2x3 = /* E */
@@ -227,7 +247,8 @@ static const MClockChar2x3_t clockCharE2x3 = /* E */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharF2x3 = /* F */
@@ -238,7 +259,8 @@ static const MClockChar2x3_t clockCharF2x3 = /* F */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharG2x3 = /* G */
@@ -249,7 +271,8 @@ static const MClockChar2x3_t clockCharG2x3 = /* G */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=180, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharH2x3 = /* H */
@@ -265,7 +288,8 @@ static const MClockChar2x3_t clockCharH2x3 = /* H */
 #endif
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
     [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharI2x3 = /* I */
@@ -276,7 +300,8 @@ static const MClockChar2x3_t clockCharI2x3 = /* I */
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharJ2x3 = /* J */
@@ -287,7 +312,8 @@ static const MClockChar2x3_t clockCharJ2x3 = /* J */
     [1][1]={.hands={{.angle=  0, .enabled= true},{.angle=180, .enabled= true}}},
     [2][0]={.hands={{.angle=315, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharK2x3 = /* K */
@@ -298,7 +324,8 @@ static const MClockChar2x3_t clockCharK2x3 = /* K */
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][1]={.hands={{.angle=315, .enabled= true},{.angle=315, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharL2x3 = /* L */
@@ -309,7 +336,8 @@ static const MClockChar2x3_t clockCharL2x3 = /* L */
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=270, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharM2x3 = /* M */
@@ -320,7 +348,8 @@ static const MClockChar2x3_t clockCharM2x3 = /* M */
     [1][1]={.hands={{.angle=180, .enabled=true },{.angle=  0, .enabled=true }}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
     [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharN2x3 = /* N */
@@ -331,7 +360,8 @@ static const MClockChar2x3_t clockCharN2x3 = /* N */
     [1][1]={.hands={{.angle=315, .enabled=true },{.angle=180, .enabled=true }}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
     [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharP2x3 = /* P */
@@ -342,7 +372,8 @@ static const MClockChar2x3_t clockCharP2x3 = /* P */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharQ2x3 = /* Q */
@@ -353,7 +384,8 @@ static const MClockChar2x3_t clockCharQ2x3 = /* Q */
     [1][1]={.hands={{.angle=180, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=315, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharR2x3 = /* R */
@@ -364,7 +396,8 @@ static const MClockChar2x3_t clockCharR2x3 = /* R */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][0]={.hands={{.angle=  0, .enabled= true},{.angle=  0, .enabled= true}}},
     [2][1]={.hands={{.angle=315, .enabled= true},{.angle=315, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharS2x3 = /* S */
@@ -375,7 +408,8 @@ static const MClockChar2x3_t clockCharS2x3 = /* S */
     [1][1]={.hands={{.angle=270, .enabled= true},{.angle=180, .enabled= true}}},
     [2][0]={.hands={{.angle= 90, .enabled= true},{.angle= 90, .enabled= true}}},
     [2][1]={.hands={{.angle=270, .enabled= true},{.angle=  0, .enabled= true}}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockChart2x3 = /* t */
@@ -386,7 +420,8 @@ static const MClockChar2x3_t clockChart2x3 = /* t */
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
     [2][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharU2x3 = /* U */
@@ -397,7 +432,8 @@ static const MClockChar2x3_t clockCharU2x3 = /* U */
     [1][1]={.hands={{.angle=180, .enabled=true },{.angle=  0, .enabled=true }}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 90, .enabled=true }}},
     [2][1]={.hands={{.angle=270, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharV2x3 = /* V */
@@ -408,7 +444,8 @@ static const MClockChar2x3_t clockCharV2x3 = /* V */
     [1][1]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
     [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][1]={.hands={{.angle=315, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharW2x3 = /* W */
@@ -419,7 +456,8 @@ static const MClockChar2x3_t clockCharW2x3 = /* W */
     [1][1]={.hands={{.angle=180, .enabled=true },{.angle=  0, .enabled=true }}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle= 45, .enabled=true }}},
     [2][1]={.hands={{.angle=315, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 /* X */
@@ -431,7 +469,8 @@ static const MClockChar2x3_t clockCharx2x3 = /* x */
     [1][1]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
     [2][0]={.hands={{.angle= 45, .enabled=true },{.angle= 45, .enabled=true }}},
     [2][1]={.hands={{.angle=315, .enabled=true },{.angle=315, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharY2x3 = /* Y */
@@ -442,7 +481,8 @@ static const MClockChar2x3_t clockCharY2x3 = /* Y */
     [1][1]={.hands={{.angle=315, .enabled=true },{.angle=180, .enabled=true }}},
     [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][1]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharZ2x3 = /* Z */
@@ -453,78 +493,149 @@ static const MClockChar2x3_t clockCharZ2x3 = /* Z */
     [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle= 30, .enabled=true },{.angle= 90, .enabled=true }}},
     [2][1]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
-  }
+  },
+  .width = 2,
 };
 
 static const MClockChar2x3_t clockCharSpace2x3 =  /* <space> */
 { .digit = {
     [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 1,
 };
 
 static const MClockChar2x3_t clockCharComma2x3 =  /* ',' */
 { .digit = {
     [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
-    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 1,
 };
 
 static const MClockChar2x3_t clockCharDot2x3 =  /* '.' */
 { .digit = {
     [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [1][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 1,
 };
 
 static const MClockChar2x3_t clockCharColon2x3 =  /* ':' */
 { .digit = {
     [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 1,
 };
 
 static const MClockChar2x3_t clockCharSemicolon2x3 =  /* ';' */
 { .digit = {
     [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
-    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 1,
 };
 
 static const MClockChar2x3_t clockCharExclamation2x3 =  /* '!' */
 { .digit = {
     [0][0]={.hands={{.angle=180, .enabled=true },{.angle=180, .enabled=true }}},
-    [0][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [1][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-    [1][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
     [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
-    [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
-  }
+  },
+  .width = 1,
 };
+
+static const MClockChar2x3_t *GetCharacterDesc(char ch) {
+  const MClockChar2x3_t *desc = NULL;
+
+  if (ch>='0' && ch<='9') {
+    desc = &clockDigits2x3[ch-'0'];
+  } else {
+    switch(ch) {
+      case 'a':
+      case 'A': desc = &clockCharA2x3; break;
+      case 'b': desc = &clockCharb2x3; break;
+      case 'B': desc = &clockCharB2x3; break;
+      case 'c': desc = &clockCharc2x3; break;
+      case 'C': desc = &clockCharC2x3; break;
+      case 'D': desc = &clockCharD2x3; break;
+      case 'd': desc = &clockChard2x3; break;
+      case 'e':
+      case 'E': desc = &clockCharE2x3; break;
+      case 'f':
+      case 'F': desc = &clockCharF2x3; break;
+      case 'g':
+      case 'G': desc = &clockCharG2x3; break;
+      case 'h':
+      case 'H': desc = &clockCharH2x3; break;
+      case 'i':
+      case 'I': desc = &clockCharI2x3; break;
+      case 'j':
+      case 'J': desc = &clockCharJ2x3; break;
+      case 'k':
+      case 'K': desc = &clockCharK2x3; break;
+      case 'l':
+      case 'L': desc = &clockCharL2x3; break;
+      case 'm':
+      case 'M': desc = &clockCharM2x3; break;
+      case 'n':
+      case 'N': desc = &clockCharN2x3; break;
+      case 'o':
+      case 'O': desc = &clockDigits2x3[0]; break;
+      case 'p':
+      case 'P': desc = &clockCharP2x3; break;
+      case 'q':
+      case 'Q': desc = &clockCharQ2x3; break;
+      case 'r':
+      case 'R': desc = &clockCharR2x3; break;
+      case 's':
+      case 'S': desc = &clockCharS2x3; break;
+      case 'T':
+      case 't': desc = &clockChart2x3; break;
+      case 'u':
+      case 'U': desc = &clockCharU2x3; break;
+      case 'v':
+      case 'V': desc = &clockCharV2x3; break;
+      case 'w':
+      case 'W': desc = &clockCharW2x3; break;
+      case 'X':
+      case 'x': desc = &clockCharx2x3; break;
+      case 'y':
+      case 'Y': desc = &clockCharY2x3; break;
+      case 'z':
+      case 'Z': desc = &clockCharZ2x3; break;
+      case 176: /* '°' */
+      case MFONT_CHAR_DEGREE: desc = &clockCharDegree2x3; break;
+      case '%': desc = &clockCharPercent2x3; break;
+      case ',': desc = &clockCharComma2x3; break;
+      case '.': desc = &clockCharDot2x3; break;
+      case ':': desc = &clockCharColon2x3; break;
+      case ';': desc = &clockCharSemicolon2x3; break;
+      case '!': desc = &clockCharExclamation2x3; break;
+
+      case ' ':
+      default:
+        desc = &clockCharSpace2x3; break;
+        break;
+    } /* switch */
+  }
+  return desc;
+}
+
+uint8_t MFONT_GetCharWidth2x3(char ch) {
+  const MClockChar2x3_t *desc = GetCharacterDesc(ch);
+  return desc->width;
+}
 
 static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
   for(int y=0; y<MFONT_SIZE_Y_2x3; y++) { /* every clock row */
-    for(int x=0; x<MFONT_SIZE_X_2x3; x++) { /* every clock column */
+    for(int x=0; x<ch->width; x++) { /* every clock column */
       MPOS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
       MPOS_SetMoveModeZ0Z1(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
     #if PL_MATRIX_CONFIG_IS_RGB
@@ -548,63 +659,13 @@ void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos) {
   const MClockChar2x3_t *desc;
 
   while(*str!='\0') {
-    desc = NULL;
-    if (*str>='0' && *str<='9') {
-      desc = &clockDigits2x3[*str-'0'];
-    } else {
-      switch(*str) {
-        case 'A': desc = &clockCharA2x3; break;
-        case 'b': desc = &clockCharb2x3; break;
-        case 'B': desc = &clockCharB2x3; break;
-        case 'c': desc = &clockCharc2x3; break;
-        case 'C': desc = &clockCharC2x3; break;
-        case 'D': desc = &clockCharD2x3; break;
-        case 'd': desc = &clockChard2x3; break;
-        case 'E': desc = &clockCharE2x3; break;
-        case 'F': desc = &clockCharF2x3; break;
-        case 'G': desc = &clockCharG2x3; break;
-        case 'H': desc = &clockCharH2x3; break;
-        case 'I': desc = &clockCharI2x3; break;
-        case 'J': desc = &clockCharJ2x3; break;
-        case 'K': desc = &clockCharK2x3; break;
-        case 'L': desc = &clockCharL2x3; break;
-        case 'M': desc = &clockCharM2x3; break;
-        case 'N': desc = &clockCharN2x3; break;
-        case 'O': desc = &clockDigits2x3[0]; break;
-        case 'P': desc = &clockCharP2x3; break;
-        case 'Q': desc = &clockCharQ2x3; break;
-        case 'R': desc = &clockCharR2x3; break;
-        case 'S': desc = &clockCharS2x3; break;
-        case 'T':
-        case 't': desc = &clockChart2x3; break;
-        case 'U': desc = &clockCharU2x3; break;
-        case 'V': desc = &clockCharV2x3; break;
-        case 'W': desc = &clockCharW2x3; break;
-        case 'X':
-        case 'x': desc = &clockCharx2x3; break;
-        case 'Y': desc = &clockCharY2x3; break;
-        case 'Z': desc = &clockCharZ2x3; break;
-        case 176: /* '°' */
-        case MFONT_CHAR_DEGREE: desc = &clockCharDegree2x3; break;
-        case '%': desc = &clockCharPercent2x3; break;
-        case ',': desc = &clockCharComma2x3; break;
-        case '.': desc = &clockCharDot2x3; break;
-        case ':': desc = &clockCharColon2x3; break;
-        case ';': desc = &clockCharSemicolon2x3; break;
-        case '!': desc = &clockCharExclamation2x3; break;
-
-        case ' ':
-        default:
-          desc = &clockCharSpace2x3; break;
-          break;
-      }
-    }
-    if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-MFONT_SIZE_X_2x3 && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_2x3) {
+    desc = GetCharacterDesc(*str);
+    if (xPos<=MATRIX_NOF_STEPPERS_X-desc->width && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_2x3) {
       DrawChar2x3(desc, xPos, yPos);
     }
-    xPos += MFONT_SIZE_X_2x3;
+    xPos += desc->width;
     str++;
   }
 }
 
-#endif /* PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3 */
+#endif /* MFONT_2x3_AVAILABLE */

@@ -9,6 +9,7 @@
 
 #include "platform.h"
 #include "McuShell.h"
+#include "matrix.h"
 #include <stdint.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -39,13 +40,16 @@ typedef struct MClock_t {
 #define MFONT_SIZE_X_3x5   3  /* number of columns needed */
 #define MFONT_SIZE_Y_3x5   5  /* number of rows needed */
 
-#define MFONT_SIZE_X_1x6   1  /* number of columns needed */
-#define MFONT_SIZE_Y_1x6   6  /* number of columns needed */
+#define MFONT_SIZE_X_4x5   4  /* number of columns needed */
+#define MFONT_SIZE_Y_4x5   5  /* number of rows needed */
+
 #define MFONT_SIZE_X_3x6   3  /* number of columns needed */
 #define MFONT_SIZE_Y_3x6   6  /* number of rows needed */
 
-#define MFONT_SIZE_X_4x5   4  /* number of columns needed */
-#define MFONT_SIZE_Y_4x5   5  /* number of rows needed */
+#define MFONT_2x3_AVAILABLE     (PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3)
+#define MFONT_3x5_AVAILABLE     (PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5)
+#define MFONT_4x5_AVAILABLE     (PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5)
+#define MFONT_3x6_AVAILABLE     (PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6)
 
 /* special character support */
 #define MFONT_CHAR_DEGREE  '~' /* placeholder, need to use a 8bit ASCII code */
@@ -62,15 +66,19 @@ void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
 
 /* print a string with a 2x3 font at a position */
 void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos);
+uint8_t MFONT_GetCharWidth2x3(char ch);
 
 /* print a string with a 3x5 font at a position */
 void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos);
+uint8_t MFONT_GetCharWidth3x5(char ch);
 
 /* print a string with a 3x6 font at a position */
 void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos);
+uint8_t MFONT_GetCharWidth3x6(char ch);
 
 /* print a string with a 4x5 font at a position */
 void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos);
+uint8_t MFONT_GetCharWidth4x5(char ch);
 
 /* print a string using a font at a position */
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font);

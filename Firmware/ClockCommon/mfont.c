@@ -40,29 +40,60 @@ void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_
 }
 
 void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xSize, int *ySize) {
-  size_t len = McuUtility_strlen((char*)text);
   switch(font) {
+#if MFONT_2x3_AVAILABLE
     case MFONT_SIZE_2x3:
-      *xSize = len*MFONT_SIZE_X_2x3;
       *ySize = MFONT_SIZE_Y_2x3;
       break;
+#endif
+#if MFONT_3x5_AVAILABLE
     case MFONT_SIZE_3x5:
-      *xSize = len*MFONT_SIZE_X_3x5;
       *ySize = MFONT_SIZE_Y_3x5;
       break;
+#endif
+#if MFONT_3x6_AVAILABLE
     case MFONT_SIZE_3x6:
-      *xSize = len*MFONT_SIZE_X_3x6;
       *ySize = MFONT_SIZE_Y_3x6;
       break;
+#endif
+#if MFONT_4x5_AVAILABLE
     case MFONT_SIZE_4x5:
-      *xSize = len*MFONT_SIZE_X_4x5;
       *ySize = MFONT_SIZE_Y_4x5;
       break;
+#endif
     default: /* error case */
-      *xSize = 0;
       *ySize = 0;
       break;
   } /* switch */
+  int width = 0 ;
+  while(*text!='\0') {
+    switch(font) {
+#if MFONT_2x3_AVAILABLE
+      case MFONT_SIZE_2x3:
+        width += MFONT_GetCharWidth2x3(*text);
+        break;
+#endif
+#if MFONT_3x5_AVAILABLE
+      case MFONT_SIZE_3x5:
+        width += MFONT_GetCharWidth3x5(*text);
+        break;
+#endif
+#if MFONT_3x6_AVAILABLE
+      case MFONT_SIZE_3x6:
+        width += MFONT_GetCharWidth3x6(*text);
+        break;
+#endif
+#if MFONT_4x5_AVAILABLE
+      case MFONT_SIZE_4x5:
+        width += MFONT_GetCharWidth4x5(*text);
+        break;
+#endif
+      default: /* error case */
+        break;
+    } /* switch */
+    text++;
+  }
+  *xSize = width;
 }
 
 void MFONT_PositionAllToClear(void) {
@@ -161,7 +192,7 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
         && McuUtility_ScanDecimal8uNumber(&p, &yPos)==ERR_OK && yPos<MATRIX_NOF_STEPPERS_Y
         )
     {
-      uint8_t buf[8];
+      uint8_t buf[32];
 
       McuUtility_SkipSpaces(&p);
       if (McuUtility_ReadEscapedName(p, buf, sizeof(buf), NULL, NULL, NULL)!=ERR_OK) {
