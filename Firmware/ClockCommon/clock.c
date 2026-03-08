@@ -405,7 +405,26 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
         res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, true, true);
       } else { /* small font and no border: show time and date */
         MFONT_PrintString(buf, 2, 0, CLOCK_font);
-        MFONT_PrintString((unsigned char*)"07. MAR", 0, 3, CLOCK_font);
+
+        unsigned char dateBuf[16];
+        static const char *monthStr3[] =
+        {
+            "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"
+        };
+
+        McuUtility_Num8uToStr(dateBuf, sizeof(dateBuf), date->Day);
+        McuUtility_chcat(dateBuf, sizeof(dateBuf), '.');
+        McuUtility_chcat(dateBuf, sizeof(dateBuf), ' ');
+        McuUtility_strcat(dateBuf, sizeof(dateBuf), (unsigned char*)monthStr3[date->Month-1]);
+
+        int xSize, ySize, xPos;
+        MFONT_GetFontTextSize(dateBuf, CLOCK_font, &xSize, &ySize);
+        if (xSize<MATRIX_NOF_STEPPERS_X) {
+          xPos = (MATRIX_NOF_STEPPERS_X-xSize)/2;
+        } else {
+          xPos = 0;
+        }
+        MFONT_PrintString(dateBuf, xPos, ySize, CLOCK_font);
         res = MATRIX_SendToRemoteQueueExecuteAndWait(true);
       }
     } else {
