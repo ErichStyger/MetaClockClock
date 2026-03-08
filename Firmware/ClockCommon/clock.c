@@ -397,8 +397,23 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   #endif
   uint8_t res;
 
+  MFONT_PositionAllToClear(); /* move all hands to disabled position by default */
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, CLOCK_clockHasBorder, true);
+  #if MATRIX_NOF_STEPPERS_X==13 && MATRIX_NOF_STEPPERS_Y==6 /* 6x13 Matrix */
+    if (CLOCK_font==MFONT_SIZE_2x3) {
+      if (GetClockHasBorder()) { /* small font and border: only show time */
+        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, true, true);
+      } else { /* small font and no border: show time and date */
+        MFONT_PrintString(buf, 2, 0, CLOCK_font);
+        MFONT_PrintString((unsigned char*)"07. MAR", 0, 3, CLOCK_font);
+        res = MATRIX_SendToRemoteQueueExecuteAndWait(true);
+      }
+    } else {
+      res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), true);
+    }
+  #else
+    res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), true);
+  #endif
 #else
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
 #endif
