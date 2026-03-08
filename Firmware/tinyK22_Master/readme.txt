@@ -1,4 +1,6 @@
 TODO:
+- hand fading not efficient for K02 clocks (too slow)
+
 - Special modes:
 6:00 Einschalten
 
