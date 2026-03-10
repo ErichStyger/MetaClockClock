@@ -814,8 +814,9 @@ static void IntermezzoTemperature(void) {
   McuUtility_strcatNumFloat(buf, sizeof(buf), temperature, 0);
   McuUtility_chcat(buf, sizeof(buf), MFONT_CHAR_DEGREE);
   McuUtility_chcat(buf, sizeof(buf), 'C');
+  MFONT_PositionAllToClear();
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, true, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, true);
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
 #endif
@@ -842,10 +843,10 @@ static void IntermezzoHumidity(void) {
   }
   buf[0] = '\0';
   McuUtility_strcatNumFloat(buf, sizeof(buf), humidity, 0);
-  McuUtility_chcat(buf, sizeof(buf), MFONT_CHAR_DEGREE);
   McuUtility_chcat(buf, sizeof(buf), '%');
+  MFONT_PositionAllToClear();
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, true, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, true);
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
   (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
 #endif
@@ -912,6 +913,7 @@ static void IntermezzoRectangles3(void) {
 
 #if PL_CONFIG_USE_FONT
 static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
+  MFONT_PositionAllToClear();
 #if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5);
 #else
