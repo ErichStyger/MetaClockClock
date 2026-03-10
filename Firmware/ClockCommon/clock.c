@@ -409,7 +409,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
         unsigned char dateBuf[16];
         static const char *monthStr3[] =
         {
-            "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"
+          "JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OKT", "NOV", "DEC"
         };
 
         McuUtility_Num8uToStr(dateBuf, sizeof(dateBuf), date->Day);
