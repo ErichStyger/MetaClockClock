@@ -49,6 +49,7 @@
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color */
   #define PL_CONFIG_HAS_BUTTONS                     (1) /* has user button on master to turn on/off clock */
   #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
+  /* experimental settings below: */
   //#define PL_CONFIG_USE_ESP32_UART  (1) /* using the 'ESP32' UART for the shell */
   //#define PL_CONFIG_USE_RTT         (1) /* with RTT and access to I2C (RTC) and no RTT connection, it stalls? */
   //#define PL_CONFIG_USE_BLE         (0) /* Adafruit module not mounted on board */
@@ -105,16 +106,17 @@
 #elif 0 /* Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */
-  #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if we have LED rings */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* if has RGB functionality */
+  #define PL_CONFIG_USE_LED_RING                    (0) /* if we have LED rings */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
-  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP         (0) /* temporary only for testing, to be removed */
 #elif 1 /* new 6x13 Matrix with massive Oak wood front */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_13x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if we have LED rings */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
+  #define PL_CONFIG_HAS_BUTTONS                     (1) /* has user button on master to turn on/off clock */
+  #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
 #else
   #error
 #endif
