@@ -1532,7 +1532,7 @@ static void ClockTask(void *pv) {
         lastClockUpdateTickCount = xTaskGetTickCount();
         intermezzoShown = false;
       #endif
-        McuLog_info("finished showing clock");
+        McuLog_trace("finished showing clock");
       } /* if close to minute */
     } /* if clock is on */
   } /* for(;;) */
