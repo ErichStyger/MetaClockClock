@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Erich Styger
+ * Copyright (c) 2020-2026, Erich Styger
  *
  * SPDX-License-Identifier: BSD-3-Clause
  */
@@ -36,7 +36,7 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
+#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* has RGB functionality */
@@ -49,14 +49,6 @@
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color */
   #define PL_CONFIG_HAS_BUTTONS                     (1) /* has user button on master to turn on/off clock */
   #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
-  /* experimental settings below: */
-  //#define PL_CONFIG_USE_ESP32_UART  (1) /* using the 'ESP32' UART for the shell */
-  //#define PL_CONFIG_USE_RTT         (1) /* with RTT and access to I2C (RTC) and no RTT connection, it stalls? */
-  //#define PL_CONFIG_USE_BLE         (0) /* Adafruit module not mounted on board */
-  //#define PL_CONFIG_USE_USB_CDC     (0)
-  //#define PL_CONFIG_USE_CLOCK       (0)
-  //#define PL_CONFIG_USE_RS485       (0)
-  #define PL_CONFIG_USE_ESP_TIME                    (0) /* if getting time and date from an external ESP */
 #elif 0 /* Alexis clock */
   #define PL_MATRIX_CONFIGURATION_ID      PL_MATRIX_ID_CLOCK_16x9_ALEXIS
   #define PL_CONFIG_USE_ESP32_UART        (1) /* using the 'ESP32' UART for the shell */
@@ -102,14 +94,13 @@
   #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
   #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
-  #define PL_CONFIG_USE_RS485                       (1)
 #elif 0 /* Cornelius 6x12 matrix */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* if has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (0) /* if we have LED rings */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
-#elif 1 /* new 6x13 Matrix with massive Oak wood front */
+#elif 1 /* 6x13 Matrix with Oak wood front */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_13x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */
