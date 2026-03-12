@@ -1718,6 +1718,10 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
     *handled = true;
     p = cmd + sizeof("intermezzo ")-1;
     if (McuUtility_ScanDecimal8uNumber(&p, &nr)==ERR_OK && nr<NOF_INTERMEZZOS) {
+      if (Intermezzo_getDisabled(nr)) {
+        McuShell_SendStr((const unsigned char*)"intermzzo is disabled\n", io->stdErr);
+        return ERR_FAILED;
+      }
       intermezzos[nr].fp();
       return ERR_OK;
     } else {
