@@ -40,6 +40,7 @@
   #include "intermezzo.h"
 #endif
 #if PL_CONFIG_USE_EXT_I2C_RTC
+  #include "McuGenericI2C.h"
   #include "McuExtRTC.h"
 #endif
 #if PL_CONFIG_HAS_CIRCLE_CLOCK
@@ -1129,7 +1130,13 @@ static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePerio
     McuLog_info("Updating SW RTC from HW RTC after %d minutes", updatePeriodMinutes);
     res = McuTimeDate_SyncFromExternalRTC(); /* update SW RTC from external HW RTC  */
     if (res!=ERR_OK) {
-      McuLog_error("Failed updating RTC from external RTC");
+      McuLog_error("Failed updating RTC from external RTC: error %d", res);
+#if 1
+      McuLog_error("Resetting I2C bus");
+      if (!I2CLIB_ResetBus()) {
+        McuLog_error("Reset I2C bus failed");
+      }
+#endif
     } else {
       McuTimeDate_GetTimeDate(&time, &date); /* what is the new time now? */
       newSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);

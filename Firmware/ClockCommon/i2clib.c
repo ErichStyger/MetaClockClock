@@ -12,6 +12,7 @@
 #include "fsl_i2c.h"
 #include "McuGPIO.h"
 #include "McuWait.h"
+#include "McuGenericI2C.h"
 #if McuLib_CONFIG_CPU_IS_KINETIS
   #include "fsl_port.h"
 #elif McuLib_CONFIG_CPU_IS_LPC
@@ -77,7 +78,7 @@ uint8_t I2CLIB_SelectSlave(uint8_t Slv) {
   return ERR_OK;
 }
 
-static void I2CLIB_ReleaseBus(void) {
+static void ResetI2CBus(void) {
   McuGPIO_Handle_t sdaPin, sclPin;
   McuGPIO_Config_t config;
   uint8_t i = 0;
@@ -203,8 +204,15 @@ static void I2CLIB_ConfigurePins(void) {
 #endif
 }
 
+bool I2CLIB_ResetBus(void) {
+  McuGenericI2C_RequestBus(); /* lock mutex */
+  ResetI2CBus(); /* reset I2C bus */
+  McuGenericI2C_ReleaseBus(); /* release mutex */
+  return true; /* success */
+}
+
 void I2CLIB_Init(void) {
-  I2CLIB_ReleaseBus();
+  ResetI2CBus();
 #if McuLib_CONFIG_CPU_IS_LPC55xx && McuLib_CONFIG_CORTEX_M==33 /* LPC55S69 */
   /* attach 12 MHz clock to FLEXCOMM4 (I2C master) */
   CLOCK_AttachClk(kFRO12M_to_FLEXCOMM4);

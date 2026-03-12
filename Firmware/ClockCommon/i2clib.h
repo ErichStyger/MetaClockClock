@@ -30,6 +30,7 @@ uint8_t I2CLIB_SelectSlave(uint8_t Slv);
 uint8_t I2CLIB_ReadAddress(uint8_t i2cAddr, uint8_t *memAddr, uint8_t memAddrSize, uint8_t *data, uint16_t dataSize);
 uint8_t I2CLIB_WriteAddress(uint8_t i2cAddr, uint8_t *memAddr, uint8_t memAddrSize, uint8_t *data, uint16_t dataSize);
 
+bool I2CLIB_ResetBus(void); /* try to reset bus if it hangs */
 void I2CLIB_Init(void);
 
 #endif /* I2CLIB_H_ */
