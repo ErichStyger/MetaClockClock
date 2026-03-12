@@ -1,4 +1,5 @@
 TODO:
+- handle disabled intermezzos
 - hand fading not efficient for K02 clocks (too slow)
 
 - Special modes:
