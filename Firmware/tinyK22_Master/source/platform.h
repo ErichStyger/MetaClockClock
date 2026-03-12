@@ -24,7 +24,7 @@
   #define PL_CONFIG_USE_VIRTUAL_STEPPER             (1) /* LED rings are driven by virtual stepper motors */
   #define PL_CONFIG_USE_BLE                         (1) /* if using Adafruit BLE module */
   #define PL_CONFIG_USE_SHELL_UART                  (1) /* if using shell UART to K20 */
-#elif 0 /* V3: modular round clock version on canvas: can be extended to a 72 clock version */
+#elif 0 /* V3: modular round clock version on canvas: replaced with the 13x6 (78) clock version */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_MOD
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_CONFIG_USE_LED_RING                    (0) /* if we do have LED rings */
@@ -36,14 +36,14 @@
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0x50)
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color*/
-#elif 0 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
+#elif 1 /* V4: 24 clock version with round PCBs: wooden frame on walnut veneer: https://mcuoneclipse.com/2021/01/01/metaclockclock-v4-for-the-year-2021/ */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3_V4
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
-  #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* has RGB functionality */
+  #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* we do have LED rings */
   #define PL_CONFIG_USE_EXTENDED_HANDS              (0) /* using extended hand */
-  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (1) /* clock on by default */
-  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (1) /* intermezzo on by default */
+  #define PL_CONFIG_CLOCK_ON_BY_DEFAULT             (0) /* clock on by default */
+  #define PL_CONFIG_INTERMEZZO_ON_BY_DEFAULT        (0) /* intermezzo on by default */
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_COLOR       (0xFF0000)
   #define PL_CONFIG_MATRIX_DEFAULT_HAND_BRIGHTNESS  (0xff) /* 0..0xff */
   #define PL_CONFIG_CLOCK_RANDOM_COLOR_ON           (1) /* if clock hands are enabled with random color */
