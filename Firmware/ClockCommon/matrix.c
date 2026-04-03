@@ -2122,20 +2122,20 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor on")==0) {
     *handled = TRUE;
-    #if PL_CONFIG_IS_MASTER
-    return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
-    #else
-    STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
     MATRIX_MotorsAreOn = true;
+    #if PL_CONFIG_IS_MASTER
+      return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
+    #else
+      STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
     #endif
     return ERR_OK;
   } else if (McuUtility_strcmp((char*)cmd, "matrix motor off")==0) {
     *handled = TRUE;
-    #if PL_CONFIG_IS_MASTER
-    return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
-    #else
-    STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
     MATRIX_MotorsAreOn = false;
+    #if PL_CONFIG_IS_MASTER
+      return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
+    #else
+      STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
     return ERR_OK;
     #endif
 #endif
@@ -2150,9 +2150,10 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     MATRIX_MoveAllToStartPosition(10000, io);
   #endif
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
-  #if PL_MATRIX_CONFIG_IS_RGB
+    #if PL_MATRIX_CONFIG_IS_RGB
     MATRIX_EnableDisableHandsAll(false);
-  #endif
+    #endif
+    MATRIX_MotorsAreOn = false;
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor off");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), false);
@@ -2161,11 +2162,11 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
   #endif
   } else if (McuUtility_strcmp((char*)cmd, "matrix park off")==0) {
     *handled = TRUE;
+    MATRIX_MotorsAreOn = true;
   #if PL_CONFIG_IS_MASTER && PL_CONFIG_USE_MOTOR_ON_OFF
     return MATRIX_SendMatrixCmdToAllBoards((const unsigned char *)"matrix motor on");
   #elif PL_CONFIG_USE_MOTOR_ON_OFF
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
-    MATRIX_MotorsAreOn = true;
     return ERR_OK;
   #endif
 #if PL_CONFIG_IS_MASTER
