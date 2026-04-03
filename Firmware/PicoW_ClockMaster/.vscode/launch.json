@@ -1,0 +1,99 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        { // see https://github.com/Marus/cortex-debug/blob/master/debug_attributes.md
+            "name": "PicoW-SPA J-Link cortex-debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "jlink",
+            "serverpath": "${env:PICO_JLINK_PATH}/JLinkGDBServerCL", // running on Windows Host
+            //"serverpath": "JLinkGDBServerCLExe", // inside container with host running JLinkRemoteServerCL, or for Linux host
+            //"serialNumber": "801048148", // connection by serial number
+            //"ipAddress": "tunnel:801048148", // connection through tunnel
+            //"ipAddress": "192.168.1.123", // connection to IP based (hardware) debug probe, e.g. J-Link Trace
+            //"ipAddress": "192.168.65.254", // host.docker.internal address, JLinkRemoteServerCL runs on host
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "armToolchainPath": "${env:PICO_TOOLCHAIN_PATH}",  // needed for the gdb
+            "device": "RP2040_M0_0",
+            "interface": "swd",
+            "runToEntryPoint": "main", // "_reset_handler" or for example "main"
+            "postLaunchCommands": [
+                "monitor semihosting enable",
+                "monitor semihosting ioclient 1", // 1: telnet (localhost, port 50002); 2: gdb; 3: both telnet and gdbclient output
+            ],
+            "rtos": "FreeRTOS",
+            "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
+            "rttConfig": {
+                "enabled": false,
+                "address": "auto",
+                "decoders": [
+                    {
+                        "label": "",
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            },
+        },
+        {
+            "name": "Debug inside DevContainer",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "external",
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "gdbTarget": "host.docker.internal:2331", // launch with: JLinkGDBServerCL -select USB -device RP2040_M0_0 -endian little -if SWD -rtos GDBServer/RTOSPlugin_FreeRTOS
+            "device": "RP2040_M0_0",
+            "runToEntryPoint": "main", // "_reset_handler" or for example "main"
+            "postLaunchCommands":[
+                "monitor reset",
+                "monitor semihosting enable",
+                "monitor semihosting ioclient 1", // 1: telnet (localhost, port 50002); 2: gdb; 3: both telnet and gdbclient output
+            ],
+            "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
+            "loadFiles": [
+              "${command:cmake.launchTargetPath}"
+            ],
+        },
+        { // see https://github.com/Marus/cortex-debug/blob/master/debug_attributes.md
+            "name": "PicoW-SPA CMSIS-DAP cortex-debug",
+            "type": "cortex-debug",
+            "request": "launch",
+            "servertype": "openocd",
+            "serverpath": "${env:OPENOCD_PATH}/openocd", // or: set in global json: cortex-debug.JLinkGDBServerPath
+            "serverArgs": [
+                "-c adapter speed 5000",
+                "-c set USE_CORE 0", // TIMER stops, see https://github.com/raspberrypi/picoprobe/issues/45
+            ],
+            "cwd": "${workspaceFolder}",
+            "executable": "${command:cmake.launchTargetPath}",
+            "armToolchainPath": "${env:PICO_TOOLCHAIN_PATH}",  // needed for the gdb
+            "device": "RP2040",
+            "configFiles": [
+                "interface\\cmsis-dap.cfg",
+                "target\\rp2040.cfg"
+            ],
+            "runToEntryPoint": "main", // "_reset_handler" or for example "main"
+            "postLaunchCommands": [
+                "monitor arm semihosting enable",
+            ],
+            "postRestartCommands": [],
+            "postResetCommands": [],
+            "rtos": "FreeRTOS",
+            "svdFile": "${env:PICO_SDK_PATH}/src/rp2040/hardware_regs/rp2040.svd",
+            "rttConfig": {
+                "enabled": false,
+                "address": "auto",
+                "decoders": [
+                    {
+                        "label": "",
+                        "port": 0,
+                        "type": "console"
+                    }
+                ]
+            },
+            "showDevDebugOutput": "none",
+        },
+    ]
+}
