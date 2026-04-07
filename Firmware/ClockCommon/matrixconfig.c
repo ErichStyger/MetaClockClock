@@ -918,9 +918,9 @@
         {.addr=BOARD_ADDR_55, .cmdSent=false},
         {.addr=BOARD_ADDR_56, .cmdSent=false},
 
-        {.addr=BOARD_ADDR_61, .cmdSent=false, .disabled=false},
-        {.addr=BOARD_ADDR_63, .cmdSent=false, .disabled=false},
-        {.addr=BOARD_ADDR_65, .cmdSent=false, .disabled=false},
+        {.addr=BOARD_ADDR_61, .cmdSent=false},
+        {.addr=BOARD_ADDR_63, .cmdSent=false},
+        {.addr=BOARD_ADDR_65, .cmdSent=false},
     };
 #else
   #error "unknown matrix"
