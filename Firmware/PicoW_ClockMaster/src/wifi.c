@@ -697,7 +697,7 @@ static uint8_t PrintStatus(McuShell_ConstStdIOType *io) {
   uint8_t mac[6];
   uint8_t macStr[] = "00:00:00:00:00:00\r\n";
   uint8_t buf[96];
-
+#if PL_CONFIG_USE_WIFI
 /* load current values: they get loaded again if WiFi gets initialized. */
 #if PL_CONFIG_USE_MININI
   McuMinINI_ini_gets(NVMC_MININI_SECTION_WIFI, NVMC_MININI_KEY_WIFI_HOSTNAME, WIFI_DEFAULT_HOSTNAME, (char*)wifi.hostname, sizeof(wifi.hostname), NVMC_MININI_FILE_NAME);
@@ -707,6 +707,7 @@ static uint8_t PrintStatus(McuShell_ConstStdIOType *io) {
   McuUtility_strcpy(wifi.hostname, sizeof(wifi.hostname), WIFI_DEFAULT_HOSTNAME);
   McuUtility_strcpy(wifi.ssid, sizeof(wifi.ssid), WIFI_DEFAULT_SSID);
   McuUtility_strcpy(wifi.pass, sizeof(wifi.pass), WIFI_DEFAULT_PASS);
+#endif
 #endif
   McuShell_SendStatusStr((unsigned char*)"wifi", (const unsigned char*)"Status of WiFi\r\n", io->stdOut);
 #if McuLib_CONFIG_CPU_IS_ESP32
