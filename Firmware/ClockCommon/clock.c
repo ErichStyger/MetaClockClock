@@ -1133,7 +1133,7 @@ static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePerio
       McuLog_error("Failed updating RTC from external RTC: error %d", res);
 #if 1
       McuLog_error("Resetting I2C bus");
-      if (!I2CLIB_ResetBus()) {
+      if (!McuI2cLib_ResetBus()) {
         McuLog_error("Reset I2C bus failed");
       }
 #endif
