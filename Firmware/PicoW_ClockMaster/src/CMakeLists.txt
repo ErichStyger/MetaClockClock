@@ -40,11 +40,13 @@ add_library(${THIS_LIBRARY_NAME} ${FILES})
 
 add_subdirectory(${MCULIB_DIR}          McuLib)
 add_subdirectory(${MCULIB_DIR}/rdimon   rdimon)
+add_subdirectory(${CLOCK_COMMON_DIR}    ClockCommonLib)
 
 # target_link_libraries: If you link with other libraries, list them here
 target_link_libraries(
   ${THIS_LIBRARY_NAME}
   PRIVATE McuLib
+  PRIVATE ClockCommonLib
   PRIVATE tinyusb_device
 
   PRIVATE pico_stdlib
