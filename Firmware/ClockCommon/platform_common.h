@@ -137,6 +137,9 @@
   #define PL_CONFIG_USE_RELATIVE_MOVES    (1)  /* use relative moves, increases the need for RAM on the master */
 #endif
 
+#ifndef PL_CONFIG_USE_LEDS
+  #define PL_CONFIG_USE_LEDS            (1) /* if using LEDs or not */
+#endif
 #ifndef PL_CONFIG_WORLD_CLOCK
   #define PL_CONFIG_WORLD_CLOCK         (0) /* legacy, clock showing different time zones */
 #endif

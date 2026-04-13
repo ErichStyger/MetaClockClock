@@ -232,7 +232,7 @@ void PL_Init(void) {
 #if PL_CONFIG_USE_USB_CDC
   USB_APPInit(); /* Initialize USB first before the UART/Gateway, because this changes the clock settings! */
 #endif
-  LEDS_Init();
+  Leds_Init();
 #if PL_CONFIG_HAS_BUTTONS
   BTN_Init();
 #endif
