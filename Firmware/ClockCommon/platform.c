@@ -61,8 +61,10 @@
 #if PL_CONFIG_USE_LED_CLOCK
   #include "LedClock.h"
 #endif
-/* SDK */
-#include "fsl_gpio.h"
+#if McuLib_CONFIG_CPU_IS_KINETIS
+  /* SDK */
+  #include "fsl_gpio.h"
+#endif
 
 /* application modules: */
 #if PL_CONFIG_USE_RS485
