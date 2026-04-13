@@ -18,6 +18,8 @@
   #define PL_CONFIG_BOARD_MCU     PL_CONFIG_BOARD_ID_MCU_K02FN64
 #elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_CLOCK_K02FN128  || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128
   #define PL_CONFIG_BOARD_MCU     PL_CONFIG_BOARD_ID_MCU_K02FN128
+#elif PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_PICO_W
+  #define PL_CONFIG_BOARD_MCU     PL_CONFIG_BOARD_ID_MCU_RP2040s
 #else
   #error "unknow board ID"
 #endif
@@ -52,9 +54,12 @@
 #endif
 
 /* selection if master or client */
-#define PL_CONFIG_IS_MASTER        (PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512) /* Master configuration, otherwise it is the client */
-#define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
-
+#ifndef PL_CONFIG_IS_MASTER
+  #define PL_CONFIG_IS_MASTER        (PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_LPC845_BRK || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_K22FN512 || PL_CONFIG_BOARD_ID==PL_CONFIG_BOARD_ID_MASTER_PICO_W) /* Master configuration, otherwise it is the client */
+#endif
+#ifndef PL_CONFIG_IS_CLIENT
+  #define PL_CONFIG_IS_CLIENT        (!PL_CONFIG_IS_MASTER) /* Client configuration, otherwise it is the master */
+#endif
 #ifndef PL_CONFIG_USE_MATRIX
   #define PL_CONFIG_USE_MATRIX  (1)
 #endif

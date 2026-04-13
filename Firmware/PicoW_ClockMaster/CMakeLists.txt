@@ -62,7 +62,7 @@ set(BUILD_DIR         "${PROJECT_ROOT_DIR}/build")
 set(TEST_EXECUTABLE   "${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.elf")
 set(CLOCK_COMMON_DIR  "${PROJECT_ROOT_DIR}/../ClockCommon")
 
-add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h")
+add_compile_options(-include "${PROJECT_ROOT_DIR}/src/IncludeMcuLibConfig.h" -I${CLOCK_COMMON_DIR})
 include_directories("${MCULIB_DIR}/src")
 include_directories("${PROJECT_ROOT_DIR}/src")
 
