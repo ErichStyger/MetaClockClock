@@ -2160,6 +2160,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     MATRIX_MotorsAreOn = false;
     return ERR_OK;
   #endif
+#if PL_CONFIG_USE_MOTOR_ON_OFF
   } else if (McuUtility_strcmp((char*)cmd, "matrix park off")==0) {
     *handled = TRUE;
     MATRIX_MotorsAreOn = true;
@@ -2169,6 +2170,7 @@ uint8_t MATRIX_ParseCommand(const unsigned char *cmd, bool *handled, const McuSh
     STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true);
     return ERR_OK;
   #endif
+#endif /* PL_CONFIG_USE_MOTOR_ON_OFF */
 #if PL_CONFIG_IS_MASTER
   } else if (McuUtility_strncmp((char*)cmd, "matrix sendcmd ", sizeof("matrix sendcmd ")-1)==0) {
     *handled = TRUE;
