@@ -88,16 +88,20 @@ Instructions:
 #define I2C_RETRY_TIMES   (5000) /* set retry count for SDK */
 
 #if CONFIG_USE_HW_I2C /* implementation in i2clib.c */
-  #define McuGenericI2C_CONFIG_INTERFACE_HEADER_FILE            "i2clib.h"
-  #define McuGenericI2C_CONFIG_RECV_BLOCK                       I2CLIB_RecvBlock
-  #define McuGenericI2C_CONFIG_SEND_BLOCK                       I2CLIB_SendBlock
+  #define McuLib_CONFIG_MCUI2CLIB_ENABLED                       (1)
+  #define McuGenericI2C_CONFIG_INTERFACE_HEADER_FILE            "McuI2cLib.h"
+  #define McuGenericI2C_CONFIG_RECV_BLOCK                       McuI2cLib_RecvBlock
+  #define McuGenericI2C_CONFIG_SEND_BLOCK                       McuI2cLib_SendBlock
   #if McuGenericI2C_CONFIG_SUPPORT_STOP_NO_START
-  #define McuGenericI2C_CONFIG_SEND_BLOCK_CONTINUE              I2CLIB_SendBlockContinue
+  #define McuGenericI2C_CONFIG_SEND_BLOCK_CONTINUE              McuI2cLib_SendBlockContinue
   #endif
-  #define McuGenericI2C_CONFIG_SEND_STOP                        I2CLIB_SendStop
-  #define McuGenericI2C_CONFIG_SELECT_SLAVE                     I2CLIB_SelectSlave
+  #define McuGenericI2C_CONFIG_SEND_STOP                        McuI2cLib_SendStop
+  #define McuGenericI2C_CONFIG_SELECT_SLAVE                     McuI2cLib_SelectSlave
   #define McuGenericI2C_CONFIG_RECV_BLOCK_CUSTOM_AVAILABLE      (0)
-  #define McuGenericI2C_CONFIG_RECV_BLOCK_CUSTOM                I2CLIB_RecvBlockCustom
+  #define McuGenericI2C_CONFIG_RECV_BLOCK_CUSTOM                McuI2cLib_RecvBlockCustom
+
+  #define MCUI2CLIB_CONFIG_ADD_DELAY                            (0)
+  #define MCUI2CLIB_CONFIG_USE_PORTB_B0_B1   (1)
 #else
   /* settings for GenericSWI2C */
   #define SCL1_CONFIG_GPIO_NAME     GPIOE // I2CLIB_SCL_GPIO

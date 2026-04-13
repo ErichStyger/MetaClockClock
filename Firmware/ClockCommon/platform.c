@@ -87,8 +87,7 @@
   #include "McuShellUart.h"
 #endif
 #if PL_CONFIG_USE_I2C
-  #include "i2clib.h"
-  #include "i2clibconfig.h"
+  #include "McuI2cLib.h"
 #endif
 #if PL_CONFIG_USE_STEPPER
   #include "stepper.h"
@@ -213,7 +212,7 @@ void PL_Init(void) {
   McuI2CSpy_Init();
 #endif
 #if PL_CONFIG_USE_I2C && PL_CONFIG_USE_HW_I2C
-  I2CLIB_Init();
+  McuI2cLib_Init();
 #elif PL_CONFIG_USE_I2C
   McuGenericSWI2C_Init();
 #endif
