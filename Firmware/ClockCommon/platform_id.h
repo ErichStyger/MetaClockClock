@@ -26,6 +26,7 @@
 #define PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN64            (7)  /* SmArtWall Board V1.0 with 8 motors using K02FN64 */
 #define PL_CONFIG_BOARD_ID_PIXELUNIT_K02FN128           (8)  /* SmArtWall Board V1.0 with 8 motors using K02FN12 */
 #define PL_CONFIG_BOARD_ID_PIXELUNIT_MASTER_K22FN512    (9)  /* PixelUnit Master with tinyK22 */
+#define PL_CONFIG_BOARD_ID_PICO_W_MASTER                (10) /* PicoW board as master */
 
 /* ********************************************************************************************************** */
 /* list of master matrix configurations: assigned to PL_MATRIX_CONFIGURATION_ID */
