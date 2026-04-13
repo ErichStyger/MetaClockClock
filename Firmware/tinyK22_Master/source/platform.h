@@ -105,8 +105,8 @@
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (PL_MATRIX_CONFIG_IS_RGB) /* if we have LED rings */
-  #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
-  #define PL_CONFIG_HAS_BUTTONS                     (1) /* has user button on master to turn on/off clock */
+  #define PL_CONFIG_USE_BLE                         (0) /* Adafruit module mounted on board */
+  #define PL_CONFIG_HAS_BUTTONS                     (0) /* has user button on master to turn on/off clock */
   #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
 #else
   #error
