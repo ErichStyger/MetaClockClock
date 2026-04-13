@@ -101,9 +101,18 @@
 /* ---------------------------------------------------------------------- */
 /* McuTimeDate */
 #define McuTimeDate_CONFIG_TICK_TIME_MS               (100) /* less timer ticks, default is RTOS tick rate */
+#define McuTimeDate_CONFIG_USE_SOFTWARE_RTC                        (1) /* enable software RTC */
+#define McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC                     (1) /* enable external I2C RTC */
+#define McuTimeDate_CONFIG_USE_INTERNAL_HW_RTC                     (0) /* no internal RTC */
+
+#define McuTimeDate_CONFIG_INIT_SOFTWARE_RTC_METHOD                (McuTimeDate_INIT_SOFTWARE_RTC_FROM_EXTERNAL_RTC)
+#define McuTimeDate_CONFIG_USE_GET_TIME_DATE_METHOD                (McuTimeDate_GET_TIME_DATE_METHOD_SOFTWARE_RTC)
+#define McuTimeDate_CONFIG_SET_TIME_DATE_METHOD_USES_SOFTWARE_RTC  (1) /* if using software RTC */
+#define McuTimeDate_CONFIG_SET_TIME_DATE_METHOD_USES_EXTERNAL_RTC  (0) /* if using external I2C RTC */
+#define McuTimeDate_CONFIG_SET_TIME_DATE_METHOD_USES_INTERNAL_RTC  (0) /* if using internal HW RTC */
 /* ---------------------------------------------------------------------- */
 /* McuShell */
-#define McuShell_CONFIG_PROJECT_NAME_STRING         "PicoWClockMaster"
+#define McuShell_CONFIG_PROJECT_NAME_STRING         "PicoW ClockMaster"
 #define McuShell_CONFIG_PROMPT_STRING               "mstr> "
 #define McuShell_CONFIG_MULTI_CMD_ENABLED           (1)
 #define McuShell_CONFIG_MULTI_CMD_SIZE              (96)

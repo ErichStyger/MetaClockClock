@@ -97,6 +97,9 @@
 #if PL_CONFIG_USE_BALBOA
   #include "balboa.h"
 #endif
+#if PL_CONFIG_USE_EXT_I2C_RTC
+  #include "McuExtRTC.h"
+#endif
 #include "application.h"
 
 /* table of shell parsers */
@@ -168,6 +171,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #endif
 #if PL_CONFIG_USE_TUD_CDC
   McuShellCdcDevice_ParseCommand,
+#endif
+#if PL_CONFIG_USE_EXT_I2C_RTC
+  McuExtRTC_ParseCommand,
 #endif
 #if PL_CONFIG_USE_BALBOA
   Balboa_ParseCommand,

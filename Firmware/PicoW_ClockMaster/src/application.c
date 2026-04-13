@@ -43,6 +43,9 @@
   #include "balboa.h"
   #include "mqtt_balboa.h"
 #endif
+#if PL_CONFIG_USE_TIME_DATE
+  #include "McuTimeDate.h"
+#endif
 
 #if PL_CONFIG_USE_BUTTONS
 void App_OnButtonEvent(uint32_t buttonBits, McuDbnc_EventKinds kind) {
@@ -89,6 +92,9 @@ static void AppTask(void *pv) {
 
 #if PL_CONFIG_USE_PICO_W && PL_CONFIG_USE_LEDS
   Leds_InitFromTask(); /* needed for the on-board Pico-W LED */
+#endif
+#if PL_CONFIG_USE_TIME_DATE
+  McuTimeDate_Init(); /* if using RTOS with external RTC, need to do this in a task! */
 #endif
   for(;;) {
   #if PL_CONFIG_USE_BUTTONS && !PL_CONFIG_USE_BUTTONS_IRQ

@@ -66,12 +66,15 @@ extern "C" {
 #define PL_CONFIG_USE_MQTT_HEIDELBERG   (0)
 
 /* I2C: OLED and Sensor */
-#define PL_CONFIG_USE_I2C               (0) /* if using I2C bus */
+#define PL_CONFIG_USE_I2C               (1) /* if using I2C bus */
 #define PL_CONFIG_USE_HW_I2C            (1 && PL_CONFIG_USE_I2C && CONFIG_USE_HW_I2C)
-#define PL_CONFIG_USE_OLED              (1 && PL_CONFIG_USE_I2C)
-#define PL_CONFIG_USE_SENSOR            (1 && PL_CONFIG_USE_I2C)
-#define PL_CONFIG_USE_SHT31             (1 && PL_CONFIG_USE_SENSOR) /* board is using SHT31 */
+#define PL_CONFIG_USE_OLED              (0 && PL_CONFIG_USE_I2C)
+#define PL_CONFIG_USE_SENSOR            (0 && PL_CONFIG_USE_I2C)
+#define PL_CONFIG_USE_SHT31             (0 && PL_CONFIG_USE_SENSOR) /* board is using SHT31 */
 #define PL_CONFIG_USE_SHT40             (!PL_CONFIG_USE_SHT31 && PL_CONFIG_USE_SENSOR) /* board is using SHT31 */
+
+#define PL_CONFIG_USE_RTC               (1) /* if using an RTC */
+#define PL_CONFIG_USE_EXT_I2C_RTC       (1 && PL_CONFIG_USE_RTC && PL_CONFIG_USE_I2C) /* DS3232M with internal memory */
 
 #define PL_CONFIG_USE_NVMC              (1) /* if using non-volatile memory for storing settings */
 #define PL_CONFIG_USE_MININI            (1 && PL_CONFIG_USE_NVMC)

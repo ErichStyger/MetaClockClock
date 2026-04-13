@@ -147,6 +147,9 @@
 #if PL_CONFIG_USE_BALBOA
   #include "balboa.h"
 #endif
+#if PL_CONFIG_USE_EXT_I2C_RTC
+  #include "McuExtRTC.h"
+#endif
 
 #if PL_CONFIG_USE_WATCHDOG
 static void PL_InitWatchdogReportTable(void) {
@@ -219,7 +222,9 @@ void PL_Init(void) {
   McuGPIO_Init();
   McuLED_Init();
 #if PL_CONFIG_USE_TIME_DATE
-  McuTimeDate_Init();
+  #if !PL_CONFIG_USE_EXT_I2C_RTC
+  McuTimeDate_Init(); /* if using RTOS with external RTC, need to do this in a task! */
+  #endif
   TMR_Init();
 #endif
 #if PL_CONFIG_USE_LEDS
@@ -322,6 +327,9 @@ void PL_Init(void) {
 #endif
 #if PL_CONFIG_USE_BALBOA
   Balboa_Init();
+#endif
+#if PL_CONFIG_USE_EXT_I2C_RTC
+  McuExtRTC_Init();
 #endif
   App_Init();
 }
