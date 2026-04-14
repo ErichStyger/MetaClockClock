@@ -131,10 +131,10 @@
 /* ---------------------------------------------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485          (1)
-#define McuUart485_CONFIG_USE_MODBUS          (McuModbus_CONFIG_IS_ENABLED)
-#define McuUart485_CONFIG_UART_BAUDRATE       (115200)
-#define McuUart485_CONFIG_USE_LOGGER          (1)
-#define McuUart485_CONFIG_USE_RAW             (1) /* use raw mode for Balboa */
+//#define McuUart485_CONFIG_USE_MODBUS          (McuModbus_CONFIG_IS_ENABLED)
+//#define McuUart485_CONFIG_UART_BAUDRATE       (115200)
+//#define McuUart485_CONFIG_USE_LOGGER          (1)
+//#define McuUart485_CONFIG_USE_RAW             (1) /* use raw mode for Balboa */
 /* ---------------------------------------------------------------------------------------*/
 /* McuSPI */
 /* RP2040: nRF24L01+ on SPI1, GP12 (MISO), GP11 (MOSI), GP10 (CLK) */
