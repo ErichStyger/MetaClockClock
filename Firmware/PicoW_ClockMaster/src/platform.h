@@ -111,6 +111,8 @@
   #define PL_CONFIG_USE_BLE                         (0) /* Adafruit module mounted on board */
   #define PL_CONFIG_HAS_BUTTONS                     (0) /* has user button on master to turn on/off clock */
   #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
+  #define PL_CONFIG_USE_LEDS                        (0) /* \TODO */
+  #define PL_CONFIG_USE_RTT                         (1) /* \TODO used as default shell IO */
 #else
   #error
 #endif
@@ -140,8 +142,8 @@ extern "C" {
    */
 
 /* platform configuration macros: set to 1 to enable functionality */
-#define PL_CONFIG_USE_LEDS              (1) /* if using LEDs */
-#define PL_CONFIG_USE_APP_TASK          (1) /* if using app task */
+//#define PL_CONFIG_USE_LEDS              (1) /* if using LEDs */
+#define PL_CONFIG_USE_APP_TASK          (0) /* if using app task */
 #define PL_CONFIG_USE_BLINKY            (0 && PL_CONFIG_USE_LEDS)  /*!< if using blinky */
 #define PL_CONFIG_USE_BUTTONS           (0) /* using nav switch buttons */
 #define PL_CONFIG_USE_BUTTONS_IRQ       (1 && !(McuLib_CONFIG_CPU_IS_ESP32 && PL_CONFIG_USE_WIFI)) /* if using button interrupts */
@@ -150,7 +152,7 @@ extern "C" {
    * and 3.11 in https://www.espressif.com/sites/default/files/documentation/esp32_errata_en.pdf  */
 
 /* Wireless related settings */
-#define PL_CONFIG_USE_WIFI              (1) /* if using WiFi functionality */
+#define PL_CONFIG_USE_WIFI              (0) /* if using WiFi functionality */
 #define PL_CONFIG_USE_IDENTIFY          (0 && PL_CONFIG_USE_WIFI) /*!< used to identify MAC, needed for EEE network */
 #define PL_CONFIG_USE_UDP_SERVER        (0 && PL_CONFIG_USE_WIFI) /*!< UDP server, used for communication to robot */
 #define PL_CONFIG_USE_UDP_CLIENT        (0 && PL_CONFIG_USE_WIFI) /*!< UDP client, optionally available for tests */
@@ -158,7 +160,7 @@ extern "C" {
 #define PL_CONFIG_USE_NTP_CLIENT        (1 && PL_CONFIG_USE_WIFI)
 #define PL_CONFIG_USE_MQTT_CLIENT       (0 && PL_CONFIG_USE_WIFI)   /* if running MQTT client */
 
-#define PL_CONFIG_USE_TIME_DATE         (1) /*!< if using Time and Date information */
+#define PL_CONFIG_USE_TIME_DATE         (0) /*!< if using Time and Date information */
 
 #define PL_CONFIG_USE_WATCHDOG          (0 && McuWatchdog_CONFIG_USE_WATCHDOG) /* if using Watchdog timer or not, configured in IncludeMcuLibConfig.h */
 
@@ -172,7 +174,7 @@ extern "C" {
 #define PL_CONFIG_USE_SHELL_CDC         (1 && PL_CONFIG_USE_TUD_CDC) /* if using CDC as shell interface */
 #define PL_CONFIG_USE_SEMIHOSTING       (0) /* if using semihosting for standard I/O */
 //#define PL_CONFIG_USE_RS485             (1 && McuUart485_CONFIG_USE_RS_485)
-#define PL_CONFIG_USE_RS485_SHELL       (1 && PL_CONFIG_USE_RS485 && !McuUart485_CONFIG_USE_RAW)
+//#define PL_CONFIG_USE_RS485_SHELL       (1 && PL_CONFIG_USE_RS485 && !McuUart485_CONFIG_USE_RAW)
 
 #define PL_CONFIG_USE_BALBOA            (0 && McuUart485_CONFIG_USE_RS_485)
 
@@ -192,7 +194,7 @@ extern "C" {
 //#define PL_CONFIG_USE_RTC               (1) /* if using an RTC */
 #define PL_CONFIG_USE_EXT_I2C_RTC       (1 && PL_CONFIG_USE_RTC && PL_CONFIG_USE_I2C) /* DS3232M with internal memory */
 
-#define PL_CONFIG_USE_NVMC              (1) /* if using non-volatile memory for storing settings */
+//#define PL_CONFIG_USE_NVMC              (1) /* if using non-volatile memory for storing settings */
 //#define PL_CONFIG_USE_MININI            (1 && PL_CONFIG_USE_NVMC)
 
 /* robot specific */
