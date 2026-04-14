@@ -100,8 +100,8 @@ Instructions:
   #define McuGenericI2C_CONFIG_RECV_BLOCK_CUSTOM_AVAILABLE      (0)
   #define McuGenericI2C_CONFIG_RECV_BLOCK_CUSTOM                McuI2cLib_RecvBlockCustom
 
-  #define MCUI2CLIB_CONFIG_ADD_DELAY                            (0)
-  #define MCUI2CLIB_CONFIG_USE_PORTB_B0_B1   (1)
+ // #define MCUI2CLIB_CONFIG_ADD_DELAY                            (0)
+  #define MCUI2CLIB_CONFIG_USE_PORTB_B0_B1                      (1)
 #else
   /* settings for GenericSWI2C */
   #define SCL1_CONFIG_GPIO_NAME     GPIOE // I2CLIB_SCL_GPIO
