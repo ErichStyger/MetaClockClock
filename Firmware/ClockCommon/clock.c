@@ -40,6 +40,7 @@
   #include "intermezzo.h"
 #endif
 #if PL_CONFIG_USE_EXT_I2C_RTC
+  #include "McuI2cLib.h"
   #include "McuGenericI2C.h"
   #include "McuExtRTC.h"
 #endif
@@ -1166,18 +1167,6 @@ static void ClockTask(void *pv) {
 #endif
   uint32_t ulNotificationValue;
 
-  McuLog_trace("Starting Clock Task");
-#if PL_CONFIG_USE_LED_PIXEL
-  PIXEL_ZeroAll();
-#endif
-  res = McuTimeDate_Init();
-#if PL_CONFIG_USE_WDT
-  WDT_SetTaskHandle(WDT_REPORT_ID_TASK_CLOCK, xTaskGetCurrentTaskHandle());
-#endif
-  vTaskDelay(pdMS_TO_TICKS(1000)); /* give external RTC and hardware time to power up */
-#if PL_CONFIG_USE_WDT
-  WDT_Report(WDT_REPORT_ID_TASK_CLOCK, 2000);
-#endif
 #if PL_CONFIG_USE_SHELL
   #if McuLib_CONFIG_CPU_IS_LPC && PL_CONFIG_IS_MASTER
   SHELL_SendString((unsigned char*)"\r\n*****************\r\n* LPC845 Master *\r\n*****************\r\n");
@@ -1190,6 +1179,21 @@ static void ClockTask(void *pv) {
   #elif McuLib_CONFIG_CPU_IS_KINETIS && PL_CONFIG_IS_MASTER
   SHELL_SendString((unsigned char*)"\r\n******************\r\n* tinyK22 Master *\r\n******************\r\n");
   #endif
+#endif
+  McuLog_trace("Starting Clock Task");
+#if PL_CONFIG_USE_LED_PIXEL
+  PIXEL_ZeroAll();
+#endif
+#if PL_CONFIG_USE_WDT
+  WDT_SetTaskHandle(WDT_REPORT_ID_TASK_CLOCK, xTaskGetCurrentTaskHandle());
+#endif
+  vTaskDelay(pdMS_TO_TICKS(1000)); /* give external RTC and hardware time to power up */
+  res = McuTimeDate_Init();
+  if (res!=ERR_OK) {
+    McuLog_fatal("failed initializing McuTimdDate");
+  }
+#if PL_CONFIG_USE_WDT
+  WDT_Report(WDT_REPORT_ID_TASK_CLOCK, 2000);
 #endif
 #if 0 && PL_CONFIG_USE_STEPPER
   if (STEPPER_ZeroAllHands()!=ERR_OK) {
