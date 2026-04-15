@@ -14,7 +14,7 @@
 #include "McuUtility.h"
 #include "McuLog.h"
 #include "shell.h"
-#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
+#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC || McuLib_CONFIG_CPU_IS_RPxxxx
   #include "nvmc.h"
 #endif
 #if PL_CONFIG_USE_WDT
@@ -36,7 +36,7 @@ typedef enum RS485_Response_e {
 static SemaphoreHandle_t RS485_stdioMutex; /* mutex to protect access to standard I/O */
 
 uint8_t RS485_GetAddress(void) {
-#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC
+#if McuLib_CONFIG_CPU_IS_KINETIS || McuLib_CONFIG_CPU_IS_LPC || McuLib_CONFIG_CPU_IS_RPxxxx
   uint8_t addr = 0;
 
   if (NVMC_GetRS485Addr(&addr)==ERR_OK) {
@@ -45,6 +45,8 @@ uint8_t RS485_GetAddress(void) {
   return 0; /* failed */
 #elif McuLib_CONFIG_CPU_IS_ESP32
   return 1; /* hard coded */
+#else
+  return 0x0; /* default */
 #endif
 }
 

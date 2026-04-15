@@ -93,11 +93,11 @@
 #define McuSSD1306_CONFIG_FIXED_DISPLAY_ORIENTATION    McuSSD1306_CONFIG_ORIENTATION_LANDSCAPE
 /* -------------------------------------------------*/
 /* RTT */
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (128)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_DOWN            (256)
 #define McuRTT_CONFIG_BLOCKING_SEND                   (0) /* 0: do not block if buffer full */
 #define McuRTT_CONFIG_BLOCKING_SEND_TIMEOUT_MS        (5)
 #define McuRTT_CONFIG_BLOCKING_SEND_WAIT_MS           (1)
-#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (5*1024)
+#define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (8*1024)
 /* ---------------------------------------------------------------------- */
 /* McuTimeDate */
 #define McuTimeDate_CONFIG_TICK_TIME_MS               (100) /* less timer ticks, default is RTOS tick rate */
@@ -115,8 +115,8 @@
 #define McuShell_CONFIG_PROJECT_NAME_STRING         "PicoW ClockMaster"
 #define McuShell_CONFIG_PROMPT_STRING               "mstr> "
 #define McuShell_CONFIG_MULTI_CMD_ENABLED           (1)
-#define McuShell_CONFIG_MULTI_CMD_SIZE              (96)
-#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE   (128)
+#define McuShell_CONFIG_MULTI_CMD_SIZE              (200)
+#define McuShell_CONFIG_DEFAULT_SHELL_BUFFER_SIZE   (256)
 /* ---------------------------------------------------------------------- */
 /* McuFlash */
 #define McuFlash_CONFIG_IS_ENABLED          (1) /* enable for MinINI with Flash FS */
@@ -131,10 +131,6 @@
 /* ---------------------------------------------------------------------------------------*/
 /* McuUart485 */
 #define McuUart485_CONFIG_USE_RS_485          (1)
-//#define McuUart485_CONFIG_USE_MODBUS          (McuModbus_CONFIG_IS_ENABLED)
-//#define McuUart485_CONFIG_UART_BAUDRATE       (115200)
-//#define McuUart485_CONFIG_USE_LOGGER          (1)
-//#define McuUart485_CONFIG_USE_RAW             (1) /* use raw mode for Balboa */
 /* ---------------------------------------------------------------------------------------*/
 /* McuSPI */
 /* RP2040: nRF24L01+ on SPI1, GP12 (MISO), GP11 (MOSI), GP10 (CLK) */

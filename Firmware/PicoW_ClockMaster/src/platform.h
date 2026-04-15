@@ -113,6 +113,7 @@
   #define PL_CONFIG_HAS_SWITCH_USER                 (1 && PL_CONFIG_HAS_BUTTONS) /* single user button (long, short) to turn on/off clock */
   #define PL_CONFIG_USE_LEDS                        (0) /* \TODO */
   #define PL_CONFIG_USE_RTT                         (1) /* \TODO used as default shell IO */
+  #define PL_CONFIG_USE_MOTOR_ON_AT_STARTUP (1) /* \TODO */
 #else
   #error
 #endif
