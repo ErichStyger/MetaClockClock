@@ -914,9 +914,11 @@ static void IntermezzoRectangles3(void) {
 #if PL_CONFIG_USE_FONT
 static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
   MFONT_PositionAllToClear();
-#if MATRIX_NOF_STEPPERS_X>=(4*3) && MATRIX_NOF_STEPPERS_Y>=5
+#if MATRIX_NOF_STEPPERS_Y>=6
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x6);
+#elif MATRIX_NOF_STEPPERS_Y>=5
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5);
-#else
+#else /* use smalles font available */
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_2x3);
 #endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
@@ -1445,16 +1447,23 @@ static const IntermezzoDesc_t intermezzos[] = {
 };
 
 #define NOF_INTERMEZZOS   (sizeof(intermezzos)/sizeof(intermezzos[0]))
+#define MAX_NOF_INTERMEZZOS   (64) /* maximum number of intermezzos, e.g. used for list of disabled ones */
 
 static struct _IntermezzoDisabled {
-  uint32_t disabled[2]; /* bits of intermezzo disabled: 1<<0 is for #0, 1<<1 for #1 and so on, max 64 intermezzos supported */
+  uint32_t disabled[MAX_NOF_INTERMEZZOS/(sizeof(uint32_t)*8)]; /* bit set of intermezzos disabled: 1<<0 is for #0, 1<<1 for #1 and so on, max 64 MAX_NOF_INTERMEZZOS supported */
 } IntermezzoDisabled = {.disabled[0]=0, .disabled[1]=0};
 
 static bool Intermezzo_getDisabled(uint8_t idx) {
-  if (idx>8*sizeof(IntermezzoDisabled.disabled)) {
+  /* return true if an intermezzo idx number is disabled */
+  if (idx>=NOF_INTERMEZZOS) {
+    McuLog_error("Intermezzo index out of bounds: %d", idx);
     return false; /* error case, cannot support that number of intermezzos, assuming it is not disabled */
   }
   return IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] & (1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
+}
+
+static bool Intermezzo_getEnabled(uint8_t idx) {
+  return !Intermezzo_getDisabled(idx);
 }
 
 #if PL_CONFIG_USE_MININI
@@ -1487,9 +1496,9 @@ void Intermezzo_clearDisabled(uint8_t idx) {
   IntermezzoDisabled.disabled[idx/(sizeof(IntermezzoDisabled.disabled[0])*8)] &= ~(1<<(idx%(sizeof(IntermezzoDisabled.disabled[0])*8)));
 }
 
-static void Intermezzo_printDisabled(const McuShell_StdIOType *io) {
-  for(int i=0; i<sizeof(IntermezzoDisabled.disabled)*8; i++) {
-    if (Intermezzo_getDisabled(i)) {
+static void Intermezzo_listEnabledDisabled(const McuShell_StdIOType *io, bool listEnabled) {
+  for(int i=0; i<NOF_INTERMEZZOS; i++) { /* go through all the bits */
+    if (listEnabled?Intermezzo_getEnabled(i):Intermezzo_getDisabled(i)) {
       McuShell_SendNum16u(i, io->stdOut);
       McuShell_SendStr((unsigned char*)" ", io->stdOut);
       McuShell_SendStr((unsigned char*)intermezzos[i].text, io->stdOut);
@@ -1505,14 +1514,14 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
   if (IntermezzoOn) {
     tickCount = xTaskGetTickCount();
     if (tickCount-lastClockUpdateTickCount > pdMS_TO_TICKS(IntermezzoDelaySec*1000)) { /* after a delay: start intermezzo */
-      #define NOF_MAX_RETRY  (100)
+      #define NOF_MAX_RETRY  (128) /* should be enough tries to get a not-disabled intermezzo */
       int i;
       for(i=0; i<NOF_MAX_RETRY; i++) { /* try to find a random intermezzo which is not disabled */
         intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
-        if (!Intermezzo_getDisabled(i)) {
+        if (Intermezzo_getEnabled(intermezzo)) { /* found an intermezzo which is not disabled */
           break;
         }
-      }
+      } /* for, breaks */
       if (i==NOF_MAX_RETRY) {
         McuLog_info("Intermezzo: unable to find not-disabled intermezzo");
         return;
@@ -1612,9 +1621,10 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  <nr>", (unsigned char*)"Play Intermezzo (0-", io->stdOut);
   McuShell_SendNum32u(NOF_INTERMEZZOS-1, io->stdOut);
   McuShell_SendStr((unsigned char*)")\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  list", (unsigned char*)"List intermezzos\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  rtc temp offset <dC>", (unsigned char*)"Set RTC temperature offset in deci-Celsius\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  disabled print", (unsigned char*)"Print disabled intermezzos\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  list", (unsigned char*)"List all intermezzos\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  list enabled", (unsigned char*)"List enabled intermezzos\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  list disabled", (unsigned char*)"List disabled intermezzos\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  disabled set <idx>", (unsigned char*)"Set an intermezzo number as disabled\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  disabled clear <idx>", (unsigned char*)"Enable a disabled intermezzo number\r\n", io->stdOut);
   return ERR_OK;
@@ -1686,9 +1696,13 @@ uint8_t INTERMEZZO_ParseCommand(const unsigned char *cmd, bool *handled, const M
   } else if (McuUtility_strcmp((char*)cmd, "intermezzo list")==0) {
     *handled = true;
     return listIntermezzos(io);
-  } else if (McuUtility_strcmp((char*)cmd, "intermezzo disabled print")==0) {
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo list enabled")==0) {
     *handled = true;
-    Intermezzo_printDisabled(io);
+    Intermezzo_listEnabledDisabled(io, true);
+    return ERR_OK;
+  } else if (McuUtility_strcmp((char*)cmd, "intermezzo list disabled")==0) {
+    *handled = true;
+    Intermezzo_listEnabledDisabled(io, false);
     return ERR_OK;
   } else if (McuUtility_strncmp((char*)cmd, "intermezzo disabled set ", sizeof("intermezzo disabled set ")-1)==0) {
     uint8_t idx;
