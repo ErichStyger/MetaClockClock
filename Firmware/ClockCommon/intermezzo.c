@@ -961,6 +961,19 @@ static void IntermezzoHey(void) {
 }
 #endif
 
+
+#if PL_CONFIG_USE_FONT
+static void IntermezzoIET(void) {
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnableAll(false);
+#endif
+#if PL_MATRIX_CONFIG_IS_RGB
+  MHAND_HandEnableAll(true);
+#endif
+  IntermezzoCharTextLarge("  IET  ", 0);
+}
+#endif
+
 #if PL_CONFIG_USE_FONT
 static const char *monthStr3[] =
 {
@@ -1442,6 +1455,7 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoHSLU,              .text="HSLU"},
   {.fp=IntermezzoCSEM,              .text="CSEM"},
   {.fp=IntermezzoHey,               .text="HEY!"},
+  {.fp=IntermezzoIET,               .text="IET"},
 #endif /* PL_CONFIG_USE_FONT */
 #endif
 };
@@ -1507,6 +1521,24 @@ static void Intermezzo_listEnabledDisabled(const McuShell_StdIOType *io, bool li
   }
 }
 
+static uint32_t GetMinEnabledIntermezzo(void) {
+  for(int i=0; i<NOF_INTERMEZZOS; i++) { /* go through all the bits */
+    if (Intermezzo_getEnabled(i)) {
+      return i;
+    }
+  }
+  return 0; /* default */
+}
+
+static uint32_t GetMaxEnabledIntermezzo(void) {
+  for(int i=NOF_INTERMEZZOS-1; i>=0; i--) { /* go through all the bits */
+    if (Intermezzo_getEnabled(i)) {
+      return i;
+    }
+  }
+  return NOF_INTERMEZZOS-1;
+}
+
 void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown) {
   TickType_t tickCount;
   uint8_t intermezzo;
@@ -1517,7 +1549,7 @@ void INTERMEZZO_Play(TickType_t lastClockUpdateTickCount, bool *intermezzoShown)
       #define NOF_MAX_RETRY  (128) /* should be enough tries to get a not-disabled intermezzo */
       int i;
       for(i=0; i<NOF_MAX_RETRY; i++) { /* try to find a random intermezzo which is not disabled */
-        intermezzo = McuUtility_random(0, NOF_INTERMEZZOS-1);
+        intermezzo = McuUtility_random(GetMinEnabledIntermezzo(), GetMaxEnabledIntermezzo());
         if (Intermezzo_getEnabled(intermezzo)) { /* found an intermezzo which is not disabled */
           break;
         }
