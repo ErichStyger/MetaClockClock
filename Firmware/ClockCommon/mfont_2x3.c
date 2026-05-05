@@ -663,8 +663,14 @@ void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos) {
     if (xPos<=MATRIX_NOF_STEPPERS_X-desc->width && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_2x3) {
       DrawChar2x3(desc, xPos, yPos);
     }
-    xPos += desc->width;
-    str++;
+    str++; /* got to next char */
+    if (str[0]=='\\' && str[1]=='n') { /* newline?`*/
+      xPos = 0;
+      yPos += MFONT_SIZE_Y_2x3;
+      str += 2; /* skip "\n" */
+    } else {
+      xPos += desc->width;
+    }
   }
 }
 
