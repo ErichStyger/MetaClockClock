@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 /*!
- * \brief Modulue initialization
+ * \brief Module initialization
  */
 void OLED_Init(void);
 

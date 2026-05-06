@@ -1190,7 +1190,7 @@ static void ClockTask(void *pv) {
   vTaskDelay(pdMS_TO_TICKS(1000)); /* give external RTC and hardware time to power up */
   res = McuTimeDate_Init();
   if (res!=ERR_OK) {
-    McuLog_fatal("failed initializing McuTimdDate");
+    McuLog_fatal("failed initializing McuTimeDate");
   }
 #if PL_CONFIG_USE_WDT
   WDT_Report(WDT_REPORT_ID_TASK_CLOCK, 2000);

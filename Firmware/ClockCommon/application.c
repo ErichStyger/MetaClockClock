@@ -20,7 +20,7 @@
 #include "StepperBoard.h"
 
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-  static SemaphoreHandle_t semNeoUpdate; /* semaphore use to trigger a display update */
+  static SemaphoreHandle_t semNeoUpdate; /* semaphore used to trigger a display update */
 #endif
 
 #if PL_CONFIG_USE_SHELL
@@ -80,7 +80,7 @@ static void NeoTask(void *pv) {
 #if PL_CONFIG_USE_LED_RING
   uint32_t color;
 
-  vTaskDelay(pdMS_TO_TICKS(500)); /* wait a bit until to turn on LED hands */
+  vTaskDelay(pdMS_TO_TICKS(500)); /* wait a bit before turning on LED hands */
   MHAND_HandEnableAll(true);
   color = MATRIX_GetHandColorAdjusted();
   MHAND_SetHandColorAll(color);
@@ -92,7 +92,7 @@ static void NeoTask(void *pv) {
   APP_RequestUpdateLEDs();
 #endif
 #if 0 && PL_CONFIG_USE_MOTOR_ON_OFF
-  vTaskDelay(pdMS_TO_TICKS(McuUtility_random(200, 1500))); /* wait a random time to avoid too much current rush */
+  vTaskDelay(pdMS_TO_TICKS(McuUtility_random(200, 1500))); /* wait a random time to avoid excessive inrush current */
   STEPBOARD_MotorSwitchOnOff(STEPBOARD_GetBoard(), true); /* turn on motors */
 #endif
 #if TEST_MODE
@@ -125,11 +125,11 @@ static void NeoTask(void *pv) {
 
 #if configUSE_HEAP_SCHEME==5
 #if PL_CONFIG_IS_K02 /* K02 has two 8K memory banks */
-  static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[8*1024]; /* placed in in no_init section inside SRAM_LOWER */
-  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[3*1024 + 1750 -410 /*for RTT */]; /* placed in in no_init section inside SRAM_UPPER */
+  static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[8*1024]; /* placed in no_init section inside SRAM_LOWER */
+  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[3*1024 + 1750 -410 /*for RTT */]; /* placed in no_init section inside SRAM_UPPER */
 #elif PL_CONFIG_IS_TINYK22 /* K22FN512 has two 64K memory banks */
-  static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[64*1024]; /* placed in in no_init section inside SRAM_LOWER */
-  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[16*1024]; /* placed in in no_init section inside SRAM_UPPER */
+  static __attribute__ ((used,section(".noinit.$SRAM_LOWER.Heap5"))) uint8_t heap_sram_lower[64*1024]; /* placed in no_init section inside SRAM_LOWER */
+  static __attribute__ ((used,section(".noinit_Heap5"))) uint8_t heap_sram_upper[16*1024]; /* placed in no_init section inside SRAM_UPPER */
 #endif
   static const HeapRegion_t xHeapRegions[] =
   { /* addresses need to be in increasing order */

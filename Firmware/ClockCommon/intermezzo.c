@@ -918,7 +918,7 @@ static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x6);
 #elif MATRIX_NOF_STEPPERS_Y>=5
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5);
-#else /* use smalles font available */
+#else /* use smallest font available */
   MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_2x3);
 #endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);

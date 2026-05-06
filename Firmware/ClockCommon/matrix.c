@@ -64,7 +64,7 @@
 #if PL_CONFIG_USE_STEPPER
   /* list of boards */
   static STEPBOARD_Handle_t MATRIX_Boards[MATRIX_NOF_BOARDS];
-  static SemaphoreHandle_t semMatrixExecuteQueue; /* semaphore use to trigger processing the matrix queues */
+  static SemaphoreHandle_t semMatrixExecuteQueue; /* semaphore used to trigger processing the matrix queues */
 #else /* used in case no stepper and no LED rings are used */
   /* list of bards defined in matrixconfig.h */
 #endif
@@ -386,7 +386,7 @@ uint8_t MATRIX_WaitForIdle(int32_t timeoutMs) {
           if (res==ERR_OK) { /* board is idle */
             boardIsIdle[i] = true;
           }
-        } else { /* board is not enabled or has not received a comand, so we consider it as idle */
+        } else { /* board is not enabled or has not received a command, so we consider it as idle */
           boardIsIdle[i] = true;
         }
       }
@@ -480,7 +480,7 @@ static void QueueMoveCommand(int x, int y, int z, int angle, int delay, STEPPER_
   McuUtility_strcatNum16u(buf, sizeof(buf), delay); /* <d> */
   McuUtility_chcat(buf, sizeof(buf), ' ');
   McuUtility_strcat(buf, sizeof(buf), GetModeString(mode, speedUp, slowDown));
-  (void)RS485_SendCommand(RS485_GetAddress(), buf, 1000, 1, NULL, NULL); /* queue the command for ourself (LED ring) */
+  (void)RS485_SendCommand(RS485_GetAddress(), buf, 1000, 1, NULL, NULL); /* queue the command for ourselves (LED ring) */
 #endif
 }
 #endif
@@ -617,7 +617,7 @@ static uint8_t QueueBoardMoveCommand(uint8_t addr, bool *cmdSent) {
     McuLog_trace("Queue enable & move (0x%02x)", addr);
     resBoards = RS485_SendCommand(addr, buf, 1000, 1, NULL, NULL); /* queue the command for the remote board */
 #if PL_CONFIG_USE_NEO_PIXEL_HW
-    resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, 1, NULL, NULL); /* queue the command for ourself (LED ring) */
+    resLeds = RS485_SendCommand(RS485_GetAddress(), ledbuf, 1000, 1, NULL, NULL); /* queue the command for ourselves (LED ring) */
     if (resBoards!=ERR_OK || resLeds!=ERR_OK) {
       return ERR_FAILED;
     }
@@ -807,7 +807,7 @@ static uint8_t SendExecuteCommand(void) {
   McuLog_trace("Sending broadcast exq");
   /* send broadcast execute queue command */
   (void)RS485_SendCommand(RS485_BROADCAST_ADDRESS, (unsigned char*)"matrix exq", 1000, 0, NULL, NULL); /* execute the queue */
-  /* check with lastEror if all have received the message */
+  /* check with lastError if all have received the message */
 #if PL_CONFIG_CHECK_LAST_ERROR
   return MATRIX_CheckRemoteLastError();
 #else

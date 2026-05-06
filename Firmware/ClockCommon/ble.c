@@ -197,9 +197,9 @@ uint8_t BLE_getPacket(sdepMsgResponse_t* p_response) {
 
 /******************************************************************************/
 /*!
-    @brief  Try to perform an full AT response transfer from Bluefruit, or execute
-            as many SPI transaction as internal FIFO can hold up.
-    @note   If verbose is enabled, all the received data will be print to Serial
+    @brief  Try to perform a full AT response transfer from Bluefruit, or execute
+            as many SPI transactions as the internal FIFO can hold.
+    @note   If verbose is enabled, all the received data will be printed to Serial
     @return
       - true  : if succeeded
       - false : if failed
@@ -239,14 +239,14 @@ bool BLE_getResponse(void) {
     if (!msg_response.header.more_data) {
       break;
     }
-    /*It takes a bit since all Data received to IRQ to get LOW */
+    /* It takes a bit after all data is received for IRQ to go LOW */
     /* May need to delay a bit for it to be stable before the next try */
     delayMicroseconds(SPI_DEFAULT_DELAY_US);
   }
   if (McuGPIO_GetValue(BLE_IRQ)) {
     int cnt = 2; /* max two iterations */
     do {
-      /* It takes a bit since all Data received to IRQ to get LOW */
+      /* It takes a bit after all data is received for IRQ to go LOW */
       /* May need to delay a bit for it to be stable before the next try */
       delayMicroseconds(SPI_DEFAULT_DELAY_US);
       cnt--;

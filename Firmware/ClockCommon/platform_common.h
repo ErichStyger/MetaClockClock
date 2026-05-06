@@ -208,7 +208,7 @@
   #define PL_CONFIG_USE_LED_RING        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED ring is present or available for the board. This is used for showing the hands, etc */
 #endif
 #ifndef PL_CONFIG_USE_LED_PIXEL
-  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixel are available: this is for the 'Moving Pixel' not for the clock! */
+  #define PL_CONFIG_USE_LED_PIXEL        (0 && PL_CONFIG_USE_NEO_PIXEL_HW) /* if LED pixels are available: this is for the 'Moving Pixel' not for the clock! */
 #endif
 #define PL_CONFIG_USE_X12_STEPPER     (1 && PL_CONFIG_USE_STEPPER && (PL_CONFIG_IS_K02 || PL_CONFIG_IS_LPC845)) /* if X12 stepper motors are used */
 #ifndef PL_CONFIG_USE_X12_LED_STEPPER

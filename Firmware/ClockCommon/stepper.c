@@ -134,9 +134,9 @@ STEPPER_Handle_t STEPPER_InitDevice(STEPPER_Config_t *config) {
   #define STEPPER_STOP_TIMER()         PIT_StopTimer(PIT_BASEADDR, PIT_CHANNEL)
 #endif
 
-/* configuration of acceleration/de-accelration moves. Note: ideally this should be table driven */
+/* configuration of acceleration/de-acceleration moves. Note: ideally this should be table driven */
 #if PL_CONFIG_IS_ANALOG_CLOCK
-  /* Check  Check AccelDelayDegree()! */
+  /* Check AccelDelayDegree()! */
   #define STEPPER_ACCELERATION_RANGE_DEGREE   (25)  /* acceleration is at the first 25 degree and the last 25 degree of the movement */
   #define STEPS_TO_DEGREE(steps)              (((steps)*360u)/STEPPER_CLOCK_360_STEPS)
 #else
