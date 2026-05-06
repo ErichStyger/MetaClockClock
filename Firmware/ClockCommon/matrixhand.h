@@ -13,19 +13,63 @@
 #include <stdbool.h>
 
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
+/*!
+ * \brief Enables or disables the main hand LED at a matrix coordinate.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \param enable True to enable or turn on, false to disable or turn off.
+ */
 void MHAND_HandEnable(uint8_t x, uint8_t y, uint8_t z, bool enable);
+/*!
+ * \brief Enables or disables all main hand LEDs.
+ * \param enable True to enable or turn on, false to disable or turn off.
+ */
 void MHAND_HandEnableAll(bool enable);
 
 #if PL_CONFIG_USE_EXTENDED_HANDS
+/*!
+ * \brief Enables or disables the second hand LED at a matrix coordinate.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \param enable True to enable or turn on, false to disable or turn off.
+ */
 void MHAND_2ndHandEnable(int32_t x, int32_t y, uint8_t z, bool enable);
+/*!
+ * \brief Enables or disables all second hand LEDs.
+ * \param enable True to enable or turn on, false to disable or turn off.
+ */
 void MHAND_2ndHandEnableAll(bool enable);
 #endif /* PL_CONFIG_USE_EXTENDED_HANDS */
 
+/*!
+ * \brief Sets the main hand LED color at a matrix coordinate.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \param color Packed RGB color value.
+ */
 void MHAND_SetHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color);
+/*!
+ * \brief Sets the main hand LED color for all clocks.
+ * \param color Packed RGB color value.
+ */
 void MHAND_SetHandColorAll(uint32_t color);
 
 #if PL_CONFIG_USE_EXTENDED_HANDS
+/*!
+ * \brief Sets the second hand LED color at a matrix coordinate.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \param color Packed RGB color value.
+ */
 void MHAND_Set2ndHandColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color);
+/*!
+ * \brief Sets the second hand LED color for all clocks.
+ * \param color Packed RGB color value.
+ */
 void MHAND_Set2ndHandColorAll(uint32_t color);
 #endif
 

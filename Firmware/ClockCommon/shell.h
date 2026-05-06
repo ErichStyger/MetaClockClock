@@ -14,40 +14,40 @@ extern "C" {
 #endif
 
 /*!
- * \brief Send a string to all supported I/Os
- * \param str String to send
+ * \brief Sends a string to all configured shell outputs.
+ * \param str Null-terminated string.
  */
 void SHELL_SendString(const unsigned char *str);
 
 /*!
- * \brief Send a string to a given IO. It tries to accelerate it by sending a buffer instead char by char.
- * \param str String to be sent.
- * \param io I/O to be used.
+ * \brief Sends a string to one shell I/O target.
+ * \param str Null-terminated string.
+ * \param io Shell I/O streams used for command output.
  */
 void SHELL_SendStringToIO(const unsigned char *str, McuShell_ConstStdIOType *io);
 
 /*!
- * \brief Send a character to all supported I/Os
- * \param ch Character to send
+ * \brief Sends one character to all configured shell outputs.
+ * \param ch Character to send or print.
  */
 void SHELL_SendChar(unsigned char ch);
 
 /*!
- * \brief Parses a command with a given standard I/O channel
- * \param command Command to be parsed
- * \param io I/O to be used. If NULL, the standard default I/O will be used
- * \param silent If parsing shall be silent or not
- * \return Error code, ERR_OK for no error
+ * \brief Parses and dispatches one shell command using the supplied I/O target.
+ * \param command Command string to parse or send.
+ * \param io Shell I/O streams used for command output.
+ * \param silent True to suppress command output.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t SHELL_ParseCommandIO(const unsigned char *command, McuShell_ConstStdIOType *io, bool silent);
 
 /*!
- * \brief Module de-initialization
+ * \brief Deinitializes shell support.
  */
 void SHELL_Deinit(void);
 
 /*!
- * \brief Module Initialization
+ * \brief Initializes shell support.
  */
 void SHELL_Init(void);
 

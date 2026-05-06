@@ -15,20 +15,29 @@ extern "C" {
 
 #include "platform.h"
 #if PL_CONFIG_USE_NEO_PIXEL_HW
+/*!
+ * \brief Requests a NeoPixel LED update from an interrupt service routine.
+ * \return True if the condition or operation succeeds, false otherwise.
+ */
   bool APP_RequestUpdateLEDsFromISR(void);
+/*!
+ * \brief Requests a NeoPixel LED update from task context.
+ */
   void APP_RequestUpdateLEDs(void);
 #endif
 
 /*!
- * \brief Command line shell parser
- * \param cmd Pointer to the command line string
- * \param handled Used to indicate that the command has been handled
- * \param io Input/Output handler
- * \return Error Code, ERR_OK if everyhing was ok.
+ * \brief Parses application shell commands.
+ * \param cmd Command string to parse or send.
+ * \param handled Set to true when the command has been handled.
+ * \param io Shell I/O streams used for command output.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t APP_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
-/*! run the application, does not return */
+/*!
+ * \brief Runs the application and starts the scheduler.
+ */
 void APP_Run(void);
 
 #ifdef __cplusplus

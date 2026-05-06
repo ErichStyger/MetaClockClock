@@ -11,19 +11,19 @@
 #include "buttons_config.h"
 
 /*!
- * \brief Decides if a button is pressed
- * \param btn Button to check
- * \return true if button is pressed, false otherwise
+ * \brief Checks whether the selected button is currently pressed.
+ * \param btn Button to query.
+ * \return True if the condition or operation succeeds, false otherwise.
  */
 bool BTN_IsPressed(BTN_Buttons_e btn);
 
 /*!
- * \brief Module de-initialization
+ * \brief Deinitializes the button module.
  */
 void BTN_Deinit(void);
 
 /*!
- * \brief Module initialization
+ * \brief Initializes the button module.
  */
 void BTN_Init(void);
 

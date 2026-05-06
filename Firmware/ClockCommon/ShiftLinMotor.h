@@ -20,32 +20,41 @@ typedef struct ShiftLinMotor_Config_t {
   uint16_t shiftPos; /* position of motor in shift register, starting with zero */
 } ShiftLinMotor_Config_t;
 
+/*!
+ * \brief Fills a linear shift motor configuration with default values.
+ * \param config Configuration structure to fill or use.
+ */
 void ShiftLinMotor_GetDefaultConfig(ShiftLinMotor_Config_t *config);
 
 typedef void *ShiftLinMotor_Handle_t;
 
+/*!
+ * \brief Initializes a linear shift motor device instance.
+ * \param config Configuration structure to fill or use.
+ * \return Requested handle.
+ */
 ShiftLinMotor_Handle_t ShiftLinMotor_InitDevice(ShiftLinMotor_Config_t *config);
 
 /*!
- * \brief Store the motor bits to do a single step. Send them later using ShiftLinMotor_Execute()
- * \param dev ShiftLinMotor_Device_t
- * \param step Positive value > direction is set to CW. | Negative value > direction is set to CCW.
+ * \brief Stores one step pattern for a linear shift motor.
+ * \param dev Underlying device pointer.
+ * \param step Step pattern index to store.
  */
 void ShiftLinMotor_SingleStep(void *dev, int step);
 
 /*!
- * \brief Send the actual stored motor bits to the steppers.
+ * \brief Transfers the stored linear shift motor bits to the hardware.
  */
 void ShiftLinMotor_Execute(void);
 
 /*!
- * \brief Set the motor stdby bit of a specific motor. Send them later using ShiftLinMotor_Execute()
- * \param dev ShiftLinMotor_Device_t
+ * \brief Puts one linear shift motor device into standby.
+ * \param dev Underlying device pointer.
  */
 void ShiftLinMotor_Stby(void *dev);
 
 /*!
- * \brief Set the motor stdby bits of all motors. Send them later using ShiftLinMotor_Execute()
+ * \brief Puts all linear shift motor devices into standby.
  */
 void ShiftLinMotor_StbyAll(void);
 

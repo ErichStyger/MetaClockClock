@@ -8,7 +8,7 @@
 #define ESP32_H_
 
 /*!
- * \brief Initializes the module.
+ * \brief Initializes ESP32 support.
  */
 void ESP_Init(void);
 

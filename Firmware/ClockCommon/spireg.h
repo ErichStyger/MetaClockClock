@@ -17,26 +17,26 @@ extern "C" {
 #endif
 
 /*!
- * \brief Sends a block of data to the bus
- * \param data Pointer to the data to be sent
- * \param size Data size in bytes
+ * \brief Writes data through the SPI register chain.
+ * \param data Data buffer.
+ * \param size Number of bytes in the data buffer.
  */
 void SpiReg_WriteData(const uint8_t *data, size_t size);
 
 /*!
- * \brief Reads a block of data from the bus
- * \param data Pointer to where the data gets stored
- * \param size Data size in bytes
+ * \brief Reads data through the SPI register chain.
+ * \param data Data buffer.
+ * \param size Number of bytes in the data buffer.
  */
 void SpiReg_ReadData(uint8_t *data, size_t size);
 
 /*!
- * \brief Module de-initialization
+ * \brief Deinitializes SPI register support.
  */
 void SpiReg_Deinit(void);
 
 /*!
- * \brief Module initialization
+ * \brief Initializes SPI register support.
  */
 void SpiReg_Init(void);
 

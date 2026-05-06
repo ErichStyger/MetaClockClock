@@ -10,21 +10,21 @@
 #include "LowPowerconfig.h"
 
 /*!
- * \brief LP_OnActivateFromISR function.
+ * \brief Handles low-power activation from an interrupt service routine.
  */
 void LP_OnActivateFromISR(void);
 
 /*!
- * \brief LP_EnterWaitMode function.
+ * \brief Enters the MCU wait low-power mode.
  */
 void LP_EnterWaitMode(void);
 /*!
- * \brief LP_EnterStopMode function.
+ * \brief Enters the MCU stop low-power mode.
  */
 void LP_EnterStopMode(void);
 
 /*!
- * \brief Initializes the module.
+ * \brief Initializes low-power mode support.
  */
 void LP_Init(void);
 

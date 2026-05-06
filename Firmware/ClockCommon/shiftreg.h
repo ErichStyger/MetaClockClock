@@ -36,73 +36,74 @@ extern "C" {
 
 #if 0 /* not used */
 /*!
- * \brief Read sensor (magnet) bits from the shift register(s)
- * \param data Pointer where to store the data, one bit for each sensor
- * \param dataSize Number of data bytes
+ * \brief Reads sensor bits through the shift register chain.
+ * \param data Data buffer.
+ * \param dataSize Number of bytes in the data buffer.
  */
 void ShiftReg_ReadSensorBits(uint8_t *data, size_t dataSize);
 #endif
 
 /*!
- * \brief Send motor (coil) bits to the shift register(s)
- * \param data Array of data, one bit for each motor coil
- * \param nofBytes Number of data bytes
+ * \brief Writes motor bits through the shift register chain.
+ * \param data Data buffer.
+ * \param nofBytes Number of bytes in the data buffer.
  */
 void ShiftReg_WriteMotorBits(const uint8_t *data, size_t nofBytes);
 
 /*!
- * \brief Store the motor bits to be sent in global variable array. Send them later using ShiftReg_WriteMotorBits()
- * \param index Motor index number, starting with 0
- * \param w Array of truth table for the motor pins
+ * \brief Stores the motor phase bits for one motor.
+ * \param index Motor index.
+ * \param w Motor phase bit array or width value.
  */
 void ShiftReg_StoreMotorBits(uint32_t index, const bool w[SHIFTREG_NOF_MOTOR_BITS]);
 
 /*!
- * \brief Set the motor specific stdby-bit  in global variable array and clear the clk-bit. Send them later using ShiftReg_WriteMotorBits()
- * \param index Motor index number, starting with 0
+ * \brief Stores the standby bit for one motor.
+ * \param motorIdx Motor index.
  */
 void ShiftReg_StoreMotorStbyBit(uint32_t motorIdx);
 
 /*!
- * \brief Set ALL stby-bits in global variable array and clear the clk-bits. Send them later using ShiftReg_WriteMotorBits()
+ * \brief Stores standby bits for all motors.
  */
 void ShiftReg_StoreMotorStbyBitsAll(void);
 
 /*!
- * \brief Send the stored bits which has been sent by ShiftReg_StoreMotorBits(). Note that this function uses a mutex to access the SPI bus.
+ * \brief Sends the stored motor bits to the shift registers.
  */
 void ShiftReg_SendStoredMotorBits(void);
 
 /*!
- * \brief Send the stored bits which has been sent by ShiftReg_StoreMotorBits(), does auto clock toggling and sends the data again . Note that this function uses a mutex to access the SPI bus.
+ * \brief Sends stored motor bits and automatically clocks them out.
  */
 void ShiftReg_SendStoredMotorBitsAutoClk(void);
 
 /*!
- * \brief Send the motor bits, but only if they have changed from the last time they were sent.
+ * \brief Sends stored motor bits only if they changed.
  */
 void ShiftReg_SendStoredMotorBitsIfChanged(void);
 
 /*!
- * \brief Send the motor bits, does auto clock toggling and sends the data again, but only if they have changed from the last time they were sent and does Auto Clk.
+ * \brief Sends changed stored motor bits and automatically clocks them out.
  */
 void ShiftReg_SendStoredMotorBitsIfChangedAutoClk(void);
 
 /*!
- * \brief Command line parser for the ShiftReg module
- * \param cmd Command string to be parsed
- * \param handled If the command has been recognized
- * \param io Standard I/O to be used
+ * \brief Parses shift-register shell commands.
+ * \param cmd Command string to parse or send.
+ * \param handled Set to true when the command has been handled.
+ * \param io Shell I/O streams used for command output.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t ShiftReg_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
 /*!
- * \brief Module de-initialization
+ * \brief Deinitializes shift-register support.
  */
 void ShiftReg_Deinit(void);
 
 /*!
- * \brief Module initialization
+ * \brief Initializes shift-register support.
  */
 void ShiftReg_Init(void);
 

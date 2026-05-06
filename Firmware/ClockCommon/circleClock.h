@@ -24,23 +24,38 @@
 #define CIRCLE_CLOCK_CIRCLE_END_X_POS       (12)  /* x end position of outer circle */
 
 /* draw a circle on the outside */
+/*!
+ * \brief Draws the circular clock outline.
+ */
 void CC_DrawCircle(void);
 
 /* draw rays outside */
+/*!
+ * \brief Draws the circular clock ray markers.
+ */
 void CC_DrawRays(void);
 
 /* show time */
+/*!
+ * \brief Shows the given time on the circular clock.
+ * \param hour Hour value to display.
+ * \param minute Minute value to display.
+ */
 void CC_ShowTime(uint8_t hour, uint8_t minute);
 
 /* disable/enable center clock during intermezzos */
+/*!
+ * \brief Enables or disables the center clock in the circular layout.
+ * \param enable True to enable or turn on, false to disable or turn off.
+ */
 void CC_EnableCenterClock(bool enable);
 
 /*!
- * \brief Deinitializes the module.
+ * \brief Deinitializes the circular clock module.
  */
 void CC_Deinit(void);
 /*!
- * \brief Initializes the module.
+ * \brief Initializes the circular clock module.
  */
 void CC_Init(void);
 

@@ -8,7 +8,7 @@
 #define TIMERS_H_
 
 /*!
- * \brief Initializes the module.
+ * \brief Initializes the software timers used by the firmware.
  */
 void Timers_Init(void);
 

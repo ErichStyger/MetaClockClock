@@ -18,11 +18,11 @@ extern uint8_t Esp32ShellUart_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_S
 extern McuShell_ConstStdIOType Esp32ShellUart_stdio;
 
 /*!
- * \brief Deinitializes the module.
+ * \brief Deinitializes the ESP32 shell UART.
  */
 void Esp32ShellUart_Deinit(void);
 /*!
- * \brief Initializes the module.
+ * \brief Initializes the ESP32 shell UART.
  */
 void Esp32ShellUart_Init(void);
 

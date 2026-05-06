@@ -19,77 +19,88 @@ extern "C" {
 #define NVMC_FLAGS_MAGNET_ENABLED   (1<<0)  /* if magnets are present on hands or not */
 
 /*!
- * \brief Getter for the 'enabled' setting of a motor
- * \param x Motor x position
- * \param y Motor y position
- * \param z Motor z position
- * \return If motor is enabled
+ * \brief Gets whether a matrix coordinate is enabled in non-volatile configuration.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \return True if the condition or operation succeeds, false otherwise.
  */
 bool NVMC_GetIsEnabled(uint8_t x, uint8_t y, uint8_t z);
 
 /*!
- * \brief Setter for the 'enabled' setting of a motor
- * \param x Motor x position
- * \param y Motor y position
- * \param z Motor z position
- * \return Error code, ERR_OK for everything ok
+ * \brief Stores whether a matrix coordinate is enabled in non-volatile configuration.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \param isEnabled Stored enabled state.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t NVMC_SetIsEnabled(uint8_t x, uint8_t y, uint8_t z, bool isEnabled);
 
 /*!
- * \brief Provide the offset from the magnet position for a stepper motor
- * \param x Motor x position
- * \param y Motor y position
- * \param z Motor z position
- * \return Stored offset
+ * \brief Gets the stored zero offset for a stepper.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \return Requested numeric value.
  */
 int16_t NVMC_GetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z);
 
 /*!
- * \brief Store the offset from the magnet position for a stepper motor
- * \param x Motor x position
- * \param y Motor y position
- * \param z Motor z position
- * \param offset Offset to store
- * \return Error code, ERR_OK for everything ok
+ * \brief Stores the zero offset for a stepper.
+ * \param x Matrix X coordinate.
+ * \param y Matrix Y coordinate.
+ * \param z Matrix Z coordinate or hand index.
+ * \param offset Stepper zero offset value.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t NVMC_SetStepperZeroOffset(uint8_t x, uint8_t y, uint8_t z, int16_t offset);
 
 /*!
- * \brief Getter to get the RS-485 address
- * \param addr Where to store the address
- * \return Error code, ERR_OK for everything ok
+ * \brief Gets the stored RS-485 address.
+ * \param addr RS-485 address value or destination buffer.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t NVMC_GetRS485Addr(uint8_t *addr);
 
 /*!
- * \brief Setter to set the RS-485 address.
- * \param addr Address to store
- * \return Error code, ERR_OK for everything ok
+ * \brief Stores the RS-485 address.
+ * \param addr RS-485 address value or destination buffer.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t NVMC_SetRS485Addr(uint8_t addr);
 
 /*!
- * \brief Getter to get the flags stored
- * \flags Where to store the flags
- * \return Error code, ERR_OK for everything ok
+ * \brief Gets the stored non-volatile configuration flags.
+ * \param flags Configuration flags value or destination buffer.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t NVMC_GetFlags(uint32_t *flags);
 
 /*!
- * \brief Setter to set the flags in the configuration
- * \param flags The flags to be set
- * \return Error code, ERR_OK for everything ok
+ * \brief Stores the non-volatile configuration flags.
+ * \param flags Configuration flags value or destination buffer.
+ * \return Error code, typically ERR_OK on success.
  */
 uint8_t NVMC_SetFlags(uint32_t flags);
 
-/*! \brief Command line shell parser interface */
+/*!
+ * \brief Parses non-volatile memory configuration shell commands.
+ * \param cmd Command string to parse or send.
+ * \param handled Set to true when the command has been handled.
+ * \param io Shell I/O streams used for command output.
+ * \return Error code, typically ERR_OK on success.
+ */
 uint8_t NVMC_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
-/*! \brief Module de-initialization */
+/*!
+ * \brief Deinitializes non-volatile memory configuration support.
+ */
 void NVMC_Deinit(void);
 
-/*! \brief Module initialization */
+/*!
+ * \brief Initializes non-volatile memory configuration support.
+ */
 void NVMC_Init(void);
 
 #ifdef __cplusplus

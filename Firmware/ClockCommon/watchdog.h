@@ -26,11 +26,21 @@ typedef enum {
 
 #define WDT_REPORT_ID_CURR_TASK (WDT_REPORT_ID_NOF) /* special id! */
 
+/*!
+ * \brief Associates a watchdog report ID with a task handle.
+ * \param id Watchdog report identifier.
+ * \param task FreeRTOS task handle.
+ */
 void WDT_SetTaskHandle(WDT_ReportID_e id, TaskHandle_t task);
+/*!
+ * \brief Reports task progress to the watchdog monitor.
+ * \param id Watchdog report identifier.
+ * \param ms Reported elapsed time in milliseconds.
+ */
 void WDT_Report(WDT_ReportID_e id, uint32_t ms);
 
 /*!
- * \brief Initializes the module.
+ * \brief Initializes watchdog monitoring.
  */
 void WDT_Init(void);
 

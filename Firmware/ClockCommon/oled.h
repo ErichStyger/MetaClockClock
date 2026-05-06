@@ -12,7 +12,7 @@ extern "C" {
 #endif
 
 /*!
- * \brief Module initialization
+ * \brief Initializes OLED display support.
  */
 void OLED_Init(void);
 

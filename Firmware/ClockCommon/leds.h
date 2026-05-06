@@ -23,13 +23,13 @@ extern "C" {
   #include <stdbool.h>
   #include "McuShell.h"
 
-  /*!
-   * \brief Command line handler
-   * \param cmd String to command to be parsed
-   * \param handled Returns if command has been handled
-   * \param io I/O channel
-   * \return Error code, ERR_OK if everything is ok
-   */
+/*!
+ * \brief Parses LED shell commands.
+ * \param cmd Command string to parse or send.
+ * \param handled Set to true when the command has been handled.
+ * \param io Shell I/O streams used for command output.
+ * \return Error code, typically ERR_OK on success.
+ */
   uint8_t Leds_ParseCommand(const uint8_t *cmd, bool *handled, McuShell_ConstStdIOType *io);
 #endif
 
@@ -53,42 +53,42 @@ typedef enum LEDS_Leds_e {
 } LEDS_Leds_e;
 
 /*!
- * \brief Turn LED on
- * \param led LED handle
+ * \brief Turns the selected LED on.
+ * \param led LED identifier.
  */
 void Leds_On(LEDS_Leds_e led);
 
 /*!
- * \brief Turn LED off
- * \param led LED handle
+ * \brief Turns the selected LED off.
+ * \param led LED identifier.
  */
 void Leds_Off(LEDS_Leds_e led);
 
 /*!
- * \brief Toggle LED
- * \param led LED handle
+ * \brief Toggles the selected LED.
+ * \param led LED identifier.
  */
 void Leds_Neg(LEDS_Leds_e led);
 
 /*!
- * \brief Return the status (on/off) of the LED
- * \param led LED handle
- * \return true if LED is on, false otherwise
+ * \brief Gets the current state of the selected LED.
+ * \param led LED identifier.
+ * \return True if the condition or operation succeeds, false otherwise.
  */
 bool Leds_Get(LEDS_Leds_e led);
 
 /*!
- * \brief Module initialization, call it to initialize the driver
+ * \brief Initializes the LED module.
  */
 void Leds_Init(void);
 
 /*!
- * \brief Initialization to be called from a task context, for example for the on-board LED of the Pico-W
+ * \brief Performs LED initialization that has to run from task context.
  */
 void Leds_InitFromTask(void);
 
 /*!
- * \brief Module de-initialization, call it to de-initialize the driver
+ * \brief Deinitializes the LED module.
  */
 void Leds_Deinit(void);
 

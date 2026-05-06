@@ -34,13 +34,22 @@ typedef struct {
 } BLE_Msg_t;
 
 /* called from the shell task to handle messages. Return true if there are more in the queue */
+/*!
+ * \brief Processes one pending BLE application message from the queue.
+ * \return True if the condition or operation succeeds, false otherwise.
+ */
 bool BLEMSG_HandleMessage(void);
 
 /* called from the BLE task to parse messages, starting with '!' */
+/*!
+ * \brief Queues a received BLE UART message for later processing.
+ * \param buf Data or text buffer.
+ * \return True if the condition or operation succeeds, false otherwise.
+ */
 bool BLEMSG_RxCallback(const uint8_t *buf);
 
 /*!
- * \brief Initializes the module.
+ * \brief Initializes BLE message handling.
  */
 void BLEMSG_Init(void);
 
