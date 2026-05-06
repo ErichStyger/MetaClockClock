@@ -58,7 +58,13 @@ STEPBOARD_Handle_t STEPBOARD_InitDevice(STEPBOARD_Config_t *config);
   bool STEPBOARD_IsMotorSwitchOn(STEPBOARD_Handle_t board);
 #endif
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void STEPBOARD_Deinit(void);
+/*!
+ * \brief Initializes the module.
+ */
 void STEPBOARD_Init(void);
 #endif /* PL_CONFIG_USE_STEPPER */
 

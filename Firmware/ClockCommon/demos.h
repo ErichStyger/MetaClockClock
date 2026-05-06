@@ -15,6 +15,9 @@ uint8_t DEMO_ParseCommand(const unsigned char *cmd, bool *handled, const McuShel
 
 bool DEMO_IsOn(void);
 
+/*!
+ * \brief Initializes the module.
+ */
 void DEMO_Init(void);
 
 #endif /* DEMOS_H_ */

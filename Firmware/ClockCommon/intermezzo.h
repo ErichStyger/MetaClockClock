@@ -21,6 +21,9 @@ void INTERMEZZO_PlaySpecific(uint8_t nr);
 
 bool INTERMEZZO_IsOn(void);
 
+/*!
+ * \brief Initializes the module.
+ */
 void INTERMEZZO_Init(void);
 
 #endif /* INTERMEZZO_H_ */

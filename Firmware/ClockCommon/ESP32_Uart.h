@@ -17,7 +17,13 @@ extern "C" {
 extern uint8_t Esp32ShellUart_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /* default buffer which can be used by the application */
 extern McuShell_ConstStdIOType Esp32ShellUart_stdio;
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void Esp32ShellUart_Deinit(void);
+/*!
+ * \brief Initializes the module.
+ */
 void Esp32ShellUart_Init(void);
 
 #ifdef __cplusplus

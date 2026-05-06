@@ -11,6 +11,9 @@
 
 uint8_t PIXDMA_Transfer(uint32_t dataAddress, size_t nofBytes);
 
+/*!
+ * \brief Initializes the module.
+ */
 void PIXDMA_Init(void);
 
 #endif /* SOURCES_PIXELDMA_H_ */

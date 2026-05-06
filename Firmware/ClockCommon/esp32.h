@@ -7,6 +7,9 @@
 #ifndef ESP32_H_
 #define ESP32_H_
 
+/*!
+ * \brief Initializes the module.
+ */
 void ESP_Init(void);
 
 #endif /* ESP32_H_ */

@@ -34,7 +34,13 @@ typedef enum {
 
 bool MAG_IsTriggered(MAG_MagSensor_e sensor);
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void MAG_Deinit(void);
+/*!
+ * \brief Initializes the module.
+ */
 void MAG_Init(void);
 
 #endif /* MAGNETS_H_ */

@@ -21,6 +21,9 @@ bool BLE_IsConnected(void);
 
 uint8_t BLE_SendATCommandExpectedResponse(const uint8_t *cmd, uint8_t *rxBuf, size_t rxBufSize, const uint8_t *expectedTailStr);
 
+/*!
+ * \brief Initializes the module.
+ */
 void BLE_Init(void);
 
 #endif /* BLE_H_ */

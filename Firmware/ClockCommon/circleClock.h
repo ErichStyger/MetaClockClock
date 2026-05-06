@@ -35,7 +35,13 @@ void CC_ShowTime(uint8_t hour, uint8_t minute);
 /* disable/enable center clock during intermezzos */
 void CC_EnableCenterClock(bool enable);
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void CC_Deinit(void);
+/*!
+ * \brief Initializes the module.
+ */
 void CC_Init(void);
 
 #endif /* PL_CONFIG_HAS_CIRCLE_CLOCK */

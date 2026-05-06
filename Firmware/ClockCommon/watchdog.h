@@ -29,6 +29,9 @@ typedef enum {
 void WDT_SetTaskHandle(WDT_ReportID_e id, TaskHandle_t task);
 void WDT_Report(WDT_ReportID_e id, uint32_t ms);
 
+/*!
+ * \brief Initializes the module.
+ */
 void WDT_Init(void);
 
 #endif /* WATCHDOG_H_ */

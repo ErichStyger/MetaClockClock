@@ -12,7 +12,13 @@
 
 uint8_t EspTime_GetTimeDate(TIMEREC *time, DATEREC *date);
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void EspTime_Deinit(void);
+/*!
+ * \brief Initializes the module.
+ */
 void EspTime_Init(void);
 
 #endif /* ESP_TIME_H_ */

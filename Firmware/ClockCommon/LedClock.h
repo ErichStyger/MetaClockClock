@@ -18,8 +18,14 @@ bool LedClock_IsPixelUsed(int32_t x, int32_t y, int32_t z);
 
 void LedClock_ReleasePixelAll(void);
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void LedClock_Deinit(void);
 
+/*!
+ * \brief Initializes the module.
+ */
 void LedClock_Init(void);
 
 #endif /* LEDCLOCK_H_ */

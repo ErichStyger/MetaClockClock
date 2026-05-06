@@ -40,6 +40,9 @@ uint8_t CLOCK_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
 
 bool CLOCK_GetClockIsOn(void);
 
+/*!
+ * \brief Initializes the module.
+ */
 void CLOCK_Init(void);
 
 #endif /* CLOCK_H_ */

@@ -62,7 +62,13 @@ void NEOSR_IlluminatePos(int stepperPos, int ledStartPos, int ledLane, bool cw, 
 void NEOSR_StrCatRingStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bufSize);
 void NEOSR_StrCatHandStatus(NEOSR_Handle_t device, unsigned char *buf, size_t bufSize);
 
+/*!
+ * \brief Deinitializes the module.
+ */
 void NEOSR_Deinit(void);
+/*!
+ * \brief Initializes the module.
+ */
 void NEOSR_Init(void);
 
 #endif /* NEOSTEPPERRING_H_ */

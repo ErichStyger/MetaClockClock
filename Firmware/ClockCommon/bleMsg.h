@@ -39,6 +39,9 @@ bool BLEMSG_HandleMessage(void);
 /* called from the BLE task to parse messages, starting with '!' */
 bool BLEMSG_RxCallback(const uint8_t *buf);
 
+/*!
+ * \brief Initializes the module.
+ */
 void BLEMSG_Init(void);
 
 #endif /* BLEMSG_H_ */

@@ -14,6 +14,9 @@ extern uint8_t BLEUART_DefaultShellBuffer[McuShell_DEFAULT_SHELL_BUFFER_SIZE]; /
 
 uint8_t BLEUART_CMDMODE_ParseCommand(const unsigned char *cmd, bool *handled, const McuShell_StdIOType *io);
 
+/*!
+ * \brief Initializes the module.
+ */
 void BLEUART_CMDMODE_Init(void);
 
 #endif /* SOURCES_BLEUART_CMDMODE_H_ */
