@@ -55,6 +55,17 @@ typedef struct MClock_t {
 #define MFONT_CHAR_DEGREE  '~' /* placeholder, need to use a 8bit ASCII code */
 #define MFONT_STR_DEGREE   "~" /* placeholder, need to use a 8bit ASCII code */
 
+/*!
+ * \brief Draw a custom character or bitmap
+ * \param data Map or two dimensional array of data
+ * \param width Width of the map in clocks
+ * \param height Height of the map in clocks
+ * \param xPos X position (left upper corner)
+ * \param yPos Y position (left uppper corner)
+ * \param doDimming If transition shall use a dimming (only for hands with LEDs)
+ */
+void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming);
+
 /* print the font name into a string */
 void MFONT_FontToStr(MFONT_Size_e font, unsigned char *buf, size_t bufSize);
 

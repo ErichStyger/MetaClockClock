@@ -12,6 +12,36 @@
 #include "matrixposition.h"
 #include "matrixhand.h"
 
+void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming) {
+  int x, y;
+
+  x = y = 0;
+  for(int i=0; i<width*height; i++) {
+    if (i==width) { /* next line */
+      x = 0;
+      y++;
+    }
+    MPOS_SetAngleZ0Z1(xPos+x, yPos+y, map[i].hands[0].angle, map[i].hands[1].angle);
+    MPOS_SetMoveModeZ0Z1(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+#if PL_MATRIX_CONFIG_IS_RGB
+  #if PL_CONFIG_USE_LED_DIMMING
+    if (doDimming) {
+      MATRIX_StartHandDimming(xPos+x, yPos+y, 0, map[i].hands[0].enabled?0xff:0);
+      MATRIX_StartHandDimming(xPos+x, yPos+y, 1, map[i].hands[1].enabled?0xff:0);
+    }
+  #else
+    (void)doDimming; /* not used */
+  #endif
+  MHAND_HandEnable(xPos+x, yPos+y, 0, map[i].hands[0].enabled);
+  MHAND_HandEnable(xPos+x, yPos+y, 1, map[i].hands[1].enabled);
+#endif
+#if PL_CONFIG_USE_EXTENDED_HANDS
+  MHAND_2ndHandEnable(xPos+x, yPos+y, 0, map[i].hands[0].enabled2nd);
+  MHAND_2ndHandEnable(xPos+x, yPos+y, 1, map[i].hands[1].enabled2nd);
+#endif
+  }
+}
+
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font) {
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
   if (font==MFONT_SIZE_2x3) {

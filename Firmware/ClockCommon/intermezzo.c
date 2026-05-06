@@ -1383,6 +1383,59 @@ static void Intermezzo4(void) {
 
 #endif
 
+#if MATRIX_NOF_STEPPERS_X>=6 && MATRIX_NOF_STEPPERS_Y>=6
+#define SMILEY_X  (6)
+#define SMILEY_Y  (6)
+static const MClock_t smiley[SMILEY_Y][SMILEY_X] =
+{
+  [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [0][1]={.hands={{.angle=225, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][4]={.hands={{.angle=270, .enabled=true },{.angle=135, .enabled=true }}},
+  [0][5]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [1][0]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
+  [1][1]={.hands={{.angle=135, .enabled=true },{.angle=135, .enabled=true }}},
+  [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [1][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [1][4]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+  [1][5]={.hands={{.angle=315, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+  [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][4]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][5]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [3][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+  [3][1]={.hands={{.angle=135, .enabled=true },{.angle=135, .enabled=true}}},
+  [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][4]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+  [3][5]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+
+  [4][0]={.hands={{.angle=  0, .enabled=true },{.angle=135, .enabled=true }}},
+  [4][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [4][2]={.hands={{.angle=315, .enabled=true },{.angle= 90, .enabled=true }}},
+  [4][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [4][4]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [4][5]={.hands={{.angle=225, .enabled=true },{.angle=  0, .enabled=true }}},
+
+  [5][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [5][1]={.hands={{.angle=315, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][4]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
+  [5][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+};
+static void IntermezzoSmiley(void) {
+  MFONT_DrawBitmap((MClock_t*)smiley, SMILEY_X, SMILEY_Y, 0, 0, true);
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+}
+#endif
+
 typedef void (*Intermezzofp)(void); /* intermezzo function pointer */
 
 typedef struct IntermezzoDesc_t {
@@ -1457,6 +1510,9 @@ static const IntermezzoDesc_t intermezzos[] = {
   {.fp=IntermezzoHey,               .text="HEY!"},
   {.fp=IntermezzoIET,               .text="IET"},
 #endif /* PL_CONFIG_USE_FONT */
+#if MATRIX_NOF_STEPPERS_X>=6 && MATRIX_NOF_STEPPERS_Y>=6
+  {.fp=IntermezzoSmiley,            .text="Smiley"},
+#endif
 #endif
 };
 
