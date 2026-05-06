@@ -66,7 +66,6 @@ typedef struct MClock_t {
  */
 void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming);
 
-/* print the font name into a string */
 /*!
  * \brief Converts a font selector into its text name.
  * \param font Font size selector.
@@ -75,7 +74,6 @@ void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t 
  */
 void MFONT_FontToStr(MFONT_Size_e font, unsigned char *buf, size_t bufSize);
 
-/* determine the size of a text based on font */
 /*!
  * \brief Calculates the rendered size of text for the selected font.
  * \param text Null-terminated text string.
@@ -85,7 +83,6 @@ void MFONT_FontToStr(MFONT_Size_e font, unsigned char *buf, size_t bufSize);
  */
 void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xSize, int *ySize);
 
-/* parse a font name string and return its handle */
 /*!
  * \brief Parses a font name and returns the matching font selector.
  * \param p Pointer to the parser cursor.
@@ -93,7 +90,6 @@ void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xS
  */
 void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
 
-/* print a string with a 2x3 font at a position */
 /*!
  * \brief Prints a string with the 2x3 matrix font.
  * \param str Null-terminated string.
@@ -101,6 +97,8 @@ void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
  * \param yPos Y start position for text or bitmap output.
  */
 void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos);
+
+/*!
  * \brief Gets the rendered character width for the 2x3 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
@@ -116,6 +114,8 @@ uint8_t MFONT_GetCharWidth2x3(char ch);
  * \param yPos Y start position for text or bitmap output.
  */
 void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos);
+
+/*!
  * \brief Gets the rendered character width for the 3x5 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
@@ -123,7 +123,6 @@ void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos);
  */
 uint8_t MFONT_GetCharWidth3x5(char ch);
 
-/* print a string with a 3x6 font at a position */
 /*!
  * \brief Prints a string with the 3x6 matrix font.
  * \param str Null-terminated string.
@@ -131,6 +130,8 @@ uint8_t MFONT_GetCharWidth3x5(char ch);
  * \param yPos Y start position for text or bitmap output.
  */
 void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos);
+
+/*!
  * \brief Gets the rendered character width for the 3x6 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
@@ -138,7 +139,6 @@ void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos);
  */
 uint8_t MFONT_GetCharWidth3x6(char ch);
 
-/* print a string with a 4x5 font at a position */
 /*!
  * \brief Prints a string with the 4x5 matrix font.
  * \param str Null-terminated string.
@@ -146,6 +146,8 @@ uint8_t MFONT_GetCharWidth3x6(char ch);
  * \param yPos Y start position for text or bitmap output.
  */
 void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos);
+
+/*!
  * \brief Gets the rendered character width for the 4x5 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
@@ -153,7 +155,6 @@ void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos);
  */
 uint8_t MFONT_GetCharWidth4x5(char ch);
 
-/* print a string using a font at a position */
 /*!
  * \brief Prints a string into the matrix using the selected font.
  * \param str Null-terminated string.
