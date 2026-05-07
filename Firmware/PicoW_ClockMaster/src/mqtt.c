@@ -1289,6 +1289,9 @@ mqtt_client_connect(mqtt_client_t *client, const ip_addr_t *ip_addr, u16_t port,
 {
   err_t err;
   size_t len;
+  LWIP_ERROR("mqtt_client_connect: Authentication required: client_user and client_pass must be set",
+             (client_info != NULL && client_info->client_user != NULL && client_info->client_pass != NULL),
+             return ERR_VAL);
   u16_t client_id_length;
   /* Length is the sum of 2+"MQTT", protocol level, flags and keep alive */
   u16_t remaining_length = 2 + 4 + 1 + 1 + 2;
