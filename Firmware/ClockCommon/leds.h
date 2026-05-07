@@ -4,8 +4,8 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-#ifndef MY_LEDS_H_
-#define MY_LEDS_H_
+#ifndef LEDS_H_
+#define LEDS_H_
 
 #include "platform.h"
 
@@ -98,4 +98,4 @@ void Leds_Deinit(void);
 }  /* extern "C" */
 #endif
 
-#endif /* MY_LEDS_H_ */
+#endif /* LEDS_H_ */
