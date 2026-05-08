@@ -12,58 +12,61 @@
 #include "matrixposition.h"
 #include "matrixhand.h"
 
-void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming) {
+void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming, uint32_t color) {
   int x, y;
 
   x = y = 0;
   for(int i=0; i<width*height; i++) {
-    if (i==width) { /* next line */
+    MPOS_SetAngleZ0Z1(xPos+x, yPos+y, map[i].hands[0].angle, map[i].hands[1].angle);
+    MPOS_SetMoveModeZ0Z1(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
+  #if PL_MATRIX_CONFIG_IS_RGB
+    #if PL_CONFIG_USE_LED_DIMMING
+      if (doDimming) {
+        MATRIX_StartHandDimming(xPos+x, yPos+y, 0, map[i].hands[0].enabled?0xff:0);
+        MATRIX_StartHandDimming(xPos+x, yPos+y, 1, map[i].hands[1].enabled?0xff:0);
+      }
+    #else
+      (void)doDimming; /* not used */
+    #endif
+    MHAND_HandEnable(xPos+x, yPos+y, 0, map[i].hands[0].enabled);
+    MHAND_SetHandColor(xPos+x, yPos+y, 0, color);
+    MHAND_HandEnable(xPos+x, yPos+y, 1, map[i].hands[1].enabled);
+    MHAND_SetHandColor(xPos+x, yPos+y, 1, color);
+  #endif
+  #if PL_CONFIG_USE_EXTENDED_HANDS
+    MHAND_2ndHandEnable(xPos+x, yPos+y, 0, map[i].hands[0].enabled2nd);
+    MHAND_2ndHandEnable(xPos+x, yPos+y, 1, map[i].hands[1].enabled2nd);
+  #endif
+    x++; /* next in list */
+    if (x==width) { /* next line */
       x = 0;
       y++;
     }
-    MPOS_SetAngleZ0Z1(xPos+x, yPos+y, map[i].hands[0].angle, map[i].hands[1].angle);
-    MPOS_SetMoveModeZ0Z1(xPos+x, yPos+y, STEPPER_MOVE_MODE_SHORT, STEPPER_MOVE_MODE_SHORT);
-#if PL_MATRIX_CONFIG_IS_RGB
-  #if PL_CONFIG_USE_LED_DIMMING
-    if (doDimming) {
-      MATRIX_StartHandDimming(xPos+x, yPos+y, 0, map[i].hands[0].enabled?0xff:0);
-      MATRIX_StartHandDimming(xPos+x, yPos+y, 1, map[i].hands[1].enabled?0xff:0);
-    }
-  #else
-    (void)doDimming; /* not used */
-  #endif
-  MHAND_HandEnable(xPos+x, yPos+y, 0, map[i].hands[0].enabled);
-  MHAND_HandEnable(xPos+x, yPos+y, 1, map[i].hands[1].enabled);
-#endif
-#if PL_CONFIG_USE_EXTENDED_HANDS
-  MHAND_2ndHandEnable(xPos+x, yPos+y, 0, map[i].hands[0].enabled2nd);
-  MHAND_2ndHandEnable(xPos+x, yPos+y, 1, map[i].hands[1].enabled2nd);
-#endif
   }
 }
 
-void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font) {
+void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font, uint32_t color) {
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
   if (font==MFONT_SIZE_2x3) {
-    MFONT_PrintString2x3(str, xPos, yPos);
+    MFONT_PrintString2x3(str, xPos, yPos, color);
     return;
   }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
   if (font==MFONT_SIZE_3x5) {
-    MFONT_PrintString3x5(str, xPos, yPos);
+    MFONT_PrintString3x5(str, xPos, yPos, color);
     return;
   }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6
   if (font==MFONT_SIZE_3x6) {
-    MFONT_PrintString3x6(str, xPos, yPos);
+    MFONT_PrintString3x6(str, xPos, yPos, color);
     return;
   }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
   if (font==MFONT_SIZE_4x5) {
-    MFONT_PrintString4x5(str, xPos, yPos);
+    MFONT_PrintString4x5(str, xPos, yPos, color);
     return;
   }
 #endif
@@ -134,7 +137,7 @@ void MFONT_PositionAllToClear(void) {
 }
 
 #if PL_CONFIG_IS_MASTER
-uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait) {
+uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, uint32_t color, bool wait) {
   int xSize, ySize;
   int xPos, yPos;
 
@@ -156,7 +159,7 @@ uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MF
   if (yPos<0) {
     yPos = 0;
   }
-  MFONT_PrintString(text, xPos, yPos, font);
+  MFONT_PrintString(text, xPos, yPos, font, color);
   return MATRIX_SendToRemoteQueueExecuteAndWait(wait);
 }
 #endif /* PL_CONFIG_IS_MASTER */
@@ -188,7 +191,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  clear all", (unsigned char*)"Clear all the text area\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  text <f> <x> <y> <txt>", (unsigned char*)"Write text with font (e.g. 2x3) at given position\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  text <f> <x> <y> <t> <c>", (unsigned char*)"Write text with font (e.g. 2x3) at position with color\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
@@ -211,11 +214,15 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
     const unsigned char *p;
     uint8_t xPos, yPos;
     MFONT_Size_e font;
+    uint32_t color;
 
     *handled = TRUE;
     p = cmd + sizeof("mfont text ")-1;
     MFONT_ParseFontName(&p, &font);
     if (font==MFONT_SIZE_ERROR) {
+      return ERR_FAILED;
+    }
+    if (McuUtility_xatoi(&p, (int32_t*)&color)!=ERR_OK) {
       return ERR_FAILED;
     }
     if (   McuUtility_ScanDecimal8uNumber(&p, &xPos)==ERR_OK && xPos<MATRIX_NOF_STEPPERS_X
@@ -229,7 +236,7 @@ uint8_t MFONT_ParseCommand(const unsigned char *cmd, bool *handled, const McuShe
         return ERR_FAILED;
       }
       MATRIX_SetMoveDelayZ0Z1All(2, 2);
-      MFONT_PrintString(buf, xPos, yPos, font);
+      MFONT_PrintString(buf, xPos, yPos, font, color);
       return MATRIX_SendToRemoteQueueExecuteAndWait(true);
     } else {
       return ERR_FAILED;

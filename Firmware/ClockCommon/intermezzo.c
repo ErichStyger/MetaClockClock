@@ -51,6 +51,14 @@ static bool IntermezzoOn = /* if intermezzos are on by default or not */
   static uint8_t IntermezzoDelaySec = 15; /* this is the delay *after* forming the time on the clock has started to build up. It takes about 10 secs to build the time */
 #endif
 
+static uint32_t Intermezzo_GetRandomColor(void) {
+#if PL_MATRIX_CONFIG_IS_RGB
+  return NEO_COMBINE_RGB(McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255));
+#else
+  return -1;
+#endif /* PL_MATRIX_CONFIG_IS_RGB */
+}
+
 #define RTC_OFFSET_TEMPERATURE_DEFAULT   (-40)
 static int8_t rtcOffsetTemperature = RTC_OFFSET_TEMPERATURE_DEFAULT; /* deci-celsius */
 
@@ -762,7 +770,7 @@ static void IntermezzoRandomHandsAllOn(void) {
       for(int z=0; z<MATRIX_NOF_STEPPERS_Z; z++) {
         MPOS_SetAngleZ0Z1(x, y, z,  McuUtility_random(0, 359));
       #if PL_MATRIX_CONFIG_IS_RGB
-        MHAND_SetHandColor(x, y, z, NEO_COMBINE_RGB(McuUtility_random(0, 255), McuUtility_random(0, 255), McuUtility_random(0, 255)));
+        MHAND_SetHandColor(x, y, z, Intermezzo_GetRandomColor());
       #endif
       }
     }
@@ -816,9 +824,9 @@ static void IntermezzoTemperature(void) {
   McuUtility_chcat(buf, sizeof(buf), 'C');
   MFONT_PositionAllToClear();
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, Intermezzo_GetRandomColor(), true);
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, Intermezzo_GetRandomColor(), true);
 #endif
 }
 #endif
@@ -846,9 +854,9 @@ static void IntermezzoHumidity(void) {
   McuUtility_chcat(buf, sizeof(buf), '%');
   MFONT_PositionAllToClear();
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, Intermezzo_GetRandomColor(), true);
 #elif MATRIX_NOF_STEPPERS_X>=8 && MATRIX_NOF_STEPPERS_Y>=3
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, Intermezzo_GetRandomColor(), true);
 #endif
 }
 #endif /* PL_CONFIG_USE_SHT31 */
@@ -915,11 +923,11 @@ static void IntermezzoRectangles3(void) {
 static void IntermezzoCharTextLarge(const char *txt, uint8_t xPos) {
   MFONT_PositionAllToClear();
 #if MATRIX_NOF_STEPPERS_Y>=6
-  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x6);
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x6, Intermezzo_GetRandomColor());
 #elif MATRIX_NOF_STEPPERS_Y>=5
-  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_3x5, Intermezzo_GetRandomColor());
 #else /* use smallest font available */
-  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_2x3);
+  MFONT_PrintString((unsigned char*)txt, xPos, 0, MFONT_SIZE_2x3, Intermezzo_GetRandomColor());
 #endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
@@ -1017,11 +1025,11 @@ static void IntermezzoDateSmall(void) {
   McuUtility_chcat(buf, sizeof(buf), '.');
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)monthStr3[date.Month-1]);
   MFONT_PositionAllToClear();
-  MFONT_PrintString((unsigned char*)buf, 0, 1, MFONT_SIZE_2x3);
+  MFONT_PrintString((unsigned char*)buf, 0, 1, MFONT_SIZE_2x3, Intermezzo_GetRandomColor());
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   McuUtility_Num16uToStr(buf, sizeof(buf), date.Year);
   MFONT_PositionAllToClear();
-  MFONT_PrintString((unsigned char*)buf, 2, 1, MFONT_SIZE_2x3);
+  MFONT_PrintString((unsigned char*)buf, 2, 1, MFONT_SIZE_2x3, Intermezzo_GetRandomColor());
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 #endif /* PL_CONFIG_USE_FONT */
@@ -1393,7 +1401,7 @@ static const MClock_t smiley[SMILEY_Y][SMILEY_X] =
   [0][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
   [0][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
   [0][4]={.hands={{.angle=270, .enabled=true },{.angle=135, .enabled=true }}},
-  [0][5]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
+  [0][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
 
   [1][0]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
   [1][1]={.hands={{.angle=135, .enabled=true },{.angle=135, .enabled=true }}},
@@ -1414,12 +1422,12 @@ static const MClock_t smiley[SMILEY_Y][SMILEY_X] =
   [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   [3][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   [3][4]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
-  [3][5]={.hands={{.angle=  0, .enabled=true },{.angle=  0, .enabled=true }}},
+  [3][5]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
 
   [4][0]={.hands={{.angle=  0, .enabled=true },{.angle=135, .enabled=true }}},
   [4][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   [4][2]={.hands={{.angle=315, .enabled=true },{.angle= 90, .enabled=true }}},
-  [4][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [4][3]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
   [4][4]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
   [4][5]={.hands={{.angle=225, .enabled=true },{.angle=  0, .enabled=true }}},
 
@@ -1430,8 +1438,10 @@ static const MClock_t smiley[SMILEY_Y][SMILEY_X] =
   [5][4]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
   [5][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
 };
+
 static void IntermezzoSmiley(void) {
-  MFONT_DrawBitmap((MClock_t*)smiley, SMILEY_X, SMILEY_Y, 0, 0, true);
+  MFONT_PositionAllToClear();
+  MFONT_DrawBitmap((MClock_t*)smiley, SMILEY_X, SMILEY_Y, (MATRIX_NOF_STEPPERS_X-SMILEY_X)/2, 0, true, 0x00ff00);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 #endif

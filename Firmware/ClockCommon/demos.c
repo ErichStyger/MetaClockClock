@@ -443,9 +443,9 @@ static void PongGameLost(PongPlayer_t *player, PongBall_t *ball) {
   }
   MRING_SetRingColorAll(0, 0, 0);
   MRING_EnableRingAll(false);
-  MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5, 0xff0000);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5, 0xff0000);
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 
@@ -517,11 +517,11 @@ static void DEMO_LedPong(void) {
 
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x12, 0x12, 0x12));
   MRING_SetRingColorAll(0, 0, 0);
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x12, 0x12, 0x12));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MFONT_PrintString((unsigned char*)"PONG", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"PONG", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x12, 0x12, 0x12));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x12, 0x12, 0x12));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 
   MHAND_HandEnableAll(false);
@@ -651,13 +651,13 @@ static void DEMO_GameOfLife(void) {
 
   MHAND_SetHandColorAll(NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MRING_EnableRingAll(false);
-  MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"GAME", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MFONT_PrintString((unsigned char*)" OF ", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)" OF ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MFONT_PrintString((unsigned char*)"LIFE", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"LIFE", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 
   MHAND_HandEnableAll(false);
@@ -687,7 +687,7 @@ static void DEMO_GameOfLife(void) {
     vTaskDelay(pdMS_TO_TICKS(500));
   }
   MRING_EnableRingAll(false);
-  MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"OVER", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0xff, 0x0, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(false); /* no need to wait as only changing LEDs */
 }
 #endif /* PL_CONFIG_IS_MASTER && PL_MATRIX_CONFIG_IS_RGB */
@@ -934,7 +934,7 @@ static uint8_t DEMO_Demo2(const McuShell_StdIOType *io) {
     buf[0] = '\0';
     McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), 21, '0', 2);
     McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), i, '0', 2);
-    MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
+    MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, NEO_COMBINE_RGB(0x12, 0x12, 0x12), true);
   }
   return MATRIX_MoveAllto12(10000, io);
 }
@@ -949,44 +949,44 @@ static void DEMO_Nxp(void) {
 #endif
   DemoRandomHandsPos();
   MATRIX_Delay(2000);
-  MFONT_PrintString((unsigned char*)"RUNS", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"RUNS", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
   MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
-  MFONT_PrintString((unsigned char*)"WITH", 0, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"WITH", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
   MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"N", 1, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"X", 4, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"P", 7, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"N", 1, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"X", 4, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"P", 7, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
   MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"L", 1, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"P", 4, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"C", 7, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"L", 1, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"P", 4, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"C", 7, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
   MHAND_HandEnableAll(true);
 #endif
   DemoRandomHandsPos();
-  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"8", 1, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"4", 4, 0, MFONT_SIZE_3x5);
-  MFONT_PrintString((unsigned char*)"5", 7, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)"    ", 0, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"8", 1, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"4", 4, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
+  MFONT_PrintString((unsigned char*)"5", 7, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   MATRIX_Delay(1000);
 #if PL_MATRIX_CONFIG_IS_RGB && PL_CONFIG_IS_ANALOG_CLOCK
@@ -1041,7 +1041,7 @@ static void fadingText(const char *text, uint8_t xpos) {
 #if PL_CONFIG_USE_LED_RING
   fadeOut();
 #endif
-  MFONT_PrintString((unsigned char*)text, xpos, 0, MFONT_SIZE_3x5);
+  MFONT_PrintString((unsigned char*)text, xpos, 0, MFONT_SIZE_3x5, NEO_COMBINE_RGB(0x0, 0x10, 0x0));
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 #if PL_CONFIG_USE_LED_RING
   fadeIn();
@@ -1104,9 +1104,9 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Hour, '0', 2);
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
 #if MATRIX_NOF_STEPPERS_X>=12 && MATRIX_NOF_STEPPERS_Y>=5
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_3x5, false, NEO_COMBINE_RGB(0x0, 0x10, 0x0), true);
 #else
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, NEO_COMBINE_RGB(0x0, 0x10, 0x0), true);
 #endif
 #endif
 
@@ -1119,7 +1119,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
 
 #if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
-  res = MFONT_ShowFramedText(0, 0, (unsigned char*)"2034", MFONT_SIZE_2x3, false, true);
+  res = MFONT_ShowFramedText(0, 0, (unsigned char*)"2034", MFONT_SIZE_2x3, false, NEO_COMBINE_RGB(0x0, 0x10, 0x0), true);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
   }
@@ -1135,13 +1135,13 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   buf[0] = '\0';
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Hour, '0', 2);
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, false, NEO_COMBINE_RGB(0x0, 0x10, 0x0), true);
   MATRIX_Delay(3000);
 #endif
 
 #if PL_CONFIG_USE_FONT
   MATRIX_SetMoveDelayZ0Z1All(2, 2);
-  res = MFONT_ShowFramedText(0, 0, (unsigned char*)"22" MFONT_STR_DEGREE "C", MFONT_SIZE_2x3, true, true);
+  res = MFONT_ShowFramedText(0, 0, (unsigned char*)"22" MFONT_STR_DEGREE "C", MFONT_SIZE_2x3, true, NEO_COMBINE_RGB(0x0, 0x10, 0x0), true);
   MATRIX_Delay(3000);
   if (res!=ERR_OK) {
     return DEMO_FailedDemo(res);
@@ -1162,7 +1162,7 @@ static uint8_t DEMO_DemoCombined(const McuShell_StdIOType *io) {
   buf[0] = '\0';
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Hour, '0', 2);
   McuUtility_strcatNum16uFormatted(buf,  sizeof(buf), time.Min, '0', 2);
-  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, true);
+  (void)MFONT_ShowFramedText(0, 0, buf, MFONT_SIZE_2x3, true, NEO_COMBINE_RGB(0x0, 0x10, 0x0), true);
   MATRIX_Delay(3000);
 #endif
 

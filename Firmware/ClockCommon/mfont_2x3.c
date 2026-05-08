@@ -655,7 +655,7 @@ static void DrawChar2x3(const MClockChar2x3_t *ch, uint8_t xPos, uint8_t yPos) {
   }
 }
 
-void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos) {
+void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos, uint32_t color) {
   const MClockChar2x3_t *desc;
 
   while(*str!='\0') {

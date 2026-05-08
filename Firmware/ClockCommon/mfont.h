@@ -63,8 +63,9 @@ typedef struct MClock_t {
  * \param xPos X start position for text or bitmap output.
  * \param yPos Y start position for text or bitmap output.
  * \param doDimming True to use dimming while drawing.
+ * \param color Color to be used for drawing.
  */
-void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming);
+void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t xPos, uint8_t yPos, bool doDimming, uint32_t color);
 
 /*!
  * \brief Converts a font selector into its text name.
@@ -95,8 +96,9 @@ void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
  * \param str Null-terminated string.
  * \param xPos X start position for text or bitmap output.
  * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
  */
-void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos);
+void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos, uint32_t color);
 
 /*!
  * \brief Gets the rendered character width for the 2x3 font.
@@ -112,8 +114,9 @@ uint8_t MFONT_GetCharWidth2x3(char ch);
  * \param str Null-terminated string.
  * \param xPos X start position for text or bitmap output.
  * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
  */
-void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos);
+void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos, uint32_t color);
 
 /*!
  * \brief Gets the rendered character width for the 3x5 font.
@@ -128,8 +131,9 @@ uint8_t MFONT_GetCharWidth3x5(char ch);
  * \param str Null-terminated string.
  * \param xPos X start position for text or bitmap output.
  * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
  */
-void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos);
+void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos, uint32_t color);
 
 /*!
  * \brief Gets the rendered character width for the 3x6 font.
@@ -144,8 +148,9 @@ uint8_t MFONT_GetCharWidth3x6(char ch);
  * \param str Null-terminated string.
  * \param xPos X start position for text or bitmap output.
  * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
  */
-void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos);
+void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos, uint32_t color);
 
 /*!
  * \brief Gets the rendered character width for the 4x5 font.
@@ -161,8 +166,9 @@ uint8_t MFONT_GetCharWidth4x5(char ch);
  * \param xPos X start position for text or bitmap output.
  * \param yPos Y start position for text or bitmap output.
  * \param font Font size selector.
+ * \param color Color to be used for drawing.
  */
-void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font);
+void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font, uint32_t color);
 
 /*!
  * \brief Moves all matrix hands to the clear-font position.
@@ -177,9 +183,10 @@ void MFONT_PositionAllToClear(void);
  * \param font Font size selector.
  * \param withBorder True to draw a border around the text.
  * \param wait True to wait for completion.
+ * \param color Color to be used for drawing.
  * \return Error code, typically ERR_OK on success.
  */
-uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, bool wait);
+uint8_t MFONT_ShowFramedText(uint8_t x, uint8_t y, const unsigned char *text, MFONT_Size_e font, bool withBorder, uint32_t color, bool wait);
 
 /*!
  * \brief Parses font shell commands.

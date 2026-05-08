@@ -412,9 +412,9 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   #if MATRIX_NOF_STEPPERS_X==13 && MATRIX_NOF_STEPPERS_Y==6 /* 6x13 Matrix */
     if (CLOCK_font==MFONT_SIZE_2x3) {
       if (GetClockHasBorder()) { /* small font and border: only show time */
-        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, true, true);
+        res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, true, color, true);
       } else { /* small font and no border: show time and date */
-        MFONT_PrintString(buf, 2, 0, CLOCK_font);
+        MFONT_PrintString(buf, 2, 0, CLOCK_font, color);
 
         unsigned char dateBuf[16];
         static const char *monthStr3[] =
@@ -434,11 +434,11 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
         } else {
           xPos = 0;
         }
-        MFONT_PrintString(dateBuf, xPos, ySize, CLOCK_font);
+        MFONT_PrintString(dateBuf, xPos, ySize, CLOCK_font, color);
         res = MATRIX_SendToRemoteQueueExecuteAndWait(true);
       }
     } else {
-      res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), true);
+      res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), color, true);
     }
   #else
     res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), true);

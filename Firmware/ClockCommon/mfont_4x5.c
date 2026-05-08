@@ -297,7 +297,7 @@ void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos) {
   }
 }
 
-void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos) {
+void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos, uint32_t color) {
   const MClockChar4x5_t *desc;
 
   while(*str!='\0') {
