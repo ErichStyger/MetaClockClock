@@ -1438,10 +1438,63 @@ static const MClock_t smiley[SMILEY_Y][SMILEY_X] =
   [5][4]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
   [5][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
 };
+static const MClock_t froney[SMILEY_Y][SMILEY_X] =
+{
+  [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [0][1]={.hands={{.angle=225, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][4]={.hands={{.angle=270, .enabled=true },{.angle=135, .enabled=true }}},
+  [0][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+
+  [1][0]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
+  [1][1]={.hands={{.angle=135, .enabled=true },{.angle=135, .enabled=true }}},
+  [1][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [1][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [1][4]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+  [1][5]={.hands={{.angle=315, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+  [2][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][4]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [2][5]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [3][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+  [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][2]={.hands={{.angle=225, .enabled=true },{.angle=90 , .enabled=true }}},
+  [3][3]={.hands={{.angle=270, .enabled=true },{.angle=135, .enabled=true }}},
+  [3][4]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][5]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [4][0]={.hands={{.angle=  0, .enabled=true },{.angle=135, .enabled=true }}},
+  [4][1]={.hands={{.angle= 45, .enabled=true },{.angle= 45, .enabled=true }}},
+  [4][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [4][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [4][4]={.hands={{.angle=315, .enabled=true },{.angle=315, .enabled=true }}},
+  [4][5]={.hands={{.angle=225, .enabled=true },{.angle=  0, .enabled=true }}},
+
+  [5][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [5][1]={.hands={{.angle=315, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][4]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
+  [5][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+};
 
 static void IntermezzoSmiley(void) {
+  int x;
+
+  x = 0;
   MFONT_PositionAllToClear();
-  MFONT_DrawBitmap((MClock_t*)smiley, SMILEY_X, SMILEY_Y, (MATRIX_NOF_STEPPERS_X-SMILEY_X)/2, 0, true, 0x00ff00);
+  MFONT_DrawBitmap((MClock_t*)smiley, SMILEY_X, SMILEY_Y, x, 0, true, 0x00ff00); /* green */
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+  x += SMILEY_X;
+  if (MATRIX_NOF_STEPPERS_X>2*SMILEY_X) {
+    x++;
+  }
+  MFONT_DrawBitmap((MClock_t*)froney, SMILEY_X, SMILEY_Y, x, 0, true, 0xff0000); /* red */
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 #endif
