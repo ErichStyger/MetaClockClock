@@ -1314,7 +1314,7 @@ static void ClockTask(void *pv) {
 #if PL_CONFIG_USE_INTERMEZZO
   Intermezzo_InitSettings();
 #endif
-
+  McuLog_info("clock init finished");
   for(;;) {
     vTaskDelay(pdMS_TO_TICKS(200));
   #if PL_CONFIG_USE_WDT
