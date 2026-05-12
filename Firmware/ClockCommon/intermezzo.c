@@ -903,7 +903,12 @@ static void IntermezzoRectangles2(void) {
   MHAND_HandEnableAll(true);
 #endif
   DrawNestedRectangles(0, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
-  DrawNestedRectangles(MATRIX_NOF_STEPPERS_X/2, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
+  if ((MATRIX_NOF_STEPPERS_X%2)==1) { /* odd number of rows: add an line between them */
+    MATRIX_DrawVLine(MATRIX_NOF_STEPPERS_X/2, 0, MATRIX_NOF_STEPPERS_Y);
+    DrawNestedRectangles((MATRIX_NOF_STEPPERS_X/2)+1, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
+  } else {
+    DrawNestedRectangles(MATRIX_NOF_STEPPERS_X/2, 0, MATRIX_NOF_STEPPERS_X/2, MATRIX_NOF_STEPPERS_Y);
+  }
 }
 
 static void IntermezzoRectangles3(void) {
@@ -913,6 +918,7 @@ static void IntermezzoRectangles3(void) {
 #if PL_MATRIX_CONFIG_IS_RGB
   MHAND_HandEnableAll(true);
 #endif
+  MFONT_PositionAllToClear();
   const int w = 2;
   for(int x=0; x<(MATRIX_NOF_STEPPERS_X/w)*w; x+=w) { /* for odd number of X, make sure we are not drawing beyond */
     DrawNestedRectangles(x, 0, w, MATRIX_NOF_STEPPERS_Y);
@@ -1012,7 +1018,7 @@ static void IntermezzoDateBig(void) {
 
 static void IntermezzoDateSmall(void) {
   DATEREC date;
-  unsigned char buf[8];
+  unsigned char buf[32];
 #if PL_CONFIG_USE_EXTENDED_HANDS
   MHAND_2ndHandEnableAll(false);
 #endif
@@ -1025,11 +1031,17 @@ static void IntermezzoDateSmall(void) {
   McuUtility_chcat(buf, sizeof(buf), '.');
   McuUtility_strcat(buf, sizeof(buf), (unsigned char*)monthStr3[date.Month-1]);
   MFONT_PositionAllToClear();
+#if MATRIX_NOF_STEPPERS_Y>=6 && MATRIX_NOF_STEPPERS_X>=11/*"dd.mmm"*/ /* write two lines */
+  McuUtility_chcat(buf, sizeof(buf), '\n');
+  McuUtility_strcatNum16u(buf, sizeof(buf), date.Year);
+  MFONT_PrintString((unsigned char*)buf, (MATRIX_NOF_STEPPERS_X-11/*"dd.mmm"*/)/2, 0, MFONT_SIZE_2x3, Intermezzo_GetRandomColor());
+#else
   MFONT_PrintString((unsigned char*)buf, 0, 1, MFONT_SIZE_2x3, Intermezzo_GetRandomColor());
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
   McuUtility_Num16uToStr(buf, sizeof(buf), date.Year);
   MFONT_PositionAllToClear();
   MFONT_PrintString((unsigned char*)buf, 2, 1, MFONT_SIZE_2x3, Intermezzo_GetRandomColor());
+#endif
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 #endif /* PL_CONFIG_USE_FONT */
@@ -1482,6 +1494,50 @@ static const MClock_t froney[SMILEY_Y][SMILEY_X] =
   [5][4]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
   [5][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
 };
+static const MClock_t deadley[SMILEY_Y][SMILEY_X] =
+{
+  [0][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [0][1]={.hands={{.angle=225, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [0][4]={.hands={{.angle=270, .enabled=true },{.angle=135, .enabled=true }}},
+  [0][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+
+  [1][0]={.hands={{.angle= 45, .enabled=true },{.angle=180, .enabled=true }}},
+  [1][1]={.hands={{.angle=135, .enabled=true },{.angle=135, .enabled=true }}},
+  [1][2]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+  [1][3]={.hands={{.angle=135, .enabled=true },{.angle=135, .enabled=true }}},
+  [1][4]={.hands={{.angle=225, .enabled=true },{.angle=225, .enabled=true }}},
+  [1][5]={.hands={{.angle=315, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [2][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+  [2][1]={.hands={{.angle= 45, .enabled=true },{.angle= 45, .enabled=true }}},
+  [2][2]={.hands={{.angle=315, .enabled=true },{.angle=315, .enabled=true }}},
+  [2][3]={.hands={{.angle= 45, .enabled=true },{.angle= 45, .enabled=true }}},
+  [2][4]={.hands={{.angle=315, .enabled=true },{.angle=315, .enabled=true }}},
+  [2][5]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [3][0]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+  [3][1]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][2]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][3]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][4]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [3][5]={.hands={{.angle=  0, .enabled=true },{.angle=180, .enabled=true }}},
+
+  [4][0]={.hands={{.angle=  0, .enabled=true },{.angle=135, .enabled=true }}},
+  [4][1]={.hands={{.angle= 90, .enabled=true },{.angle= 90, .enabled=true }}},
+  [4][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [4][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [4][4]={.hands={{.angle=270, .enabled=true },{.angle=270, .enabled=true }}},
+  [4][5]={.hands={{.angle=225, .enabled=true },{.angle=  0, .enabled=true }}},
+
+  [5][0]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+  [5][1]={.hands={{.angle=315, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][2]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][3]={.hands={{.angle=270, .enabled=true },{.angle= 90, .enabled=true }}},
+  [5][4]={.hands={{.angle=270, .enabled=true },{.angle= 45, .enabled=true }}},
+  [5][5]={.hands={{.angle=225, .enabled=false},{.angle=225, .enabled=false}}},
+};
 
 static void IntermezzoSmiley(void) {
   int x;
@@ -1495,6 +1551,10 @@ static void IntermezzoSmiley(void) {
     x++;
   }
   MFONT_DrawBitmap((MClock_t*)froney, SMILEY_X, SMILEY_Y, x, 0, true, 0xff0000); /* red */
+  MATRIX_SendToRemoteQueueExecuteAndWait(true);
+
+  MFONT_PositionAllToClear();
+  MFONT_DrawBitmap((MClock_t*)deadley, SMILEY_X, SMILEY_Y, (MATRIX_NOF_STEPPERS_X-SMILEY_X)/2, 0, true, 0xffA500); /* orange */
   MATRIX_SendToRemoteQueueExecuteAndWait(true);
 }
 #endif
