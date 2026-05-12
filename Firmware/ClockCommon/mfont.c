@@ -191,7 +191,7 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
   McuShell_SendHelpStr((unsigned char*)"  help|status", (unsigned char*)"Print help or status information\r\n", io->stdOut);
 #if PL_CONFIG_IS_MASTER
   McuShell_SendHelpStr((unsigned char*)"  clear all", (unsigned char*)"Clear all the text area\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  text <f> <x> <y> <t> <c>", (unsigned char*)"Write text with font (e.g. 2x3) at position with color\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  text <f> <c> <x> <y> <t>", (unsigned char*)"Write text with font (e.g. 2x3) at position with color\r\n", io->stdOut);
 #endif
   return ERR_OK;
 }
