@@ -1104,7 +1104,7 @@ uint8_t MFONT_GetCharWidth3x6(char ch) {
   return desc->width;
 }
 
-static void DrawChar3x6(const MClockChar3x6_t *ch, uint8_t xPos, uint8_t yPos) {
+static void DrawChar3x6(const MClockChar3x6_t *ch, uint8_t xPos, uint8_t yPos, uint32_t color) {
   for(int y=0; y<MFONT_SIZE_Y_3x6; y++) { /* every clock row */
     for(int x=0; x<ch->width; x++) { /* every clock column */
       MPOS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
@@ -1112,28 +1112,26 @@ static void DrawChar3x6(const MClockChar3x6_t *ch, uint8_t xPos, uint8_t yPos) {
     #if PL_MATRIX_CONFIG_IS_RGB
       MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
       MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
+      MHAND_SetHandColor(xPos+x, yPos+y, 0, color);
+      MHAND_SetHandColor(xPos+x, yPos+y, 1, color);
     #endif
     }
   }
 }
 
-void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos, uint32_t color) {
+void MFONT_DrawChar3x6(char ch, uint8_t *xPos, uint8_t *yPos, uint32_t color) {
   const MClockChar3x6_t *desc;
 
-  while(*str!='\0') {
-    desc = GetCharacterDesc(*str);
-    if (desc!=NULL && xPos<=MATRIX_NOF_STEPPERS_X-desc->width && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_3x6) {
-      DrawChar3x6(desc, xPos, yPos);
-    }
-    str++; /* got to next char */
-    if (str[0]=='\\' && str[1]=='n') { /* newline?`*/
-      xPos = 0;
-      yPos += MFONT_SIZE_Y_2x3;
-      str += 2; /* skip "\n" */
-    } else {
-      xPos += desc->width;
-    }
+  if (ch=='\n') {
+    *xPos = 0;
+    *yPos += MFONT_SIZE_Y_3x6;
+    return;
   }
+  desc = GetCharacterDesc(ch);
+  if (*xPos<=MATRIX_NOF_STEPPERS_X-desc->width && *yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_3x6) {
+    DrawChar3x6(desc, *xPos, *yPos, color);
+  }
+  *xPos += desc->width;
 }
 
 #endif /* PL_CONFIG_USE_FONT && MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6 */

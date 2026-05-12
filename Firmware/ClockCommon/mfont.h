@@ -92,31 +92,12 @@ void MFONT_GetFontTextSize(const unsigned char *text, MFONT_Size_e font, int *xS
 void MFONT_ParseFontName(const unsigned char **p, MFONT_Size_e *font);
 
 /*!
- * \brief Prints a string with the 2x3 matrix font.
- * \param str Null-terminated string.
- * \param xPos X start position for text or bitmap output.
- * \param yPos Y start position for text or bitmap output.
- * \param color Color to be used for drawing.
- */
-void MFONT_PrintString2x3(const unsigned char *str, int xPos, int yPos, uint32_t color);
-
-/*!
  * \brief Gets the rendered character width for the 2x3 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
  * \return Requested 8-bit value.
  */
 uint8_t MFONT_GetCharWidth2x3(char ch);
-
-/* print a string with a 3x5 font at a position */
-/*!
- * \brief Prints a string with the 3x5 matrix font.
- * \param str Null-terminated string.
- * \param xPos X start position for text or bitmap output.
- * \param yPos Y start position for text or bitmap output.
- * \param color Color to be used for drawing.
- */
-void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos, uint32_t color);
 
 /*!
  * \brief Gets the rendered character width for the 3x5 font.
@@ -127,15 +108,6 @@ void MFONT_PrintString3x5(const unsigned char *str, int xPos, int yPos, uint32_t
 uint8_t MFONT_GetCharWidth3x5(char ch);
 
 /*!
- * \brief Prints a string with the 3x6 matrix font.
- * \param str Null-terminated string.
- * \param xPos X start position for text or bitmap output.
- * \param yPos Y start position for text or bitmap output.
- * \param color Color to be used for drawing.
- */
-void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos, uint32_t color);
-
-/*!
  * \brief Gets the rendered character width for the 3x6 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
@@ -144,21 +116,48 @@ void MFONT_PrintString3x6(const unsigned char *str, int xPos, int yPos, uint32_t
 uint8_t MFONT_GetCharWidth3x6(char ch);
 
 /*!
- * \brief Prints a string with the 4x5 matrix font.
- * \param str Null-terminated string.
- * \param xPos X start position for text or bitmap output.
- * \param yPos Y start position for text or bitmap output.
- * \param color Color to be used for drawing.
- */
-void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos, uint32_t color);
-
-/*!
  * \brief Gets the rendered character width for the 4x5 font.
  * \param ch Character to measure.
  * \return Character width in matrix cells.
  * \return Requested 8-bit value.
  */
 uint8_t MFONT_GetCharWidth4x5(char ch);
+
+/*!
+ * \brief Draw a character with 2x3 font.
+ * \param ch Character to print.
+ * \param xPos X start position for text or bitmap output.
+ * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
+ */
+void MFONT_DrawChar2x3(char ch, uint8_t *xPos, uint8_t *yPos, uint32_t color);
+
+/*!
+ * \brief Draw a character with 3x5 font.
+ * \param ch Character to print.
+ * \param xPos X start position for text or bitmap output.
+ * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
+ */
+void MFONT_DrawChar3x5(char ch, uint8_t *xPos, uint8_t *yPos, uint32_t color);
+
+/*!
+ * \brief Draw a character with 3x6 font.
+ * \param ch Character to print.
+ * \param xPos X start position for text or bitmap output.
+ * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
+ */
+void MFONT_DrawChar3x6(char ch, uint8_t *xPos, uint8_t *yPos, uint32_t color);
+
+/*!
+ * \brief Draw a character with 4x5 font.
+ * \param ch Character to print.
+ * \param xPos X start position for text or bitmap output.
+ * \param yPos Y start position for text or bitmap output.
+ * \param color Color to be used for drawing.
+ */
+void MFONT_DrawChar4x5(char ch, uint8_t *xPos, uint8_t *yPos, uint32_t color);
 
 /*!
  * \brief Prints a string into the matrix using the selected font.

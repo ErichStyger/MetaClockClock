@@ -45,28 +45,44 @@ void MFONT_DrawBitmap(const MClock_t *map, size_t width, size_t height, uint8_t 
   }
 }
 
+void PrintString(const unsigned char *str, uint8_t xPos, uint8_t yPos, uint32_t color, void (*printFct)(char, uint8_t*, uint8_t*, uint32_t)) {
+  uint8_t x, y;
+
+  x = xPos;
+  y = yPos;
+  while(*str!='\0') {
+    if (str[0]=='\\' && str[1]=='n') { /* newline? in command line string */
+      printFct('\n', &x, &y, color);
+      str++; /* skip "\" */
+    } else {
+      printFct(*str, &x, &y, color);
+    }
+    str++; /* got to next char */
+  }
+}
+
 void MFONT_PrintString(const unsigned char *str, int xPos, int yPos, MFONT_Size_e font, uint32_t color) {
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_2x3 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_2x3
   if (font==MFONT_SIZE_2x3) {
-    MFONT_PrintString2x3(str, xPos, yPos, color);
+    PrintString(str, xPos, yPos, color, MFONT_DrawChar2x3);
     return;
   }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x5
   if (font==MFONT_SIZE_3x5) {
-    MFONT_PrintString3x5(str, xPos, yPos, color);
+    PrintString(str, xPos, yPos, color, MFONT_DrawChar3x5);
     return;
   }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_3x6 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_3x6
   if (font==MFONT_SIZE_3x6) {
-    MFONT_PrintString3x6(str, xPos, yPos, color);
+    PrintString(str, xPos, yPos, color, MFONT_DrawChar3x6);
     return;
   }
 #endif
 #if MATRIX_NOF_STEPPERS_X>=MFONT_SIZE_X_4x5 && MATRIX_NOF_STEPPERS_Y>=MFONT_SIZE_Y_4x5
   if (font==MFONT_SIZE_4x5) {
-    MFONT_PrintString4x5(str, xPos, yPos, color);
+    PrintString(str, xPos, yPos, color, MFONT_DrawChar4x5);
     return;
   }
 #endif

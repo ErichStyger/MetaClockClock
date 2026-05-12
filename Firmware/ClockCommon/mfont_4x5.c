@@ -280,7 +280,7 @@ uint8_t MFONT_GetCharWidth4x5(char ch) {
   return desc->width;
 }
 
-void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos) {
+void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos, uint32_t color) {
   for(int y=0; y<MFONT_SIZE_Y_4x5; y++) { /* every clock row */
     for(int x=0; x<ch->width; x++) { /* every clock column */
       MPOS_SetAngleZ0Z1(xPos+x, yPos+y, ch->digit[y][x].hands[0].angle, ch->digit[y][x].hands[1].angle);
@@ -288,32 +288,26 @@ void DrawChar4x5(const MClockChar4x5_t *ch, uint8_t xPos, uint8_t yPos) {
     #if PL_MATRIX_CONFIG_IS_RGB
       MHAND_HandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled);
       MHAND_HandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled);
-    #endif
-    #if PL_CONFIG_USE_EXTENDED_HANDS
-      MHAND_2ndHandEnable(xPos+x, yPos+y, 0, ch->digit[y][x].hands[0].enabled2nd);
-      MHAND_2ndHandEnable(xPos+x, yPos+y, 1, ch->digit[y][x].hands[1].enabled2nd);
+      MHAND_SetHandColor(xPos+x, yPos+y, 0, color);
+      MHAND_SetHandColor(xPos+x, yPos+y, 1, color);
     #endif
     }
   }
 }
 
-void MFONT_PrintString4x5(const unsigned char *str, int xPos, int yPos, uint32_t color) {
+void MFONT_DrawChar4x5(char ch, uint8_t *xPos, uint8_t *yPos, uint32_t color) {
   const MClockChar4x5_t *desc;
 
-  while(*str!='\0') {
-    desc = GetCharacterDesc(*str);
-    if (xPos<=MATRIX_NOF_STEPPERS_X-desc->width && yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_4x5) {
-      DrawChar4x5(desc, xPos, yPos);
-    }
-    str++; /* got to next char */
-    if (str[0]=='\\' && str[1]=='n') { /* newline?`*/
-      xPos = 0;
-      yPos += MFONT_SIZE_Y_2x3;
-      str += 2; /* skip "\n" */
-    } else {
-      xPos += desc->width;
-    }
+  if (ch=='\n') {
+    *xPos = 0;
+    *yPos += MFONT_SIZE_Y_4x5;
+    return;
   }
+  desc = GetCharacterDesc(ch);
+  if (*xPos<=MATRIX_NOF_STEPPERS_X-desc->width && *yPos<=MATRIX_NOF_STEPPERS_Y-MFONT_SIZE_Y_4x5) {
+    DrawChar4x5(desc, *xPos, *yPos, color);
+  }
+  *xPos += desc->width;
 }
 
 #endif /* MFONT_4x5_AVAILABLE */
