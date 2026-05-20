@@ -6,6 +6,17 @@ The idea is to use many 'clocks' to display information with text, digits and co
 
 ![60 clock version with time](/Hardware/images/1946.jpg?raw=true "60 clock version with time")
 
+# PCBs and Assembly
+Read https://github.com/ErichStyger/MetaClockClock/wiki about building our own clock version.
+
+All of my PCBs have been produced by [PCBWay](https://www.pcbway.com/).
+I highly recommend using **PCBWay** for assembly services too, see [PCBs and Assembly Service](https://mcuoneclipse.com/2026/05/03/building-the-metaclockclock78-my-largest-clock-project-yet/#led-ring-pcbs-and-assembly). You order PCBs and fully assembled PCBs from PCBWay with Gerbers and BOM:
+- [MCU Board]( https://www.pcbway.com/project/shareproject/MetaClockClock_MCU_Board.html)
+- [Motor Board](https://www.pcbway.com/project/shareproject/MetaClockClock_Motor_Board__Satellite_.html)
+- [LED Ring](https://www.pcbway.com/project/shareproject/MetaClockClock_LED_Ring.html)
+- [tinyK22](https://www.pcbway.com/project/shareproject/TinyK22_V1_3.html)
+- [Controller Board](https://www.pcbway.com/project/shareproject/MetaClockClock_Master_tinyK22.html)
+
 ## Articles
 For more information about this project, see the following articles:
 - [Building the MetaClockClock78: My Largest Clock Project Yet](https://mcuoneclipse.com/2026/05/03/building-the-metaclockclock78-my-largest-clock-project-yet/)
