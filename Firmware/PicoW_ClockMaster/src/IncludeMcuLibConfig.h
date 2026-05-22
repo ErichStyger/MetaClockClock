@@ -206,7 +206,7 @@
 #define MCU_PICO_WIFI_CONFIG_ENABLED             (1) /* if McuPicoWiFi module is enabled, needed for onboard LED too on PicoW board */
 /* ---------------------------------------------------------------------------------------*/
 /* McuWiFi */
-#define MCU_WIFI_CONFIG_ENABLED                  (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
+#define MCU_WIFI_CONFIG_ENABLED                  (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuNtpClient */
 #define MCU_NTP_CLIENT_CONFIG_ENABLED            (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuNtpClient module is enabled */
@@ -216,7 +216,5 @@
 /* ---------------------------------------------------------------------------------------*/
 /* McuMqttClient */
 #define MCU_MQTT_CLIENT_CONFIG_ENABLED           (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuMqttClient module is enabled */
-
-
 
 #endif /* MCULIB_CONFIG_CONFIG_H_ */
