@@ -6,6 +6,12 @@ The idea is to use many 'clocks' to display information with text, digits and co
 
 ![60 clock version with time](/Hardware/images/1946.jpg?raw=true "60 clock version with time")
 
+# Ordering from PCBWay
+PCBWay sponsored the setup fee and assembly for 80 LED rings for my second [MetaClockClock78](https://mcuoneclipse.com/2026/05/03/building-the-metaclockclock78-my-largest-clock-project-yet/#led-ring-pcbs-and-assembly).
+Total costs for PCBs plus assembly was $1091, and PCBWay sponsored $430 of it.
+Their service was amazing with smooth communication. I really appreciated that their engineers asked apropriate questions and shared their progress.
+I received the boards earlier than expected, and 100% of the PCBs worked which is amazing. See links in next section if you want to order either just the PCBs or fully assembled versions from [PCBWay](https://www.pcbway.com).
+
 # PCBs and Assembly
 Read https://github.com/ErichStyger/MetaClockClock/wiki about building our own clock version.
 
