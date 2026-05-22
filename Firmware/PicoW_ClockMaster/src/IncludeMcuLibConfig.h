@@ -197,7 +197,7 @@
 #define McuShellCdcDevice_CONFIG_BLOCKING_SEND_WAIT_MS      (1) /* waiting time in timeout loop */
 /* ---------------------------------------------------------------------------------------*/
 /* McuWatchdog */
-#define McuWatchdog_CONFIG_USE_WATCHDOG                     (1)
+#define McuWatchdog_CONFIG_USE_WATCHDOG                     (0)
 #define McuWatchdog_CONFIG_REPORT_ID_INCLUDE_HEADER_FILE    "../../PicoW_ClockMaster/src/platform.h" /* path from McuLib/src/McuWatchdog.c to our platform.h */
 #define McuWatchdog_CONFIG_REPORT_ID_INCLUDE_FILE           "../../PicoW_ClockMaster/src/McuWatchdog_IDs.inc" /* path from McuLib/src/McuWatchdog.c to our ID file */
 #define McuWatchdog_CONFIG_HEALTH_CHECK_TIME_SEC            (15) /* longer time than usual, as WiFi network stack sometimes takes 10 secs to connect */
@@ -209,10 +209,10 @@
 #define MCU_WIFI_CONFIG_ENABLED                  (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuNtpClient */
-#define MCU_NTP_CLIENT_CONFIG_ENABLED            (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuNtpClient module is enabled */
+#define MCU_NTP_CLIENT_CONFIG_ENABLED            (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuNtpClient module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuDnsResolver */
-#define MCU_DNS_RESOLVER_CONFIG_ENABLED          (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuDnsResolver module is enabled */
+#define MCU_DNS_RESOLVER_CONFIG_ENABLED          (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuDnsResolver module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuMqttClient */
 #define MCU_MQTT_CLIENT_CONFIG_ENABLED           (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuMqttClient module is enabled */
