@@ -7,7 +7,7 @@
 #include "platform.h"
 #if PL_CONFIG_USE_PICO_W
   #include "pico/cyw43_arch.h"
-  #include "PicoWiFi.h"
+  #include "McuPicoWiFi.h"
 #endif
 #include "application.h"
 #include "McuRTOS.h"

@@ -2,16 +2,11 @@
     "version": "0.2.0",
     "configurations": [
         { // see https://github.com/Marus/cortex-debug/blob/master/debug_attributes.md
-            "name": "PicoW-SPA J-Link cortex-debug",
+            "name": "PicoW J-Link cortex-debug",
             "type": "cortex-debug",
             "request": "launch",
             "servertype": "jlink",
             "serverpath": "${env:PICO_JLINK_PATH}/JLinkGDBServerCL", // running on Windows Host
-            //"serverpath": "JLinkGDBServerCLExe", // inside container with host running JLinkRemoteServerCL, or for Linux host
-            //"serialNumber": "801048148", // connection by serial number
-            //"ipAddress": "tunnel:801048148", // connection through tunnel
-            //"ipAddress": "192.168.1.123", // connection to IP based (hardware) debug probe, e.g. J-Link Trace
-            //"ipAddress": "192.168.65.254", // host.docker.internal address, JLinkRemoteServerCL runs on host
             "cwd": "${workspaceFolder}",
             "executable": "${command:cmake.launchTargetPath}",
             "armToolchainPath": "${env:PICO_TOOLCHAIN_PATH}",  // needed for the gdb
