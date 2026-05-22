@@ -138,24 +138,6 @@
 #define MCUSPI_CONFIG_USE_CS                    (0) /* do not initialize CS pin */
 #define MCUSPI_CONFIG_TRANSFER_BAUDRATE         (8*500000U)
 /* ---------------------------------------------------------------------------------------*/
-/* McuRNF24L01 */
-#define McuNRF24L01_CONFIG_IS_ENABLED           (0)
-#define McuNRF24L01_CONFIG_CE_PIN_NUMBER        (9)
-#define McuNRF24L01_CONFIG_CSN_PIN_NUMBER       (13)
-#define McuNRF24L01_CONFIG_USE_MUTEX            (0)
-#define McuNRF24L01_CONFIG_IRQ_PIN_NUMBER       (8)
-#define McuNRF24L01_CONFIG_IRQ_PIN_ENABLED      (1)
-/* ---------------------------------------------------------------------------------------*/
-/* McuRNET */
-#define McuRNET_CONFIG_IS_ENABLED               (0)
-#define RNet_App_CONFIG_DO_SANITY_CHECK         (0)
-#define McuRNet_CONFIG_APPLICATION_HEADER_FILE  "RNet_AppConfig.h"
-#define RNET_CONFIG_TRANSCEIVER_CHANNEL         (120) /* channel, default 81 */
-#define RNET_CONFIG_NRF24_DATA_RATE             McuNRF24L01_RF_SETUP_RF_DR_2000
-#define RSTDIO_CONFIG_QUEUE_LENGTH              (5*48) /* default is 48 */
-#define RNET_CONFIG_MSG_QUEUE_NOF_RX_ITEMS      (32) /* default is 15 */
-#define RNET_CONFIG_MSG_QUEUE_NOF_TX_ITEMS      (32) /* default is 15 */
-/* ---------------------------------------------------------------------------------------*/
 /* Unity */
 #if ENABLE_UNIT_TESTS
     #if !__ASSEMBLER__ /* set if file is included by GNU as (assembler). Do not include normal C header files if running the assembler for example to assemble the pico startup code */
@@ -175,10 +157,10 @@
 #define McuSemihost_CONFIG_RETARGET_STDLIB          (0)
 /* ---------------------------------------------------------------------------------------*/
 /* McuRdimon */
-#define McuRdimon_CONFIG_IS_ENABLED                 (1 && McuSemihost_CONFIG_IS_ENABLED)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/
+#define McuRdimon_CONFIG_IS_ENABLED                 (0 && McuSemihost_CONFIG_IS_ENABLED)       /* 1: RdiMon is enabled; 0: RdiMon is disabled*/
 /* ---------------------------------------------------------------------------------------*/
 /* McuCoverage */
-#define McuCoverage_CONFIG_IS_ENABLED               (1)
+#define McuCoverage_CONFIG_IS_ENABLED               (0)
 #define McuCoverage_CONFIG_USE_FREESTANDING         (0 && McuCoverage_CONFIG_IS_ENABLED)
 /* ---------------------------------------------------------------------------------------*/
 /* McuLog */
