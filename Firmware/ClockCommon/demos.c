@@ -1037,7 +1037,7 @@ static void fadeOut(void) {
 }
 #endif /* PL_CONFIG_USE_LED_RING */
 
-static void fadingText(const char *text, uint8_t xpos) {
+void fadingText(const char *text, uint8_t xpos) {
 #if PL_CONFIG_USE_LED_RING
   fadeOut();
 #endif

@@ -16,7 +16,7 @@
 /* assign matrix configuration used, only needed for master: */
 #if 0   /* V1: original meta clock with 24 clocks */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_8x3
-#elif 0 /* V2: 60 billion lights with LPC and WS2812B, now at CSEM in oak enclosure */
+#elif 0 /* V2: 60 billion lights with LPC and WS2812B, now at CSEM with oak enclosure */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_12x5_60B
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* enable or disable RGB functions */
   #define PL_CONFIG_USE_NEO_PIXEL_HW                (1) /* we drive the NeoPixels directly with hardware pins */
@@ -100,7 +100,7 @@
   #define PL_MATRIX_CONFIG_IS_RGB                   (0) /* if has RGB functionality */
   #define PL_CONFIG_USE_LED_RING                    (0) /* if we have LED rings */
   #define PL_CONFIG_USE_BLE                         (1) /* Adafruit module mounted on board */
-#elif 1 /* 6x13 Matrix with Oak wood front */
+#elif 1 /* 6x13 Matrix with Oak wood front (MetaCloockClick 78) */
   #define PL_MATRIX_CONFIGURATION_ID                PL_MATRIX_ID_CLOCK_13x6
   #define PL_CONFIG_USE_MOTOR_ON_OFF                (1) /* has motor on/off hardware */
   #define PL_MATRIX_CONFIG_IS_RGB                   (1) /* if has RGB functionality */

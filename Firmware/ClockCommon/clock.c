@@ -440,7 +440,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
       res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), color, true);
     }
   #else
-    res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), true);
+    res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), color, true);
   #endif
 #else
   res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, color, true);
