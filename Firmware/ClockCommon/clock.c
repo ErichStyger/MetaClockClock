@@ -173,7 +173,7 @@ static TaskHandle_t clockTaskHndl;
 #endif
 
 #if PL_CONFIG_IS_CLOCK_CLOCK
-static void SetClockHasBorder(bool on) {
+void SetClockHasBorder(bool on) {
 #if PL_CONFIG_USE_MININI
   McuMinINI_ini_putl(NVMC_MININI_SECTION_CLOCK, NVMC_MININI_KEY_CLOCK_HAS_BORDER, on, NVMC_MININI_FILE_NAME);
 #endif
@@ -182,7 +182,7 @@ static void SetClockHasBorder(bool on) {
 #endif
 
 #if PL_CONFIG_IS_CLOCK_CLOCK
-static bool GetClockHasBorder(void) {
+bool GetClockHasBorder(void) {
   return CLOCK_clockHasBorder;
 }
 #endif
@@ -350,6 +350,7 @@ static void clock_fadeOut(uint32_t color) {
 
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   uint8_t buf[8];
+  uint32_t color = 0; /* 0 in case no color is used or no hardware for it */
 
   if (date!=NULL) {
     McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
@@ -365,8 +366,6 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   MATRIX_SetMoveDelayAll(MATRIX_GetDefaultDelay());
   MPOS_SetMoveModeAll(STEPPER_MOVE_MODE_SHORT);
 #if PL_CONFIG_USE_LED_RING
-  uint32_t color;
-
   if (GetDoRandomHandColor()) {
     int32_t r, g, b;
     do {
@@ -444,7 +443,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, GetClockHasBorder(), true);
   #endif
 #else
-  res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, true);
+  res = MFONT_ShowFramedText(0, 0, buf, CLOCK_font, false, color, true);
 #endif
   #if PL_CONFIG_USE_LED_RING
   if (CLOCK_doFadingHands) {
