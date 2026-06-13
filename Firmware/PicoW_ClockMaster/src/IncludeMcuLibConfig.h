@@ -100,7 +100,7 @@
 #define McuRTT_CONFIG_RTT_BUFFER_SIZE_UP              (8*1024)
 /* ---------------------------------------------------------------------- */
 /* McuTimeDate */
-#define McuTimeDate_CONFIG_TICK_TIME_MS               (100) /* less timer ticks, default is RTOS tick rate */
+#define McuTimeDate_CONFIG_TICK_TIME_MS               						 (100) /* less timer ticks, default is RTOS tick rate */
 #define McuTimeDate_CONFIG_USE_SOFTWARE_RTC                        (1) /* enable software RTC */
 #define McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC                     (1) /* enable external I2C RTC */
 #define McuTimeDate_CONFIG_USE_INTERNAL_HW_RTC                     (0) /* no internal RTC */
@@ -110,6 +110,9 @@
 #define McuTimeDate_CONFIG_SET_TIME_DATE_METHOD_USES_SOFTWARE_RTC  (1) /* if using software RTC */
 #define McuTimeDate_CONFIG_SET_TIME_DATE_METHOD_USES_EXTERNAL_RTC  (0) /* if using external I2C RTC */
 #define McuTimeDate_CONFIG_SET_TIME_DATE_METHOD_USES_INTERNAL_RTC  (0) /* if using internal HW RTC */
+/* ---------------------------------------------------------------------- */
+/* RTC */
+#define McuExtRTC_CONFIG_DEVICE                                     3232  /* RTC device used */
 /* ---------------------------------------------------------------------- */
 /* McuShell */
 #define McuShell_CONFIG_PROJECT_NAME_STRING         "PicoW ClockMaster"
@@ -188,15 +191,15 @@
 #define MCU_PICO_WIFI_CONFIG_ENABLED             (1) /* if McuPicoWiFi module is enabled, needed for onboard LED too on PicoW board */
 /* ---------------------------------------------------------------------------------------*/
 /* McuWiFi */
-#define MCU_WIFI_CONFIG_ENABLED                  (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
+#define MCU_WIFI_CONFIG_ENABLED                  (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuNtpClient */
-#define MCU_NTP_CLIENT_CONFIG_ENABLED            (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuNtpClient module is enabled */
+#define MCU_NTP_CLIENT_CONFIG_ENABLED            (1 && MCU_WIFI_CONFIG_ENABLED) /* if McuNtpClient module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuDnsResolver */
-#define MCU_DNS_RESOLVER_CONFIG_ENABLED          (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuDnsResolver module is enabled */
+#define MCU_DNS_RESOLVER_CONFIG_ENABLED          (1 && MCU_WIFI_CONFIG_ENABLED) /* if McuDnsResolver module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuMqttClient */
-#define MCU_MQTT_CLIENT_CONFIG_ENABLED           (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuMqttClient module is enabled */
+#define MCU_MQTT_CLIENT_CONFIG_ENABLED           (0 && MCU_WIFI_CONFIG_ENABLED) /* if McuMqttClient module is enabled */
 
 #endif /* MCULIB_CONFIG_CONFIG_H_ */

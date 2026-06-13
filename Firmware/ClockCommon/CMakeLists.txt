@@ -13,6 +13,8 @@ add_library(${THIS_LIBRARY_NAME} ${FILES})
 target_link_libraries(
   ${THIS_LIBRARY_NAME}
   PRIVATE McuLib
+  PRIVATE wifiLib
+  PRIVATE tinyusb_device
 )
 
 # target_include_directories: Libraries need to publish their header files 

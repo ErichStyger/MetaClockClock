@@ -130,6 +130,15 @@
 #if PL_CONFIG_USE_ESP_TIME
   #include "esp_time.h"
 #endif
+#if PL_CONFIG_USE_TUD_CDC
+  #include "McuShellCdcDevice.h"
+#endif
+#if PL_CONFIG_USE_WIFI
+  #include "McuWiFi.h"
+#endif
+#if PL_CONFIG_USE_PICO_W
+  #include "McuPicoWiFi.h"
+#endif
 
 #if McuLib_CONFIG_CPU_IS_LPC && McuLib_CONFIG_CPU_VARIANT==McuLib_CONFIG_CPU_VARIANT_NXP_LPC845
 static void setFlashWaitStates(uint8_t nofWaits) {
@@ -181,6 +190,16 @@ void PL_Init(void) {
   McuWait_Init();
   McuArmTools_Init();
   McuUtility_Init();
+#if PL_CONFIG_USE_TUD_CDC
+  McuShellCdcDevice_Init();
+  McuShellCdcDevice_SetBufferRxCharCallback(McuShellCdcDevice_QueueChar);
+#endif
+#if PL_CONFIG_USE_WIFI
+  McuWiFi_Init();
+#endif
+#if PL_CONFIG_USE_PICO_W
+  McuPicoWiFi_Init();
+#endif
 #if PL_CONFIG_IS_MASTER /* intialize random seed and using rand() only on master to save ~200 bytes of RAM */
   { /* different random seed for each board with using the UID of the device */
     McuArmTools_UID uid;

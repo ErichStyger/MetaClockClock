@@ -23,7 +23,8 @@
  * THE SOFTWARE.
  *
  */
-
+#include "platform.h"
+#if PL_CONFIG_USE_TUD_CDC
 #include "tusb.h"
 
 /* A combination of interfaces must have a unique product id, since PC will save device driver after the first plug.
@@ -163,3 +164,5 @@ uint16_t const* tud_descriptor_string_cb(uint8_t index, uint16_t langid)
 
   return _desc_str;
 }
+
+#endif /* PL_CONFIG_USE_TUD_CDC */

@@ -87,6 +87,9 @@
 #if PL_CONFIG_USE_LED_CLOCK
   #include "LedClock.h"
 #endif
+#if PL_CONFIG_USE_TUD_CDC
+  #include "McuShellCdcDevice.h"
+#endif
 
 #if PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
 static struct {
@@ -187,6 +190,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #if PL_CONFIG_USE_SHIFT_REGS
   ShiftReg_ParseCommand,
 #endif
+#if PL_CONFIG_USE_TUD_CDC
+  McuShellCdcDevice_ParseCommand,
+#endif
   APP_ParseCommand,
   NULL /* Sentinel */
 };
@@ -213,6 +219,9 @@ static const SHELL_IODesc ios[] =
 #endif
 #if PL_CONFIG_USE_BLE
   {&BLEUART_stdio,  BLEUART_DefaultShellBuffer,  sizeof(BLEUART_DefaultShellBuffer)},
+#endif
+#if PL_CONFIG_USE_SHELL_CDC
+  {&McuShellCdcDevice_stdio,  McuShellCdcDevice_DefaultShellBuffer,  sizeof(McuShellCdcDevice_DefaultShellBuffer)},
 #endif
 };
 

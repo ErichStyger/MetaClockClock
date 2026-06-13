@@ -40,19 +40,18 @@ add_library(${THIS_LIBRARY_NAME} ${FILES})
 
 add_subdirectory(${MCULIB_DIR}          McuLib)
 add_subdirectory(${MCULIB_DIR}/rdimon   rdimon)
-add_subdirectory(${CLOCK_COMMON_DIR}    ClockCommonLib)
 add_subdirectory(${MCULIB_DIR}/wifi     wifi)
+add_subdirectory(${CLOCK_COMMON_DIR}    ClockCommonLib)
 
 # target_link_libraries: If you link with other libraries, list them here
 target_link_libraries(
   ${THIS_LIBRARY_NAME}
   PRIVATE McuLib
-  PRIVATE ClockCommonLib
-  PRIVATE tinyusb_device
 
   PRIVATE pico_stdlib
   PRIVATE pico_stdio_semihosting
 
+  PUBLIC ClockCommonLib
   PUBLIC wifiLib   # common WiFi library
   PUBLIC rdimonLib # file I/O with semihosting
   PUBLIC gcov      # GNU gcov library
