@@ -6,6 +6,7 @@
 
 #include "platform.h"
 #if PL_CONFIG_USE_SHELL
+#include <string.h> /* for strlen */
 #include "shell.h"
 #include "McuShell.h"
 #include "McuRTOS.h"
