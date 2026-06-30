@@ -392,7 +392,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
     }
     McuUtility_strcatNum16uFormatted(buf, sizeof(buf), hour, '0', 2);
   }
-#if PL_CONFIG_IS_CLOCK_CLOCK
+#if PL_CONFIG_IS_CLOCK_CLOCK && PL_CONFIG_USE_FONT
   if ((CLOCK_font==MFONT_SIZE_3x6||CLOCK_font==MFONT_SIZE_2x3) && MATRIX_NOF_STEPPERS_X>=13) { /* add ':', e.g. "12:15" if enough space */
     McuUtility_chcat(buf, sizeof(buf), ':'); /* only because that font has a narrow ":" implemented */
   }
@@ -1119,6 +1119,7 @@ static void ShowSeconds(const TIMEREC *time) {
 }
 #endif
 
+#if McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC
 static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePeriodMinutes) {
   /* Because the SW RTC might run off, we update the SW RTC from the HW RTC every 'updatePeriodMinutes' */
   TickType_t tickCount = xTaskGetTickCount();
@@ -1139,12 +1140,10 @@ static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePerio
     res = McuTimeDate_SyncFromExternalRTC(); /* update SW RTC from external HW RTC  */
     if (res!=ERR_OK) {
       McuLog_error("Failed updating RTC from external RTC: error %d", res);
-#if 1
       McuLog_error("Resetting I2C bus");
       if (!McuI2cLib_ResetBus()) {
         McuLog_error("Reset I2C bus failed");
       }
-#endif
     } else {
       McuTimeDate_GetTimeDate(&time, &date); /* what is the new time now? */
       newSWRTC = McuTimeDate_TimeDateToUnixSeconds(&time, &date, 0);
@@ -1161,13 +1160,16 @@ static void UpdateTimeDate(TickType_t *lastUpdateTickCount, uint32_t updatePerio
     *lastUpdateTickCount = tickCount;
   }
 }
+#endif /* McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC */
 
 static void ClockTask(void *pv) {
   uint8_t res;
   bool doImmediateClockUpdate = true;
   TIMEREC time;
   DATEREC date;
+#if McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC
   TickType_t lastTimeDateUpdatTickCount = 0; /* time stamp when last time the SW RTC has been updated */
+#endif
 #if PL_CONFIG_USE_INTERMEZZO
   TickType_t lastClockUpdateTickCount = -1; /* tick count when the clock has been updated the last time */
   bool intermezzoShown = true;
@@ -1450,7 +1452,9 @@ static void ClockTask(void *pv) {
   #endif /* PL_CONFIG_HAS_SWITCH_7WAY */
     } /* if notification received */
     /* ----------------------------------------------------------------------------------*/
+  #if McuTimeDate_CONFIG_USE_EXTERNAL_HW_RTC
     UpdateTimeDate(&lastTimeDateUpdatTickCount, CLOCK_CONFIG_UPDATE_SW_RTC_FROM_HW_RTC_PERIOD_MINUTES);
+  #endif
   #if PL_CONFIG_USE_INTERMEZZO
     /* ----------------------------------------------------------------------------------*/
     /* Intermezzo */
