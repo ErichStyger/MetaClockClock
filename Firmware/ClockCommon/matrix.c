@@ -48,7 +48,7 @@
 
 #define STEPPER_HAND_ZERO_DELAY     (2)
 
-#if PL_CONFIG_IS_MASTER
+#if PL_CONFIG_IS_MASTER || PL_CONFIG_WORLD_CLOCK
   static uint8_t MATRIX_DefaultDelay = 2;
 #endif
 
@@ -69,8 +69,10 @@
   /* list of bards defined in matrixconfig.h */
 #endif
 
-#if PL_CONFIG_IS_MASTER
+#if PL_CONFIG_IS_MASTER || PL_CONFIG_WORLD_CLOCK
   MATRIX_Matrix_t matrix; /* map of current matrix */
+#endif
+#if PL_CONFIG_IS_MASTER
   static MATRIX_Matrix_t prevMatrix; /* map of previous matrix, used to reduce communication traffic */
 #endif /* PL_CONFIG_IS_MASTER */
 
@@ -272,7 +274,7 @@ void MATRIX_Delay(int32_t ms) {
 }
 #endif
 
-#if PL_CONFIG_IS_MASTER
+#if PL_CONFIG_IS_MASTER || PL_CONFIG_WORLD_CLOCK
 uint8_t MATRIX_GetDefaultDelay(void) {
   return MATRIX_DefaultDelay;
 }
@@ -283,7 +285,7 @@ void MATRIX_SetDefaultDelay(uint8_t delay) {
 }
 #endif
 
-#if PL_CONFIG_IS_MASTER
+#if PL_CONFIG_IS_MASTER || PL_CONFIG_WORLD_CLOCK
 
 #if PL_MATRIX_CONFIG_IS_RGB
 void MATRIX_DrawRingColor(uint8_t x, uint8_t y, uint8_t z, uint32_t color) {
