@@ -219,7 +219,9 @@ void MAG_Init(void) {
 #endif
   gpioConfig.isInput = true;
   MAG_MagSensor[MAG_MAG1] = McuGPIO_InitGPIO(&gpioConfig);
-#if PL_CONFIG_IS_LPC845 && PL_CONFIG_BOARD_VERSION==10 /* Pin used on V0.1 has no internal pull-up capability */
+#if PL_CONFIG_IS_LPC845 && PL_CONFIG_BOARD_VERSION==1
+  /* Pin used on V0.1 has no internal pull-up capability */
+#else
   McuGPIO_SetPullResistor(MAG_MagSensor[MAG_MAG1], McuGPIO_PULL_UP);
 #endif
 
