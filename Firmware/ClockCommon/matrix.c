@@ -1512,8 +1512,8 @@ static uint8_t PrintHelp(const McuShell_StdIOType *io) {
 #if PL_CONFIG_USE_MAG_SENSOR
   McuShell_SendHelpStr((unsigned char*)"  zero all", (unsigned char*)"Move all motors to zero position using magnet sensor\r\n", io->stdOut);
   McuShell_SendHelpStr((unsigned char*)"  zero <x> <y> <z>", (unsigned char*)"Move clock to zero position using magnet sensor\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  offs <x> <y> <z> <v>", (unsigned char*)"Set offset value for clock\r\n", io->stdOut);
-  McuShell_SendHelpStr((unsigned char*)"  offs 12", (unsigned char*)"Calculate offset from 12-o-clock for all clocks\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  offs <x> <y> <z> <v>", (unsigned char*)"Set stepper magnet position offset value for clock\r\n", io->stdOut);
+  McuShell_SendHelpStr((unsigned char*)"  offs 12", (unsigned char*)"Calculate stepper magnet position offset from 12-o-clock for all clocks\r\n", io->stdOut);
 #endif
 #if PL_CONFIG_USE_MOTOR_ON_OFF
   McuShell_SendHelpStr((unsigned char*)"  motor on|off", (unsigned char*)"Switch motors on or off\r\n", io->stdOut);
