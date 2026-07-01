@@ -95,7 +95,7 @@ Instructions:
 #define McuLog_CONFIG_IS_ENABLED                      (0)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE              (0)
 #define McuLog_CONFIG_USE_RTT_DATA_LOGGER             (0)
-#define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (128)
+#define McuLog_CONFIG_RTT_DATA_LOGGER_BUFFER_SIZE     (64)
 /* ---------------------------------------------------------------------------------------*/
 /* MinINI */
 #define McuFlash_CONFIG_IS_ENABLED					        (1)
