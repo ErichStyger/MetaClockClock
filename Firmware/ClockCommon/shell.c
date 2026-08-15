@@ -91,6 +91,9 @@
 #if PL_CONFIG_USE_TUD_CDC
   #include "McuShellCdcDevice.h"
 #endif
+#if PL_CONFIG_USE_WIFI
+  #include "McuWiFi.h"
+#endif
 
 #if PL_CONFIG_USE_AUTOMATIC_DEMO_MODE
 static struct {
@@ -193,6 +196,9 @@ static const McuShell_ParseCommandCallback CmdParserTable[] =
 #endif
 #if PL_CONFIG_USE_TUD_CDC
   McuShellCdcDevice_ParseCommand,
+#endif
+#if PL_CONFIG_USE_WIFI
+  McuWiFi_ParseCommand,
 #endif
   APP_ParseCommand,
   NULL /* Sentinel */
@@ -381,15 +387,30 @@ void SHELL_Init(void) {
   }
   McuShell_SetStdio(ios[0].stdio); /* default */
 #if PL_CONFIG_USE_USB_CDC && PL_CONFIG_USE_RTT && PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER>=3
-  McuLog_set_console(&McuRTT_stdio, 0);
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+  #if McuLog_CONFIG_USE_COLOR
+  McuLog_set_channel_color(0, true); /* enable color for channel zero */
+  #endif
   McuLog_set_console(&McuShellUart_stdio, 1);
   McuLog_set_console(&USB_CdcStdioNonBlockingSend, 2);
 #elif PL_CONFIG_USE_RTT && PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2
-  McuLog_set_console(&McuRTT_stdio, 0);
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+  #if McuLog_CONFIG_USE_COLOR
+  McuLog_set_channel_color(0, true); /* enable color for channel zero */
+  #endif
   McuLog_set_console(&McuShellUart_stdio, 1);
+#elif McuLog_CONFIG_NOF_CONSOLE_LOGGER>=2 && PL_CONFIG_USE_SHELL_CDC && PL_CONFIG_USE_RTT
+  McuLog_set_console(McuRTT_GetStdio(), 0);
+  #if McuLog_CONFIG_USE_COLOR
+  McuLog_set_channel_color(0, true); /* enable color for channel zero */
+  #endif
+  McuLog_set_console(McuShellCdcDevice_GetStdio(), 1);
 #elif PL_CONFIG_USE_RTT && McuLog_CONFIG_NOF_CONSOLE_LOGGER>=1
-  McuLog_set_console(&McuRTT_stdio, 0);
-#elif PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER>=1
+  McuLog_set_console(McuRTT_GetStdio() 0);
+  #if McuLog_CONFIG_USE_COLOR
+  McuLog_set_channel_color(0, true); /* enable color for channel zero */
+  #endif
+  #elif PL_CONFIG_USE_SHELL_UART && McuLog_CONFIG_NOF_CONSOLE_LOGGER>=1
   McuLog_set_console(&McuShellUart_stdio, 0);
 #endif
 }
