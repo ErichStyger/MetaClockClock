@@ -192,7 +192,7 @@ void PL_Init(void) {
   McuUtility_Init();
 #if PL_CONFIG_USE_TUD_CDC
   McuShellCdcDevice_Init();
-  McuShellCdcDevice_SetBufferRxCharCallback(McuShellCdcDevice_QueueChar);
+  McuShellCdcDevice_SetBufferRxCharCallback(McuShellCdcDevice_QueueData);
 #endif
 #if PL_CONFIG_USE_WIFI
   McuWiFi_Init();
