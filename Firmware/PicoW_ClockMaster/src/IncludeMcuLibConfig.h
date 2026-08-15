@@ -171,7 +171,7 @@
 #define McuLog_CONFIG_USE_FILE                  (0)
 #define McuLog_CONFIG_USE_RTT_CONSOLE           (1)
 #define McuLog_CONFIG_NOF_CONSOLE_LOGGER        (2) /* RTT and USB CDC */
-#define McuLog_CONFIG_USE_COLOR                 (0)
+#define McuLog_CONFIG_USE_COLOR                 (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_DATE        (1)
 #define McuLog_CONFIG_LOG_TIMESTAMP_TIME        (1)
 /* ---------------------------------------------------------------------------------------*/
@@ -191,7 +191,7 @@
 #define MCU_PICO_WIFI_CONFIG_ENABLED             (1) /* if McuPicoWiFi module is enabled, needed for onboard LED too on PicoW board */
 /* ---------------------------------------------------------------------------------------*/
 /* McuWiFi */
-#define MCU_WIFI_CONFIG_ENABLED                  (0 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
+#define MCU_WIFI_CONFIG_ENABLED                  (1 && MCU_PICO_WIFI_CONFIG_ENABLED) /* if McuWiFi module is enabled */
 /* ---------------------------------------------------------------------------------------*/
 /* McuNtpClient */
 #define MCU_NTP_CLIENT_CONFIG_ENABLED            (1 && MCU_WIFI_CONFIG_ENABLED) /* if McuNtpClient module is enabled */
