@@ -6,12 +6,13 @@
  * \brief Implemenation of the the HTTPD server.
  */
 
- #include "platform.h"
+#include "platform.h"
 #if PL_CONFIG_USE_HTTPD_SERVER
 #include "pico/cyw43_arch.h"
 #include "httpdServer.h"
 #include "McuRTOS.h"
 #include "McuLog.h"
+#include "shell.h"
 #include "lwip/ip4_addr.h"
 #include "lwip/apps/mdns.h"
 #include "lwip/init.h"
@@ -35,6 +36,9 @@ void httpd_init(void);
 
 static absolute_time_t wifi_connected_time;
 static bool led_on = false;
+static char httpShellLastCmd[96] = "";
+static char httpShellLastResult[256] = "No command executed yet.";
+static bool httpShellLastSuccess = true;
 
 #if LWIP_MDNS_RESPONDER
 static void srv_txt(struct mdns_service *service, void *txt_userdata)
@@ -92,7 +96,7 @@ u16_t ssi_example_ssi_handler(int iIndex, char *pcInsert, int iInsertLen
         break;
     }
     case 1: { // "welcome"
-        printed = snprintf(pcInsert, iInsertLen, "Hello from Pico");
+        printed = snprintf(pcInsert, iInsertLen, "Hello from Pico V2");
         break;
     }
     case 2: { // "uptime"
@@ -108,8 +112,20 @@ u16_t ssi_example_ssi_handler(int iIndex, char *pcInsert, int iInsertLen
         printed = snprintf(pcInsert, iInsertLen, "%s", led_on ? "OFF" : "ON");
         break;
     }
+    case 5: { // "shellcmd"
+        printed = snprintf(pcInsert, iInsertLen, "%s", httpShellLastCmd);
+        break;
+    }
+    case 6: { // "shstat"
+        printed = snprintf(pcInsert, iInsertLen, "%s", httpShellLastSuccess ? "OK" : "ERROR");
+        break;
+    }
+    case 7: { // "shresult"
+        printed = snprintf(pcInsert, iInsertLen, "%s", httpShellLastResult);
+        break;
+    }
 #if LWIP_HTTPD_SSI_MULTIPART
-    case 5: { /* "table" */
+    case 8: { /* "table" */
         printed = snprintf(pcInsert, iInsertLen, "<tr><td>This is table row number %d</td></tr>", current_tag_part + 1);
         // Leave "next_tag_part" unchanged to indicate that all data has been returned for this tag
         if (current_tag_part < 9) {
@@ -133,19 +149,69 @@ static const char *ssi_tags[] = {
     "uptime",
     "ledstate",
     "ledinv",
+    "shellcmd",
+    "shstat",
+    "shresult",
     "table",
 };
 
 #if LWIP_HTTPD_SUPPORT_POST
 #define LED_STATE_BUFSIZE 4
+#define SHELL_CMD_BUFSIZE 96
 static void *current_connection;
+typedef enum HttpPostHandler_e {
+  HTTP_POST_HANDLER_NONE = 0,
+  HTTP_POST_HANDLER_LED,
+  HTTP_POST_HANDLER_SHELL,
+} HttpPostHandler_e;
+static HttpPostHandler_e currentPostHandler = HTTP_POST_HANDLER_NONE;
+
+typedef struct HttpShellOutputCtx_t {
+  char *buf;
+  size_t pos;
+  size_t maxLen;
+} HttpShellOutputCtx_t;
+
+static HttpShellOutputCtx_t httpShellOutCtx;
+
+static void HttpShell_ReadChar(uint8_t *c) {
+  *c = '\0'; /* no input available */
+}
+
+static void HttpShell_OutputChar(uint8_t ch) {
+  if (httpShellOutCtx.pos + 1 < httpShellOutCtx.maxLen) {
+    httpShellOutCtx.buf[httpShellOutCtx.pos++] = (char)ch;
+    httpShellOutCtx.buf[httpShellOutCtx.pos] = '\0';
+  }
+}
+
+static bool HttpShell_KeyPressed(void) {
+  return false;
+}
+
+static McuShell_ConstStdIOType httpShellStdIO = {
+  .stdIn = (McuShell_StdIO_In_FctType)HttpShell_ReadChar,
+  .stdOut = (McuShell_StdIO_OutErr_FctType)HttpShell_OutputChar,
+  .stdErr = (McuShell_StdIO_OutErr_FctType)HttpShell_OutputChar,
+  .keyPressed = HttpShell_KeyPressed,
+#if McuShell_CONFIG_ECHO_ENABLED
+  .echoEnabled = false,
+#endif
+};
 
 err_t httpd_post_begin(void *connection, const char *uri, const char *http_request,
         u16_t http_request_len, int content_len, char *response_uri,
         u16_t response_uri_len, u8_t *post_auto_wnd) {
   if (memcmp(uri, "/led.cgi", 8) == 0 && current_connection != connection) {
     current_connection = connection;
+    currentPostHandler = HTTP_POST_HANDLER_LED;
     snprintf(response_uri, response_uri_len, "/ledfail.shtml");
+    *post_auto_wnd = 1;
+    return ERR_OK;
+  } else if (memcmp(uri, "/shell.cgi", 10) == 0 && current_connection != connection) {
+    current_connection = connection;
+    currentPostHandler = HTTP_POST_HANDLER_SHELL;
+    snprintf(response_uri, response_uri_len, "/index.shtml");
     *post_auto_wnd = 1;
     return ERR_OK;
   }
@@ -176,16 +242,80 @@ char *httpd_param_value(struct pbuf *p, const char *param_name, char *value_buf,
   return NULL;
 }
 
+static int HttpShell_HexToNibble(char ch) {
+  if (ch>='0' && ch<='9') {
+    return ch-'0';
+  } else if (ch>='A' && ch<='F') {
+    return 10 + (ch-'A');
+  } else if (ch>='a' && ch<='f') {
+    return 10 + (ch-'a');
+  }
+  return -1;
+}
+
+static void HttpShell_DecodeUrl(const char *src, char *dst, size_t dstSize) {
+  size_t srcIdx = 0;
+  size_t dstIdx = 0;
+
+  if (dstSize==0) {
+    return;
+  }
+  while (src[srcIdx]!='\0' && dstIdx+1<dstSize) {
+    if (src[srcIdx]=='+') {
+      dst[dstIdx++] = ' ';
+      srcIdx++;
+    } else if (src[srcIdx]=='%' && src[srcIdx+1]!='\0' && src[srcIdx+2]!='\0') {
+      int hi = HttpShell_HexToNibble(src[srcIdx+1]);
+      int lo = HttpShell_HexToNibble(src[srcIdx+2]);
+
+      if (hi>=0 && lo>=0) {
+        dst[dstIdx++] = (char)((hi<<4) | lo);
+        srcIdx += 3;
+      } else {
+        dst[dstIdx++] = src[srcIdx++];
+      }
+    } else {
+      dst[dstIdx++] = src[srcIdx++];
+    }
+  }
+  dst[dstIdx] = '\0';
+}
+
 err_t httpd_post_receive_data(void *connection, struct pbuf *p) {
   err_t ret = ERR_VAL;
   LWIP_ASSERT("NULL pbuf", p != NULL);
-  if (current_connection == connection) {
+  if (current_connection == connection && currentPostHandler == HTTP_POST_HANDLER_LED) {
     char buf[LED_STATE_BUFSIZE];
     char *val = httpd_param_value(p, "led_state=", buf, sizeof(buf));
     if (val) {
         led_on = (strcmp(val, "ON") == 0) ? true : false;
         cyw43_gpio_set(&cyw43_state, 0, led_on);
         ret = ERR_OK;
+    }
+  } else if (current_connection == connection && currentPostHandler == HTTP_POST_HANDLER_SHELL) {
+    char encodedCmd[SHELL_CMD_BUFSIZE];
+    char decodedCmd[SHELL_CMD_BUFSIZE];
+    char shellOut[sizeof(httpShellLastResult)];
+    char *val = httpd_param_value(p, "cmd=", encodedCmd, sizeof(encodedCmd));
+
+    if (val!=NULL) {
+      HttpShell_DecodeUrl(val, decodedCmd, sizeof(decodedCmd));
+      (void)snprintf(httpShellLastCmd, sizeof(httpShellLastCmd), "%s", decodedCmd);
+      shellOut[0] = '\0';
+      httpShellOutCtx.buf = shellOut;
+      httpShellOutCtx.pos = 0;
+      httpShellOutCtx.maxLen = sizeof(shellOut);
+      httpShellLastSuccess = SHELL_ParseCommandIO((const unsigned char*)decodedCmd, &httpShellStdIO, false)==ERR_OK;
+      if (shellOut[0]=='\0') {
+        (void)snprintf(httpShellLastResult, sizeof(httpShellLastResult), "%s", httpShellLastSuccess ? "(no output)" : "(command failed)");
+      } else {
+        (void)snprintf(httpShellLastResult, sizeof(httpShellLastResult), "%s", shellOut);
+      }
+      ret = ERR_OK;
+    } else {
+      (void)snprintf(httpShellLastCmd, sizeof(httpShellLastCmd), "%s", "");
+      (void)snprintf(httpShellLastResult, sizeof(httpShellLastResult), "%s", "Missing 'cmd' parameter.");
+      httpShellLastSuccess = false;
     }
   }
   pbuf_free(p);
@@ -194,10 +324,13 @@ err_t httpd_post_receive_data(void *connection, struct pbuf *p) {
 
 void httpd_post_finished(void *connection, char *response_uri, u16_t response_uri_len) {
   snprintf(response_uri, response_uri_len, "/ledfail.shtml");
-  if (current_connection == connection) {
+  if (current_connection == connection && currentPostHandler == HTTP_POST_HANDLER_LED) {
     snprintf(response_uri, response_uri_len, "/ledpass.shtml");
+  } else if (current_connection == connection && currentPostHandler == HTTP_POST_HANDLER_SHELL) {
+    snprintf(response_uri, response_uri_len, "/index.shtml");
   }
   current_connection = NULL;
+  currentPostHandler = HTTP_POST_HANDLER_NONE;
 }
 #endif /* LWIP_HTTPD_SUPPORT_POST */
 

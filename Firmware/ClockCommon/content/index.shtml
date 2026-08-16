@@ -14,5 +14,14 @@
             <input type="submit" value="Turn led <!--#ledinv-->">
         </form>
     </p>
+    <p>
+        <form action="/shell.cgi" method="post">
+            <label for="cmd">Shell command:</label>
+            <input type="text" id="cmd" name="cmd" size="48" value="<!--#shellcmd-->">
+            <input type="submit" value="Execute">
+        </form>
+    </p>
+    <p>Shell status: <!--#shstat--></p>
+    <p><pre><!--#shresult--></pre></p>
 </body>
 </html>
