@@ -36,8 +36,12 @@ void httpd_init(void);
 
 static absolute_time_t wifi_connected_time;
 static bool led_on = false;
-static char httpShellLastCmd[96] = "";
-static char httpShellLastResult[256] = "No command executed yet.";
+#define HTTP_SHELL_LAST_CMD_SIZE      96
+#define HTTP_SHELL_LAST_RESULT_SIZE   1024
+#define HTTP_SHELL_HTML_EXPANSION_MAX 6 /* worst-case (&quot;) */
+static char httpShellLastCmd[HTTP_SHELL_LAST_CMD_SIZE*HTTP_SHELL_HTML_EXPANSION_MAX] = "";
+static char httpShellLastResult[HTTP_SHELL_LAST_RESULT_SIZE] = "No command executed yet.";
+static char httpShellLastResultHtml[HTTP_SHELL_LAST_RESULT_SIZE*HTTP_SHELL_HTML_EXPANSION_MAX] = "No command executed yet.";
 static bool httpShellLastSuccess = true;
 
 #if LWIP_MDNS_RESPONDER
@@ -121,7 +125,26 @@ u16_t ssi_example_ssi_handler(int iIndex, char *pcInsert, int iInsertLen
         break;
     }
     case 7: { // "shresult"
-        printed = snprintf(pcInsert, iInsertLen, "%s", httpShellLastResult);
+#if LWIP_HTTPD_SSI_MULTIPART
+        size_t textLen = strlen(httpShellLastResultHtml);
+        size_t maxChunkLen = iInsertLen>0 ? (size_t)(iInsertLen-1) : 0; /* keep room for terminator */
+        size_t offset = (size_t)current_tag_part * maxChunkLen;
+
+        if (maxChunkLen==0 || offset>=textLen) {
+          printed = 0;
+        } else {
+          size_t copyLen = textLen-offset;
+          if (copyLen>maxChunkLen) {
+            copyLen = maxChunkLen;
+            *next_tag_part = current_tag_part + 1;
+          }
+          memcpy(pcInsert, &httpShellLastResultHtml[offset], copyLen);
+          pcInsert[copyLen] = '\0';
+          printed = copyLen;
+        }
+#else
+        printed = snprintf(pcInsert, iInsertLen, "%s", httpShellLastResultHtml);
+#endif
         break;
     }
 #if LWIP_HTTPD_SSI_MULTIPART
@@ -281,6 +304,39 @@ static void HttpShell_DecodeUrl(const char *src, char *dst, size_t dstSize) {
   dst[dstIdx] = '\0';
 }
 
+static void HttpShell_HtmlEscape(const char *src, char *dst, size_t dstSize) {
+  size_t dstIdx = 0;
+
+  if (dstSize==0) {
+    return;
+  }
+  while (*src!='\0' && dstIdx+1<dstSize) {
+    const char *entity = NULL;
+
+    switch(*src) {
+      case '&': entity = "&amp;"; break;
+      case '<': entity = "&lt;"; break;
+      case '>': entity = "&gt;"; break;
+      case '"': entity = "&quot;"; break;
+      case '\'': entity = "&#39;"; break;
+      default:
+        dst[dstIdx++] = *src;
+        src++;
+        continue;
+    }
+    {
+      size_t entLen = strlen(entity);
+      if (dstIdx + entLen >= dstSize) {
+        break;
+      }
+      memcpy(&dst[dstIdx], entity, entLen);
+      dstIdx += entLen;
+    }
+    src++;
+  }
+  dst[dstIdx] = '\0';
+}
+
 err_t httpd_post_receive_data(void *connection, struct pbuf *p) {
   err_t ret = ERR_VAL;
   LWIP_ASSERT("NULL pbuf", p != NULL);
@@ -293,14 +349,14 @@ err_t httpd_post_receive_data(void *connection, struct pbuf *p) {
         ret = ERR_OK;
     }
   } else if (current_connection == connection && currentPostHandler == HTTP_POST_HANDLER_SHELL) {
-    char encodedCmd[SHELL_CMD_BUFSIZE];
-    char decodedCmd[SHELL_CMD_BUFSIZE];
+    char encodedCmd[HTTP_SHELL_LAST_CMD_SIZE];
+    char decodedCmd[HTTP_SHELL_LAST_CMD_SIZE];
     char shellOut[sizeof(httpShellLastResult)];
     char *val = httpd_param_value(p, "cmd=", encodedCmd, sizeof(encodedCmd));
 
     if (val!=NULL) {
       HttpShell_DecodeUrl(val, decodedCmd, sizeof(decodedCmd));
-      (void)snprintf(httpShellLastCmd, sizeof(httpShellLastCmd), "%s", decodedCmd);
+      HttpShell_HtmlEscape(decodedCmd, httpShellLastCmd, sizeof(httpShellLastCmd));
       shellOut[0] = '\0';
       httpShellOutCtx.buf = shellOut;
       httpShellOutCtx.pos = 0;
@@ -311,10 +367,12 @@ err_t httpd_post_receive_data(void *connection, struct pbuf *p) {
       } else {
         (void)snprintf(httpShellLastResult, sizeof(httpShellLastResult), "%s", shellOut);
       }
+      HttpShell_HtmlEscape(httpShellLastResult, httpShellLastResultHtml, sizeof(httpShellLastResultHtml));
       ret = ERR_OK;
     } else {
       (void)snprintf(httpShellLastCmd, sizeof(httpShellLastCmd), "%s", "");
       (void)snprintf(httpShellLastResult, sizeof(httpShellLastResult), "%s", "Missing 'cmd' parameter.");
+      HttpShell_HtmlEscape(httpShellLastResult, httpShellLastResultHtml, sizeof(httpShellLastResultHtml));
       httpShellLastSuccess = false;
     }
   }
