@@ -15,6 +15,25 @@ target_link_libraries(
   PRIVATE McuLib
   PRIVATE wifiLib
   PRIVATE tinyusb_device
+  
+  # PL_CONFIG_USE_HTTPD_SERVER:
+  pico_lwip_http
+  pico_httpd_content
+)
+
+# PL_CONFIG_USE_HTTPD_SERVER:
+# generates file containing HTTP declaration
+# file is cnfigured lwipopts.h with HTTPD_FSDATA_FILE
+# file is generated as build\Debug\srcLib\generated\pico_fsdata.inc
+# but on Windows the Python script builds it with '\' instead of '_' in variables, thus it is fixed and copied locally
+pico_add_library(pico_httpd_content NOFLAG)
+pico_set_lwip_httpd_content(pico_httpd_content INTERFACE
+  ${CMAKE_CURRENT_LIST_DIR}/content/404.html
+  ${CMAKE_CURRENT_LIST_DIR}/content/index.shtml
+  ${CMAKE_CURRENT_LIST_DIR}/content/test.shtml
+  ${CMAKE_CURRENT_LIST_DIR}/content/ledpass.shtml
+  ${CMAKE_CURRENT_LIST_DIR}/content/ledfail.shtml
+  ${CMAKE_CURRENT_LIST_DIR}/content/img/rpi.png
 )
 
 # target_include_directories: Libraries need to publish their header files 

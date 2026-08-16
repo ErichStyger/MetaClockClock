@@ -11,6 +11,12 @@
   #include "NeoPixel.h"
   #include "NeoStepperRing.h"
 #endif
+#if PL_CONFIG_USE_WIFI
+  #include "McuWiFi.h"
+#endif
+#if PL_CONFIG_USE_HTTPD_SERVER
+  #include "httpdServer.h"
+#endif
 #include "matrix.h"
 #include "matrixhand.h"
 #include "matrixring.h"
@@ -139,6 +145,47 @@ static void NeoTask(void *pv) {
   };
 #endif
 
+#if PL_CONFIG_USE_WIFI
+static void App_SuspendResumeNetworkServices(bool isSuspend) {
+  if (isSuspend) {
+  #if PL_CONFIG_USE_UDP_SERVER
+    McuUdpServer_Suspend();
+  #endif
+  #if PL_CONFIG_USE_NTP_CLIENT
+    McuNtpClient_TaskSuspend();
+  #endif
+  #if PL_CONFIG_USE_MQTT_CLIENT
+    AppEsp_MqttTaskSuspend();
+    McuMqttClient_Disconnect();
+  #endif
+  #if PL_CONFIG_USE_HTTPD_SERVER
+    HttpdServer_TaskSuspend();
+  #endif
+  } else { /* resume */
+  #if PL_CONFIG_USE_UDP_SERVER
+    McuLog_info("resuming UDP server.");
+    McuUdpServer_Resume();
+  #endif
+  #if PL_CONFIG_USE_NTP_CLIENT
+    if (McuNtpClient_GetDefaultStart()) {
+      McuLog_info("resuming NTP client.");
+      McuNtpClient_TaskResume();
+    }
+  #endif
+  #if PL_CONFIG_USE_MQTT_CLIENT
+    if (McuMqttClient_Connect()!=ERR_OK) {
+      McuLog_error("failed connecting to MQTT broker");
+      McuMqttClient_Disconnect(); /* make sure it is disconnected */
+    }
+    AppEsp_MqttTaskResume();
+  #endif
+  #if PL_CONFIG_USE_HTTPD_SERVER
+    HttpdServer_TaskResume();
+  #endif
+  }
+}
+#endif /* PL_CONFIG_USE_WIFI */
+
 void APP_Run(void) {
 #if configUSE_HEAP_SCHEME==5
   vPortDefineHeapRegions(xHeapRegions); /* Pass the array into vPortDefineHeapRegions(). Must be called first! */
@@ -162,14 +209,15 @@ void APP_Run(void) {
   vQueueAddToRegistry(semNeoUpdate, "semNeoUpdate");
   xSemaphoreGive(semNeoUpdate); /* trigger initial update */
 #endif
+#if PL_CONFIG_USE_WIFI
+  McuWiFi_SetSuspendResumeCallback(App_SuspendResumeNetworkServices);
+#endif
   PL_Init();
   vTaskStartScheduler();
   for(;;) { /* should not get here */ }
 }
 
 /* overwrite assertion callback */
-#include "McuLog.h"
-
 void __assertion_failed(char *_Expr)  {
   McuLog_fatal(_Expr);
   McuLog_fatal("Assert failed!");

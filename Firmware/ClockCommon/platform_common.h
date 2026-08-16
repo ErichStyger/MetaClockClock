@@ -323,6 +323,22 @@
   #define PL_CONFIG_USE_OLED   (0 && PL_CONFIG_USE_I2C)
 #endif
 
+#ifndef PL_CONFIG_USE_PICO_W
+  #define PL_CONFIG_USE_PICO_W            (1)
+#endif
+#ifndef PL_CONFIG_USE_WIFI
+  #define PL_CONFIG_USE_WIFI              (1 && MCU_WIFI_CONFIG_ENABLED)
+#endif
+#ifndef PL_CONFIG_USE_TUD_CDC
+  #define PL_CONFIG_USE_TUD_CDC           (1) /* tinyUSB CDC device with McuShellCdcDevice */
+#endif
+#ifndef PL_CONFIG_USE_SHELL_CDC
+  #define PL_CONFIG_USE_SHELL_CDC         (1 && PL_CONFIG_USE_TUD_CDC) /* if using CDC as shell interface */
+#endif
+#ifndef PL_CONFIG_USE_HTTPD_SERVER
+  #define PL_CONFIG_USE_HTTPD_SERVER      (1 && PL_CONFIG_USE_PICO_W && PL_CONFIG_USE_WIFI)
+#endif
+
 /* NYI or not applicable */
 #define PL_CONFIG_USE_KBI           (0)
 #define PL_CONFIG_USE_GUI           (0)

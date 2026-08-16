@@ -124,6 +124,7 @@ extern "C" {
 #define PL_CONFIG_USE_WIFI              (1 && MCU_WIFI_CONFIG_ENABLED)
 #define PL_CONFIG_USE_TUD_CDC           (1) /* tinyUSB CDC device with McuShellCdcDevice */
 #define PL_CONFIG_USE_SHELL_CDC         (1 && PL_CONFIG_USE_TUD_CDC) /* if using CDC as shell interface */
+#define PL_CONFIG_USE_HTTPD_SERVER      (1 && PL_CONFIG_USE_PICO_W && PL_CONFIG_USE_WIFI)
 
 /* ********************************************************************* */
 /* override settings in platform_common.h: */

@@ -21,15 +21,6 @@ endif()
 
 set_source_files_properties(
   main.c
-  application.c
-  blinky.c
-  buttons.c
-  debounce.c
-  leds.c
-  platform.c
-  oled.c
-  sensor.c
-  timer.c
   PROPERTIES COMPILE_FLAGS --coverage
 )
 
