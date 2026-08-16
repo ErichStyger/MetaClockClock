@@ -37,7 +37,7 @@ void httpd_init(void);
 static absolute_time_t wifi_connected_time;
 static bool led_on = false;
 #define HTTP_SHELL_LAST_CMD_SIZE      96
-#define HTTP_SHELL_LAST_RESULT_SIZE   1024
+#define HTTP_SHELL_LAST_RESULT_SIZE   (1024)
 #define HTTP_SHELL_HTML_EXPANSION_MAX 6 /* worst-case (&quot;) */
 static char httpShellLastCmd[HTTP_SHELL_LAST_CMD_SIZE*HTTP_SHELL_HTML_EXPANSION_MAX] = "";
 static char httpShellLastResult[HTTP_SHELL_LAST_RESULT_SIZE] = "No command executed yet.";
