@@ -35,6 +35,10 @@ pico_set_lwip_httpd_content(pico_httpd_content INTERFACE
   ${CMAKE_CURRENT_LIST_DIR}/content/ledfail.shtml
   ${CMAKE_CURRENT_LIST_DIR}/content/img/rpi.png
 )
+if(EXISTS ${CMAKE_CURRENT_BINARY_DIR}/generated/pico_fsdata.inc)
+  file(COPY ${CMAKE_CURRENT_BINARY_DIR}/generated/pico_fsdata.inc DESTINATION ${CMAKE_CURRENT_LIST_DIR})  # copy file from the build folder to the src folder
+  message(STATUS "copy pico_fsdata.inc to " ${CMAKE_CURRENT_LIST_DIR})
+endif()
 
 # target_include_directories: Libraries need to publish their header files 
 # so that you can import them in source code. This statement expresses where to find the files 
