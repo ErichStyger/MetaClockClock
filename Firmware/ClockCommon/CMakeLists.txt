@@ -23,8 +23,8 @@ target_link_libraries(
 
 # PL_CONFIG_USE_HTTPD_SERVER:
 # generates file containing HTTP declaration
-# file is cnfigured lwipopts.h with HTTPD_FSDATA_FILE
-# file is generated as build\Debug\srcLib\generated\pico_fsdata.inc
+# file is configured in lwipopts.h with HTTPD_FSDATA_FILE
+# file is generated as build\Debug\srcLib\ClockCommonLib\generated
 # but on Windows the Python script builds it with '\' instead of '_' in variables, thus it is fixed and copied locally
 pico_add_library(pico_httpd_content NOFLAG)
 pico_set_lwip_httpd_content(pico_httpd_content INTERFACE
