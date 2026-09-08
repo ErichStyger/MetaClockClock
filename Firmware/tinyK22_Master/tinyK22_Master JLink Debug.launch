@@ -17,6 +17,7 @@
     <stringAttribute key="com.nxp.mcuxpresso.jlink.flash.executable" value="hex"/>
     <booleanAttribute key="com.nxp.mcuxpresso.jlink.flash.halt.target" value="true"/>
     <booleanAttribute key="com.nxp.mcuxpresso.jlink.flash.reset.target" value="true"/>
+    <stringAttribute key="com.nxp.mcuxpresso.segger.SettingsFile" value="${ProjDirPath}/${ConfigName}/${LaunchConfigName} SettingsFile.jlink"/>
     <stringAttribute key="com.nxp.mcuxpresso.segger.auto.startup" value="auto"/>
     <stringAttribute key="com.nxp.mcuxpresso.segger.device" value="MK22FN512xxx12"/>
     <stringAttribute key="com.nxp.mcuxpresso.segger.endian" value="little"/>
@@ -74,10 +75,11 @@
     <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
     <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_ID" value="gdb"/>
     <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="remote"/>
-    <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug\tinyK22_Master.axf"/>
+    <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/tinyK22_Master.axf"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="tinyK22_Master"/>
     <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="com.crt.advproject.config.exe.debug.1652255002"/>
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
         <listEntry value="/tinyK22_Master"/>
     </listAttribute>

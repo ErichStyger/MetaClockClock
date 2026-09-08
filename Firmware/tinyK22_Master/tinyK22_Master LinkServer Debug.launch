@@ -2,6 +2,8 @@
 <launchConfiguration type="com.crt.dsfdebug.crtmcu.launchType">
     <stringAttribute key=".gdbinit" value=""/>
     <booleanAttribute key="attach" value="false"/>
+    <booleanAttribute key="boot.config.enable" value="false"/>
+    <stringAttribute key="boot.configuration.control" value=""/>
     <stringAttribute key="bootrom.stall" value=""/>
     <stringAttribute key="com.crt.ctrlcenter.OFSemuDetails" value="LinkServer"/>
     <booleanAttribute key="com.crt.ctrlcenter.crtInit" value="true"/>
@@ -9,7 +11,7 @@
     <booleanAttribute key="com.crt.ctrlcenter.mainBreakIsHardware" value="true"/>
     <booleanAttribute key="com.crt.ctrlcenter.saveState" value="true"/>
     <stringAttribute key="com.crt.ctrlcenter.serialNumber" value="LinkServerNXP SemiconductorsLPC-LINK2 CMSIS-DAP V5.361I3FUNSAW"/>
-    <mapAttribute key="com.crt.ctrlcenter.symbolsGroupSettings"/>
+    <listAttribute key="com.crt.ctrlcenter.symbolsAndImagesGroupSettings"/>
     <intAttribute key="com.crt.ctrlcenter.version" value="6"/>
     <stringAttribute key="com.nxp.mcuxpresso.flash.base.address" value="0x0"/>
     <booleanAttribute key="com.nxp.mcuxpresso.flash.clear.console" value="true"/>
@@ -25,6 +27,9 @@
     <stringAttribute key="debug.level" value="2"/>
     <stringAttribute key="emu.speed" value=""/>
     <stringAttribute key="flash.driver.reset" value=""/>
+    <stringAttribute key="gdbserver.host" value="localhost"/>
+    <stringAttribute key="gdbserver.port" value="10989"/>
+    <booleanAttribute key="gdbserver.start" value="true"/>
     <booleanAttribute key="internal.attach.slave" value="false"/>
     <booleanAttribute key="internal.cache" value="false"/>
     <stringAttribute key="internal.connect.script" value="kinetisconnect.scp"/>
@@ -37,6 +42,7 @@
     <stringAttribute key="internal.semihost" value="On"/>
     <stringAttribute key="internal.wirespeed" value=""/>
     <stringAttribute key="internal.wiretype" value="SWD*,JTAG"/>
+    <stringAttribute key="isp.control" value="xxxx"/>
     <stringAttribute key="launch.config.handler" value="com.crt.ctrlcenter.launch.CRTLaunchConfigHandler"/>
     <booleanAttribute key="mem.access" value="false"/>
     <stringAttribute key="misc.options" value=""/>
@@ -47,9 +53,11 @@
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageFileName" value=""/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.imageOffset" value=""/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.initCommands" value="set non-stop on&#10;set pagination off&#10;set mi-async&#10;set remotetimeout 60000&#10;##target_extended_remote##&#10;set mem inaccessible-by-default ${mem.access}&#10;mon ondisconnect ${ondisconnect}&#10;set arm force-mode thumb&#10;${load}"/>
+    <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.ipAddress" value="localhost"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.loadImage" value="true"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.loadSymbols" value="true"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.pcRegister" value=""/>
+    <intAttribute key="org.eclipse.cdt.debug.gdbjtag.core.portNumber" value="10989"/>
     <stringAttribute key="org.eclipse.cdt.debug.gdbjtag.core.runCommands" value="${run}"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setPcRegister" value="false"/>
     <booleanAttribute key="org.eclipse.cdt.debug.gdbjtag.core.setResume" value="false"/>
@@ -73,11 +81,12 @@
     <intAttribute key="org.eclipse.cdt.launch.ATTR_BUILD_BEFORE_LAUNCH_ATTR" value="2"/>
     <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_ID" value="gdb"/>
     <stringAttribute key="org.eclipse.cdt.launch.DEBUGGER_START_MODE" value="remote"/>
-    <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug\tinyK22_Master.axf"/>
+    <stringAttribute key="org.eclipse.cdt.launch.PROGRAM_NAME" value="Debug/tinyK22_Master.axf"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_ATTR" value="tinyK22_Master"/>
     <booleanAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_AUTO_ATTR" value="false"/>
     <stringAttribute key="org.eclipse.cdt.launch.PROJECT_BUILD_CONFIG_ID_ATTR" value="com.crt.advproject.config.exe.debug.1652255002"/>
     <booleanAttribute key="org.eclipse.cdt.launch.use_terminal" value="false"/>
+    <booleanAttribute key="org.eclipse.debug.core.ATTR_FORCE_SYSTEM_CONSOLE_ENCODING" value="false"/>
     <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
         <listEntry value="/tinyK22_Master"/>
     </listAttribute>
