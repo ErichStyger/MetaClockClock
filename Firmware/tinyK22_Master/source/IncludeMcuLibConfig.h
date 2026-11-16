@@ -4,26 +4,6 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-/* header file is included with -include compiler option
-Instructions:
- - Remove the 'Template_' from the name and place this file into your 'src' folder.
- - Include it with the -include compiler option with:  "${ProjDirPath}/source/IncludeMcuLibConfig.h"
- - Add the following to the -I compiler option:
-../McuLib
-../McuLib/config
-../McuLib/config/fonts
-../McuLib/fonts
-../McuLib/src
-../McuLib/FreeRTOS/Source/include
-../McuLib/FreeRTOS/Source/portable/GCC/ARM_CM4F
-../McuLib/SEGGER_RTT
-../McuLib/SEGGER_Sysview
-../McuLib/TraceRecorder/config
-../McuLib/TraceRecorder/include
-../McuLib/TraceRecorder/streamports/Jlink_RTT/include
-../McuLib/HD44780
- */
-
 #ifndef INCLUDEMCULIBCONFIG_H_
 #define INCLUDEMCULIBCONFIG_H_
 
