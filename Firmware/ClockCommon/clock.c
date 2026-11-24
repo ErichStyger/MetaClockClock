@@ -350,7 +350,9 @@ static void clock_fadeOut(uint32_t color) {
 
 static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   uint8_t buf[8];
+#if PL_CONFIG_USE_FONT || PL_CONFIG_USE_LED_RING
   uint32_t color = 0; /* 0 in case no color is used or no hardware for it */
+#endif
 
   if (date!=NULL) {
     McuLog_info("Time: %02d:%02d, Date: %02d-%02d-%04d", time->Hour, time->Min, date->Day, date->Month, date->Year);
@@ -377,7 +379,7 @@ static void CLOCK_ShowTimeDate(TIMEREC *time, DATEREC *date) {
   }
   color = NEO_COMBINE_RGB((CLOCK_HandColor>>16)&0xff, (CLOCK_HandColor>>8)&0xff, CLOCK_HandColor&0xff);
   MHAND_SetHandColorAll(color);
-#elif PL_CONFIG_USE_LED_RING
+#elif PL_CONFIG_USE_MATRIX
   MATRIX_GetHandColorBrightness(&color, NULL);
 #endif
 #endif /* PL_CONFIG_USE_MATRIX */
